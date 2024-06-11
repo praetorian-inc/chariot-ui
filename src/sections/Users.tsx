@@ -40,8 +40,9 @@ export const Users: React.FC = () => {
     },
     ...(accounts || []).filter(
       account =>
-        ![...AvailableIntegrations, 'settings'].includes(account.member) &&
-        account.member !== account.username
+        !AvailableIntegrations.includes(account.member) &&
+        account.member !== account.username &&
+        account.member.includes('@')
     ),
   ];
 

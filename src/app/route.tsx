@@ -4,7 +4,7 @@ import { Body } from '@/components/ui/Body';
 import Account from '@/sections/Account';
 import Assets from '@/sections/Assets';
 import { Attributes } from '@/sections/Attributes';
-import { AuthenticatedApp } from '@/sections/authenticatedApp/AuthenticatedApp';
+import { AuthenticatedApp } from '@/sections/AuthenticatedApp';
 import Files from '@/sections/Files';
 import Hello from '@/sections/Hello';
 import Integrations from '@/sections/Integrations';

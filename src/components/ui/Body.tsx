@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 
-import { Header } from '@/sections/authenticatedApp/AuthenticatedApp';
+import { Header } from '@/sections/AuthenticatedApp';
 import { cn } from '@/utils/classname';
 
 import Footer from './Footer';

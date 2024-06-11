@@ -7,16 +7,15 @@ import { MaxWidthContainer } from '@/components/MaxWidthContainer';
 import ImpersonationBanner from '@/components/ui/ImpersonationBanner';
 import { ShortcutsHelper } from '@/components/ui/Shortcuts';
 import { useMy } from '@/hooks';
+import { DetailsDrawer } from '@/sections/detailsDrawer';
+import { NewUserSeedModal } from '@/sections/NewUserSeedModal';
+import { ProofOfExploit } from '@/sections/ProofOfExploit';
+import { TopNavBar } from '@/sections/topNavBar/TopNavBar';
 import { useAuth } from '@/state/auth';
 import { useBreadCrumbsContext } from '@/state/breadcrumbs';
+import { AccountMetadata } from '@/types';
 import { cn } from '@/utils/classname';
 import { getRoute } from '@/utils/route.util';
-
-import { AccountMetadata } from '../../types';
-import { DetailsDrawer } from '../detailsDrawer';
-import { NewUserSeedModal } from '../NewUserSeedModal';
-import { POEModal } from '../risk/PoeModal';
-import { TopNavBar } from '../topNavBar/TopNavBar';
 
 const offsetViewMargin = 16;
 interface AuthenticatedApp {
@@ -122,7 +121,7 @@ export function Header() {
     <>
       <ImpersonationBanner />
       <NewUserSeedModal />
-      <POEModal />
+      <ProofOfExploit />
       <div
         className={cn(
           `${friend?.email?.length > 0 && 'pt-[10px]'} flex flex-col items-center w-full bg-header text-header px-4`

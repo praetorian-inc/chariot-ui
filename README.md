@@ -9,8 +9,8 @@
 [![Open Source Libraries](https://img.shields.io/badge/open--source-%F0%9F%92%9A-28a745)](https://opensource.org/)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/praetorian-inc/chariot-ui/issues)
 
-:book: [Documentation](https://docs.praetorian.com/hc/en-us)
-:link: [Chariot Platform](preview.chariot.praetorian.com)
+:book: [Documentation](https://docs.praetorian.com)
+:link: [Chariot Platform](https://preview.chariot.praetorian.com)
 :computer: [Praetorian CLI](https://github.com/praetorian-inc/praetorian-cli)
 
 ## Table of Contents

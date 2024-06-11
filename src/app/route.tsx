@@ -1,4 +1,5 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { ReactNode } from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { Body } from '@/components/ui/Body';
 import Account from '@/sections/Account';
@@ -14,9 +15,22 @@ import Logout from '@/sections/Logout';
 import { References } from '@/sections/References';
 import { Risks } from '@/sections/RisksTable';
 import Seeds from '@/sections/Seeds';
+import { useAuth } from '@/state/auth';
 import { validateRoutes } from '@/utils/route.util';
+import { getRoute } from '@/utils/route.util';
 
-import { CheckAuth } from './redirect/CheckAuth';
+function CheckAuth(props: { children: ReactNode }) {
+  const { token } = useAuth();
+  const location = useLocation();
+
+  if (token) {
+    return props.children;
+  } else {
+    return (
+      <Navigate to={getRoute(['login'])} state={{ from: location }} replace />
+    );
+  }
+}
 
 export const appRoutes = {
   login: {

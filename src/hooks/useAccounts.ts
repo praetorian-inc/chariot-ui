@@ -24,6 +24,7 @@ export const useModifyAccount = (
         const {
           username,
           config: configAccount,
+          member,
           value,
           key,
           ...rest
@@ -41,6 +42,7 @@ export const useModifyAccount = (
           const response = await axios.delete(`/account/${username}`, {
             data: {
               config: configAccount,
+              member,
               value,
               key,
             },

@@ -116,6 +116,7 @@ export interface Account extends AccountTemplate {
 
 export interface LinkAccount {
   username: string;
+  member?: string;
   config: AccountMetadata;
   value?: string;
   key?: string;

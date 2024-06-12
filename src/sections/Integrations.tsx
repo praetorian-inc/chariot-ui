@@ -68,6 +68,7 @@ const Integrations: React.FC = () => {
           accounts.forEach(account =>
             unlink({
               username: account.member,
+              member: account.member,
               config: account.config,
               value: account.value,
               key: account.key,

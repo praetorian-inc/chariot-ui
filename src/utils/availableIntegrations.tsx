@@ -470,7 +470,7 @@ export const AvailableIntegrations = IntegrationsMeta.filter(
   integration => integration.connected
 ).map(integration => integration.name);
 
-export const isFutureIntegration = (name: string) =>
+export const isComingSoonIntegration = (name: string) =>
   !AvailableIntegrations.includes(name);
 
 export const getIntegrationMeta = (name?: string) =>

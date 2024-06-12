@@ -11,7 +11,7 @@ import {
   AvailableIntegrations,
   IntegrationMeta,
   IntegrationsMeta,
-  isFutureIntegration,
+  isComingSoonIntegration,
 } from '@/utils/availableIntegrations';
 
 import { Account } from '../types';
@@ -20,7 +20,7 @@ function getButtonText(integration: IntegrationMeta) {
   const { name, connected, issue } = integration;
   if (connected) {
     return 'Disconnect';
-  } else if (isFutureIntegration(name)) {
+  } else if (isComingSoonIntegration(name)) {
     return issue ? `Github #${issue}` : 'Coming soon';
   } else {
     return 'Connect';
@@ -93,7 +93,7 @@ const Integrations: React.FC = () => {
           ...integrationMeta,
           connected: connectedAccounts.length > 0,
         };
-        const isFuture = isFutureIntegration(integration.name);
+        const isComingSoon = isComingSoonIntegration(integration.name);
 
         return (
           <div
@@ -134,13 +134,13 @@ const Integrations: React.FC = () => {
                   integration.connected &&
                     'text-red-600 hover:text-red-500 rounded-br-[2px]',
                   !integration.connected &&
-                    !isFuture &&
+                    !isComingSoon &&
                     'text-brand hover:text-brand-hover'
                 )}
                 startIcon={
                   integration.connected ? (
                     <MinusCircleIcon className="mr-2 size-5" />
-                  ) : !isFuture ? (
+                  ) : !isComingSoon ? (
                     <PlusCircleIcon className="mr-2 size-5" />
                   ) : undefined
                 }

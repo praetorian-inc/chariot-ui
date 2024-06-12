@@ -34,8 +34,9 @@ export function capitalize(str?: string): string {
   return lower ? lower.charAt(0).toUpperCase() + lower.slice(1) : '';
 }
 
-export const isObject = (obj?: any): boolean =>
-  obj && obj !== null && typeof obj === 'object';
+export function isObject(obj?: any): boolean {
+  return obj && obj !== null && typeof obj === 'object';
+}
 
 export function isEqual(obj1?: any, obj2?: any): boolean {
   if (isObject(obj1) && isObject(obj2)) {

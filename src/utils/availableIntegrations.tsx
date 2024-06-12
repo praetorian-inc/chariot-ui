@@ -427,7 +427,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       'Industry-standard vulnerability scanner for comprehensive security assessments.',
     logo: '/icons/Nessus.svg',
     connected: false,
-    issue: 302,
   },
   {
     id: 14,
@@ -437,7 +436,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       'Vulnerability management solution offering risk-based prioritization and real-time remediation guidance.',
     logo: '/icons/Rapid7.svg',
     connected: false,
-    issue: 303,
   },
   {
     id: 15,
@@ -447,7 +445,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       'Offers cloud-based solutions for security and compliance across networks.',
     logo: '/icons/Qualys.svg',
     connected: false,
-    issue: 304,
   },
 ];
 

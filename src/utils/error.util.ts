@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { capitalize } from './lodash.util';
 
 export function createError(errorMessage: string, title?: string) {
   const error = new Error(errorMessage);
@@ -12,14 +12,14 @@ export function createError(errorMessage: string, title?: string) {
 export function getError(error: Error | string | unknown): Error {
   if (error instanceof Error) {
     return {
-      message: _.capitalize(error.message),
-      name: _.capitalize(error?.name),
+      message: capitalize(error.message),
+      name: capitalize(error?.name),
     };
   }
 
   return {
     message:
-      typeof error === 'string' ? _.capitalize(error) : JSON.stringify(error),
+      typeof error === 'string' ? capitalize(error) : JSON.stringify(error),
     name: '',
   };
 }

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import _, { PropertyPath } from 'lodash';
 
+import { isEqual, PropertyPath } from '../lodash.util';
 import { useGetComponentDidMount } from '../reactHooks.util';
 
 import { appStorage, appStorageKey } from './appStorage.util';
@@ -73,7 +73,7 @@ export function useStorage<S>(
 
   function updateStorage(value: S | undefined) {
     if (localStorageKey || queryKey) {
-      if (_.isEqual(value, defaultValue)) {
+      if (isEqual(value, defaultValue)) {
         if (localStorageKey) {
           appStorage.removeItem(localStorageKey);
         }
@@ -158,7 +158,7 @@ export function useStorage<S>(
 
   useEffect(() => {
     if (parentState !== undefined) {
-      if (!_.isEqual(parentState, localValue)) {
+      if (!isEqual(parentState, localValue)) {
         setLocalValue(parentState);
       }
     }

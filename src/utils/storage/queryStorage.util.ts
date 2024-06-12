@@ -1,6 +1,5 @@
-import _ from 'lodash';
-
 import { safeExecute } from '../function.util';
+import { isEmpty } from '../lodash.util';
 
 function queryStorageFn() {
   function getItem<T>(key: string): T | undefined {
@@ -15,7 +14,7 @@ function queryStorageFn() {
   function setItem<T>(key: string, value: T): void {
     const url = getSearchParams();
 
-    if (_.isEmpty(value)) {
+    if (isEmpty(value)) {
       url.searchParams.delete(key);
     } else {
       url.searchParams.set(

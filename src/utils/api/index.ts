@@ -17,13 +17,12 @@ import {
 export type { QueryStatus } from '@tanstack/react-query';
 export { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import _ from 'lodash';
-
 import { Snackbar } from '@/components/Snackbar';
 import { appendPeriodIfMissing } from '@/utils/text.util';
 
 import { queryClient } from '../../queryclient';
 import { createError, getError } from '../error.util';
+import { capitalize } from '../lodash.util';
 
 export function useMutation<
   TData = unknown,
@@ -189,7 +188,7 @@ function getQueryError(defaultErrorMessage: string, error: any) {
 }
 
 function appendContactSupport(error: string) {
-  return _.capitalize(
+  return capitalize(
     appendPeriodIfMissing(error) + ' Please contact support@praetorian.com.'
   );
 }

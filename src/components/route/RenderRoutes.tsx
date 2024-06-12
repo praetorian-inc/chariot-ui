@@ -4,9 +4,9 @@ import {
   RouteObject as ReactRouteObject,
   Routes,
 } from 'react-router-dom';
-import _ from 'lodash';
 
 import { useBreadCrumbsContext } from '@/state/breadcrumbs';
+import { omit } from '@/utils/lodash.util';
 
 type RouteObject = ReactRouteObject & { title?: string };
 
@@ -128,7 +128,7 @@ function getRouteObjects<EnabledProps>(props: {
                 element: (value as IRouteObj<EnabledProps>).element,
                 title: (value as IRouteObj<EnabledProps>).title,
                 children: getRouteObjects({
-                  routeObj: _.omit(
+                  routeObj: omit(
                     value as IRouteObj<EnabledProps>,
                     'element',
                     'enabled',

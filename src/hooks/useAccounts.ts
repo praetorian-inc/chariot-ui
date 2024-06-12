@@ -3,7 +3,7 @@ import { useAuth } from '@/state/auth';
 import { useMutation } from '@/utils/api';
 import { AvailableIntegrations } from '@/utils/availableIntegrations';
 import { getChariotWebhookURL } from '@/utils/integration.util';
-import { capitalize } from '@/utils/text.util';
+import { capitalize } from '@/utils/lodash.util';
 
 import { Account, LinkAccount } from '../types';
 

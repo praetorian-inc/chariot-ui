@@ -1,6 +1,5 @@
-import { PropertyPath } from 'lodash';
-
 import { decode, encode } from '../encrypt.util';
+import { PropertyPath } from '../lodash.util';
 
 export const appStorageKey = 'appStorage';
 

@@ -38,6 +38,9 @@ export interface IntegrationMeta {
 
 const uuid = uuidv4();
 
+const defaultPin = (
+  Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000
+).toString();
 export const IntegrationsMeta: IntegrationMeta[] = [
   {
     id: 12,
@@ -68,13 +71,13 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
       {
         label: 'Secret Pin',
-        value: `${Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000}`,
+        value: defaultPin,
         placeholder: uuid,
         name: 'pin',
         hidden: true,
       },
     ],
-    markup: <WebhookExample />,
+    markup: <WebhookExample defaultPin={defaultPin} />,
   },
   {
     id: 9,

@@ -4,10 +4,15 @@ import { getChariotWebhookURL } from '@/utils/integration.util';
 
 import { CopyToClipboard } from '../CopyToClipboard';
 
-function WebhookExample() {
+interface Props {
+  defaultPin: string;
+}
+const WebhookExample: React.FC<Props> = ({ defaultPin }) => {
   const { me, api } = useAuth();
   const { data: accounts } = useMy({ resource: 'account' });
-  const pin = accounts?.find(account => account.member === 'hook')?.config?.pin;
+  const pin =
+    accounts?.find(account => account.member === 'hook')?.config?.pin ??
+    defaultPin;
   const url = getChariotWebhookURL({ api, me, pin });
 
   const samples = [
@@ -48,6 +53,6 @@ function WebhookExample() {
       ))}
     </div>
   );
-}
+};
 
 export default WebhookExample;

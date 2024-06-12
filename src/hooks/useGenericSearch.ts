@@ -4,8 +4,8 @@ import { UseExtendQueryOptions, useQuery } from '@/utils/api';
 
 import { GenericResource } from '../types';
 
-import { mapAssetStataus } from './assets';
 import { getQueryKey } from './queryKeys';
+import { mapAssetStataus } from './useAssets';
 import { useAxios } from './useAxios';
 
 export const useGenericSearch = (

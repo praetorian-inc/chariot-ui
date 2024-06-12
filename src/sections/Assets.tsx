@@ -20,7 +20,7 @@ import { AddRisks } from '@/components/ui/AddRisks';
 import { AssetStatusChip } from '@/components/ui/AssetStatusChip';
 import Counts from '@/components/ui/Counts';
 import { useMy } from '@/hooks';
-import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/assets';
+import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
 import { useCounts } from '@/hooks/useCounts';
 import { useMergeStatus } from '@/utils/api';
 import { exportContent } from '@/utils/download.util';

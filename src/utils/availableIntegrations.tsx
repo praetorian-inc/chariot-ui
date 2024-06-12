@@ -321,17 +321,17 @@ export const IntegrationsMeta: IntegrationMeta[] = [
         value: '',
         placeholder:
           '{\n' +
-            '  "type": "service_account",\n' +
-            '  "project_id": "PROJECT_ID",\n' +
-            '  "private_key_id": "KEY_ID",\n' +
-            '  "private_key": "-----BEGIN PRIVATE KEY-----\\nPRIVATE_KEY\\n-----END PRIVATE KEY-----\\n",\n' +
-            '  "client_email": "SERVICE_ACCOUNT_EMAIL",\n' +
-            '  "client_id": "CLIENT_ID",\n' +
-            '  "auth_uri": "https://accounts.google.com/o/oauth2/auth",\n' +
-            '  "token_uri": "https://accounts.google.com/o/oauth2/token",\n' +
-            '  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",\n' +
-            '  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/SERVICE_ACCOUNT_EMAIL"\n' +
-            '}',
+          '  "type": "service_account",\n' +
+          '  "project_id": "PROJECT_ID",\n' +
+          '  "private_key_id": "KEY_ID",\n' +
+          '  "private_key": "-----BEGIN PRIVATE KEY-----\\nPRIVATE_KEY\\n-----END PRIVATE KEY-----\\n",\n' +
+          '  "client_email": "SERVICE_ACCOUNT_EMAIL",\n' +
+          '  "client_id": "CLIENT_ID",\n' +
+          '  "auth_uri": "https://accounts.google.com/o/oauth2/auth",\n' +
+          '  "token_uri": "https://accounts.google.com/o/oauth2/token",\n' +
+          '  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",\n' +
+          '  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/SERVICE_ACCOUNT_EMAIL"\n' +
+          '}',
         name: 'keyfile',
         required: true,
         type: Input.Type.TEXT_AREA,

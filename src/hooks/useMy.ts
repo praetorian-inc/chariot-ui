@@ -5,8 +5,8 @@ import { UseExtendInfiniteQueryOptions, useInfiniteQuery } from '@/utils/api';
 
 import { Asset, MyResource, MyResourceKey } from '../types';
 
-import { mapAssetStataus } from './assets';
 import { getQueryKey } from './queryKeys';
+import { mapAssetStataus } from './useAssets';
 import { useAxios } from './useAxios';
 import { useSearchParams } from './useSearchParams';
 

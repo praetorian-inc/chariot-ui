@@ -145,7 +145,7 @@ const Seeds: React.FC = () => {
             isFQDN(seed.dns) && !seed.dns.startsWith('https://github')
         );
       } else if (filter === 'cloud') {
-        const integrationNames = integrationList.map(i => i.name);
+        const integrationNames = integrationList.map(i => i.member);
         return seeds.filter((seed: Seed) =>
           integrationNames.includes(seed.dns)
         );

@@ -310,30 +310,29 @@ export const IntegrationsMeta: IntegrationMeta[] = [
         hidden: true,
       },
       {
-        name: 'auth_uri',
-        value: 'https://accounts.google.com/o/oauth2/auth',
-        hidden: true,
-      },
-      {
         label: 'Project ID',
         value: '',
         placeholder: 'praetorian-chariot-example',
-        name: 'project_id',
+        name: 'value',
         required: true,
       },
       {
-        label: 'Service Account Email',
-        value: '',
-        placeholder: 'example-account@appspot.gserviceaccount.com',
-        name: 'client_email',
-        required: true,
-      },
-      {
-        label: 'Private Key',
+        label: 'Service Account JSON Keyfile',
         value: '',
         placeholder:
-          '-----BEGIN PRIVATE KEY-----\nEXAMPLEKEY\n-----END PRIVATE KEY-----\n',
-        name: 'private_key',
+          '{\n' +
+            '  "type": "service_account",\n' +
+            '  "project_id": "PROJECT_ID",\n' +
+            '  "private_key_id": "KEY_ID",\n' +
+            '  "private_key": "-----BEGIN PRIVATE KEY-----\\nPRIVATE_KEY\\n-----END PRIVATE KEY-----\\n",\n' +
+            '  "client_email": "SERVICE_ACCOUNT_EMAIL",\n' +
+            '  "client_id": "CLIENT_ID",\n' +
+            '  "auth_uri": "https://accounts.google.com/o/oauth2/auth",\n' +
+            '  "token_uri": "https://accounts.google.com/o/oauth2/token",\n' +
+            '  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",\n' +
+            '  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/SERVICE_ACCOUNT_EMAIL"\n' +
+            '}',
+        name: 'keyfile',
         required: true,
         type: Input.Type.TEXT_AREA,
       },

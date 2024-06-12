@@ -93,6 +93,7 @@ const Integrations: React.FC = () => {
           ...integrationMeta,
           connected: connectedAccounts.length > 0,
         };
+        const isFuture = isFutureIntegration(integration.name);
 
         return (
           <div
@@ -133,13 +134,13 @@ const Integrations: React.FC = () => {
                   integration.connected &&
                     'text-red-600 hover:text-red-500 rounded-br-[2px]',
                   !integration.connected &&
-                    !isFutureIntegration(integration.name) &&
+                    !isFuture &&
                     'text-brand hover:text-brand-hover'
                 )}
                 startIcon={
                   integration.connected ? (
                     <MinusCircleIcon className="mr-2 size-5" />
-                  ) : !isFutureIntegration(integration.name) ? (
+                  ) : !isFuture ? (
                     <PlusCircleIcon className="mr-2 size-5" />
                   ) : undefined
                 }

@@ -4,8 +4,8 @@ import { sToMs } from '@/utils/date.util';
 
 import { MyResourceKey, Statistics } from '../types';
 
-import { getQueryKey } from './queryKeys';
 import { useAxios } from './useAxios';
+import { getQueryKey } from './useQueryKeys';
 import { useSearchParams } from './useSearchParams';
 
 interface UseCountsProps<ResourceKey extends MyResourceKey> {

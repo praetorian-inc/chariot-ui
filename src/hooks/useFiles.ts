@@ -2,9 +2,9 @@ import { Snackbar } from '@/components/Snackbar';
 import { queryClient } from '@/queryclient';
 import { UseExtendQueryOptions, useMutation, useQuery } from '@/utils/api';
 
-import { getQueryKey } from './queryKeys';
 import { useAxios } from './useAxios';
 import { useMy } from './useMy';
+import { getQueryKey } from './useQueryKeys';
 
 interface UploadFilesProps {
   name: string;

@@ -4,7 +4,7 @@ import { useQuery } from '@/utils/api';
 
 import { BackendSections } from '../types';
 
-import { getQueryKey } from './queryKeys';
+import { getQueryKey } from './useQueryKeys';
 
 export const useBackends = () => {
   const configIniParser = new ConfigIniParser();

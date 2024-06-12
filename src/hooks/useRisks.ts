@@ -4,9 +4,9 @@ import { useMutation } from '@/utils/api';
 import { queryClient } from '../queryclient';
 import { Risk, RiskTemplate } from '../types';
 
-import { getQueryKey } from './queryKeys';
 import { useAxios } from './useAxios';
 import { useMy } from './useMy';
+import { getQueryKey } from './useQueryKeys';
 
 export const useCreateRisk = () => {
   const axios = useAxios();

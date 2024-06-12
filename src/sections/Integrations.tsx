@@ -132,15 +132,14 @@ const Integrations: React.FC = () => {
                   'grow basis-1/2 py-4 bg-layer0 rounded-none border-t-2 border-gray-100',
                   integration.connected &&
                     'text-red-600 hover:text-red-500 rounded-br-[2px]',
-                  !integration.connected && 'rounded-b-[2px]',
                   !integration.connected &&
-                    !integration.issue &&
+                    !isFutureIntegration(integration.name) &&
                     'text-brand hover:text-brand-hover'
                 )}
                 startIcon={
                   integration.connected ? (
                     <MinusCircleIcon className="mr-2 size-5" />
-                  ) : !integration.issue ? (
+                  ) : !isFutureIntegration(integration.name) ? (
                     <PlusCircleIcon className="mr-2 size-5" />
                   ) : undefined
                 }

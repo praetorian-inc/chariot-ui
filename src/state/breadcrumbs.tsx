@@ -34,14 +34,6 @@ export const BreadCrumbsProvider: React.FC<{ children: React.ReactNode }> = ({
         newBreadcrumbs[breadcrumb.order - 1] = breadcrumb;
         return newBreadcrumbs;
       });
-
-      return () => {
-        setBreadcrumbs(prevBreadcrumbs => {
-          return prevBreadcrumbs.filter(
-            (_, index) => index !== breadcrumb.order - 1
-          );
-        });
-      };
     }, [breadcrumb.label, breadcrumb.order, breadcrumb.to]);
   };
 

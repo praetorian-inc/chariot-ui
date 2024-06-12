@@ -1,8 +1,7 @@
 import { Snackbar } from '@/components/Snackbar';
 import { useMutation } from '@/utils/api';
 
-import { StartMessage, StopMessage } from '../constants';
-import { Asset, AssetStatus } from '../types';
+import { Asset, AssetStatus, RiskScanMessage } from '../types';
 
 import { useAxios } from './useAxios';
 import { useMy } from './useMy';
@@ -50,8 +49,8 @@ export const useUpdateAsset = () => {
           title: `${name} ${AssetsSnackbarTitle[status]}`,
           description:
             status === AssetStatus.Frozen || status === AssetStatus.Unknown
-              ? StopMessage
-              : StartMessage,
+              ? RiskScanMessage.Stop
+              : RiskScanMessage.Start,
           variant: 'success',
         });
       }

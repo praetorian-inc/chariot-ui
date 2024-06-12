@@ -1,3 +1,8 @@
+export enum RiskScanMessage {
+  Stop = 'Risk scanning will stop.',
+  Start = 'Risk scanning will start automatically.',
+}
+
 export enum UniqueQueryKeys {
   Backends = 'backends',
   MY = 'MY',

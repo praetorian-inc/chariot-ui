@@ -29,8 +29,7 @@ import {
 } from '@/utils/availableIntegrations';
 import { exportContent } from '@/utils/download.util';
 
-import { StartMessage, StopMessage } from '../constants';
-import { Account, Seed, SeedStatus } from '../types';
+import { Account, RiskScanMessage, Seed, SeedStatus } from '../types';
 
 import { useOpenDrawer } from './detailsDrawer/useOpenDrawer';
 
@@ -209,7 +208,7 @@ const Seeds: React.FC = () => {
                 if (showBulk) {
                   Snackbar({
                     title: `${seeds.length} seeds will be removed`,
-                    description: StopMessage,
+                    description: RiskScanMessage.Stop,
                     variant: 'success',
                   });
                 }
@@ -237,7 +236,7 @@ const Seeds: React.FC = () => {
                 if (showBulk) {
                   Snackbar({
                     title: `${seeds.length} seeds will resume scanning`,
-                    description: StartMessage,
+                    description: RiskScanMessage.Start,
                     variant: 'success',
                   });
                 }

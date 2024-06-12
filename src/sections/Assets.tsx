@@ -26,8 +26,7 @@ import { useMergeStatus } from '@/utils/api';
 import { exportContent } from '@/utils/download.util';
 import { getRoute } from '@/utils/route.util';
 
-import { StartMessage, StopMessage } from '../constants';
-import { Asset, AssetStatus, Risk } from '../types';
+import { Asset, AssetStatus, Risk, RiskScanMessage } from '../types';
 
 import { useOpenDrawer } from './detailsDrawer/useOpenDrawer';
 import { AssetStatusWarning } from './AssetStatusWarning';
@@ -223,8 +222,8 @@ const Assets: React.FC = () => {
                   AssetStatus.Active,
                   AssetStatus.ActiveHigh,
                 ].includes(status)
-                  ? StartMessage
-                  : StopMessage,
+                  ? RiskScanMessage.Start
+                  : RiskScanMessage.Stop,
                 variant: 'success',
               });
             }

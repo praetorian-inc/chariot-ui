@@ -133,9 +133,9 @@ const Integrations: React.FC = () => {
                   'grow basis-1/2 py-4 bg-layer0 rounded-none border-t-2 border-gray-100',
                   integration.connected &&
                     'text-red-600 hover:text-red-500 rounded-br-[2px]',
-                  !integration.connected &&
-                    !isComingSoon &&
-                    'text-brand hover:text-brand-hover'
+                  !integration.connected && !isComingSoon
+                    ? 'text-brand hover:text-brand-hover'
+                    : 'cursor-default'
                 )}
                 startIcon={
                   integration.connected ? (
@@ -144,7 +144,7 @@ const Integrations: React.FC = () => {
                     <PlusCircleIcon className="mr-2 size-5" />
                   ) : undefined
                 }
-                onClick={() => handleCTA(integration)}
+                onClick={() => !isComingSoon && handleCTA(integration)}
               >
                 {isLoading ? 'Loading...' : getButtonText(integration)}
               </Button>

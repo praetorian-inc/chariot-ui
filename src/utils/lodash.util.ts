@@ -72,5 +72,10 @@ export function isEqual(obj1?: any, obj2?: any): boolean {
 }
 
 export function isEmpty(data?: any): boolean {
-  return data === null || data === undefined || data === '';
+  return (
+    data === null ||
+    data === undefined ||
+    data === '' ||
+    (isObject(data) && !Object.keys(data).length)
+  );
 }

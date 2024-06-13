@@ -243,6 +243,46 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     ],
   },
   {
+    id: 17,
+    name: 'gitlab',
+    displayName: 'GitLab',
+    description:
+      'Platform for software development and version control using Git, with collaboration features.',
+    logo: '/icons/GitLab.svg',
+    connected: true,
+    inputs: [
+      {
+        name: 'username',
+        value: 'gitlab',
+        hidden: true,
+      },
+      {
+        label: 'Personal Access Token (PAT)',
+        value: '',
+        placeholder: 'glpat-abcd1234abcd1234abcd',
+        name: 'pat',
+        required: true,
+        type: Input.Type.PASSWORD,
+        info: {
+          url: 'https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html',
+          text: 'Learn more',
+        },
+      },
+      {
+        label: 'GitLab Group',
+        value: '',
+        placeholder: 'https://gitlab.com/example-group',
+        pattern: '^http(s)?://.+$',
+        name: 'group',
+        required: true,
+        info: {
+          url: 'https://docs.gitlab.com/ee/user/group/',
+          text: 'Learn more',
+        },
+      },
+    ],
+  },
+  {
     id: 4,
     name: 'amazon',
     displayName: 'Amazon Web Services',

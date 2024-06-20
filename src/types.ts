@@ -150,6 +150,7 @@ export interface LinkAccount {
 export interface AccountMetadata {
   displayName?: string;
   pin?: string;
+  logoFilename?: string;
 }
 
 // TODO: Discover the unknowns

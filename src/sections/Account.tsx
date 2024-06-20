@@ -3,6 +3,8 @@ import MD5 from 'crypto-js/md5';
 
 import { Button } from '@/components/Button';
 import { Input } from '@/components/form/Input';
+import { Dropzone, Files } from '@/components/Dropzone';
+import { useUploadFile } from '@/hooks';
 import { Paper } from '@/components/Paper';
 import { useModifyAccount } from '@/hooks/useAccounts';
 import { useMy } from '@/hooks/useMy';
@@ -10,9 +12,11 @@ import { useAuth } from '@/state/auth';
 
 import { CollaboratingWith } from './CollaboratingWith';
 import { Users } from './Users';
+import { Loader } from '@/components/Loader';
 
 const Account: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
+  const [logoFilename, setLogoFilename] = useState('');
 
   const { me, friend } = useAuth();
   const { data, status } = useMy({ resource: 'account' });
@@ -28,6 +32,7 @@ const Account: React.FC = () => {
   useEffect(() => {
     if (status === 'success') {
       setDisplayName((account?.config?.displayName as string) || '');
+      setLogoFilename((account?.config?.logoFilename as string) || '');
     }
   }, [status, account]);
 
@@ -45,6 +50,27 @@ const Account: React.FC = () => {
     [data]
   );
 
+  const { mutate: uploadFile } = useUploadFile();
+
+  const handleFileDrop = (files: Files): void => {
+    files.forEach(({ result, file }) => {
+      const resultStr = result as string;
+      const bytes: Uint8Array = new Uint8Array(resultStr.length);
+      for (let j = 0; j < resultStr.length; j++) {
+        bytes[j] = resultStr.charCodeAt(j);
+      }
+      uploadFile({
+        name: file.name,
+        bytes,
+      });
+      setLogoFilename(file.name);
+      updateAccount({
+        username: 'settings',
+        config: { displayName, logoFilename: file.name },
+      });
+    });
+  };
+
   return (
     <div className="flex h-max w-full flex-col gap-8">
       <Section title="Organization Details">
@@ -53,7 +79,7 @@ const Account: React.FC = () => {
             e.preventDefault();
             updateAccount({
               username: 'settings',
-              config: { displayName },
+              config: { displayName, logoFilename },
             });
           }}
         >
@@ -64,6 +90,23 @@ const Account: React.FC = () => {
             isLoading={status === 'pending'}
             onChange={e => setDisplayName(e.target.value)}
           />
+
+          <div className="mt-5 flex items-center gap-1">
+            <label className="block text-sm font-medium leading-6 text-gray-900">
+              Organization Logo
+            </label>
+          </div>
+          <Loader isLoading={status === 'pending'} className="h-5 mt-2">
+            {!account?.config?.logoFilename && (
+              <Dropzone
+                onFilesDrop={handleFileDrop}
+                title="Click or drag and drop your logo image here."
+                subTitle=""
+                maxFileSizeInMb={6}
+              />
+            )}
+            {account?.config?.logoFilename && <div></div>}
+          </Loader>
           <Button
             style={{
               opacity: isDirty ? '100%' : '0%',

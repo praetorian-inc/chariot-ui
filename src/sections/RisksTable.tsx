@@ -467,7 +467,7 @@ export function Risks() {
           title: risks?.length > 0 ? 'Scanning for Risks' : 'No Risks Found',
           description:
             risks.length > 0
-              ? `None of these Risks have been found, but we're actively scanning for them.\nWe'll alert you if we find any.`
+              ? `No risks have been found, but we're actively scanning for them.\nWe'll alert you if we find any.`
               : `Congratulations! Your Assets look safe, secure, and properly configured.\nWe'll continue to watch them to ensure nothing changes.`,
           icon:
             risks.length > 0 ? (

@@ -75,6 +75,23 @@ export function useDownloadFile() {
   });
 }
 
+interface GetFileSignedURLProps {
+  name: string;
+}
+
+export async function useGetFileSignedURL(props: GetFileSignedURLProps) {
+  const axios = useAxios();
+
+  return (
+    await axios.get(`/file`, {
+      params: {
+        name: props.name,
+      },
+      responseType: 'arraybuffer',
+    })
+  ).request.responseURL;
+}
+
 export interface GetFilesProps {
   name?: string;
 }

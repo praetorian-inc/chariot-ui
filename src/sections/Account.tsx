@@ -1,10 +1,10 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import MD5 from 'crypto-js/md5';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 import { Button } from '@/components/Button';
 import { Input } from '@/components/form/Input';
 import { Dropzone, Files } from '@/components/Dropzone';
-import { useUploadFile } from '@/hooks';
 import { Paper } from '@/components/Paper';
 import { useModifyAccount } from '@/hooks/useAccounts';
 import { useMy } from '@/hooks/useMy';
@@ -13,10 +13,13 @@ import { useAuth } from '@/state/auth';
 import { CollaboratingWith } from './CollaboratingWith';
 import { Users } from './Users';
 import { Loader } from '@/components/Loader';
+import { useUploadFile, useGetFileSignedURL } from '@/hooks/useFiles';
+import Hexagon from '@/components/Hexagon';
 
 const Account: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
   const [logoFilename, setLogoFilename] = useState('');
+  const [logoURL, setLogoURL] = useState('');
 
   const { me, friend } = useAuth();
   const { data, status } = useMy({ resource: 'account' });
@@ -32,9 +35,16 @@ const Account: React.FC = () => {
   useEffect(() => {
     if (status === 'success') {
       setDisplayName((account?.config?.displayName as string) || '');
-      setLogoFilename((account?.config?.logoFilename as string) || '');
+      if (account?.config?.logoFilename) {
+        setLogoFilename(account.config.logoFilename as string);
+        useGetFileSignedURL({
+          name: account.config.logoFilename as string,
+        }).then(signedURL => {
+          setLogoURL(signedURL);
+        });
+      }
     }
-  }, [status, account]);
+  }, [status, account, logoURL]);
 
   const collaborators = useMemo(
     () =>
@@ -53,15 +63,10 @@ const Account: React.FC = () => {
   const { mutate: uploadFile } = useUploadFile();
 
   const handleFileDrop = (files: Files): void => {
-    files.forEach(({ result, file }) => {
-      const resultStr = result as string;
-      const bytes: Uint8Array = new Uint8Array(resultStr.length);
-      for (let j = 0; j < resultStr.length; j++) {
-        bytes[j] = resultStr.charCodeAt(j);
-      }
+    files.forEach(({ content, file }) => {
       uploadFile({
         name: file.name,
-        bytes,
+        content,
       });
       setLogoFilename(file.name);
       updateAccount({
@@ -105,7 +110,24 @@ const Account: React.FC = () => {
                 maxFileSizeInMb={6}
               />
             )}
-            {account?.config?.logoFilename && <div></div>}
+            {account?.config?.logoFilename && (
+              <div>
+                <Hexagon big={true}>
+                  <img className="object-scale-down h-50 w-50" src={logoURL} />
+                </Hexagon>
+                <Button
+                  styleType="none"
+                  onClick={() =>
+                    updateAccount({
+                      username: 'settings',
+                      config: { displayName, logoFilename: '' },
+                    })
+                  }
+                >
+                  <TrashIcon className="size-10" />
+                </Button>
+              </div>
+            )}
           </Loader>
           <Button
             style={{

@@ -37,6 +37,7 @@ export const AccountDropdown: React.FC = () => {
         .map(acc => ({
           email: acc.name,
           displayName: acc?.config?.displayName ?? acc.name,
+          logoFilename: acc?.config?.logoFilename ?? '',
         })) || [],
     [data]
   );
@@ -92,6 +93,7 @@ export const AccountDropdown: React.FC = () => {
               <Avatar
                 account={String(collaborator.email)}
                 className="size-5 max-w-max scale-125 rounded-full"
+                logoFilename={String(collaborator.logoFilename)}
               />
             ),
             value: collaborator.email,
@@ -114,7 +116,7 @@ export const AccountDropdown: React.FC = () => {
       }}
     >
       <Hexagon>
-        <Avatar className="scale-150" account={friend.email || me} />
+        <Avatar account={friend.email || me} />
       </Hexagon>
     </Dropdown>
   );

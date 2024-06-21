@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserIcon } from '@heroicons/react/24/solid';
 
 import { useAuth } from '@/state/auth';
+import { useMy } from '@/hooks';
+import { useGetFileSignedURL } from '@/hooks/useFiles';
 
 async function computeSHA256(input: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -14,29 +16,41 @@ async function computeSHA256(input: string): Promise<string> {
 interface Props {
   account?: string;
   className?: string;
+  logoFilename?: string;
 }
 
-const Avatar: React.FC<Props> = ({ account, className }: Props) => {
-  const { me } = useAuth();
-  const [gravatarUrl, setGravatarUrl] = useState<string | null>(null);
+const Avatar: React.FC<Props> = ({
+  account,
+  className,
+  logoFilename,
+}: Props) => {
+  const { me, token } = useAuth();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
+
+  const { data } = useMy({ resource: 'account' });
+  const settings = useMemo(
+    () => data?.find(acc => acc.key.endsWith('#settings#')),
+    [data]
+  );
 
   useEffect(() => {
     if (account || me) {
-      computeSHA256((account || me).trim().toLowerCase())
-        .then(hash => {
-          setGravatarUrl(`https://www.gravatar.com/avatar/${hash}?d=404`);
-          setLoadError(false); // Reset error state upon new hash calculation
-        })
-        .catch(() => setLoadError(true)); // Handle any errors in hash computation
+      if (settings?.config?.logoFilename) {
+        useGetFileSignedURL({
+          name: settings.config.logoFilename as string,
+        }).then(signedURL => {
+          setLogoUrl(signedURL);
+        });
+      }
     }
-  }, [account, me]);
+  }, [account, me, logoUrl, settings]);
 
   return (
     <>
-      {gravatarUrl && !loadError ? (
+      {logoUrl && !loadError ? (
         <img
-          src={gravatarUrl}
+          src={logoUrl}
           onError={() => setLoadError(true)}
           alt="User Avatar"
           className={className}

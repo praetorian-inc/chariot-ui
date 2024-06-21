@@ -1,7 +1,7 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { CheckCircleIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import MDEditor from '@uiw/react-md-editor';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
@@ -21,17 +21,16 @@ import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useReRunJob } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
-import { formatDate } from '@/utils/date.util';
-import { sToMs } from '@/utils/date.util';
+import { formatDate, sToMs } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch, useSearchParams } from '@/utils/url.util';
 
 import { JobStatus, Risk, RiskCombinedStatus, RiskHistory } from '../../types';
 
+import { DRAWER_WIDTH } from '.';
 import { Comment } from './Comment';
 import { DetailsDrawerHeader } from './DetailsDrawerHeader';
-import { DRAWER_WIDTH } from '.';
 
 const getJobTimeline = ({
   status,
@@ -86,6 +85,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const [, dns, name] = compositeKey.split('#');
 
   const referenceFilter = `#${dns}#${name}`;
+  const attributeFilter = `#${dns}#${dns}`;
 
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [markdownValue, setMarkdownValue] = useState('');
@@ -94,6 +94,24 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const { mutateAsync: updateRisk } = useUpdateRisk();
   const { mutateAsync: updateFile, status: updateFileStatus } = useUploadFile();
   const { mutateAsync: reportRisk, status: reportRiskStatus } = useReportRisk();
+
+  const { data: attributes = [], status: attributesStatus } = useMy(
+    {
+      resource: 'attribute',
+      query: attributeFilter,
+    },
+    { enabled: open }
+  );
+
+  const prefix = useMemo(() => {
+    let prefixValue = '';
+    attributes.forEach(attribute => {
+      if (attribute.class === 'SOW') {
+        prefixValue = attribute.name + '/';
+      }
+    });
+    return prefixValue;
+  }, [attributes, dns]);
 
   const {
     data: risks = [],
@@ -113,7 +131,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     isFetching: isDefinitionsFileFetching,
   } = useGetFile(
     {
-      name: `definitions/${name}`,
+      name: `definitions/${prefix}${name}`,
     },
     { enabled: open }
   );

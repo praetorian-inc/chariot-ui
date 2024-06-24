@@ -1,7 +1,7 @@
+import React from 'react';
 import Counts from '@/components/ui/Counts';
 import { BusinessImpact } from '@/sections/overview/BusinessImpact';
 import { Conclusion } from '@/sections/overview/Conclusion';
-import { Definitions } from '@/sections/overview/Definitions';
 import { Findings } from '@/sections/overview/Findings';
 import { NewFeatures } from '@/sections/overview/NewFeatures';
 import { Recommendations } from '@/sections/overview/Recommendations';
@@ -26,16 +26,11 @@ export const Overview = () => {
         </div>
 
         {/* Center Column: Main Report Information */}
-        <div className="w-2/4">
+        <div className="w-3/4">
           <Findings />
           <Recommendations client_short={client_short} />
           <BusinessImpact />
           <Conclusion />
-        </div>
-
-        {/* Right Column: Definitions */}
-        <div className="w-1/4">
-          <Definitions />
         </div>
       </div>
     </div>

@@ -38,7 +38,10 @@ export const NewFeatures = () => {
 
   return (
     <div className="rounded-[2px] bg-white p-6 shadow-md">
-      <div className="border-1 mb-6 flex items-center justify-between">
+      <div className="list-inside list-disc text-gray-700">
+        <Markdown className="prose">{body}</Markdown>
+      </div>
+      <div className="mt-6 flex items-center justify-between">
         <Dropdown
           label={name}
           className="font-semibold"
@@ -56,14 +59,10 @@ export const NewFeatures = () => {
           }}
         />
         <span className="text-sm italic">
-          {isLatest ? 'Current Release' : 'Previous Release'}
+          <a href={html_url} className="text-primary">
+            Release Notes
+          </a>
         </span>
-      </div>
-      <div className="list-inside list-disc text-gray-700">
-        <Markdown className="prose">{body}</Markdown>
-        <a href={html_url} className="text-primary">
-          Learn more
-        </a>
       </div>
     </div>
   );

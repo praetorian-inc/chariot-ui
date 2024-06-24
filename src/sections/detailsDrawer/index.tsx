@@ -1,9 +1,8 @@
+import { AssetDrawer } from '@/sections/detailsDrawer/AssetDrawer';
+import { RiskDrawer } from '@/sections/detailsDrawer/RiskDrawer';
+import { SeedDrawer } from '@/sections/detailsDrawer/SeedDrawer';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { useSearchParams } from '@/utils/url.util';
-
-import { AssetDrawer } from './AssetDrawer';
-import { RiskDrawer } from './RiskDrawer';
-import { SeedDrawer } from './SeedDrawer';
 
 export const DRAWER_WIDTH = 'w-[864px]';
 

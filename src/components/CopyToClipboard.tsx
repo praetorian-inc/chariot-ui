@@ -1,10 +1,9 @@
 import React, { PropsWithChildren, useState } from 'react';
 import { ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 
+import { Tooltip } from '@/components/Tooltip';
 import { cn } from '@/utils/classname';
 import { copyToClipboard } from '@/utils/copyToClipboard.util';
-
-import { Tooltip } from './Tooltip';
 
 interface CopyToClipboardProps extends PropsWithChildren {
   hideCopyIcon?: boolean;

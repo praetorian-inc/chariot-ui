@@ -12,16 +12,15 @@ import { Table } from '@/components/table/Table';
 import { DetailsListContainer } from '@/components/ui/DetailsListContainer';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { change as changeSeed } from '@/hooks/useSeeds';
+import { Comment } from '@/sections/detailsDrawer/Comment';
+import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
+import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { Asset, Attribute, Risk, Seed, SeedStatus } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { useSearchParams } from '@/utils/url.util';
 
-import { Asset, Attribute, Risk, Seed, SeedStatus } from '../../types';
-
-import { Comment } from './Comment';
-import { DetailsDrawerHeader } from './DetailsDrawerHeader';
-import { useOpenDrawer } from './useOpenDrawer';
 import { DRAWER_WIDTH } from '.';
 
 interface Props {

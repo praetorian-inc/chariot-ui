@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { Input, InputEvent, InputProps } from './Input';
-import { Option } from './Select';
+import { Input, InputEvent, InputProps } from '@/components/form/Input';
+import { Option } from '@/components/form/Select';
 
 export type Values = Record<string, InputProps['value']>;
 type InputType = Omit<InputProps, 'onChange'>;

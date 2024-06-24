@@ -23,6 +23,14 @@ import { useModifyAccount, useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
 import { change as changeSeed, useDeleteSeed } from '@/hooks/useSeeds';
+import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import {
+  Account,
+  RiskScanMessage,
+  Seed,
+  SeedLabels,
+  SeedStatus,
+} from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { partition } from '@/utils/array.util';
 import {
@@ -30,16 +38,6 @@ import {
   IntegrationsMeta,
 } from '@/utils/availableIntegrations';
 import { exportContent } from '@/utils/download.util';
-
-import {
-  Account,
-  RiskScanMessage,
-  Seed,
-  SeedLabels,
-  SeedStatus,
-} from '../types';
-
-import { useOpenDrawer } from './detailsDrawer/useOpenDrawer';
 
 const isFrozen = (item: Seed) => {
   return item?.status[0] === SeedStatus.Frozen;

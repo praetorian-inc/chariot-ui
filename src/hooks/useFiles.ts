@@ -3,13 +3,12 @@ import {
   PROFILE_PICTURE_ID,
   useGetProfilePictureUrl,
 } from '@/hooks/profilePicture';
+import { useAxios } from '@/hooks/useAxios';
+import { useMy } from '@/hooks/useMy';
+import { getQueryKey } from '@/hooks/useQueryKeys';
 import { queryClient } from '@/queryclient';
 import { useAuth } from '@/state/auth';
 import { UseExtendQueryOptions, useMutation, useQuery } from '@/utils/api';
-
-import { useAxios } from './useAxios';
-import { useMy } from './useMy';
-import { getQueryKey } from './useQueryKeys';
 
 interface UploadFilesProps {
   name: string;

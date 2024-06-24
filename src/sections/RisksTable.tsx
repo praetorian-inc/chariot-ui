@@ -19,15 +19,13 @@ import {
 } from '@/components/ui/RiskDropdown';
 import { useFilter } from '@/hooks/useFilter';
 import { useMy } from '@/hooks/useMy';
+import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { Risk, RiskStatus, RiskStatusLabel, SeverityDef } from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { exportContent } from '@/utils/download.util';
 import { Regex } from '@/utils/regex.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch } from '@/utils/url.util';
-
-import { Risk, RiskStatus, RiskStatusLabel, SeverityDef } from '../types';
-
-import { useOpenDrawer } from './detailsDrawer/useOpenDrawer';
 
 const DownIcon = (
   <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />

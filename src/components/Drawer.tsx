@@ -4,11 +4,10 @@ import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Transition } from '@headlessui/react';
 import { twMerge } from 'tailwind-merge';
 
+import { MODAL_WRAPPER_ID } from '@/components/Modal';
 import { useMutationObserver } from '@/hooks/useMutationObserver';
 import { cn } from '@/utils/classname';
 import { getTransitionSettings } from '@/utils/transition.util';
-
-import { MODAL_WRAPPER_ID } from './Modal';
 
 interface Props {
   position?: 'left' | 'right';

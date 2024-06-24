@@ -1,8 +1,7 @@
 import React, { forwardRef } from 'react';
 
+import { Loader } from '@/components/Loader';
 import { cn } from '@/utils/classname';
-
-import { Loader } from './Loader';
 
 type BaseButtonProps = React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,

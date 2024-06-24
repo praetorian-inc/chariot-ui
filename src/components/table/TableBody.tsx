@@ -2,21 +2,19 @@ import { ReactNode } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { VirtualItem } from '@tanstack/react-virtual';
 
-import { cn } from '@/utils/classname';
-
-import { Loader } from '../Loader';
-
-import { ROW_HEIGHT } from './constants';
-import { TableCellContent } from './TableCellContent';
-import { TableCheckBoxIcon } from './TableCheckboxIcon';
-import { TableRowActions } from './TableRowActions';
+import { Loader } from '@/components/Loader';
+import { ROW_HEIGHT } from '@/components/table/constants';
+import { TableCellContent } from '@/components/table/TableCellContent';
+import { TableCheckBoxIcon } from '@/components/table/TableCheckboxIcon';
+import { TableRowActions } from '@/components/table/TableRowActions';
 import {
   ActionsWithRowSelection,
   CellAlignment,
   Columns,
   InternalTData,
   TableProps,
-} from './types';
+} from '@/components/table/types';
+import { cn } from '@/utils/classname';
 
 interface TableBodyProps<TData> {
   selectedRows: string[];

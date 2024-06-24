@@ -1,9 +1,8 @@
 import React from 'react';
 
+import { Dropzone, Files } from '@/components/Dropzone';
+import { Modal } from '@/components/Modal';
 import { useUploadFile } from '@/hooks';
-
-import { Dropzone, Files } from '../Dropzone';
-import { Modal } from '../Modal';
 
 interface Props {
   isOpen: boolean;

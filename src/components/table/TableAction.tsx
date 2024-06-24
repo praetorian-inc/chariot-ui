@@ -1,8 +1,8 @@
 import { createPortal } from 'react-dom';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
-import { Button } from '../Button';
-import { Dropdown, DropdownProps } from '../Dropdown';
+import { Button } from '@/components/Button';
+import { Dropdown, DropdownProps } from '@/components/Dropdown';
 
 interface TableActionProps {
   actions?: DropdownProps['menu'];

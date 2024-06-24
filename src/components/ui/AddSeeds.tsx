@@ -2,14 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
 
+import { Button } from '@/components/Button';
+import { Dropzone, Files } from '@/components/Dropzone';
+import { Modal } from '@/components/Modal';
+import { Tooltip } from '@/components/Tooltip';
 import { create as createSeed, useBulkAddSeed } from '@/hooks/useSeeds';
 import { IntegrationType } from '@/types';
 import { AllowedSeedRegex, GetSeeds } from '@/utils/regex.util';
-
-import { Button } from '../Button';
-import { Dropzone, Files } from '../Dropzone';
-import { Modal } from '../Modal';
-import { Tooltip } from '../Tooltip';
 
 interface Props {
   isOpen: boolean;

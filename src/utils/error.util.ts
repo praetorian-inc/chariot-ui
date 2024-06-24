@@ -1,4 +1,4 @@
-import { capitalize } from './lodash.util';
+import { capitalize } from '@/utils/lodash.util';
 
 export function createError(errorMessage: string, title?: string) {
   const error = new Error(errorMessage);

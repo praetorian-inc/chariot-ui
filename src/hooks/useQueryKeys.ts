@@ -1,6 +1,5 @@
-import { MyResourceKey, UniqueQueryKeys } from '../types';
-
-import { GetFilesProps } from './useFiles';
+import { GetFilesProps } from '@/hooks/useFiles';
+import { MyResourceKey, UniqueQueryKeys } from '@/types';
 
 export const getQueryKey = {
   getMy: (key: MyResourceKey, compositeKey?: string) => {

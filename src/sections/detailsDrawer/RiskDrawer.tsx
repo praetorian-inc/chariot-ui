@@ -22,16 +22,15 @@ import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useReRunJob } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
+import { Comment } from '@/sections/detailsDrawer/Comment';
+import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
+import { JobStatus, Risk, RiskCombinedStatus, RiskHistory } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { sToMs } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch, useSearchParams } from '@/utils/url.util';
 
-import { JobStatus, Risk, RiskCombinedStatus, RiskHistory } from '../../types';
-
-import { Comment } from './Comment';
-import { DetailsDrawerHeader } from './DetailsDrawerHeader';
 import { DRAWER_WIDTH } from '.';
 
 const getJobTimeline = ({

@@ -25,21 +25,19 @@ import { FilterCounts } from '@/components/ui/FilterCounts';
 import { useMy } from '@/hooks';
 import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
 import { useCounts } from '@/hooks/useCounts';
-import { useMergeStatus } from '@/utils/api';
-import { exportContent } from '@/utils/download.util';
-import { getRoute } from '@/utils/route.util';
-import { StorageKey } from '@/utils/storage/useStorage.util';
-
+import { AssetStatusWarning } from '@/sections/AssetStatusWarning';
+import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
 import {
   Asset,
   AssetLabels,
   AssetStatus,
   Risk,
   RiskScanMessage,
-} from '../types';
-
-import { useOpenDrawer } from './detailsDrawer/useOpenDrawer';
-import { AssetStatusWarning } from './AssetStatusWarning';
+} from '@/types';
+import { useMergeStatus } from '@/utils/api';
+import { exportContent } from '@/utils/download.util';
+import { getRoute } from '@/utils/route.util';
+import { StorageKey } from '@/utils/storage/useStorage.util';
 
 type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
 type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;

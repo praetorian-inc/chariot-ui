@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 import { Chip } from '@/components/Chip';
+import { Dropdown } from '@/components/Dropdown';
 import { Modal } from '@/components/Modal';
+import { Snackbar } from '@/components/Snackbar';
 import { useUpdateRisk } from '@/hooks/useRisks';
-import { cn } from '@/utils/classname';
-import { getSeverityClass } from '@/utils/getSeverityClass.util';
-
 import {
   Risk,
   RiskClosedStatus,
@@ -17,9 +16,9 @@ import {
   RiskStatus,
   RiskStatusLabel,
   SeverityDef,
-} from '../../types';
-import { Dropdown } from '../Dropdown';
-import { Snackbar } from '../Snackbar';
+} from '@/types';
+import { cn } from '@/utils/classname';
+import { getSeverityClass } from '@/utils/getSeverityClass.util';
 
 interface Props {
   risk: Pick<Risk, 'status' | 'key' | 'comment'>;

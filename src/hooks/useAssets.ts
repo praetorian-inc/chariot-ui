@@ -1,10 +1,8 @@
 import { Snackbar } from '@/components/Snackbar';
+import { useAxios } from '@/hooks/useAxios';
+import { useMy } from '@/hooks/useMy';
+import { Asset, AssetStatus, RiskScanMessage } from '@/types';
 import { useMutation } from '@/utils/api';
-
-import { Asset, AssetStatus, RiskScanMessage } from '../types';
-
-import { useAxios } from './useAxios';
-import { useMy } from './useMy';
 
 interface UpdateAssetProps {
   key: string;

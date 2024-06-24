@@ -13,16 +13,15 @@ import { DetailsListContainer } from '@/components/ui/DetailsListContainer';
 import { useMy } from '@/hooks';
 import { useUpdateAsset } from '@/hooks/useAssets';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
+import { Comment } from '@/sections/detailsDrawer/Comment';
+import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
+import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { Asset, AssetStatus } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { useSearchParams } from '@/utils/url.util';
 
-import { Asset, AssetStatus } from '../../types';
-
-import { Comment } from './Comment';
-import { DetailsDrawerHeader } from './DetailsDrawerHeader';
-import { useOpenDrawer } from './useOpenDrawer';
 import { DRAWER_WIDTH } from '.';
 
 interface Props {

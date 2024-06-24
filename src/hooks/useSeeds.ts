@@ -1,12 +1,10 @@
 import { Snackbar } from '@/components/Snackbar';
+import { useAxios } from '@/hooks/useAxios';
+import { useMy } from '@/hooks/useMy';
 import { queryClient } from '@/queryclient';
 import { useAuth } from '@/state/auth';
+import { Seed, SeedStatus } from '@/types';
 import { useMutation } from '@/utils/api';
-
-import { Seed, SeedStatus } from '../types';
-
-import { useAxios } from './useAxios';
-import { useMy } from './useMy';
 
 interface NewSeed {
   asset: string;

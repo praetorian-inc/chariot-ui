@@ -1,11 +1,9 @@
+import { useAxios } from '@/hooks/useAxios';
+import { getQueryKey } from '@/hooks/useQueryKeys';
 import { useSearchContext } from '@/state/search';
+import { MyResourceKey, Statistics } from '@/types';
 import { UseExtendQueryOptions, useQuery } from '@/utils/api';
 import { sToMs } from '@/utils/date.util';
-
-import { MyResourceKey, Statistics } from '../types';
-
-import { useAxios } from './useAxios';
-import { getQueryKey } from './useQueryKeys';
 
 interface UseCountsProps<ResourceKey extends MyResourceKey> {
   resource: ResourceKey;

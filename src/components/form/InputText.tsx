@@ -1,7 +1,11 @@
 import { twMerge } from 'tailwind-merge';
 
-import { DEFAULT_CLASS, DISABLED_CLASS, ERROR_CLASS } from './constants';
-import { InputProps, Type } from './Input';
+import {
+  DEFAULT_CLASS,
+  DISABLED_CLASS,
+  ERROR_CLASS,
+} from '@/components/form/constants';
+import { InputProps, Type } from '@/components/form/Input';
 
 // Add a missing property to the Properties interface
 declare module 'csstype' {

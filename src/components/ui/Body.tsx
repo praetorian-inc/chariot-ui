@@ -1,9 +1,8 @@
 import { forwardRef } from 'react';
 
+import Footer from '@/components/ui/Footer';
 import { Header } from '@/sections/AuthenticatedApp';
 import { cn } from '@/utils/classname';
-
-import Footer from './Footer';
 
 export const Body = forwardRef(function Paper(
   props: React.DetailedHTMLProps<

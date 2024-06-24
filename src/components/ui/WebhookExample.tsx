@@ -1,8 +1,7 @@
+import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { useMy } from '@/hooks';
 import { useAuth } from '@/state/auth';
 import { getChariotWebhookURL } from '@/utils/integration.util';
-
-import { CopyToClipboard } from '../CopyToClipboard';
 
 interface Props {
   defaultPin: string;

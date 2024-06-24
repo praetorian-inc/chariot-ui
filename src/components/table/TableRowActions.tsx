@@ -1,9 +1,8 @@
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 
-import { Dropdown } from '../Dropdown';
-
-import { ActionsWithRowSelection } from './types';
-import { mapActionsWithRowSelection } from './util';
+import { Dropdown } from '@/components/Dropdown';
+import { ActionsWithRowSelection } from '@/components/table/types';
+import { mapActionsWithRowSelection } from '@/components/table/util';
 
 interface TableRowActionsProps<TData> {
   selectedRows: string[];

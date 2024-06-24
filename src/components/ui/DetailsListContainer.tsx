@@ -1,10 +1,10 @@
 import { ReactNode } from 'react';
 import { Link, To } from 'react-router-dom';
 
-import { Accordian } from '../Accordian';
-import { CopyToClipboard } from '../CopyToClipboard';
-import { Loader } from '../Loader';
-import { Tooltip } from '../Tooltip';
+import { Accordian } from '@/components/Accordian';
+import { CopyToClipboard } from '@/components/CopyToClipboard';
+import { Loader } from '@/components/Loader';
+import { Tooltip } from '@/components/Tooltip';
 
 interface DetailsContainerProps {
   list: {

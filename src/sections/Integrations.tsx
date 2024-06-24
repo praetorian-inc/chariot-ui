@@ -10,6 +10,7 @@ import { FilterCounts } from '@/components/ui/FilterCounts';
 import { IntegrationModal } from '@/components/ui/IntegrationModal';
 import { useModifyAccount, useMy } from '@/hooks';
 import { useFilter } from '@/hooks/useFilter';
+import { Account, IntegrationType } from '@/types';
 import { partition } from '@/utils/array.util';
 import {
   AvailableIntegrations,
@@ -17,8 +18,6 @@ import {
   IntegrationsMeta,
   isComingSoonIntegration,
 } from '@/utils/availableIntegrations';
-
-import { Account, IntegrationType } from '../types';
 
 function getButtonText(integration: IntegrationMeta) {
   const { name, connected, issue } = integration;

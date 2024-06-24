@@ -3,10 +3,9 @@ import { useDropzone } from 'react-dropzone';
 import { PlusCircleIcon } from '@heroicons/react/24/solid';
 import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
 
+import { Snackbar } from '@/components/Snackbar';
 import { cn } from '@/utils/classname';
 import { mbToBytes } from '@/utils/file.util';
-
-import { Snackbar } from './Snackbar';
 
 type FileReadType = 'string' | 'arrayBuffer';
 

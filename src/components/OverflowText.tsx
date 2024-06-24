@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Placement } from '@floating-ui/react';
 
-import { Tooltip } from './Tooltip';
+import { Tooltip } from '@/components/Tooltip';
 
 interface OverflowTextProps {
   text: string;

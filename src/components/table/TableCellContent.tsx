@@ -1,13 +1,11 @@
 import { ConditionalRender } from '@/components/ConditionalRender';
+import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { Link } from '@/components/Link';
+import { OverflowText } from '@/components/OverflowText';
+import { Column } from '@/components/table/types';
+import { Tooltip } from '@/components/Tooltip';
 import { cn } from '@/utils/classname';
 import { formatDate } from '@/utils/date.util';
-
-import { CopyToClipboard } from '../CopyToClipboard';
-import { OverflowText } from '../OverflowText';
-import { Tooltip } from '../Tooltip';
-
-import { Column } from './types';
 
 export function TableCellContent<TData>(props: {
   col: Column<TData>;

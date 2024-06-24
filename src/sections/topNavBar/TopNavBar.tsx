@@ -8,10 +8,9 @@ import { Hexagon } from '@/components/Hexagon';
 import { AssetsIcon, RisksIcon, SeedsIcon } from '@/components/icons';
 import { LogoIcon } from '@/components/icons/Logo.icon';
 import { Shortcuts } from '@/components/ui/Shortcuts';
+import { AccountDropdown } from '@/sections/topNavBar/AccountDropdown';
+import { Notifications } from '@/sections/topNavBar/Notifications';
 import { getRoute } from '@/utils/route.util';
-
-import { AccountDropdown } from './AccountDropdown';
-import { Notifications } from './Notifications';
 
 export function TopNavBar() {
   const [showNotification, setShowNotification] = useState<boolean>(false);

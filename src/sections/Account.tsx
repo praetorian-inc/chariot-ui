@@ -18,11 +18,10 @@ import {
 } from '@/hooks/useAccounts';
 import { useUploadFile } from '@/hooks/useFiles';
 import { useMy } from '@/hooks/useMy';
+import { CollaboratingWith } from '@/sections/CollaboratingWith';
 import Avatar from '@/sections/topNavBar/Avatar';
+import { Users } from '@/sections/Users';
 import { useAuth } from '@/state/auth';
-
-import { CollaboratingWith } from './CollaboratingWith';
-import { Users } from './Users';
 
 const Account: React.FC = () => {
   const [displayName, setDisplayName] = useState('');

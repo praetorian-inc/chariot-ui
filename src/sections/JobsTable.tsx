@@ -12,9 +12,8 @@ import { FilterCounts } from '@/components/ui/FilterCounts';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
+import { Job, JobLabels, JobStatus } from '@/types';
 import { useMergeStatus } from '@/utils/api';
-
-import { Job, JobLabels, JobStatus } from '../types';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);

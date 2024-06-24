@@ -1,16 +1,14 @@
 import { useMemo } from 'react';
 
 import { Snackbar } from '@/components/Snackbar';
+import { useAxios } from '@/hooks/useAxios';
+import { useMy } from '@/hooks/useMy';
 import { useAuth } from '@/state/auth';
+import { Account, LinkAccount } from '@/types';
 import { useMutation } from '@/utils/api';
 import { AvailableIntegrations } from '@/utils/availableIntegrations';
 import { getChariotWebhookURL } from '@/utils/integration.util';
 import { capitalize } from '@/utils/lodash.util';
-
-import { Account, LinkAccount } from '../types';
-
-import { useAxios } from './useAxios';
-import { useMy } from './useMy';
 
 export const useModifyAccount = (
   action: 'link' | 'unlink' | 'updateSetting'

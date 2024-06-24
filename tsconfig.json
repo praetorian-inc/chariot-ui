@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"] // enables us to use @components/MyComponent
+      "@/*": ["./src/*"] // enables us to use @components/MyComponent
     },
     /* Visit https://aka.ms/tsconfig to read more about this file */
 

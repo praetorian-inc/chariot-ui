@@ -1,10 +1,8 @@
+import { mapAssetStataus } from '@/hooks/useAssets';
+import { useAxios } from '@/hooks/useAxios';
+import { getQueryKey } from '@/hooks/useQueryKeys';
+import { GenericResource } from '@/types';
 import { UseExtendQueryOptions, useQuery } from '@/utils/api';
-
-import { GenericResource } from '../types';
-
-import { mapAssetStataus } from './useAssets';
-import { useAxios } from './useAxios';
-import { getQueryKey } from './useQueryKeys';
 
 export const useGenericSearch = (
   props: { query: string },

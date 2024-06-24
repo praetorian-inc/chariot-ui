@@ -4,11 +4,10 @@ import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { useMy } from '@/hooks';
+import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
 import { Reference } from '@/types';
 import { exportContent } from '@/utils/download.util';
 import { prettyPrint } from '@/utils/prettyPrint.util';
-
-import { useOpenDrawer } from './detailsDrawer/useOpenDrawer';
 
 export function References() {
   const {

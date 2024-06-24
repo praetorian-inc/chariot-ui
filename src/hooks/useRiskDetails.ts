@@ -1,7 +1,6 @@
+import { useAxios } from '@/hooks/useAxios';
 import { useAuth } from '@/state/auth';
 import { Risk } from '@/types';
-
-import { useAxios } from './useAxios';
 
 const useRiskDetails = () => {
   const { token } = useAuth();

@@ -1,10 +1,8 @@
 import { ConfigIniParser } from 'config-ini-parser';
 
+import { getQueryKey } from '@/hooks/useQueryKeys';
+import { BackendSections } from '@/types';
 import { useQuery } from '@/utils/api';
-
-import { BackendSections } from '../types';
-
-import { getQueryKey } from './useQueryKeys';
 
 export const useBackends = () => {
   const configIniParser = new ConfigIniParser();

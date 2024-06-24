@@ -1,8 +1,7 @@
 import { isFQDN } from 'validator';
 
 import { Account } from '@/types';
-
-import { defineAggregate } from './aggregate';
+import { defineAggregate } from '@/utils/aggregates/aggregate';
 
 const getDomainFromEmail = (email: string): string => {
   const domain = email.split('@')[1];

@@ -1,6 +1,5 @@
+import { Tooltip } from '@/components/Tooltip';
 import { cn } from '@/utils/classname';
-
-import { Tooltip } from './Tooltip';
 
 interface Props {
   steps?: { title: string; description?: string; className?: string }[];

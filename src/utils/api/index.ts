@@ -18,11 +18,10 @@ export type { QueryStatus } from '@tanstack/react-query';
 export { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { Snackbar } from '@/components/Snackbar';
+import { queryClient } from '@/queryclient';
+import { createError, getError } from '@/utils/error.util';
+import { capitalize } from '@/utils/lodash.util';
 import { appendPeriodIfMissing } from '@/utils/text.util';
-
-import { queryClient } from '../../queryclient';
-import { createError, getError } from '../error.util';
-import { capitalize } from '../lodash.util';
 
 export function useMutation<
   TData = unknown,

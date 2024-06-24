@@ -1,5 +1,5 @@
-import { safeExecute } from '../function.util';
-import { isEmpty } from '../lodash.util';
+import { safeExecute } from '@/utils/function.util';
+import { isEmpty } from '@/utils/lodash.util';
 
 function queryStorageFn() {
   function getItem<T>(key: string): T | undefined {

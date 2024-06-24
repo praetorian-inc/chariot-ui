@@ -1,8 +1,7 @@
 import { ReactNode } from 'react';
 
+import { HorseIcon } from '@/components/icons/Horse.icon';
 import { cn } from '@/utils/classname';
-
-import { HorseIcon } from '../icons/Horse.icon';
 
 export interface NoDataProps {
   icon?: ReactNode;

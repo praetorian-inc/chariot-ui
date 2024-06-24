@@ -5,8 +5,7 @@ import { InputsT } from '@/components/form/Inputs';
 import AWSExample from '@/components/ui/AWSExample';
 import WebhookExample from '@/components/ui/WebhookExample';
 import { IntegrationType } from '@/types';
-
-import { getChariotWebhookURL } from './integration.util';
+import { getChariotWebhookURL } from '@/utils/integration.util';
 
 export interface IntegrationMeta {
   id: number;

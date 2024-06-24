@@ -14,16 +14,18 @@ import {
 import { DocumentIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Menu } from '@headlessui/react';
 
+import { Input, InputEvent } from '@/components/form/Input';
+import {
+  AssetsIcon,
+  AttributesIcon,
+  RisksIcon,
+  SeedsIcon,
+} from '@/components/icons';
+import { Loader } from '@/components/Loader';
 import { RiskDropdown } from '@/components/ui/RiskDropdown';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
 import { useSearchContext } from '@/state/search';
-import { cn } from '@/utils/classname';
-import { getSeverityClass } from '@/utils/getSeverityClass.util';
-import { getRoute } from '@/utils/route.util';
-import { StorageKey } from '@/utils/storage/useStorage.util';
-import { useSearchParams } from '@/utils/url.util';
-
 import {
   Account,
   Asset,
@@ -37,11 +39,12 @@ import {
   Search,
   Seed,
   SeverityDef,
-} from '../types';
-
-import { Input, InputEvent } from './form/Input';
-import { AssetsIcon, AttributesIcon, RisksIcon, SeedsIcon } from './icons';
-import { Loader } from './Loader';
+} from '@/types';
+import { cn } from '@/utils/classname';
+import { getSeverityClass } from '@/utils/getSeverityClass.util';
+import { getRoute } from '@/utils/route.util';
+import { StorageKey } from '@/utils/storage/useStorage.util';
+import { useSearchParams } from '@/utils/url.util';
 
 const GlobalSearch = () => {
   const ref = useRef<HTMLDivElement>(null);

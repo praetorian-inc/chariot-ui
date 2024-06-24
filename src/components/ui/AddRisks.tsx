@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
+import { Input } from '@/components/form/Input';
+import { Inputs } from '@/components/form/Inputs';
+import { Modal } from '@/components/Modal';
+import { RiskSeverityOptions } from '@/components/ui/RiskDropdown';
 import { useCreateRisk } from '@/hooks/useRisks';
 import { RiskCombinedStatus } from '@/types';
-
-import { Input } from '../form/Input';
-import { Inputs } from '../form/Inputs';
-import { Modal } from '../Modal';
-
-import { RiskSeverityOptions } from './RiskDropdown';
 
 interface Props {
   isOpen: boolean;

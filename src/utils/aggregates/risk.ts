@@ -1,6 +1,8 @@
 import { Risk } from '@/types';
-
-import { AggregateCollection, defineAggregate } from './aggregate';
+import {
+  AggregateCollection,
+  defineAggregate,
+} from '@/utils/aggregates/aggregate';
 
 const getDateFromISO = (isoDate: string): string => {
   const date = new Date(isoDate);

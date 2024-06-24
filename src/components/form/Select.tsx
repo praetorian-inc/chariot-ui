@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CheckIcon } from '@heroicons/react/24/outline';
 
+import {
+  DEFAULT_CLASS,
+  DISABLED_CLASS,
+  ERROR_CLASS,
+} from '@/components/form/constants';
+import { InputEvent, InputProps } from '@/components/form/Input';
 import { Link } from '@/components/Link';
 import { useOnScreen } from '@/hooks';
-
-import { DEFAULT_CLASS, DISABLED_CLASS, ERROR_CLASS } from './constants';
-import { InputEvent, InputProps } from './Input';
 
 export interface Option {
   value: number | string;

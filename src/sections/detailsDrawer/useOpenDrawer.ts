@@ -1,9 +1,8 @@
 import { To } from 'react-router-dom';
 
+import { Asset, Risk, Seed } from '@/types';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch } from '@/utils/url.util';
-
-import { Asset, Risk, Seed } from '../../types';
 
 export function useOpenDrawer() {
   return {

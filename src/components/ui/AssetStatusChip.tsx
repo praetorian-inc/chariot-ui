@@ -1,5 +1,5 @@
-import { AssetStatus } from '../../types';
-import { Chip, ChipProps } from '../Chip';
+import { Chip, ChipProps } from '@/components/Chip';
+import { AssetStatus } from '@/types';
 
 export const AssetStatusChip: React.FC<{
   className?: string;

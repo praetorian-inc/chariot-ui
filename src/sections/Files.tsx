@@ -12,10 +12,9 @@ import { FilterCounts } from '@/components/ui/FilterCounts';
 import { useDownloadFile, useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
+import { FileLabels, MyFile } from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { sortByDate } from '@/utils/date.util';
-
-import { FileLabels, MyFile } from '../types';
 
 const Files: React.FC = () => {
   const {

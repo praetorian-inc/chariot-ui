@@ -7,10 +7,9 @@ import React, {
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 
+import { Button } from '@/components/Button';
 import { cn } from '@/utils/classname';
 import { getTransitionSettings } from '@/utils/transition.util';
-
-import { Button } from './Button';
 
 type Size = 'sm' | 'md' | 'lg' | 'xl';
 interface Props extends PropsWithChildren {

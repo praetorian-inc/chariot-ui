@@ -17,10 +17,9 @@ import {
   useRole,
 } from '@floating-ui/react';
 
+import { Button, ButtonProps } from '@/components/Button';
+import { Menu, MenuProps } from '@/components/Menu';
 import { useStorage } from '@/utils/storage/useStorage.util';
-
-import { Button, ButtonProps } from './Button';
-import { Menu, MenuProps } from './Menu';
 
 export interface DropdownMenu extends MenuProps {
   placement?: Placement;

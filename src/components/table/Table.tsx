@@ -5,21 +5,23 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { notUndefined, useVirtualizer } from '@tanstack/react-virtual';
 
+import { DropdownProps } from '@/components/Dropdown';
+import { CELL_WIDTHS, ROW_HEIGHT } from '@/components/table/constants';
+import { TableAction } from '@/components/table/TableAction';
+import { TableBody } from '@/components/table/TableBody';
+import { TableCheckBoxIcon } from '@/components/table/TableCheckboxIcon';
+import { TableFilters } from '@/components/table/TableFilters';
+import {
+  CellAlignment,
+  InternalTData,
+  TableProps,
+} from '@/components/table/types';
+import { mapActionsWithRowSelection } from '@/components/table/util';
+import { Body } from '@/components/ui/Body';
+import { NoData } from '@/components/ui/NoData';
 import { useScroll } from '@/hooks';
 import { cn } from '@/utils/classname';
 import { useStorage } from '@/utils/storage/useStorage.util';
-
-import { DropdownProps } from '../Dropdown';
-import { Body } from '../ui/Body';
-import { NoData } from '../ui/NoData';
-
-import { CELL_WIDTHS, ROW_HEIGHT } from './constants';
-import { TableAction } from './TableAction';
-import { TableBody } from './TableBody';
-import { TableCheckBoxIcon } from './TableCheckboxIcon';
-import { TableFilters } from './TableFilters';
-import { CellAlignment, InternalTData, TableProps } from './types';
-import { mapActionsWithRowSelection } from './util';
 
 export function Table<TData>(props: TableProps<TData>) {
   const {

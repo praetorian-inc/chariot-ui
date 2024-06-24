@@ -6,10 +6,9 @@ import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { useMy } from '@/hooks';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { Attribute } from '@/types';
 import { exportContent } from '@/utils/download.util';
 import { prettyPrint } from '@/utils/prettyPrint.util';
-
-import { Attribute } from '../types';
 
 export function Attributes() {
   const {

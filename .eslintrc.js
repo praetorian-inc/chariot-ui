@@ -27,8 +27,13 @@ module.exports = {
     'unused-imports',
     'simple-import-sort',
     'check-file',
+    'no-relative-import-paths',
   ],
   rules: {
+    'no-relative-import-paths/no-relative-import-paths': [
+      'error',
+      { allowSameFolder: false, prefix: '@', rootDir: 'src' },
+    ],
     complexity: ['warn', 22],
     'react/react-in-jsx-scope': 'off', // Not needed for React 17+
     'react/prop-types': 'off', // Using TypeScript for type checking

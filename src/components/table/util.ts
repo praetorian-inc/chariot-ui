@@ -2,8 +2,7 @@ import { useMemo } from 'react';
 
 import { DropdownMenu } from '@/components/Dropdown';
 import { MenuItemProps } from '@/components/Menu';
-
-import { ActionsWithRowSelection } from './types';
+import { ActionsWithRowSelection } from '@/components/table/types';
 
 export function mapActionsWithRowSelection<TData>(
   selectedRows: string[],

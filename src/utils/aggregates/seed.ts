@@ -1,10 +1,9 @@
 import { Seed, SeedStatus } from '@/types';
-
 import {
   AggregateCollection,
   defineAggregate,
   getDateFromISO,
-} from './aggregate';
+} from '@/utils/aggregates/aggregate';
 
 const getStatus = (seed: Seed): string => {
   return seed.status[0] === SeedStatus.Frozen ? 'Frozen' : 'Active';

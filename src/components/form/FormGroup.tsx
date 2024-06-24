@@ -2,8 +2,8 @@ import React, { PropsWithChildren } from 'react';
 import { ExclamationCircleIcon as ExclamationCircleIconOutline } from '@heroicons/react/24/outline';
 import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
 
-import { Loader } from '../Loader';
-import { Tooltip } from '../Tooltip';
+import { Loader } from '@/components/Loader';
+import { Tooltip } from '@/components/Tooltip';
 
 export interface FormInfo {
   url?: string;

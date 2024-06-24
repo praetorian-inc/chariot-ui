@@ -8,12 +8,11 @@ import { Columns } from '@/components/table/types';
 import { IntegrationModal } from '@/components/ui/IntegrationModal';
 import { useModifyAccount, useMy } from '@/hooks';
 import { useAuth } from '@/state/auth';
+import { Account } from '@/types';
 import {
   AccountMeta,
   AvailableIntegrations,
 } from '@/utils/availableIntegrations';
-
-import { Account } from '../types';
 
 const isAccount = (account: Account): boolean => {
   return account?.key === 'self';

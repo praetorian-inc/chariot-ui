@@ -11,16 +11,15 @@ import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provid
 import { jwtDecode } from 'jwt-decode';
 
 import { queryClient } from '@/queryclient';
-import { msToM, sToM } from '@/utils/date.util';
-import { getRoute } from '@/utils/route.util';
-import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
-
 import {
   AuthContextType,
   AuthState,
   BackendType,
   CognitoAuthStates,
-} from '../types';
+} from '@/types';
+import { msToM, sToM } from '@/utils/date.util';
+import { getRoute } from '@/utils/route.util';
+import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
 const REGION_REGEX = /.*execute-api.(.*).amazonaws/;
 

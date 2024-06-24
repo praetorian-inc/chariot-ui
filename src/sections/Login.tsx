@@ -8,9 +8,8 @@ import { Button } from '@/components/Button';
 import BackendSelector from '@/components/ui/BackendSelector';
 import { useBackends } from '@/hooks';
 import { useAuth } from '@/state/auth';
+import { BackendType } from '@/types';
 import { getRoute } from '@/utils/route.util';
-
-import { BackendType } from '../types';
 
 function Login() {
   const navigate = useNavigate();

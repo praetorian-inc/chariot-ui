@@ -10,10 +10,9 @@ import { Hexagon } from '@/components/Hexagon';
 import { useGetCollaborators } from '@/hooks/collaborators';
 import { useGetDisplayName } from '@/hooks/useAccounts';
 import { useMy } from '@/hooks/useMy';
+import Avatar from '@/sections/topNavBar/Avatar';
 import { useAuth } from '@/state/auth';
 import { getRoute } from '@/utils/route.util';
-
-import Avatar from './Avatar';
 
 export const AccountDropdown: React.FC = () => {
   const { friend, me, startImpersonation, stopImpersonation } = useAuth();

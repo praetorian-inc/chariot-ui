@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
 import { To } from 'react-router-dom';
 
-import { DropdownProps } from '../Dropdown';
-import { NoDataProps } from '../ui/NoData';
+import { DropdownProps } from '@/components/Dropdown';
+import { NoDataProps } from '@/components/ui/NoData';
 
 export type CellAlignment = 'center';
 

@@ -1,5 +1,5 @@
-import { safeExecute } from './function.util';
-import { isLocalhost } from './location.util';
+import { safeExecute } from '@/utils/function.util';
+import { isLocalhost } from '@/utils/location.util';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function encode(value: any) {

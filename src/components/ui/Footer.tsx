@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { LogoIcon } from '../icons/Logo.icon';
+import { LogoIcon } from '@/components/icons/Logo.icon';
 
 const Footer = () => {
   return (

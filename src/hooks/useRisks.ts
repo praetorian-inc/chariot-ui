@@ -1,12 +1,10 @@
 import { Snackbar } from '@/components/Snackbar';
+import { useAxios } from '@/hooks/useAxios';
+import { useMy } from '@/hooks/useMy';
+import { getQueryKey } from '@/hooks/useQueryKeys';
+import { queryClient } from '@/queryclient';
+import { Risk, RiskTemplate } from '@/types';
 import { useMutation } from '@/utils/api';
-
-import { queryClient } from '../queryclient';
-import { Risk, RiskTemplate } from '../types';
-
-import { useAxios } from './useAxios';
-import { useMy } from './useMy';
-import { getQueryKey } from './useQueryKeys';
 
 export const useCreateRisk = () => {
   const axios = useAxios();

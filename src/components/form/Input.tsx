@@ -1,9 +1,9 @@
 import React from 'react';
 import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 
-import { FormGroup, FormInfo } from './FormGroup';
-import { InputText } from './InputText';
-import { Select, SelectProps } from './Select';
+import { FormGroup, FormInfo } from '@/components/form/FormGroup';
+import { InputText } from '@/components/form/InputText';
+import { Select, SelectProps } from '@/components/form/Select';
 
 export enum Type {
   PASSWORD = 'PASSWORD',

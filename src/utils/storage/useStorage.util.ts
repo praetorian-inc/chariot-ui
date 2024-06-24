@@ -1,10 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
-import { isEqual, PropertyPath } from '../lodash.util';
-import { useGetComponentDidMount } from '../reactHooks.util';
-
-import { appStorage, appStorageKey } from './appStorage.util';
-import { queryStorge } from './queryStorage.util';
+import { isEqual, PropertyPath } from '@/utils/lodash.util';
+import { useGetComponentDidMount } from '@/utils/reactHooks.util';
+import { appStorage, appStorageKey } from '@/utils/storage/appStorage.util';
+import { queryStorge } from '@/utils/storage/queryStorage.util';
 
 export enum StorageKey {
   AUTH = 'chariot.auth',

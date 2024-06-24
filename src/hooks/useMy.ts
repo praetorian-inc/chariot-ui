@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { AxiosHeaders } from 'axios';
 
+import { mapAssetStataus } from '@/hooks/useAssets';
+import { useAxios } from '@/hooks/useAxios';
+import { getQueryKey } from '@/hooks/useQueryKeys';
 import { useAuth } from '@/state/auth';
 import { useSearchContext } from '@/state/search';
+import { Asset, MyResource, MyResourceKey } from '@/types';
 import { UseExtendInfiniteQueryOptions, useInfiniteQuery } from '@/utils/api';
-
-import { Asset, MyResource, MyResourceKey } from '../types';
-
-import { mapAssetStataus } from './useAssets';
-import { useAxios } from './useAxios';
-import { getQueryKey } from './useQueryKeys';
 
 interface UseMyProps<ResourceKey extends MyResourceKey> {
   resource: ResourceKey;

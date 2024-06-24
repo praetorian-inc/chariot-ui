@@ -7,15 +7,14 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 
+import { Button } from '@/components/Button';
+import { getFormValues, Inputs, Values } from '@/components/form/Inputs';
+import { Modal } from '@/components/Modal';
 import { useModifyAccount } from '@/hooks';
+import { Account, AccountMetadata, LinkAccount } from '@/types';
 import { IntegrationMeta } from '@/utils/availableIntegrations';
 import { cn } from '@/utils/classname';
 import { getRoute } from '@/utils/route.util';
-
-import { Account, AccountMetadata, LinkAccount } from '../../types';
-import { Button } from '../Button';
-import { getFormValues, Inputs, Values } from '../form/Inputs';
-import { Modal } from '../Modal';
 
 interface Props {
   form?: IntegrationMeta & { connectedAccounts?: Account[] };

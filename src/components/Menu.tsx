@@ -7,12 +7,11 @@ import {
   StopIcon as StopIconSolid,
 } from '@heroicons/react/24/solid';
 
+import { Button, ButtonProps } from '@/components/Button';
+import { Dropdown } from '@/components/Dropdown';
+import { OverflowText } from '@/components/OverflowText';
+import { Tooltip } from '@/components/Tooltip';
 import { cn } from '@/utils/classname';
-
-import { Button, ButtonProps } from './Button';
-import { Dropdown } from './Dropdown';
-import { OverflowText } from './OverflowText';
-import { Tooltip } from './Tooltip';
 
 export type MenuProps = {
   items: Omit<MenuItemProps, 'isFocused'>[];

@@ -86,17 +86,10 @@ const countsDefinition: Record<string, React.ReactNode> = {
 
 interface CountsProps {
   stats: Statistics;
-  onClick?: (label: string) => void;
-  selected?: string;
   status?: QueryStatus;
 }
 
-const Counts: React.FC<CountsProps> = ({
-  stats,
-  onClick,
-  selected,
-  status,
-}) => {
+const Counts: React.FC<CountsProps> = ({ stats, status }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState<{
     label: string;
@@ -130,8 +123,7 @@ const Counts: React.FC<CountsProps> = ({
             <div
               key={key}
               className={cn(
-                'flex w-full flex-col bg-layer0 border-b-4 px-4 py-2 rounded-[2px] shadow-sm',
-                selected === key ? 'border-brand' : 'border-transparent'
+                'flex w-full flex-col bg-layer0 border-b-4 px-4 py-2 rounded-[2px] shadow-sm border-transparent'
               )}
             >
               <Loader isLoading={status === 'pending'} className="my-3 h-2">

@@ -1,6 +1,6 @@
 export const BusinessImpact = () => {
   return (
-    <div className="mt-6 rounded-[2px] bg-white p-6 shadow-md">
+    <div>
       <h2 className="mb-4 text-2xl font-bold">Business Impact</h2>
       <p className="mb-4 text-gray-700">
         The cybersecurity assessment revealed several critical and high-risk

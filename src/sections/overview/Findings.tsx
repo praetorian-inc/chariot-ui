@@ -1,6 +1,6 @@
 export const Findings = () => {
   return (
-    <div className="rounded-[2px] bg-white p-6 shadow-md">
+    <div>
       <h2 className="mb-4 text-2xl font-bold">Findings</h2>
       <p className="mb-4 text-gray-700">
         Critical and high-risk findings pose a material risk to the security of

@@ -3,6 +3,7 @@ import Markdown from 'react-markdown';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 import { Dropdown } from '@/components/Dropdown';
+import { Modal } from '@/components/Modal';
 
 type Release = {
   id: number;
@@ -14,6 +15,7 @@ type Release = {
 export const NewFeatures = () => {
   const [releases, setReleases] = useState<Release[]>([]);
   const [selectedRelease, setSelectedRelease] = useState<Release | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchReleases = async () => {
@@ -34,12 +36,12 @@ export const NewFeatures = () => {
 
   const { name, body, html_url } = selectedRelease;
 
-  const isLatest = selectedRelease.id === releases[0].id;
+  const truncatedBody = body.length > 300 ? `${body.slice(0, 300)}...` : body;
 
   return (
     <div className="rounded-[2px] bg-white p-6 shadow-md">
       <div className="list-inside list-disc text-gray-700">
-        <Markdown className="prose">{body}</Markdown>
+        <Markdown className="prose">{truncatedBody}</Markdown>
       </div>
       <div className="mt-6 flex items-center justify-between">
         <Dropdown
@@ -60,10 +62,20 @@ export const NewFeatures = () => {
         />
         <span className="text-sm italic">
           <a href={html_url} className="text-primary">
-            Release Notes
+            View Release Notes
           </a>
         </span>
       </div>
+
+      <Modal
+        title={name}
+        open={isModalOpen}
+        onClose={() => setModalOpen(false)}
+      >
+        <div className="prose">
+          <Markdown>{body}</Markdown>
+        </div>
+      </Modal>
     </div>
   );
 };

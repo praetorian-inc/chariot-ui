@@ -8,12 +8,13 @@ import {
   DisplaySeverities,
   FileLabels,
   JobLabels,
+  OverviewLabels,
   SeedLabels,
   Statistics,
 } from '../../types';
 import { Loader } from '../Loader';
 
-type CountType = 'risks' | 'assets' | 'jobs' | 'seeds' | 'files';
+type CountType = 'risks' | 'assets' | 'jobs' | 'seeds' | 'files' | 'overview';
 
 const countsLabel: Record<CountType, Record<string, string>> = {
   risks: DisplaySeverities,
@@ -21,6 +22,7 @@ const countsLabel: Record<CountType, Record<string, string>> = {
   jobs: JobLabels,
   seeds: SeedLabels,
   files: FileLabels,
+  overview: OverviewLabels,
 };
 
 interface CountsProps {
@@ -50,7 +52,7 @@ const Counts: React.FC<CountsProps> = ({
     }, {});
 
   return (
-    <div className="mx-auto mb-4 w-full max-w-screen-xl">
+    <div className="mx-auto w-full max-w-screen-xl">
       <div className="flex flex-nowrap justify-stretch gap-x-5">
         {Object.entries(countsObject).map(([key, { label, count }]) => (
           <button

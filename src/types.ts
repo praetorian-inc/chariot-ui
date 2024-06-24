@@ -126,6 +126,12 @@ export const JobLabels: Record<string, string> = {
   JR: 'Running',
 };
 
+export const OverviewLabels: Record<string, string> = {
+  seeds: 'Seeds',
+  assets: 'Assets',
+  risks: 'Risks',
+};
+
 interface AccountTemplate {
   username: string;
   key: string;

@@ -1,6 +1,10 @@
 import React, { useMemo } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { ArrowDownCircleIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowDownCircleIcon,
+  DocumentIcon,
+  PhotoIcon,
+} from '@heroicons/react/24/outline';
 
 import { Button } from '@/components/Button';
 import { Dropdown } from '@/components/Dropdown';
@@ -15,8 +19,17 @@ import { useFilter } from '@/hooks/useFilter';
 import { FileLabels, MyFile } from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { sortByDate } from '@/utils/date.util';
+import { useNavigate } from 'react-router-dom';
+import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { RisksIcon } from '@/components/icons';
+import { Modal } from '@/components/Modal';
+import FileViewer from '@/components/FileViewer';
 
 const Files: React.FC = () => {
+  const navigate = useNavigate();
+  const { getRiskDrawerLink } = useOpenDrawer();
+  const [filename, setFilename] = React.useState('');
+  const [filetype, setFiletype] = React.useState('');
   const {
     status: fileStatus,
     data: files = [],
@@ -70,19 +83,73 @@ const Files: React.FC = () => {
 
   const columns: Columns<MyFile> = [
     {
+      label: 'Class',
+      id: 'class',
+      className: 'w-1/5',
+      cell: (item: MyFile) => getLabel(item),
+    },
+    {
       label: 'Document Name',
       id: 'name',
       className: 'w-full',
-    },
-    // {
-    //   label: 'File Type',
-    //   id: 'type',
-    // },
-    {
-      label: 'Class',
-      id: 'class',
-      className: 'w-1/2',
-      cell: (item: MyFile) => getLabel(item),
+      cell: (item: MyFile) => {
+        if (item.class === 'proof') {
+          const parts = item.name.split('/');
+          const dns = parts.shift() ?? '';
+          const name = parts.join('/') ?? '';
+          const link = getRiskDrawerLink({ dns, name });
+          return (
+            <div className="flex flex-row">
+              <Tooltip title="View Risk">
+                <button
+                  onClick={() => navigate(link)}
+                  className="mr-2 text-brand"
+                >
+                  <RisksIcon className="size-5" />
+                </button>
+              </Tooltip>
+              {item.name}
+            </div>
+          );
+        } else if (item.class === 'manual') {
+          if (item.name.endsWith('png') || item.name.endsWith('jpg')) {
+            return (
+              <div className="flex flex-row">
+                <Tooltip title="Preview Image">
+                  <button
+                    onClick={() => {
+                      setFiletype('image');
+                      setFilename(item.name);
+                    }}
+                    className="mr-2 text-brand"
+                  >
+                    <PhotoIcon className="size-5" />
+                  </button>
+                </Tooltip>
+                {item.name}
+              </div>
+            );
+          } else {
+            return (
+              <div className="flex flex-row">
+                <Tooltip title="View File">
+                  <button
+                    onClick={() => {
+                      setFiletype('text');
+                      setFilename(item.name);
+                    }}
+                    className="mr-2 text-brand"
+                  >
+                    <DocumentIcon className="size-5" />
+                  </button>
+                </Tooltip>
+                {item.name}
+              </div>
+            );
+          }
+        }
+        return item.name;
+      },
     },
     {
       label: 'Added',
@@ -190,6 +257,13 @@ const Files: React.FC = () => {
         isOpen={isUploadFileDialogOpen}
         onClose={() => setIsUploadFileDialogOpen(false)}
       />
+      <Modal
+        open={filename.length > 0 && filetype.length > 0}
+        onClose={() => setFilename('')}
+        title="File Content"
+      >
+        <FileViewer fileName={filename} fileType={filetype} />
+      </Modal>
     </div>
   );
 };

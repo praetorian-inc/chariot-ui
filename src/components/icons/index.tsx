@@ -3,7 +3,7 @@ import {
   CommandLineIcon,
   ExclamationTriangleIcon,
   ServerStackIcon,
-} from '@heroicons/react/24/solid';
+} from '@heroicons/react/24/outline';
 
 export const SeedsIcon = CircleStackIcon;
 export const AssetsIcon = ServerStackIcon;

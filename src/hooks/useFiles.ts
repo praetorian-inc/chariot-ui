@@ -9,6 +9,8 @@ import { getQueryKey } from '@/hooks/useQueryKeys';
 import { queryClient } from '@/queryclient';
 import { useAuth } from '@/state/auth';
 import { UseExtendQueryOptions, useMutation, useQuery } from '@/utils/api';
+import { useState } from 'react';
+import { c } from 'vite/dist/node/types.d-aGj9QkWt';
 
 interface UploadFilesProps {
   name: string;
@@ -89,6 +91,28 @@ export function useDownloadFile() {
       a.download = props.name.split('/').pop()?.split(':')[0] || props.name;
       a.click();
       URL.revokeObjectURL(url);
+    },
+  });
+}
+
+export function useOpenFile() {
+  const axios = useAxios();
+
+  return useMutation({
+    defaultErrorMessage: 'Failed to load file',
+    mutationFn: async (props: DownloadFilesProps) => {
+      try {
+        const res = await axios.get(`/file`, {
+          params: {
+            name: props.name,
+          },
+          responseType: 'blob',
+        });
+
+        return res.data;
+      } catch (error) {
+        console.log('retrying', error);
+      }
     },
   });
 }

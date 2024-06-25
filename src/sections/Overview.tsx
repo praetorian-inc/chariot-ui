@@ -22,49 +22,43 @@ export const Overview = () => {
           risks: 50,
         }}
       />
-
-      <div className="flex space-x-6">
-        <div className="w-3/4 rounded-[2px] bg-white p-6 shadow-md">
-          <Tab.Group>
-            <Tab.List className="flex space-x-1 rounded-[2px] bg-blue-900/20 p-1">
-              {[
-                'Findings',
-                'Recommendations',
-                'Business Impact',
-                'Conclusion',
-              ].map(tab => (
-                <Tab
-                  key={tab}
-                  className={({ selected }) =>
-                    classNames(
-                      'w-full rounded-[2px] py-4 text-sm font-semibold leading-5',
-                      selected ? 'bg-white shadow-md' : ''
-                    )
-                  }
-                >
-                  {tab}
-                </Tab>
-              ))}
-            </Tab.List>
-            <Tab.Panels className="mt-4">
-              <Tab.Panel>
-                <Findings />
-              </Tab.Panel>
-              <Tab.Panel>
-                <Recommendations client_short={client_short} />
-              </Tab.Panel>
-              <Tab.Panel>
-                <BusinessImpact />
-              </Tab.Panel>
-              <Tab.Panel>
-                <Conclusion />
-              </Tab.Panel>
-            </Tab.Panels>
-          </Tab.Group>
-        </div>
-        <div className="w-1/4">
-          <NewFeatures />
-        </div>
+      <div className="flex flex-col space-y-6 bg-white p-2">
+        <Tab.Group>
+          <Tab.List className="flex space-x-1 bg-layer0 p-1">
+            {[
+              'Findings',
+              'Recommendations',
+              'Business Impact',
+              'Conclusion',
+            ].map(tab => (
+              <Tab
+                key={tab}
+                className={({ selected }) =>
+                  classNames(
+                    'w-full py-4 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0',
+                    selected ? 'border-b-4 border-brand' : ''
+                  )
+                }
+              >
+                {tab}
+              </Tab>
+            ))}
+          </Tab.List>
+          <Tab.Panels className="p-6">
+            <Tab.Panel>
+              <Findings />
+            </Tab.Panel>
+            <Tab.Panel>
+              <Recommendations client_short={client_short} />
+            </Tab.Panel>
+            <Tab.Panel>
+              <BusinessImpact />
+            </Tab.Panel>
+            <Tab.Panel>
+              <Conclusion />
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
       </div>
     </div>
   );

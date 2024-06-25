@@ -4,6 +4,7 @@ import { ArrowRightIcon } from '@heroicons/react/24/solid';
 import { Loader } from '@/components/Loader';
 import { OverviewLabels, Statistics } from '@/types';
 import { QueryStatus } from '@/utils/api';
+import { AssetsIcon, RisksIcon, SeedsIcon } from '@/components/icons';
 
 const countsLabel = OverviewLabels;
 
@@ -17,6 +18,12 @@ interface CountsProps {
   stats: Statistics;
   status?: QueryStatus;
 }
+
+const icons: Record<string, React.ReactNode> = {
+  seeds: <SeedsIcon className="size-4 inline mb-1 text-gray-500 mr-1" />,
+  assets: <AssetsIcon className="size-4 inline mb-1 mr-1 text-gray-500" />,
+  risks: <RisksIcon className="size-4 inline mb-0.5 mr-1 text-gray-500" />,
+};
 
 const Counts: React.FC<CountsProps> = ({ stats, status }) => {
   const countsObject: Record<
@@ -39,12 +46,13 @@ const Counts: React.FC<CountsProps> = ({ stats, status }) => {
       {Object.entries(countsObject).map(
         ([key, { label, count, definition }], index, array) => (
           <React.Fragment key={key}>
-            <div className="h-28 w-1/3 rounded bg-white p-4 shadow-md">
+            <div className="h-28 w-1/3 rounded-[2px] bg-white p-4 shadow-md">
               <Loader isLoading={status === 'pending'}>
-                <span className="mt-2 text-lg font-semibold">
+                <span className="mt-2 text-2xl font-semibold">
                   {count.toLocaleString()}
                 </span>
-                <span className="ml-1 text-center text-sm text-gray-600">
+                <span className="ml-2 text-center text-sm text-gray-600">
+                  {icons[key]}
                   {label}
                 </span>
               </Loader>

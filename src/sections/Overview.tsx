@@ -27,7 +27,7 @@ export const Overview = () => {
         <DocumentTextIcon className="mr-2 inline-block size-6" />
         My Report
       </h1>
-      <div className="flex flex-col space-y-6 bg-white p-2">
+      <div className="flex flex-col space-y-6 bg-white p-2 shadow-sm roundex-[2px]">
         <TabGroup>
           <TabList className="flex p-1">
             {[
@@ -43,7 +43,7 @@ export const Overview = () => {
                   classNames(
                     'w-full py-4 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0',
                     selected ? 'border-b-4 border-brand text-brand' : '',
-                    !selected ? 'border-b-2 border-default bg-layer0' : ''
+                    !selected ? 'border-b-2 border-gray-100 bg-layer0' : ''
                   )
                 }
               >

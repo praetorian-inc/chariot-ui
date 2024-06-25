@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 export enum RiskScanMessage {
   Stop = 'Risk scanning will stop.',
   Start = 'Risk scanning will start automatically.',

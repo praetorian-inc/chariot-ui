@@ -4,8 +4,8 @@ import Counts from '@/components/ui/Counts';
 import { BusinessImpact } from '@/sections/overview/BusinessImpact';
 import { Conclusion } from '@/sections/overview/Conclusion';
 import { Findings } from '@/sections/overview/Findings';
-import { NewFeatures } from '@/sections/overview/NewFeatures';
 import { Recommendations } from '@/sections/overview/Recommendations';
+import { ExecutiveSummary } from '@/sections/overview/ExecutiveSummary';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -14,7 +14,7 @@ function classNames(...classes: string[]) {
 export const Overview = () => {
   const client_short = 'Acme Corp.';
   return (
-    <div className="flex min-h-screen flex-col space-y-6">
+    <div className="flex min-h-screen flex-col">
       <Counts
         stats={{
           seeds: 100,
@@ -22,10 +22,14 @@ export const Overview = () => {
           risks: 50,
         }}
       />
+      <h1 className="text-2xl font-light text-gray-500 mt-6 mb-1 ml-2">
+        My Report
+      </h1>
       <div className="flex flex-col space-y-6 bg-white p-2">
         <Tab.Group>
           <Tab.List className="flex space-x-1 bg-layer0 p-1">
             {[
+              'Executive Summary',
               'Findings',
               'Recommendations',
               'Business Impact',
@@ -45,6 +49,9 @@ export const Overview = () => {
             ))}
           </Tab.List>
           <Tab.Panels className="p-6">
+            <Tab.Panel>
+              <ExecutiveSummary />
+            </Tab.Panel>
             <Tab.Panel>
               <Findings />
             </Tab.Panel>

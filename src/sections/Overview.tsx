@@ -1,16 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import Markdown from 'react-markdown';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
-import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 
-import Counts from '@/components/ui/Counts';
-import { BusinessImpact } from '@/sections/overview/BusinessImpact';
-import { Conclusion } from '@/sections/overview/Conclusion';
-import { ExecutiveSummary } from '@/sections/overview/ExecutiveSummary';
-import { Findings } from '@/sections/overview/Findings';
-import { Recommendations } from '@/sections/overview/Recommendations';
-import { Tooltip } from '@/components/Tooltip';
-import { Button } from '@/components/Button';
 import CircularProgressBar from '@/components/CircularProgressBar';
+import Counts from '@/components/ui/Counts';
+import { getReportSections, sampleReport } from '@/sections/overview/constants';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -27,6 +21,14 @@ export const Overview = () => {
     setJobsRunning(reportReady ? 5 : 0);
   };
 
+  const reportSections = useMemo(
+    () =>
+      getReportSections(sampleReport, {
+        client_short,
+      }),
+    []
+  );
+
   return (
     <div className="flex min-h-screen flex-col">
       <Counts
@@ -38,7 +40,7 @@ export const Overview = () => {
         }}
       />
 
-      <label className="flex items-center cursor-pointer absolute top-0 left-0">
+      <label className="absolute left-0 top-0 flex cursor-pointer items-center">
         <div className="relative">
           <input
             type="checkbox"
@@ -46,26 +48,20 @@ export const Overview = () => {
             checked={reportReady}
             onChange={toggleReportStatus}
           />
-          <div className="block bg-gray-600 w-14 h-8 rounded-full"></div>
+          <div className="block h-8 w-14 rounded-full bg-gray-600"></div>
           <div
-            className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition ${
-              reportReady ? 'transform translate-x-full bg-blue-500' : ''
+            className={`dot absolute left-1 top-1 size-6 rounded-full bg-white transition ${
+              reportReady ? 'translate-x-full bg-blue-500' : ''
             }`}
           ></div>
         </div>
       </label>
 
-      <div className="mt-6 flex flex-col space-y-6 bg-white p-2 shadow-sm rounded-[2px]">
+      <div className="mt-6 flex flex-col space-y-6 rounded-[2px] bg-white p-2 shadow-sm">
         {reportReady ? (
           <TabGroup>
             <TabList className="flex p-1">
-              {[
-                'Executive Summary',
-                'Findings',
-                'Recommendations',
-                'Business Impact',
-                'Conclusion',
-              ].map(tab => (
+              {Object.keys(reportSections).map(tab => (
                 <Tab
                   key={tab}
                   className={({ selected }) =>
@@ -81,31 +77,21 @@ export const Overview = () => {
               ))}
             </TabList>
             <TabPanels className="p-6">
-              <TabPanel>
-                <ExecutiveSummary />
-              </TabPanel>
-              <TabPanel>
-                <Findings />
-              </TabPanel>
-              <TabPanel>
-                <Recommendations client_short={client_short} />
-              </TabPanel>
-              <TabPanel>
-                <BusinessImpact />
-              </TabPanel>
-              <TabPanel>
-                <Conclusion />
-              </TabPanel>
+              {Object.entries(reportSections).map(([heading, content]) => (
+                <TabPanel key={heading}>
+                  <Markdown className="prose max-w-none">{content}</Markdown>
+                </TabPanel>
+              ))}
             </TabPanels>
           </TabGroup>
         ) : (
           <div className="flex flex-col justify-center p-4">
             <div className="flex flex-col items-center justify-center">
-              <div className="text-xl font-semibold text-gray-700 mb-4">
+              <div className="mb-4 text-xl font-semibold text-gray-700">
                 A report is being generated...
               </div>
               <CircularProgressBar />
-              <div className="text-gray-600 mt-4">
+              <div className="mt-4 text-gray-600">
                 We have {jobsRunning} job{jobsRunning !== 1 && 's'} running
                 right now to gather all the necessary data.
               </div>
@@ -133,7 +119,7 @@ export const Overview = () => {
                   the most critical findings. The aim is to provide you with
                   actionable insights to enhance your security posture.
                 </p>
-                <ul className="mt-4 list-disc list-inside text-gray-700">
+                <ul className="mt-4 list-inside list-disc text-gray-700">
                   <li>Scanning for risks</li>
                   <li>Analyzing asset configurations and exposures</li>
                   <li>Compiling findings into comprehensive reports</li>
@@ -151,9 +137,9 @@ export const Overview = () => {
                     Our system is currently working hard with {jobsRunning} job
                     {jobsRunning !== 1 && 's'} in progress. These jobs are
                     critical to gather and analyze data, ensuring an up-to-date
-                    risk assessment. Here's what they involve:
+                    risk assessment. Here&apos;s what they involve:
                   </p>
-                  <ul className="mt-2 list-disc list-inside text-gray-700">
+                  <ul className="mt-2 list-inside list-disc text-gray-700">
                     <li>Discovering assets from the provided seeds</li>
                     <li>Scanning each asset for security risks</li>
                     <li>Analyzing configurations and exposures</li>

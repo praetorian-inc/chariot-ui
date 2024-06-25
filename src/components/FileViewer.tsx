@@ -1,3 +1,4 @@
+import { Loader } from '@/components/Loader';
 import { useOpenFile } from '@/hooks/useFiles';
 import { Editor } from '@monaco-editor/react';
 import React, { useEffect, useState } from 'react';
@@ -10,7 +11,7 @@ const FileViewer = ({
   fileType: string;
 }) => {
   const { mutate: getFileContent, data: fileContent } = useOpenFile();
-  const [editorContent, setEditorContent] = useState('hello world');
+  const [editorContent, setEditorContent] = useState('');
 
   useEffect(() => {
     if (fileName) {
@@ -50,7 +51,7 @@ const FileViewer = ({
 
   // Conditional rendering based on content type
   if (!fileContent) {
-    return <div>Loading...</div>;
+    return <Loader isLoading />;
   }
 
   if (fileType === 'image') {

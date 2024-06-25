@@ -9,8 +9,6 @@ import { getQueryKey } from '@/hooks/useQueryKeys';
 import { queryClient } from '@/queryclient';
 import { useAuth } from '@/state/auth';
 import { UseExtendQueryOptions, useMutation, useQuery } from '@/utils/api';
-import { useState } from 'react';
-import { c } from 'vite/dist/node/types.d-aGj9QkWt';
 
 interface UploadFilesProps {
   name: string;

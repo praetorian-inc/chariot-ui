@@ -102,7 +102,7 @@ export const Overview = () => {
           <div className="flex flex-col justify-center p-4">
             <div className="flex flex-col items-center justify-center">
               <div className="text-xl font-semibold text-gray-700 mb-4">
-                The report is being generated...
+                A report is being generated...
               </div>
               <CircularProgressBar />
               <div className="text-gray-600 mt-4">

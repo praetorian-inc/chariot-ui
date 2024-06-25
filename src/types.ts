@@ -101,7 +101,7 @@ export const DisplaySeverities: Record<string, string> = {
 };
 
 export const SeedLabels: Record<string, string> = {
-  cloud: 'Cloud Accounts',
+  cloud: 'Integrations',
   ipv4: 'IPv4 Addresses',
   cidr: 'CIDR Ranges',
   repository: 'GitHub Organizations',

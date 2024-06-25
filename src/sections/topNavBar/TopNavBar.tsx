@@ -56,9 +56,6 @@ export function TopNavBar() {
               ],
             }}
           />
-          <Link to={getRoute(['app', 'intelligence'])} className="ml-4 text-sm">
-            Intelligence
-          </Link>
           <div className="ml-auto flex items-center md:hidden">
             <Notifications />
             <AccountDropdown />

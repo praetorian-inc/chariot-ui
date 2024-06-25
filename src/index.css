@@ -92,3 +92,25 @@
 .react-grid-item.react-grid-placeholder {
   background-color: var(--brand-light);
 }
+
+.icon-container {
+  width: 36px;
+  height: 44px;
+  position: relative;
+  overflow: hidden;
+}
+
+.icon-mask {
+  clip-path: inset(0 100% 0 0);
+  animation: reveal 2s linear infinite;
+}
+
+@keyframes reveal {
+  0%,
+  100% {
+    clip-path: inset(0 100% 0 0);
+  }
+  99.99% {
+    clip-path: inset(0 0 0 0);
+  }
+}

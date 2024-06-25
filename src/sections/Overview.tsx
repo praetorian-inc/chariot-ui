@@ -1,5 +1,5 @@
-import { DocumentTextIcon } from '@heroicons/react/24/outline';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 
 import Counts from '@/components/ui/Counts';
 import { BusinessImpact } from '@/sections/overview/BusinessImpact';
@@ -7,6 +7,8 @@ import { Conclusion } from '@/sections/overview/Conclusion';
 import { ExecutiveSummary } from '@/sections/overview/ExecutiveSummary';
 import { Findings } from '@/sections/overview/Findings';
 import { Recommendations } from '@/sections/overview/Recommendations';
+import { Tooltip } from '@/components/Tooltip';
+import { Button } from '@/components/Button';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -24,8 +26,12 @@ export const Overview = () => {
         }}
       />
       <h1 className="center-align mb-1 mt-6 flex items-center text-2xl font-light text-gray-500">
-        <DocumentTextIcon className="mr-2 inline-block size-6" />
-        My Report
+        Daily Report
+        <Tooltip title="Download PDF" placement="right">
+          <Button onClick={() => {}} styleType="none">
+            <DocumentArrowDownIcon className="w-6 h-6" />
+          </Button>
+        </Tooltip>
       </h1>
       <div className="flex flex-col space-y-6 bg-white p-2 shadow-sm roundex-[2px]">
         <TabGroup>

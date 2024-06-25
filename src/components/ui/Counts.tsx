@@ -5,6 +5,7 @@ import { Loader } from '@/components/Loader';
 import { OverviewLabels, Statistics } from '@/types';
 import { QueryStatus } from '@/utils/api';
 import { AssetsIcon, RisksIcon, SeedsIcon } from '@/components/icons';
+import { AnimatedArrowIcon } from '@/components/icons/AnimatedArrow.icon';
 
 const countsLabel = OverviewLabels;
 
@@ -46,21 +47,21 @@ const Counts: React.FC<CountsProps> = ({ stats, status }) => {
       {Object.entries(countsObject).map(
         ([key, { label, count, definition }], index, array) => (
           <React.Fragment key={key}>
-            <div className="h-28 w-1/3 rounded-[2px] bg-white p-4 shadow-md">
+            <div className="h-28 w-1/3 rounded-[2px] bg-white p-4 shadow-md relative">
               <Loader isLoading={status === 'pending'}>
                 <span className="mt-2 text-2xl font-semibold">
                   {count.toLocaleString()}
                 </span>
                 <span className="ml-2 text-center text-sm text-gray-600">
-                  {icons[key]}
                   {label}
                 </span>
+                <div className="absolute top-1 right-1">{icons[key]}</div>
               </Loader>
               <div className="pt-1 text-xs text-gray-500">{definition}</div>
             </div>
             {index < array.length - 1 && (
-              <div className="mx-2 h-full">
-                <ArrowRightIcon className="h-11 w-9 text-gray-300 " />
+              <div className="mx-3">
+                <AnimatedArrowIcon delay={index + 1 + 's'} />{' '}
               </div>
             )}
           </React.Fragment>

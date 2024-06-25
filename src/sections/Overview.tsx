@@ -1,11 +1,12 @@
-import React from 'react';
-import { Tab } from '@headlessui/react';
+import { DocumentTextIcon } from '@heroicons/react/24/outline';
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+
 import Counts from '@/components/ui/Counts';
 import { BusinessImpact } from '@/sections/overview/BusinessImpact';
 import { Conclusion } from '@/sections/overview/Conclusion';
+import { ExecutiveSummary } from '@/sections/overview/ExecutiveSummary';
 import { Findings } from '@/sections/overview/Findings';
 import { Recommendations } from '@/sections/overview/Recommendations';
-import { ExecutiveSummary } from '@/sections/overview/ExecutiveSummary';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -22,12 +23,13 @@ export const Overview = () => {
           risks: 50,
         }}
       />
-      <h1 className="text-2xl font-light text-gray-500 mt-6 mb-1 ml-2">
+      <h1 className="center-align mb-1 mt-6 flex items-center text-2xl font-light text-gray-500">
+        <DocumentTextIcon className="mr-2 inline-block size-6" />
         My Report
       </h1>
       <div className="flex flex-col space-y-6 bg-white p-2">
-        <Tab.Group>
-          <Tab.List className="flex space-x-1 bg-layer0 p-1">
+        <TabGroup>
+          <TabList className="flex p-1">
             {[
               'Executive Summary',
               'Findings',
@@ -40,32 +42,33 @@ export const Overview = () => {
                 className={({ selected }) =>
                   classNames(
                     'w-full py-4 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0',
-                    selected ? 'border-b-4 border-brand' : ''
+                    selected ? 'border-b-4 border-brand text-brand' : '',
+                    !selected ? 'border-b-2 border-default bg-layer0' : ''
                   )
                 }
               >
                 {tab}
               </Tab>
             ))}
-          </Tab.List>
-          <Tab.Panels className="p-6">
-            <Tab.Panel>
+          </TabList>
+          <TabPanels className="p-6">
+            <TabPanel>
               <ExecutiveSummary />
-            </Tab.Panel>
-            <Tab.Panel>
+            </TabPanel>
+            <TabPanel>
               <Findings />
-            </Tab.Panel>
-            <Tab.Panel>
+            </TabPanel>
+            <TabPanel>
               <Recommendations client_short={client_short} />
-            </Tab.Panel>
-            <Tab.Panel>
+            </TabPanel>
+            <TabPanel>
               <BusinessImpact />
-            </Tab.Panel>
-            <Tab.Panel>
+            </TabPanel>
+            <TabPanel>
               <Conclusion />
-            </Tab.Panel>
-          </Tab.Panels>
-        </Tab.Group>
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
       </div>
     </div>
   );

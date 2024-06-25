@@ -1,9 +1,9 @@
 import React from 'react';
+import { ArrowRightIcon } from '@heroicons/react/24/solid';
+
 import { Loader } from '@/components/Loader';
 import { OverviewLabels, Statistics } from '@/types';
 import { QueryStatus } from '@/utils/api';
-import { ChevronRightIcon } from '@heroicons/react/20/solid';
-import { ArrowRightIcon } from '@heroicons/react/24/solid';
 
 const countsLabel = OverviewLabels;
 
@@ -39,20 +39,20 @@ const Counts: React.FC<CountsProps> = ({ stats, status }) => {
       {Object.entries(countsObject).map(
         ([key, { label, count, definition }], index, array) => (
           <React.Fragment key={key}>
-            <div className="bg-white p-4 w-1/3 h-28">
+            <div className="h-28 w-1/3 rounded bg-white p-4 shadow-md">
               <Loader isLoading={status === 'pending'}>
-                <span className="text-lg font-semibold mt-2">
+                <span className="mt-2 text-lg font-semibold">
                   {count.toLocaleString()}
                 </span>
-                <span className="text-sm text-gray-600 text-center ml-1">
+                <span className="ml-1 text-center text-sm text-gray-600">
                   {label}
                 </span>
               </Loader>
-              <div className="text-xs text-gray-500 pt-1">{definition}</div>
+              <div className="pt-1 text-xs text-gray-500">{definition}</div>
             </div>
             {index < array.length - 1 && (
-              <div className="h-full mx-2">
-                <ArrowRightIcon className="w-9 h-11 text-gray-300 " />
+              <div className="mx-2 h-full">
+                <ArrowRightIcon className="h-11 w-9 text-gray-300 " />
               </div>
             )}
           </React.Fragment>

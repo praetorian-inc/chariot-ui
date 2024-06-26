@@ -23,7 +23,7 @@ export const Chip = ({
   return (
     <div
       className={twMerge(
-        'w-full text-center rounded-[2px] text-xs py-1 ',
+        'text-center rounded-[2px] text-xs py-1 px-2 ',
         chipClasses[style],
         className,
         onClick && 'cursor-pointer'

@@ -10,6 +10,7 @@ import {
   LockOpenIcon,
 } from '@heroicons/react/24/outline';
 
+import { Chip } from '@/components/Chip';
 import { Dropdown } from '@/components/Dropdown';
 import { Modal } from '@/components/Modal';
 import { Snackbar } from '@/components/Snackbar';
@@ -33,6 +34,7 @@ interface Props {
   className?: string;
   type?: 'status' | 'severity';
   selectedRowsData?: Risk[];
+  styleType?: 'chip';
 }
 
 const riskStatusOptions = [
@@ -84,6 +86,7 @@ export const RiskDropdown: React.FC<Props> = ({
   className,
   type = 'severity',
   selectedRowsData,
+  styleType,
 }: Props) => {
   const [isClosedSubStateModalOpen, setIsClosedSubStateModalOpen] =
     useState(false);
@@ -94,10 +97,13 @@ export const RiskDropdown: React.FC<Props> = ({
     selectedRowsData && selectedRowsData.length > 1 ? selectedRowsData : [risk];
   const { mutate: updateRisk } = useUpdateRisk();
 
+  const generalChipClass = 'inline-flex min-h-[26px] py-1 whitespace-nowrap';
+
   const riskStatusKey =
     `${risk.status?.[0]}${risk.status?.[2] || ''}` as RiskStatus;
   const riskSeverityKey = risk.status?.[1] as RiskSeverity;
 
+  console.log('riskStatusKey', risk.status);
   const statusLabel = RiskStatusLabel[riskStatusKey];
   const severityLabel = SeverityDef[riskSeverityKey];
 
@@ -128,6 +134,24 @@ export const RiskDropdown: React.FC<Props> = ({
         }
       );
     });
+  }
+
+  if (styleType === 'chip') {
+    return type === 'status' ? (
+      <Chip className={cn(generalChipClass, className)} style="default">
+        {statusLabel}
+      </Chip>
+    ) : (
+      <Chip
+        className={cn(
+          generalChipClass,
+          getSeverityClass(riskSeverityKey),
+          className
+        )}
+      >
+        {severityLabel}
+      </Chip>
+    );
   }
 
   if (type === 'status') {

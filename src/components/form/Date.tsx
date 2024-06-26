@@ -13,7 +13,6 @@ export const Date = (props: InputProps) => {
       onChange={props.onChange}
       value={props.value}
       max={props.max}
-      data-date-inline-picker="true"
     />
   );
 };

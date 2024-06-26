@@ -209,10 +209,9 @@ const DateComp = ({
     <div className={cn('ml-auto flex items-center gap-2', className)}>
       <ChevronDoubleLeftIcon
         className={iconClassName}
+        onMouseDown={e => e.preventDefault()}
         onClick={() =>
-          setDate((date: string) => {
-            return formatDate(subtractDays(new Date(date), 1));
-          })
+          setDate((date: string) => formatDate(subtractDays(new Date(date), 1)))
         }
       />
       <Input
@@ -228,6 +227,7 @@ const DateComp = ({
           iconClassName,
           date === TODAY && 'cursor-not-allowed opacity-50'
         )}
+        onMouseDown={e => e.preventDefault()}
         onClick={() =>
           date === TODAY
             ? {}

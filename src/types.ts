@@ -362,7 +362,6 @@ export interface MyResource {
   seed: Seed[];
   attribute: Attribute[];
   file: MyFile[];
-  threat: Threat[];
 }
 
 export interface GenericResource {

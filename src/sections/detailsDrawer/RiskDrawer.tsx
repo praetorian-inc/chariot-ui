@@ -24,7 +24,13 @@ import { useReRunJob } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
-import { JobStatus, Risk, RiskCombinedStatus, RiskHistory } from '@/types';
+import {
+  JobStatus,
+  Risk,
+  RiskCombinedStatus,
+  RiskHistory,
+  Threat,
+} from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { sToMs } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
@@ -142,9 +148,13 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
 
   const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
 
-  const { data: threats } = useMy({
-    resource: 'threat',
+  const { data } = useGenericSearch({
+    query: 'class:cti',
   });
+
+  console.log('data', data);
+
+  const threats = [] as Threat[];
   const knownExploitedThreats = useMemo(() => {
     return threats.map(threat => threat.name);
   }, [JSON.stringify(threats)]);

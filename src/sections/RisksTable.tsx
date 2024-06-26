@@ -18,9 +18,16 @@ import {
   riskStatusFilterOptions,
 } from '@/components/ui/RiskDropdown';
 import { useFilter } from '@/hooks/useFilter';
+import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useMy } from '@/hooks/useMy';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
-import { Risk, RiskStatus, RiskStatusLabel, SeverityDef } from '@/types';
+import {
+  Risk,
+  RiskStatus,
+  RiskStatusLabel,
+  SeverityDef,
+  Threat,
+} from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { exportContent } from '@/utils/download.util';
 import { Regex } from '@/utils/regex.util';
@@ -122,9 +129,14 @@ export function Risks() {
   const [classFilter, setClassFilter] = useFilter([''], setSelectedRows);
   const [sourceFilter, setSourceFilter] = useFilter([''], setSelectedRows);
 
-  const { data: threats, status: threatsStatus } = useMy({
-    resource: 'threat',
+  const { data } = useGenericSearch({
+    query: 'class:cti',
   });
+
+  console.log('data', data);
+  const threats = [] as Threat[];
+  const threatsStatus = 'success';
+
   const {
     data: risks = [],
     status: risksStatus,

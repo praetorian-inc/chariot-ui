@@ -21,23 +21,19 @@ const ImpersonationBanner: React.FC = () => {
 
   const handleMouseDown = (event: React.MouseEvent) => {
     const startX = event.clientX;
-    const startY = event.clientY;
     const startPos = { ...position };
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const newX = startPos.x + moveEvent.clientX - startX;
-      const newY = startPos.y + moveEvent.clientY - startY;
       const banner = bannerRef.current;
       const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
 
       if (banner) {
         const bannerWidth = banner.offsetWidth;
-        const bannerHeight = banner.offsetHeight;
 
         setPosition({
           x: Math.max(0, Math.min(newX, screenWidth - bannerWidth)),
-          y: Math.max(0, Math.min(newY, screenHeight - bannerHeight)),
+          y: 0,
         });
       }
     };

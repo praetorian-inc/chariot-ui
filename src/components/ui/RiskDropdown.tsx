@@ -115,7 +115,7 @@ export const RiskDropdown: React.FC<Props> = ({
     `${risk.status?.[0]}${risk.status?.[2] || ''}` as RiskStatus;
   const riskSeverityKey = risk.status?.[1] as RiskSeverity;
 
-  const statusLabel = RiskStatusLabel[riskStatusKey] || 'Unknown'; // Unknown is added to handle the old statuses
+  const statusLabel = RiskStatusLabel[riskStatusKey] || 'Closed'; // Closed is added to handle the old statuses
   const severityLabel = SeverityDef[riskSeverityKey];
 
   function handleStatusChange(value: RiskCombinedStatus) {

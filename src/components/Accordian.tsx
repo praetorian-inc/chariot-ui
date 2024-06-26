@@ -49,7 +49,7 @@ export function Accordian(props: AccordianProps) {
       </div>
       <hr className="mt-2 border-default" />
       {open && (
-        <div className={cn('pt-8', props.contentClassName)}>
+        <div className={cn('pt-2', props.contentClassName)}>
           {props.children}
         </div>
       )}

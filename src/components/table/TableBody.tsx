@@ -1,5 +1,9 @@
 import { ReactNode } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronDownIcon,
+  ClockIcon,
+  BoltIcon,
+} from '@heroicons/react/24/outline';
 import { VirtualItem } from '@tanstack/react-virtual';
 
 import { Loader } from '@/components/Loader';
@@ -37,6 +41,11 @@ interface TableBodyProps<TData> {
   groupBy?: TableProps<TData>['groupBy'];
 }
 
+const getGroupIcon = (label: string) => {
+  if (label === 'High Priority') return <BoltIcon className="size-4" />;
+  if (label === 'Standard Priority') return <ClockIcon className="size-4" />;
+  return null;
+};
 export function TableBody<TData>(props: TableBodyProps<TData>) {
   const {
     selectedRows,
@@ -76,7 +85,12 @@ export function TableBody<TData>(props: TableBodyProps<TData>) {
           />
         </th>
         <th className="text-left" colSpan={columns.length + 2} scope="colgroup">
-          <Loader isLoading={isLoading}>{GroupName}</Loader>
+          <Loader isLoading={isLoading}>
+            <div className="flex flex-row space-x-2 items-center">
+              {getGroupIcon(GroupName)}
+              <p>{GroupName}</p>
+            </div>
+          </Loader>
         </th>
       </tr>
     );

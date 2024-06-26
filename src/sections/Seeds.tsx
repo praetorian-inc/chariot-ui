@@ -196,7 +196,7 @@ const Seeds: React.FC = () => {
       submenu: [
         {
           disabled: seeds => seeds.filter(seed => isActive(seed)).length === 0,
-          label: 'Stop Scanning',
+          label: 'Pause Scanning',
           icon: <PauseIcon className="size-5" />,
           onClick: seeds => {
             seeds.forEach(seed => {
@@ -359,7 +359,7 @@ const Seeds: React.FC = () => {
                 {
                   disabled: seeds =>
                     seeds.filter(seed => isFrozen(seed)).length > 0,
-                  label: 'Stop Scanning',
+                  label: 'Pause',
                   icon: <PauseIcon className="size-5" />,
                   onClick: seeds => {
                     seeds.forEach(seed => {

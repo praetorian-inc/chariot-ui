@@ -2,9 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import {
-  CheckCircleIcon,
+  BoltIcon,
+  ClockIcon,
   DocumentArrowDownIcon,
-  ExclamationCircleIcon,
   PauseIcon,
   PlayIcon,
   PlusIcon,
@@ -263,7 +263,7 @@ const Assets: React.FC = () => {
         submenu: [
           {
             label: 'High Priority',
-            icon: <ExclamationCircleIcon className="size-5" />,
+            icon: <BoltIcon className="size-5" />,
             disabled: (assets: Asset[]) =>
               assets.every(asset => asset.status === AssetStatus.ActiveHigh),
             onClick: (assets: Asset[]) => {
@@ -274,14 +274,14 @@ const Assets: React.FC = () => {
           },
           {
             label: 'Standard Priority',
-            icon: <CheckCircleIcon className="size-5" />,
+            icon: <ClockIcon className="size-5" />,
             disabled: (assets: Asset[]) =>
               assets.every(asset => isActive(asset)),
             onClick: (assets: Asset[]) =>
               updateStatus(assets, AssetStatus.Active),
           },
           {
-            label: 'Stop Scanning',
+            label: 'Pause Scan',
             icon: <PauseIcon className="size-5" />,
             disabled: (assets: Asset[]) =>
               assets.every(asset => isFrozen(asset)),
@@ -292,8 +292,8 @@ const Assets: React.FC = () => {
             },
           },
           {
-            label: "I don't recognize this",
-            icon: <QuestionMarkCircleIcon className="size-5" />,
+            label: 'Unknown Asset',
+            icon: <PauseIcon className="size-5" />,
             disabled: (assets: Asset[]) =>
               assets.every(asset => isUnknown(asset)),
             onClick: (assets: Asset[]) =>

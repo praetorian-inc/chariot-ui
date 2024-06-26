@@ -215,7 +215,7 @@ interface CustomOptions {
  * @param statusList List of QueryStatus
  * @returns
  */
-function mergeStatus(...statusList: QueryStatus[]): QueryStatus {
+export function mergeStatus(...statusList: QueryStatus[]): QueryStatus {
   let isError = false;
   let isLoading = false;
 

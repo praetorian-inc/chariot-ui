@@ -140,10 +140,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   );
   const { data: riskNameGenericSearch, status: riskNameGenericSearchStatus } =
     useGenericSearch({ query: name }, { enabled: open });
+  const { data: knownExploitedThreats = [] } = useGetKev({ enabled: open });
 
   const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
-
-  const { data: knownExploitedThreats = [] } = useGetKev();
 
   const hostRef = references.find(ref => ref.class === 'host');
   const [ip, port] = hostRef?.name?.split(/:(?=[^:]*$)/) ?? '';

@@ -51,18 +51,17 @@ const getFilteredRisksByCISA = (
   risks: Risk[],
   knownExploitedThreats?: string[]
 ) => {
-  let filteredRisks = risks;
   if (knownExploitedThreats && knownExploitedThreats.length > 0) {
-    filteredRisks = filteredRisks.filter(risk => {
-      const matchedCVEID = Regex.CVE_ID.exec(risk.name)?.[0];
+    return risks.filter(risk => {
+      const parsedCVEIDFromRisk = Regex.CVE_ID.exec(risk.name)?.[0];
 
       return (
-        (matchedCVEID && knownExploitedThreats.includes(matchedCVEID)) ||
-        knownExploitedThreats.includes(risk.name)
+        parsedCVEIDFromRisk &&
+        knownExploitedThreats.includes(parsedCVEIDFromRisk)
       );
     });
   }
-  return filteredRisks;
+  return [];
 };
 
 const getFilteredRisks = (
@@ -125,6 +124,8 @@ export function Risks() {
 
   const { data: knownExploitedThreats = [], status: threatsStatus } =
     useGetKev();
+
+  console.log('knownExploitedThreats', knownExploitedThreats);
 
   const {
     data: risks = [],

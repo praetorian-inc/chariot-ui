@@ -1,9 +1,5 @@
 import { ReactNode } from 'react';
-import {
-  ChevronDownIcon,
-  ClockIcon,
-  BoltIcon,
-} from '@heroicons/react/24/outline';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { VirtualItem } from '@tanstack/react-virtual';
 
 import { Loader } from '@/components/Loader';
@@ -19,6 +15,9 @@ import {
   TableProps,
 } from '@/components/table/types';
 import { cn } from '@/utils/classname';
+import { getAsset } from 'node:sea';
+import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
+import { AssetStatus } from '@/types';
 
 interface TableBodyProps<TData> {
   selectedRows: string[];
@@ -42,8 +41,10 @@ interface TableBodyProps<TData> {
 }
 
 const getGroupIcon = (label: string) => {
-  if (label === 'High Priority') return <BoltIcon className="size-4" />;
-  if (label === 'Standard Priority') return <ClockIcon className="size-4" />;
+  if (label === 'High Priority')
+    return getAssetStatusIcon(AssetStatus.ActiveHigh);
+  if (label === 'Standard Priority')
+    return getAssetStatusIcon(AssetStatus.Active);
   return null;
 };
 export function TableBody<TData>(props: TableBodyProps<TData>) {

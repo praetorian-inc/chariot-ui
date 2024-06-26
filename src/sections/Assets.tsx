@@ -2,13 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import {
-  BoltIcon,
-  ClockIcon,
   DocumentArrowDownIcon,
-  PauseIcon,
   PlayIcon,
   PlusIcon,
-  QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
@@ -39,6 +35,7 @@ import { exportContent } from '@/utils/download.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { Link } from '@/components/Link';
+import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 
 type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
 type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
@@ -263,7 +260,7 @@ const Assets: React.FC = () => {
         submenu: [
           {
             label: 'High Priority',
-            icon: <BoltIcon className="size-5" />,
+            icon: getAssetStatusIcon(AssetStatus.ActiveHigh),
             disabled: (assets: Asset[]) =>
               assets.every(asset => asset.status === AssetStatus.ActiveHigh),
             onClick: (assets: Asset[]) => {
@@ -274,7 +271,7 @@ const Assets: React.FC = () => {
           },
           {
             label: 'Standard Priority',
-            icon: <ClockIcon className="size-5" />,
+            icon: getAssetStatusIcon(AssetStatus.Active),
             disabled: (assets: Asset[]) =>
               assets.every(asset => isActive(asset)),
             onClick: (assets: Asset[]) =>
@@ -282,7 +279,7 @@ const Assets: React.FC = () => {
           },
           {
             label: 'Pause Scan',
-            icon: <PauseIcon className="size-5" />,
+            icon: getAssetStatusIcon(AssetStatus.Frozen),
             disabled: (assets: Asset[]) =>
               assets.every(asset => isFrozen(asset)),
             onClick: (assets: Asset[]) => {
@@ -293,7 +290,7 @@ const Assets: React.FC = () => {
           },
           {
             label: 'Unknown Asset',
-            icon: <PauseIcon className="size-5" />,
+            icon: getAssetStatusIcon(AssetStatus.Unknown),
             disabled: (assets: Asset[]) =>
               assets.every(asset => isUnknown(asset)),
             onClick: (assets: Asset[]) =>

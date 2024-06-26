@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '@/state/auth';
 import { useStorage } from '@/utils/storage/useStorage.util';
+import { Bars3Icon } from '@heroicons/react/20/solid';
 
 const ImpersonationBanner: React.FC = () => {
   const { friend, stopImpersonation } = useAuth();
@@ -54,7 +55,7 @@ const ImpersonationBanner: React.FC = () => {
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
     >
       <button
-        className="hover:bg-brand-hover mr-2 rounded-b-[2px] p-1 text-center"
+        className="hover:bg-brand-dark mr-2 rounded-b-[4px] p-1 text-center"
         onClick={stopImpersonation}
       >
         <XMarkIcon className="h-4 w-4" />
@@ -64,8 +65,13 @@ const ImpersonationBanner: React.FC = () => {
         {friend.displayName || friend.email}
       </span>
       {friend.displayName && <span className="ml-1">({friend.email})</span>}
-      <div className="cursor-move ml-2 p-1" onMouseDown={handleMouseDown}>
-        <span className="text-lg">≡</span>
+      <div
+        className="cursor-move ml-2 hover:bg-brand-dark rounded-b-[4px] p-1 "
+        onMouseDown={handleMouseDown}
+      >
+        <span className="text-lg">
+          <Bars3Icon className="h-4 w-4" />
+        </span>
       </div>
     </div>
   );

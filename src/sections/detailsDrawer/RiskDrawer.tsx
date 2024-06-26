@@ -424,16 +424,8 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       label: '',
                       value: (
                         <div className="flex gap-2 text-sm">
-                          <RiskDropdown
-                            type="status"
-                            className="justify-center py-2"
-                            risk={risk}
-                          />
-                          <RiskDropdown
-                            type="severity"
-                            className="justify-center py-2"
-                            risk={risk}
-                          />
+                          <RiskDropdown type="status" risk={risk} />
+                          <RiskDropdown type="severity" risk={risk} />
                         </div>
                       ),
                     },

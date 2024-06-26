@@ -4,6 +4,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import {
   ArrowDownCircleIcon,
   DocumentIcon,
+  DocumentTextIcon,
   PhotoIcon,
 } from '@heroicons/react/24/outline';
 
@@ -27,7 +28,7 @@ import { sortByDate } from '@/utils/date.util';
 
 const Files: React.FC = () => {
   const navigate = useNavigate();
-  const { getRiskDrawerLink } = useOpenDrawer();
+  const { getRiskDrawerLink, getProofOfExploitLink } = useOpenDrawer();
   const [filename, setFilename] = React.useState('');
   const [filetype, setFiletype] = React.useState('');
   const {
@@ -85,6 +86,66 @@ const Files: React.FC = () => {
     return item.class;
   }
 
+  const getAdditionaActions = (item: MyFile) => {
+    if (item.class === 'proof') {
+      const parts = item.name.split('/');
+      const dns = parts.shift() ?? '';
+      const name = parts.join('/') ?? '';
+      const riskDrawerLink = getRiskDrawerLink({ dns, name });
+      const poeLink = getProofOfExploitLink({ dns, name });
+
+      return (
+        <div className="flex flex-row mr-2">
+          <Tooltip title="View Risk">
+            <button
+              onClick={() => navigate(riskDrawerLink)}
+              className="p-0 m-0"
+            >
+              <RisksIcon className="size-5" />
+            </button>
+          </Tooltip>
+          <Tooltip title="View Proof">
+            <button onClick={() => navigate(poeLink)} className="px-1">
+              <DocumentTextIcon className="size-5" />
+            </button>
+          </Tooltip>
+        </div>
+      );
+    } else if (item.class === 'manual') {
+      if (item.name.endsWith('png') || item.name.endsWith('jpg')) {
+        return (
+          <div className="flex flex-row mr-2">
+            <Tooltip title="Preview Image">
+              <button
+                onClick={() => {
+                  setFiletype('image');
+                  setFilename(item.name);
+                }}
+              >
+                <PhotoIcon className="size-5" />
+              </button>
+            </Tooltip>
+          </div>
+        );
+      } else {
+        return (
+          <div className="flex flex-row mr-2">
+            <Tooltip title="View File">
+              <button
+                onClick={() => {
+                  setFiletype('text');
+                  setFilename(item.name);
+                }}
+              >
+                <DocumentIcon className="size-5" />
+              </button>
+            </Tooltip>
+          </div>
+        );
+      }
+    }
+  };
+
   const columns: Columns<MyFile> = [
     {
       label: 'Class',
@@ -97,73 +158,12 @@ const Files: React.FC = () => {
       id: 'name',
       className: 'w-full',
       cell: (item: MyFile) => {
-        if (item.class === 'proof') {
-          const parts = item.name.split('/');
-          const dns = parts.shift() ?? '';
-          const name = parts.join('/') ?? '';
-          const link = getRiskDrawerLink({ dns, name });
-          return (
-            <div className="flex flex-row">
-              <Tooltip title="View Risk">
-                <button
-                  onClick={() => navigate(link)}
-                  className="mr-2 text-brand"
-                >
-                  <RisksIcon className="size-5" />
-                </button>
-              </Tooltip>
-              <Tooltip title="View File">
-                <button
-                  onClick={() => {
-                    setFiletype('text');
-                    setFilename(item.name);
-                  }}
-                  className="mr-2 text-brand"
-                >
-                  <DocumentIcon className="size-5" />
-                </button>
-              </Tooltip>
-              {item.name}
-            </div>
-          );
-        } else if (item.class === 'manual') {
-          if (item.name.endsWith('png') || item.name.endsWith('jpg')) {
-            return (
-              <div className="flex flex-row">
-                <Tooltip title="Preview Image">
-                  <button
-                    onClick={() => {
-                      setFiletype('image');
-                      setFilename(item.name);
-                    }}
-                    className="mr-2 text-brand"
-                  >
-                    <PhotoIcon className="size-5" />
-                  </button>
-                </Tooltip>
-                {item.name}
-              </div>
-            );
-          } else {
-            return (
-              <div className="flex flex-row">
-                <Tooltip title="View File">
-                  <button
-                    onClick={() => {
-                      setFiletype('text');
-                      setFilename(item.name);
-                    }}
-                    className="mr-2 text-brand"
-                  >
-                    <DocumentIcon className="size-5" />
-                  </button>
-                </Tooltip>
-                {item.name}
-              </div>
-            );
-          }
-        }
-        return item.name;
+        return (
+          <div className="flex flex-row">
+            {getAdditionaActions(item)}
+            <span>{item.name}</span>
+          </div>
+        );
       },
     },
     {
@@ -175,16 +175,18 @@ const Files: React.FC = () => {
       label: 'Actions',
       id: '',
       cell: (item: MyFile) => (
-        <Tooltip title={'Download'}>
-          <button
-            onClick={() => handleDownload(item)}
-            className="m-auto block cursor-pointer"
-          >
-            <ArrowDownCircleIcon className="m-1 size-5 stroke-2" />
-          </button>
-        </Tooltip>
+        <div className="flex flex-row w-full justify-center">
+          <Tooltip title={'Download'}>
+            <button
+              onClick={() => handleDownload(item)}
+              className="block cursor-pointer"
+            >
+              <ArrowDownCircleIcon className="m-1 size-5 stroke-2" />
+            </button>
+          </Tooltip>
+        </div>
       ),
-      fixedWidth: 80,
+      fixedWidth: 120,
       align: 'center',
     },
   ];

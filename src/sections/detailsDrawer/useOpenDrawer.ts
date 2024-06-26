@@ -23,6 +23,11 @@ export function useOpenDrawer() {
         ],
       });
     },
+    getProofOfExploitLink: (risk: Pick<Risk, 'dns' | 'name'>): To => {
+      return generatePathWithSearch({
+        appendSearch: [[StorageKey.POE, `${risk.dns}/${risk.name}`]],
+      });
+    },
     getSeedDrawerLink: (seed: Pick<Seed, 'name'>): To => {
       return generatePathWithSearch({
         appendSearch: [[StorageKey.DRAWER_COMPOSITE_KEY, `#seed#${seed.name}`]],

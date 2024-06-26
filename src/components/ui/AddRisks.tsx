@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Input } from '@/components/form/Input';
 import { Inputs } from '@/components/form/Inputs';
 import { Modal } from '@/components/Modal';
-import { RiskSeverityOptions } from '@/components/ui/RiskDropdown';
+import { riskSeverityOptions } from '@/components/ui/RiskDropdown';
 import { useCreateRisk } from '@/hooks/useRisks';
 import { RiskCombinedStatus } from '@/types';
 
@@ -80,7 +80,7 @@ export const AddRisks: React.FC<Props> = (props: Props) => {
                 label: 'Severity',
                 name: 'severity',
                 value: 'I',
-                options: RiskSeverityOptions,
+                options: riskSeverityOptions,
                 type: Input.Type.SELECT,
               },
               {

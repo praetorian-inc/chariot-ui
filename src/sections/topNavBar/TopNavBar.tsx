@@ -32,25 +32,31 @@ export function TopNavBar() {
                 {
                   label: 'Seeds',
                   description:
-                    "Define your scope by adding the domains, IP's, or repositories you wish to monitor.",
+                    'Manage entry points to discover and monitor assets for scanning.',
                   helpText: <Shortcuts value="S" />,
-                  icon: <SeedsIcon />,
+                  icon: (
+                    <SeedsIcon className="size-7 -ml-2 stroke-1 text-default-light" />
+                  ),
                   to: getRoute(['app', 'seeds']),
                 },
                 {
                   label: 'Assets',
                   description:
-                    'Discover all objects and elements associated with your Seeds.',
+                    'Track and manage discovered assets to ensure comprehensive scanning.',
                   helpText: <Shortcuts value="A" />,
-                  icon: <AssetsIcon />,
+                  icon: (
+                    <AssetsIcon className="size-7 -ml-2 stroke-1 text-default-light" />
+                  ),
                   to: getRoute(['app', 'assets']),
                 },
                 {
                   label: 'Risks',
                   description:
-                    'Identify, prioritize, and mitigate threats located within your Assets.',
+                    'Identify, evaluate, and prioritize risks in your assets to protect your organization.',
                   helpText: <Shortcuts value="R" />,
-                  icon: <RisksIcon />,
+                  icon: (
+                    <RisksIcon className="size-7 -ml-2 stroke-1 text-default-light" />
+                  ),
                   to: getRoute(['app', 'risks']),
                 },
               ],

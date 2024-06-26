@@ -15,6 +15,8 @@ import {
   TableProps,
 } from '@/components/table/types';
 import { cn } from '@/utils/classname';
+import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
+import { AssetStatus } from '@/types';
 
 interface TableBodyProps<TData> {
   selectedRows: string[];
@@ -37,6 +39,13 @@ interface TableBodyProps<TData> {
   groupBy?: TableProps<TData>['groupBy'];
 }
 
+const getGroupIcon = (label: string) => {
+  if (label === 'High Priority')
+    return getAssetStatusIcon(AssetStatus.ActiveHigh);
+  if (label === 'Standard Priority')
+    return getAssetStatusIcon(AssetStatus.Active);
+  return null;
+};
 export function TableBody<TData>(props: TableBodyProps<TData>) {
   const {
     selectedRows,
@@ -76,7 +85,12 @@ export function TableBody<TData>(props: TableBodyProps<TData>) {
           />
         </th>
         <th className="text-left" colSpan={columns.length + 2} scope="colgroup">
-          <Loader isLoading={isLoading}>{GroupName}</Loader>
+          <Loader isLoading={isLoading}>
+            <div className="flex flex-row space-x-2 items-center">
+              {getGroupIcon(GroupName)}
+              <p>{GroupName}</p>
+            </div>
+          </Loader>
         </th>
       </tr>
     );

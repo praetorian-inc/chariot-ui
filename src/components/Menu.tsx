@@ -80,8 +80,11 @@ export const Menu: React.FC<MenuProps> = props => {
                   } else {
                     newSelected = [...prev, item.value];
                   }
-                  // Remove empty string if there are other values for multiSelect 'All' option
-                  newSelected = newSelected.filter(v => v !== '');
+                  // Toggle "All option" and other values
+                  newSelected =
+                    newSelected.length > 0
+                      ? newSelected.filter(v => v !== '')
+                      : [''];
                 } else {
                   // If 'All' option is selected, remove all other values
                   newSelected = [''];
@@ -222,7 +225,7 @@ function MenuButton(
   } = props;
 
   const buttonClassName = cn(
-    'relative text-start rounded-[2px] flex items-center justify-start px-4 m-0 py-2',
+    'relative text-start rounded-[2px] flex items-center justify-start m-0 py-2',
     isFocused ? 'outline-none z-10' : '',
     isSelected ? 'bg-brand-lighter' : '',
     menuMarginClassName,
@@ -297,11 +300,7 @@ function Content(props: MenuItemProps & { multiSelect?: boolean }) {
           <CheckboxIcon isChecked={Boolean(isSelected)} />
         </>
       )}
-      {icon && (
-        <div className={`[&>svg]:size-5 [&>svg]:text-default-light`}>
-          {icon}
-        </div>
-      )}
+      {icon && <div>{icon}</div>}
       <div className="w-full overflow-hidden">
         <div className="flex items-center justify-between text-sm">
           <div

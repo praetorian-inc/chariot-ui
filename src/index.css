@@ -57,25 +57,26 @@
   /*
   @media (prefers-color-scheme: dark) {
     :root {
-      --header-light: theme('colors.neutral.900');
-      --header: rgb(24, 24, 24);
-      --header-dark: theme('colors.black');
-
-      --default-light: theme('colors.neutral.900');
-      --default: theme('colors.neutral.800');
-      --default-dark: theme('colors.neutral.700');
-
-      --text-default-light: theme('colors.gray.500');
+      --text-default-light: theme('colors.gray.400');
       --text-default: theme('colors.gray.200');
-      --text-default-dark: theme('colors.gray.100');
+      --text-default-dark: theme('colors.gray.800');
 
-      --border-default: theme('colors.stone.400');
+      --default-light: theme('colors.gray.700');
+      --default: theme('colors.gray.600');
+      --default-dark: theme('colors.gray.600');
 
-      --layer0: theme('colors.black');
-      --layer1: rgb(24, 24, 24);
+      --border-default: theme('colors.stone.600');
+
+      --layer0: #0d0d28;
+      --layer1: #313147;
 
       --highlight: 250 250 249;
       --contract: 255 255 255;
+
+      --brand-lighter: #474158;
+      --brand: 134 101 255;
+
+      --tw-ring-color: theme('colors.stone.700');
     }
   }
   */

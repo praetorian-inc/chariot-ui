@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { VirtualItem } from '@tanstack/react-virtual';
 
+import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { Loader } from '@/components/Loader';
 import { ROW_HEIGHT } from '@/components/table/constants';
 import { TableCellContent } from '@/components/table/TableCellContent';
@@ -14,9 +15,8 @@ import {
   InternalTData,
   TableProps,
 } from '@/components/table/types';
-import { cn } from '@/utils/classname';
-import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { AssetStatus } from '@/types';
+import { cn } from '@/utils/classname';
 
 interface TableBodyProps<TData> {
   selectedRows: string[];
@@ -72,7 +72,7 @@ export function TableBody<TData>(props: TableBodyProps<TData>) {
     const isExpanded = expandedGroups.includes(GroupName);
     return (
       <tr
-        className="cursor-pointer border-t border-gray-200 bg-layer1 text-sm font-semibold"
+        className="cursor-pointer border-t border-default bg-layer1 text-sm font-semibold"
         key={`row-${rowIndex}`}
         style={{
           height: `${virtualRow.size}px`,
@@ -86,7 +86,7 @@ export function TableBody<TData>(props: TableBodyProps<TData>) {
         </th>
         <th className="text-left" colSpan={columns.length + 2} scope="colgroup">
           <Loader isLoading={isLoading}>
-            <div className="flex flex-row space-x-2 items-center">
+            <div className="flex flex-row items-center space-x-2">
               {getGroupIcon(GroupName)}
               <p>{GroupName}</p>
             </div>

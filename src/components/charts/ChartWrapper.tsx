@@ -68,7 +68,7 @@ const ChartWrapper: React.FC<ChartWrapperProps> = ({
     const chartData = run(aggregate, data as Account[]);
 
     return (
-      <div className="relative flex size-full flex-col gap-4 border border-gray-200 bg-white p-6">
+      <div className="relative flex size-full flex-col gap-4 border border-default bg-white p-6">
         <div className="flex items-center">
           <h3 className="dark:text-dark-tremor-content-strong flex-1 text-lg font-medium text-tremor-content-strong">
             {label}

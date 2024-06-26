@@ -17,9 +17,9 @@ import {
   RiskDropdown,
   riskStatusFilterOptions,
 } from '@/components/ui/RiskDropdown';
+import { useGetKev } from '@/hooks/kev';
 import { useFilter } from '@/hooks/useFilter';
 import { useMy } from '@/hooks/useMy';
-import { useGetKev } from '@/hooks/useThreat';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
 import { Risk, RiskStatus, RiskStatusLabel, SeverityDef } from '@/types';
 import { useMergeStatus } from '@/utils/api';

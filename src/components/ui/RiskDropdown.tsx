@@ -41,17 +41,17 @@ const riskStatusOptions = [
   {
     label: 'Triage',
     value: RiskStatus.Triaged,
-    icon: <AdjustmentsHorizontalIcon className="size-4" />,
+    icon: <AdjustmentsHorizontalIcon className="size-4 stroke-2" />,
   },
   {
     label: 'Open',
     value: RiskStatus.Opened,
-    icon: <LockOpenIcon className="size-4" />,
+    icon: <LockOpenIcon className="size-4 stroke-2" />,
   },
   {
     label: 'Closed',
     value: RiskStatus.Resolved,
-    icon: <LockClosedIcon className="size-4" />,
+    icon: <LockClosedIcon className="size-4 stroke-2" />,
   },
 ];
 
@@ -69,11 +69,23 @@ export const RiskSeverityOptions = [
   {
     label: 'Critical',
     value: 'C',
-    icon: <ChevronDoubleUpIcon className="size-4" />,
+    icon: <ChevronDoubleUpIcon className="size-4 stroke-2" />,
   },
-  { label: 'High', value: 'H', icon: <ChevronUpIcon className="size-4" /> },
-  { label: 'Medium', value: 'M', icon: <Bars2Icon className="size-4" /> },
-  { label: 'Low', value: 'L', icon: <ChevronDownIcon className="size-4" /> },
+  {
+    label: 'High',
+    value: 'H',
+    icon: <ChevronUpIcon className="size-4 stroke-2" />,
+  },
+  {
+    label: 'Medium',
+    value: 'M',
+    icon: <Bars2Icon className="size-4 stroke-2" />,
+  },
+  {
+    label: 'Low',
+    value: 'L',
+    icon: <ChevronDownIcon className="size-4 stroke-2" />,
+  },
   {
     label: 'Info',
     value: 'I',
@@ -103,7 +115,6 @@ export const RiskDropdown: React.FC<Props> = ({
     `${risk.status?.[0]}${risk.status?.[2] || ''}` as RiskStatus;
   const riskSeverityKey = risk.status?.[1] as RiskSeverity;
 
-  console.log('riskStatusKey', risk.status);
   const statusLabel = RiskStatusLabel[riskStatusKey];
   const severityLabel = SeverityDef[riskSeverityKey];
 
@@ -180,7 +191,7 @@ export const RiskDropdown: React.FC<Props> = ({
             riskStatusOptions.find(option => option.value === riskStatusKey)
               ?.icon ?? <LockClosedIcon className="size-4" />
           }
-          endIcon={<ChevronDownIcon className="size-4" />}
+          endIcon={<ChevronDownIcon className="size-3 text-default-light" />}
           onClick={event => event.stopPropagation()}
         >
           <div className="flex-1 text-left">{statusLabel}</div>
@@ -261,14 +272,15 @@ export const RiskDropdown: React.FC<Props> = ({
           }
         },
       }}
-      label={severityLabel}
       startIcon={
         RiskSeverityOptions.find(option => option.value === riskSeverityKey)
           ?.icon
       }
-      endIcon={<ChevronDownIcon className="ml-1 size-4" />}
+      endIcon={<ChevronDownIcon className="size-3 text-default-light" />}
       onClick={event => event.stopPropagation()}
-    />
+    >
+      <div className="flex-1 text-left">{severityLabel}</div>
+    </Dropdown>
   );
 };
 

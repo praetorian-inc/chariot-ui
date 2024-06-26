@@ -60,13 +60,13 @@ export const Overview = () => {
       <div className="mt-6 flex flex-col space-y-6 rounded-[2px] bg-white p-2 shadow-sm">
         {reportReady ? (
           <TabGroup>
-            <TabList className="flex p-1">
+            <TabList className="flex overflow-x-auto p-1">
               {Object.keys(reportSections).map(tab => (
                 <Tab
                   key={tab}
                   className={({ selected }) =>
                     classNames(
-                      'w-full py-4 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0',
+                      'w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0',
                       selected ? 'border-b-4 border-brand text-brand' : '',
                       !selected ? 'border-b-2 border-gray-100 bg-layer0' : ''
                     )

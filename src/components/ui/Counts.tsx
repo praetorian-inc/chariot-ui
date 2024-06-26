@@ -1,11 +1,10 @@
 import React from 'react';
-import { ArrowRightIcon } from '@heroicons/react/24/solid';
 
+import { AssetsIcon, RisksIcon, SeedsIcon } from '@/components/icons';
+import { AnimatedArrowIcon } from '@/components/icons/AnimatedArrow.icon';
 import { Loader } from '@/components/Loader';
 import { OverviewLabels, Statistics } from '@/types';
 import { QueryStatus } from '@/utils/api';
-import { AssetsIcon, RisksIcon, SeedsIcon } from '@/components/icons';
-import { AnimatedArrowIcon } from '@/components/icons/AnimatedArrow.icon';
 
 const countsLabel = OverviewLabels;
 
@@ -21,9 +20,9 @@ interface CountsProps {
 }
 
 const icons: Record<string, React.ReactNode> = {
-  seeds: <SeedsIcon className="size-4 inline mb-1 text-gray-500 mr-1" />,
-  assets: <AssetsIcon className="size-4 inline mb-1 mr-1 text-gray-500" />,
-  risks: <RisksIcon className="size-4 inline mb-0.5 mr-1 text-gray-500" />,
+  seeds: <SeedsIcon className="mb-1 mr-1 inline size-4 text-gray-500" />,
+  assets: <AssetsIcon className="mb-1 mr-1 inline size-4 text-gray-500" />,
+  risks: <RisksIcon className="mb-0.5 mr-1 inline size-4 text-gray-500" />,
 };
 
 const Counts: React.FC<CountsProps> = ({ stats, status }) => {
@@ -43,11 +42,11 @@ const Counts: React.FC<CountsProps> = ({ stats, status }) => {
   );
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col items-center justify-between md:flex-row">
       {Object.entries(countsObject).map(
         ([key, { label, count, definition }], index, array) => (
           <React.Fragment key={key}>
-            <div className="h-28 w-1/3 rounded-[2px] bg-white p-4 shadow-sm relative">
+            <div className="relative h-28 w-full rounded-[2px] bg-white p-4 shadow-sm md:w-1/3">
               <Loader isLoading={status === 'pending'}>
                 <span className="mt-2 text-2xl font-semibold">
                   {count.toLocaleString()}
@@ -55,13 +54,16 @@ const Counts: React.FC<CountsProps> = ({ stats, status }) => {
                 <span className="ml-2 text-center text-sm text-gray-600">
                   {label}
                 </span>
-                <div className="absolute top-1 right-1">{icons[key]}</div>
+                <div className="absolute right-1 top-1">{icons[key]}</div>
               </Loader>
               <div className="pt-1 text-xs text-gray-500">{definition}</div>
             </div>
             {index < array.length - 1 && (
               <div className="mx-3">
-                <AnimatedArrowIcon delay={index + 1 + 's'} />{' '}
+                <AnimatedArrowIcon
+                  className="rotate-90 md:rotate-0 "
+                  delay={index + 1 + 's'}
+                />
               </div>
             )}
           </React.Fragment>

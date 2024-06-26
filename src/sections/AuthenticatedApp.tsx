@@ -17,6 +17,7 @@ import { useBreadCrumbsContext } from '@/state/breadcrumbs';
 import { cn } from '@/utils/classname';
 import { getRoute } from '@/utils/route.util';
 import { Tooltip } from '@/components/Tooltip';
+import ImpersonationBanner from '@/components/ImpersonationBanner';
 
 const offsetViewMargin = 16;
 interface AuthenticatedApp {
@@ -121,33 +122,6 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
     </div>
   );
 }
-
-const ImpersonationBanner: React.FC = () => {
-  const { friend, stopImpersonation } = useAuth();
-
-  if (friend?.email === '') {
-    return null;
-  }
-
-  return (
-    <div className="absolute top-0 z-[99999] flex w-full items-center bg-brand px-10 py-1 text-xs text-white">
-      <button
-        className="hover:bg-brand-hover mr-2 w-4 rounded text-center"
-        onClick={stopImpersonation}
-      >
-        <XMarkIcon className="mr-2 size-4" />
-      </button>
-      <span>Viewing</span>
-      <span className="ml-1">
-        {friend?.displayName?.length > 0 ? (
-          <Tooltip title={friend.email}>{friend.displayName}</Tooltip>
-        ) : (
-          friend.email
-        )}
-      </span>
-    </div>
-  );
-};
 
 interface HeaderProps {
   filters?: JSX.Element;

@@ -15,7 +15,6 @@ import {
   TableProps,
 } from '@/components/table/types';
 import { cn } from '@/utils/classname';
-import { getAsset } from 'node:sea';
 import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { AssetStatus } from '@/types';
 

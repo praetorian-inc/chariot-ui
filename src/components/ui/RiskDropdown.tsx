@@ -65,7 +65,7 @@ const riskClosedStatusList = Object.values(RiskClosedStatus).map(
   }
 );
 
-export const RiskSeverityOptions = [
+export const riskSeverityOptions = [
   {
     label: 'Critical',
     value: 'C',
@@ -262,7 +262,7 @@ export const RiskDropdown: React.FC<Props> = ({
     <Dropdown
       className={`justify-between rounded-[2px] py-1 ${getSeverityClass(riskSeverityKey)} ${className} border-1 min-w-28 border pr-2`}
       menu={{
-        items: RiskSeverityOptions,
+        items: riskSeverityOptions,
         onClick: value => {
           if (value) {
             const oldStatus = risk.status;
@@ -273,7 +273,7 @@ export const RiskDropdown: React.FC<Props> = ({
         },
       }}
       startIcon={
-        RiskSeverityOptions.find(option => option.value === riskSeverityKey)
+        riskSeverityOptions.find(option => option.value === riskSeverityKey)
           ?.icon
       }
       endIcon={<ChevronDownIcon className="size-3 text-default-light" />}

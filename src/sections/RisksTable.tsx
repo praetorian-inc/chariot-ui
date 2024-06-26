@@ -125,8 +125,6 @@ export function Risks() {
   const { data: knownExploitedThreats = [], status: threatsStatus } =
     useGetKev();
 
-  console.log('knownExploitedThreats', knownExploitedThreats);
-
   const {
     data: risks = [],
     status: risksStatus,

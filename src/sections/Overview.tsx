@@ -3,11 +3,14 @@ import Markdown from 'react-markdown';
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
+  DocumentArrowDownIcon,
 } from '@heroicons/react/24/outline';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
+import { Button } from '@/components/Button';
 import CircularProgressBar from '@/components/CircularProgressBar';
 import { Input } from '@/components/form/Input';
+import { Tooltip } from '@/components/Tooltip';
 import Counts from '@/components/ui/Counts';
 import { getReportSections, sampleReport } from '@/sections/overview/constants';
 import { cn } from '@/utils/classname';
@@ -70,7 +73,17 @@ export const Overview = () => {
       </label>
 
       {reportReady && (
-        <DateComp className="mt-3" date={date} setDate={setDate} />
+        <div className="flex ">
+          <h1 className="center-align mb-1 mt-6 flex items-center text-2xl font-light text-gray-500">
+            Daily Report
+            <Tooltip title="Download PDF" placement="right">
+              <Button onClick={() => {}} styleType="none">
+                <DocumentArrowDownIcon className="size-6" />
+              </Button>
+            </Tooltip>
+          </h1>
+          <DateComp className="mt-3" date={date} setDate={setDate} />
+        </div>
       )}
       <div
         className={cn(

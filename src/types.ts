@@ -10,6 +10,7 @@ export enum UniqueQueryKeys {
   GET_FILE = 'GET_FILE',
   COUNTS = 'COUNTS',
   GAVATAR_PROFILE_PICTURE = 'GAVATAR_PROFILE_PICTURE',
+  KEV = 'KEV',
 }
 
 export enum JobStatus {

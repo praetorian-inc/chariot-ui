@@ -22,15 +22,10 @@ import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useReRunJob } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
+import { useGetKev } from '@/hooks/useThreat';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
-import {
-  JobStatus,
-  Risk,
-  RiskCombinedStatus,
-  RiskHistory,
-  Threat,
-} from '@/types';
+import { JobStatus, Risk, RiskCombinedStatus, RiskHistory } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { sToMs } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
@@ -148,16 +143,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
 
   const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
 
-  const { data } = useGenericSearch({
-    query: 'class:cti',
-  });
-
-  console.log('data', data);
-
-  const threats = [] as Threat[];
-  const knownExploitedThreats = useMemo(() => {
-    return threats.map(threat => threat.name);
-  }, [JSON.stringify(threats)]);
+  const { data: knownExploitedThreats = [] } = useGetKev();
 
   const hostRef = references.find(ref => ref.class === 'host');
   const [ip, port] = hostRef?.name?.split(/:(?=[^:]*$)/) ?? '';

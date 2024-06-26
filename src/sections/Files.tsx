@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import {
   ArrowDownCircleIcon,
@@ -8,6 +9,9 @@ import {
 
 import { Button } from '@/components/Button';
 import { Dropdown } from '@/components/Dropdown';
+import FileViewer from '@/components/FileViewer';
+import { RisksIcon } from '@/components/icons';
+import { Modal } from '@/components/Modal';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
@@ -16,14 +20,10 @@ import { FilterCounts } from '@/components/ui/FilterCounts';
 import { useDownloadFile, useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
+import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
 import { FileLabels, MyFile } from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { sortByDate } from '@/utils/date.util';
-import { useNavigate } from 'react-router-dom';
-import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
-import { RisksIcon } from '@/components/icons';
-import { Modal } from '@/components/Modal';
-import FileViewer from '@/components/FileViewer';
 
 const Files: React.FC = () => {
   const navigate = useNavigate();
@@ -73,11 +73,15 @@ const Files: React.FC = () => {
     const label = FileLabels[item.class];
 
     // Remove pluralization
-    if (label.endsWith('s')) {
-      return label.slice(0, -1);
-    } else if (label.length) {
-      return label;
+
+    if (label) {
+      if (label.endsWith('s')) {
+        return label.slice(0, -1);
+      } else if (label.length) {
+        return label;
+      }
     }
+
     return item.class;
   }
 

@@ -18,16 +18,10 @@ import {
   riskStatusFilterOptions,
 } from '@/components/ui/RiskDropdown';
 import { useFilter } from '@/hooks/useFilter';
-import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useMy } from '@/hooks/useMy';
+import { useGetKev } from '@/hooks/useThreat';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
-import {
-  Risk,
-  RiskStatus,
-  RiskStatusLabel,
-  SeverityDef,
-  Threat,
-} from '@/types';
+import { Risk, RiskStatus, RiskStatusLabel, SeverityDef } from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { exportContent } from '@/utils/download.util';
 import { Regex } from '@/utils/regex.util';
@@ -129,13 +123,8 @@ export function Risks() {
   const [classFilter, setClassFilter] = useFilter([''], setSelectedRows);
   const [sourceFilter, setSourceFilter] = useFilter([''], setSelectedRows);
 
-  const { data } = useGenericSearch({
-    query: 'class:cti',
-  });
-
-  console.log('data', data);
-  const threats = [] as Threat[];
-  const threatsStatus = 'success';
+  const { data: knownExploitedThreats = [], status: threatsStatus } =
+    useGetKev();
 
   const {
     data: risks = [],
@@ -149,10 +138,6 @@ export function Risks() {
   });
 
   const status = useMergeStatus(risksStatus, threatsStatus);
-
-  const knownExploitedThreats = useMemo(() => {
-    return threats.map(threat => threat.name);
-  }, [JSON.stringify(threats)]);
 
   const filteredRisks = useMemo(() => {
     let filteredRisks = risks;

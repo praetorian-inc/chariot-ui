@@ -222,7 +222,7 @@ function MenuButton(
   } = props;
 
   const buttonClassName = cn(
-    'relative text-start rounded-[2px] flex items-center justify-start px-4 m-0 py-2',
+    'relative text-start rounded-[2px] flex items-center justify-start m-0 py-2',
     isFocused ? 'outline-none z-10' : '',
     isSelected ? 'bg-brand-lighter' : '',
     menuMarginClassName,

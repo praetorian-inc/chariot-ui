@@ -182,29 +182,29 @@ export function Risks() {
         label: 'Status',
         id: 'status',
         className: 'text-left',
-        fixedWidth: 150,
+        fixedWidth: 170,
         cell: (risk: Risk, selectedRowsData?: Risk[]) => {
           return (
-            <div className="border-1 flex justify-start ">
-              <RiskDropdown
-                type="status"
-                risk={risk}
-                selectedRowsData={selectedRowsData}
-              />
-            </div>
+            <RiskDropdown
+              type="status"
+              risk={risk}
+              selectedRowsData={selectedRowsData}
+              className="w-[170px]"
+            />
           );
         },
       },
       {
         label: 'Severity',
         id: 'status',
-        fixedWidth: 130,
+        fixedWidth: 140,
         cell: (risk: Risk, selectedRowsData?: Risk[]) => {
           return (
             <RiskDropdown
               type="severity"
               risk={risk}
               selectedRowsData={selectedRowsData}
+              className="w-[120px]"
             />
           );
         },

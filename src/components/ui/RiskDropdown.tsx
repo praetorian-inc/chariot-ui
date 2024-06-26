@@ -1,7 +1,15 @@
 import { useState } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import {
+  AdjustmentsHorizontalIcon,
+  Bars2Icon,
+  ChevronDoubleDownIcon,
+  ChevronDoubleUpIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+} from '@heroicons/react/24/outline';
 
-import { Chip } from '@/components/Chip';
 import { Dropdown } from '@/components/Dropdown';
 import { Modal } from '@/components/Modal';
 import { Snackbar } from '@/components/Snackbar';
@@ -25,18 +33,23 @@ interface Props {
   className?: string;
   type?: 'status' | 'severity';
   selectedRowsData?: Risk[];
-  styleType?: 'chip';
 }
 
 const riskStatusOptions = [
-  { label: 'Triage', value: RiskStatus.Triaged },
+  {
+    label: 'Triage',
+    value: RiskStatus.Triaged,
+    icon: <AdjustmentsHorizontalIcon className="size-4" />,
+  },
   {
     label: 'Open',
     value: RiskStatus.Opened,
+    icon: <LockOpenIcon className="size-4" />,
   },
   {
     label: 'Closed',
     value: RiskStatus.Resolved,
+    icon: <LockClosedIcon className="size-4" />,
   },
 ];
 
@@ -51,11 +64,19 @@ const riskClosedStatusList = Object.values(RiskClosedStatus).map(
 );
 
 export const RiskSeverityOptions = [
-  { label: 'Info', value: 'I' },
-  { label: 'Low', value: 'L' },
-  { label: 'Medium', value: 'M' },
-  { label: 'High', value: 'H' },
-  { label: 'Critical', value: 'C' },
+  {
+    label: 'Critical',
+    value: 'C',
+    icon: <ChevronDoubleUpIcon className="size-4" />,
+  },
+  { label: 'High', value: 'H', icon: <ChevronUpIcon className="size-4" /> },
+  { label: 'Medium', value: 'M', icon: <Bars2Icon className="size-4" /> },
+  { label: 'Low', value: 'L', icon: <ChevronDownIcon className="size-4" /> },
+  {
+    label: 'Info',
+    value: 'I',
+    icon: <ChevronDoubleDownIcon className="size-4" />,
+  },
 ];
 
 export const RiskDropdown: React.FC<Props> = ({
@@ -63,7 +84,6 @@ export const RiskDropdown: React.FC<Props> = ({
   className,
   type = 'severity',
   selectedRowsData,
-  styleType,
 }: Props) => {
   const [isClosedSubStateModalOpen, setIsClosedSubStateModalOpen] =
     useState(false);
@@ -73,9 +93,6 @@ export const RiskDropdown: React.FC<Props> = ({
   const data =
     selectedRowsData && selectedRowsData.length > 1 ? selectedRowsData : [risk];
   const { mutate: updateRisk } = useUpdateRisk();
-
-  const generalChipClass =
-    'inline-flex items-center min-h-[26px] gap-2 w-fit py-1 px-3 whitespace-nowrap';
 
   const riskStatusKey =
     `${risk.status?.[0]}${risk.status?.[2] || ''}` as RiskStatus;
@@ -113,29 +130,11 @@ export const RiskDropdown: React.FC<Props> = ({
     });
   }
 
-  if (styleType === 'chip') {
-    return type === 'status' ? (
-      <Chip className={cn(generalChipClass, className)} style="default">
-        {statusLabel}
-      </Chip>
-    ) : (
-      <Chip
-        className={cn(
-          generalChipClass,
-          getSeverityClass(riskSeverityKey),
-          className
-        )}
-      >
-        {severityLabel}
-      </Chip>
-    );
-  }
-
   if (type === 'status') {
     return (
       <>
         <Dropdown
-          className={`justify-between rounded-[2px] py-1 ${className} border-1 min-w-32 border border-gray-200`}
+          className={`justify-start rounded-[2px] py-1 ${className} border-1 min-w-32 border border-gray-200 w-full`}
           menu={{
             items: riskStatusOptions,
             onClick: value => {
@@ -153,10 +152,14 @@ export const RiskDropdown: React.FC<Props> = ({
               }
             },
           }}
-          endIcon={<ChevronDownIcon className="ml-1 size-3" />}
+          startIcon={
+            riskStatusOptions.find(option => option.value === riskStatusKey)
+              ?.icon ?? <LockClosedIcon className="size-4" />
+          }
+          endIcon={<ChevronDownIcon className="size-4" />}
           onClick={event => event.stopPropagation()}
         >
-          {statusLabel}
+          <div className="flex-1 text-left">{statusLabel}</div>
         </Dropdown>
         {isClosedSubStateModalOpen && (
           <Modal
@@ -235,7 +238,11 @@ export const RiskDropdown: React.FC<Props> = ({
         },
       }}
       label={severityLabel}
-      endIcon={<ChevronDownIcon className="ml-1 size-3" />}
+      startIcon={
+        RiskSeverityOptions.find(option => option.value === riskSeverityKey)
+          ?.icon
+      }
+      endIcon={<ChevronDownIcon className="ml-1 size-4" />}
       onClick={event => event.stopPropagation()}
     />
   );

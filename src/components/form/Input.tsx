@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 
+import { Date, DateProps } from '@/components/form/Date';
 import { FormGroup, FormInfo } from '@/components/form/FormGroup';
 import { InputText } from '@/components/form/InputText';
 import { Select, SelectProps } from '@/components/form/Select';
@@ -9,13 +10,14 @@ export enum Type {
   PASSWORD = 'PASSWORD',
   TEXT_AREA = 'TEXT_AREA',
   SELECT = 'SELECT',
+  DATE = 'DATE',
 }
 
 export type InputEvent = React.ChangeEvent<
   HTMLInputElement | HTMLTextAreaElement
 >;
 
-export interface InputProps extends SelectProps {
+export interface InputProps extends SelectProps, DateProps {
   className?: string;
   label?: string;
   value: string | number;
@@ -73,6 +75,21 @@ export function Input(props: InputProps) {
           }
         >
           <Select {...rest} className={className} />
+        </FormGroup>
+      );
+
+    case Type.DATE:
+      return (
+        <FormGroup
+          label={props.label}
+          error={props.error}
+          name={props.name}
+          startIcon={startIcon}
+          isLoading={isLoading}
+          info={info}
+          endIcon={endIcon}
+        >
+          <Date {...rest} className={className} />
         </FormGroup>
       );
 

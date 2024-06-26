@@ -1,20 +1,32 @@
 import React, { useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
+import {
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
+} from '@heroicons/react/24/outline';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
 import CircularProgressBar from '@/components/CircularProgressBar';
+import { Input } from '@/components/form/Input';
 import Counts from '@/components/ui/Counts';
 import { getReportSections, sampleReport } from '@/sections/overview/constants';
+import { cn } from '@/utils/classname';
+import { addDays, subtractDays } from '@/utils/date.util';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
+
+const formatDate = (date: Date): string => date.toISOString().split('T')[0];
+
+const TODAY = formatDate(new Date());
 
 export const Overview = () => {
   const client_short = 'Acme Corp.';
   const [reportReady, setReportReady] = useState(false);
   const [jobsRunning, setJobsRunning] = useState(5);
   const [showDetails, setShowDetails] = useState(false);
+  const [date, setDate] = useState(TODAY);
 
   const toggleReportStatus = () => {
     setReportReady(!reportReady);
@@ -57,7 +69,15 @@ export const Overview = () => {
         </div>
       </label>
 
-      <div className="mt-6 flex flex-col space-y-6 rounded-[2px] bg-white p-2 shadow-sm">
+      {reportReady && (
+        <DateComp className="mt-3" date={date} setDate={setDate} />
+      )}
+      <div
+        className={cn(
+          'mt-6 flex flex-col space-y-6 rounded-[2px] bg-white p-2 shadow-sm',
+          reportReady && 'mt-3'
+        )}
+      >
         {reportReady ? (
           <TabGroup>
             <TabList className="flex overflow-x-auto p-1">
@@ -157,6 +177,52 @@ export const Overview = () => {
           </div>
         )}
       </div>
+    </div>
+  );
+};
+
+const DateComp = ({
+  className,
+  date,
+  setDate,
+}: {
+  className?: string;
+  date: string;
+  setDate: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+  const iconClassName =
+    'size-6 cursor-pointer rounded-full p-1 hover:bg-default-light';
+  return (
+    <div className={cn('ml-auto flex items-center gap-2', className)}>
+      <ChevronDoubleLeftIcon
+        className={iconClassName}
+        onClick={() =>
+          setDate((date: string) => {
+            return formatDate(subtractDays(new Date(date), 1));
+          })
+        }
+      />
+      <Input
+        type={Input.Type.DATE}
+        max={TODAY}
+        onChange={e => setDate(e.target.value)}
+        value={date}
+        name="date"
+      />
+
+      <ChevronDoubleRightIcon
+        className={cn(
+          iconClassName,
+          date === TODAY && 'cursor-not-allowed opacity-50'
+        )}
+        onClick={() =>
+          date === TODAY
+            ? {}
+            : setDate(date => {
+                return formatDate(addDays(new Date(date), 1));
+              })
+        }
+      />
     </div>
   );
 };

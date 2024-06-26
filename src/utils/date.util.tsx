@@ -1,4 +1,10 @@
-import { format, formatDistanceToNow, parseISO, subDays } from 'date-fns';
+import {
+  addDays as addDaysDateFns,
+  format,
+  formatDistanceToNow,
+  parseISO,
+  subDays,
+} from 'date-fns';
 
 /**
  * Formats a UTC date string to show relative time for recent dates up to a month ago,
@@ -7,12 +13,12 @@ import { format, formatDistanceToNow, parseISO, subDays } from 'date-fns';
  * @param {string} utcTimestamp - The UTC date string to format.
  * @return {string} - The formatted date string.
  */
-export function formatDate(utcTimestamp: string) {
+export function formatDate(utcTimestamp: string, formatType = 'MMM d, yyyy') {
   // Check if the input is a valid UTC timestamp
   if (!utcTimestamp?.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/)) {
     // check for YYYY-MM-DD format and return a nice format
     if (utcTimestamp?.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      return format(parseISO(utcTimestamp), 'MMM d, yyyy');
+      return format(parseISO(utcTimestamp), formatType);
     } else {
       return utcTimestamp; // Return the input as is
     }
@@ -49,7 +55,7 @@ export function formatDate(utcTimestamp: string) {
     return formatDistanceToNow(date, { addSuffix: true });
   } else {
     // Otherwise, use a fixed date format
-    return format(date, 'MMM d, yyyy');
+    return format(date, formatType);
   }
 }
 
@@ -83,4 +89,12 @@ export function sToM(seconds: number) {
 
 export function msToM(ms: number) {
   return Math.floor(ms / 60000);
+}
+
+export function subtractDays(date: Date, days: number) {
+  return subDays(date, days);
+}
+
+export function addDays(date: Date, days: number) {
+  return addDaysDateFns(date, days);
 }

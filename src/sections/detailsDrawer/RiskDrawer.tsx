@@ -302,26 +302,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
           <HorizontalSplit
             leftContainer={
               <>
-                <Accordian title="Risk History" contentClassName="pt-0">
-                  <Timeline
-                    items={[
-                      ...(history
-                        ?.map((item, itemIndex) => {
-                          const { title, updated } = getHistoryDiff(
-                            item,
-                            itemIndex === 0
-                          );
-                          return {
-                            title,
-                            description: updated,
-                            icon:
-                              itemIndex === 0 ? <CheckCircleIcon /> : undefined,
-                          };
-                        })
-                        .reverse() || []),
-                    ]}
-                  />
-                </Accordian>
                 <Accordian
                   title="Description & Remediation"
                   titlerightContainer={
@@ -412,6 +392,26 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       )}
                     </>
                   </Loader>
+                </Accordian>
+                <Accordian title="Risk History" contentClassName="pt-0">
+                  <Timeline
+                    items={[
+                      ...(history
+                        ?.map((item, itemIndex) => {
+                          const { title, updated } = getHistoryDiff(
+                            item,
+                            itemIndex === 0
+                          );
+                          return {
+                            title,
+                            description: updated,
+                            icon:
+                              itemIndex === 0 ? <CheckCircleIcon /> : undefined,
+                          };
+                        })
+                        .reverse() || []),
+                    ]}
+                  />
                 </Accordian>
               </>
             }

@@ -16,6 +16,7 @@ import { useAggregateCounts } from '@/hooks/useAggregateCounts';
 import { getReportSections, sampleReport } from '@/sections/overview/constants';
 import { cn } from '@/utils/classname';
 import { addDays, subtractDays } from '@/utils/date.util';
+import { useMy } from '@/hooks/useMy';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -27,15 +28,18 @@ const TODAY = formatDate(new Date());
 
 export const Overview = () => {
   const client_short = 'Acme Corp.';
-  const [reportReady, setReportReady] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [date, setDate] = useState(TODAY);
   const { counts } = useAggregateCounts();
   const jobsRunning = counts.jobsRunning;
+  const { data: files, isLoading } = useMy({
+    resource: 'file',
+    query: `#reports`,
+  });
 
-  const toggleReportStatus = () => {
-    setReportReady(!reportReady);
-  };
+  const reportReady = useMemo(() => {
+    return files.length > 0;
+  }, [files]);
 
   const reportSections = useMemo(
     () => getReportSections({ report: sampleReport, data: { client_short } }),
@@ -54,6 +58,8 @@ export const Overview = () => {
     return '';
   };
 
+  if (isLoading) return <></>;
+
   return (
     <div className="flex min-h-screen flex-col">
       <Counts
@@ -64,23 +70,6 @@ export const Overview = () => {
           jobs: counts.jobs,
         }}
       />
-
-      <label className="absolute left-0 top-0 flex cursor-pointer items-center">
-        <div className="relative">
-          <input
-            type="checkbox"
-            className="sr-only"
-            checked={reportReady}
-            onChange={toggleReportStatus}
-          />
-          <div className="block h-8 w-14 rounded-full bg-gray-600"></div>
-          <div
-            className={`dot absolute left-1 top-1 size-6 rounded-full bg-white transition ${
-              reportReady ? 'translate-x-full bg-blue-500' : ''
-            }`}
-          ></div>
-        </div>
-      </label>
 
       {reportReady && (
         <div className="flex ">

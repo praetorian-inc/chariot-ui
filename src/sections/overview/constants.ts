@@ -49,11 +49,16 @@ Other significant issues include the storage of sensitive data on network shares
 ## Conclusion
 Praetorian thanks booking-holdings-inc-2023-12-0403 for the opportunity to perform risk analysis.`;
 
-export const getReportSections = (
-  report: string = '',
-  data: Record<string, string> = {}
-): Record<string, string> => {
-  const headingRegex = new RegExp(/(^##\s+.*$)/, 'gm');
+export const getReportSections = ({
+  report = '',
+  data = {},
+  regex = /(^##\s+.*$)/,
+}: {
+  report: string;
+  data?: Record<string, string>;
+  regex?: RegExp;
+}): Record<string, string | object> => {
+  const headingRegex = new RegExp(regex, 'gm');
   const sections = report.match(headingRegex) || [];
 
   const sectionContent = sections.reduce(
@@ -65,16 +70,24 @@ export const getReportSections = (
           : report.indexOf(sections[index + 1]);
       const header = section.split('## ')[1];
       const content = report.slice(startIndex, endIndex).trim();
+      const contentWithData = content.replace(
+        /{{(.*?)}}/g,
+        (current, key) => data?.[key] || current
+      );
+
+      const subContent = getReportSections({
+        report: contentWithData,
+        regex: /(^###\s+.*$)/,
+        data,
+      });
 
       return {
         ...acc,
-        [header]: content.replace(
-          /{{(.*?)}}/g,
-          (current, key) => data?.[key] || current
-        ),
+        [header]:
+          Object.keys(subContent).length === 0 ? contentWithData : subContent,
       };
     },
-    {} as Record<string, string>
+    {} as Record<string, string | object>
   );
 
   return sectionContent;

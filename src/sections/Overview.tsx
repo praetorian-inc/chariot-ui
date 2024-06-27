@@ -37,12 +37,21 @@ export const Overview = () => {
   };
 
   const reportSections = useMemo(
-    () =>
-      getReportSections(sampleReport, {
-        client_short,
-      }),
+    () => getReportSections({ report: sampleReport, data: { client_short } }),
     []
   );
+
+  const getBorderClass = (subHeading = '') => {
+    if (subHeading.includes('Non-Critical')) {
+      return 'border-yellow-600';
+    }
+
+    if (subHeading.includes('Critical') || subHeading.includes('High-Risk')) {
+      return 'border-red-600';
+    }
+
+    return '';
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -110,11 +119,32 @@ export const Overview = () => {
               ))}
             </TabList>
             <TabPanels className="p-6">
-              {Object.entries(reportSections).map(([heading, content]) => (
-                <TabPanel key={heading}>
-                  <Markdown className="prose max-w-none">{content}</Markdown>
-                </TabPanel>
-              ))}
+              {Object.entries(reportSections).map(([heading, tabContent]) => {
+                return (
+                  <TabPanel key={heading} className="prose max-w-none">
+                    {typeof tabContent === 'string' && (
+                      <Markdown>{tabContent}</Markdown>
+                    )}
+                    {typeof tabContent !== 'string' &&
+                      Object.entries(tabContent).map(
+                        ([subHeading, subContent]) => {
+                          return (
+                            <div
+                              key={subHeading}
+                              className={cn(
+                                'border-l-4 pl-4',
+                                getBorderClass(subHeading)
+                              )}
+                            >
+                              <h3>{subHeading}</h3>
+                              <Markdown key={subHeading}>{subContent}</Markdown>
+                            </div>
+                          );
+                        }
+                      )}
+                  </TabPanel>
+                );
+              })}
             </TabPanels>
           </TabGroup>
         ) : (

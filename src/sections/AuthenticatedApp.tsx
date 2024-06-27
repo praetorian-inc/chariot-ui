@@ -168,7 +168,7 @@ export function Header() {
           </div>
         </div>
       </div>
-      <div className="sticky top-0 w-full bg-header" style={{ zIndex: 1 }}>
+      <div className="sticky top-0 w-full bg-header pt-4" style={{ zIndex: 1 }}>
         <div
           id={HeaderPortalSections.EXTRA_CONTENT}
           className="m-auto max-w-screen-xl [&:has(*)]:pb-9"

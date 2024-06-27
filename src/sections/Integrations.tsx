@@ -166,6 +166,7 @@ const Integrations: React.FC = () => {
             <div
               key={integration.id}
               className="w-[302px] max-w-[302px] rounded-[2px] bg-layer0 shadow"
+              style={{ zIndex: 1 }}
             >
               <div className="relative flex flex-col items-center p-8">
                 <img

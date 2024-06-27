@@ -356,7 +356,7 @@ export function Table<TData>(props: TableProps<TData>) {
             tableClassName
           )}
         >
-          <thead className="sticky top-12 bg-layer0" style={{ zIndex: 1 }}>
+          <thead className="sticky top-20 bg-layer0" style={{ zIndex: 1 }}>
             <tr>
               {enableCheckbox && (
                 <Th fixedWidth={CELL_WIDTHS.checkbox} align="center">

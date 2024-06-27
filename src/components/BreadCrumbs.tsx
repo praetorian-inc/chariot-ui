@@ -27,7 +27,7 @@ const pageTitles = {
 export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
   const currentPage = breadcrumbs[breadcrumbs.length - 1].label;
   return (
-    <div className="flex flex-col py-9">
+    <div className="flex flex-col pb-5 pt-9">
       <ul className="flex items-center">
         {breadcrumbs.map((breadcrumb, idx) => {
           return (
@@ -46,7 +46,7 @@ export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
           );
         })}
       </ul>
-      <p className="mt-1 text-md font-light text-gray-400">
+      <p className="text-md mt-1 font-light text-gray-400">
         {currentPage in pageTitles &&
           pageTitles[currentPage as keyof typeof pageTitles]}
       </p>

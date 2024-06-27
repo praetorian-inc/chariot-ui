@@ -64,20 +64,21 @@ export function AddAttribute() {
           type="assets"
           value={selectedAssets}
           onChange={onSelectedAssetsChange}
+          placeholder="8.8.8.8"
         />
         <Inputs
           inputs={[
             {
               label: 'Class',
               value: formData.class,
-              placeholder: 'Class',
+              placeholder: 'SSH',
               name: 'class',
               required: true,
             },
             {
               label: 'Name',
               value: formData.name,
-              placeholder: 'Name',
+              placeholder: '2222',
               name: 'name',
               required: true,
             },

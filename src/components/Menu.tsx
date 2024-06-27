@@ -23,6 +23,7 @@ export type MenuProps = {
   onSelect?: (value: string[]) => void;
   emptyState?: {
     label: ReactNode;
+    hide?: boolean;
   };
 };
 
@@ -64,7 +65,7 @@ export const Menu: React.FC<MenuProps> = props => {
         className
       )}
     >
-      {items.length === 0 && (
+      {items.length === 0 && !emptyState?.hide && (
         <li
           className={cn(
             'flex items-center min-h-16 p-3 text-xs font-medium text-default-light',

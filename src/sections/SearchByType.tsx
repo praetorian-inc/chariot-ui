@@ -62,11 +62,12 @@ export function SearchByType<T extends keyof GenericResource>(
       options={options}
       label={props.label}
       emptyState={{
+        hide: !search,
         label: search
           ? genericSearchStatus === 'pending'
             ? 'Loading...'
             : 'No results found'
-          : `Search for ${props.type} to get started`,
+          : '',
       }}
     />
   );

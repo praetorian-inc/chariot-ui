@@ -12,6 +12,7 @@ import CircularProgressBar from '@/components/CircularProgressBar';
 import { Input } from '@/components/form/Input';
 import { Tooltip } from '@/components/Tooltip';
 import Counts from '@/components/ui/Counts';
+import { useAggregateCounts } from '@/hooks/useAggregateCounts';
 import { getReportSections, sampleReport } from '@/sections/overview/constants';
 import { cn } from '@/utils/classname';
 import { addDays, subtractDays } from '@/utils/date.util';
@@ -27,13 +28,13 @@ const TODAY = formatDate(new Date());
 export const Overview = () => {
   const client_short = 'Acme Corp.';
   const [reportReady, setReportReady] = useState(false);
-  const [jobsRunning, setJobsRunning] = useState(5);
   const [showDetails, setShowDetails] = useState(false);
   const [date, setDate] = useState(TODAY);
+  const { counts } = useAggregateCounts();
+  const jobsRunning = counts.jobsRunning;
 
   const toggleReportStatus = () => {
     setReportReady(!reportReady);
-    setJobsRunning(reportReady ? 5 : 0);
   };
 
   const reportSections = useMemo(
@@ -57,10 +58,10 @@ export const Overview = () => {
     <div className="flex min-h-screen flex-col">
       <Counts
         stats={{
-          seeds: 100,
-          assets: 300,
-          risks: 50,
-          jobs: jobsRunning,
+          seeds: counts.seeds,
+          assets: counts.assets,
+          risks: counts.risks,
+          jobs: counts.jobs,
         }}
       />
 

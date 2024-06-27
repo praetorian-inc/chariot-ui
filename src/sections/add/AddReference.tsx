@@ -63,20 +63,21 @@ export function AddReference() {
           type="risks"
           value={selectedRisks}
           onChange={onSelectedRisksChange}
+          placeholder="CVE-2017-5487"
         />
         <Inputs
           inputs={[
             {
               label: 'Class',
               value: formData.class,
-              placeholder: 'Class',
+              placeholder: 'URL',
               name: 'class',
               required: true,
             },
             {
               label: 'Name',
               value: formData.name,
-              placeholder: 'Name',
+              placeholder: 'https://acme.com:443/wp-json/wp/v2/users/',
               name: 'name',
               required: true,
             },

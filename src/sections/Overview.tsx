@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import {
   ChevronDoubleLeftIcon,
@@ -13,10 +13,13 @@ import { Input } from '@/components/form/Input';
 import { Tooltip } from '@/components/Tooltip';
 import Counts from '@/components/ui/Counts';
 import { useAggregateCounts } from '@/hooks/useAggregateCounts';
-import { getReportSections, sampleReport } from '@/sections/overview/constants';
+import { getReportSections } from '@/sections/overview/constants';
 import { cn } from '@/utils/classname';
 import { addDays, subtractDays } from '@/utils/date.util';
 import { useMy } from '@/hooks/useMy';
+import { useAuth } from '@/state/auth';
+import { useGetFile } from '@/hooks/useFiles';
+import { MyFile } from '@/types';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -27,24 +30,52 @@ const formatDate = (date: Date): string => date.toISOString().split('T')[0];
 const TODAY = formatDate(new Date());
 
 export const Overview = () => {
+  const { me } = useAuth();
   const client_short = 'Acme Corp.';
   const [showDetails, setShowDetails] = useState(false);
   const [date, setDate] = useState(TODAY);
   const { counts } = useAggregateCounts();
+  const [selectedFile, setSelectedFile] = useState<MyFile>();
   const jobsRunning = counts.jobsRunning;
   const { data: files, isLoading } = useMy({
     resource: 'file',
-    query: `#reports`,
+    query: `#${me}/reports`,
   });
 
   const reportReady = useMemo(() => {
     return files.length > 0;
   }, [files]);
 
+  const { data: fileContent } = useGetFile(
+    {
+      name: selectedFile?.name,
+    },
+    {
+      enabled: !!selectedFile,
+    }
+  );
+
   const reportSections = useMemo(
-    () => getReportSections({ report: sampleReport, data: { client_short } }),
+    () => getReportSections({ report: fileContent, data: { client_short } }),
     []
   );
+
+  // example filename: #file#geoff.storbeck@praetorian.com/reports/1719519204.md
+  // get latest file by filename.md as filename is the unix timestamp
+  const latestFile = useMemo(() => {
+    return files.reduce((acc, file) => {
+      const timestamp = file.key.split('/').pop()?.split('.')[0];
+      if (!timestamp) return acc;
+      return acc < timestamp ? timestamp : acc;
+    }, '0');
+  }, [files]);
+
+  useEffect(() => {
+    if (!latestFile) return;
+    setSelectedFile(files.find(file => file.key.includes(latestFile)));
+  }, [latestFile]);
+
+  console.log('latest file', latestFile);
 
   const getBorderClass = (subHeading = '') => {
     if (subHeading.includes('Non-Critical')) {

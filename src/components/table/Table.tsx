@@ -28,6 +28,7 @@ import {
 } from '@/sections/AuthenticatedApp';
 import { cn } from '@/utils/classname';
 import { useStorage } from '@/utils/storage/useStorage.util';
+import { Tooltip } from '@/components/Tooltip';
 
 export function Table<TData>(props: TableProps<TData>) {
   const {
@@ -298,20 +299,26 @@ export function Table<TData>(props: TableProps<TData>) {
               <Button
                 {...parsedPrimaryAction}
                 styleType="header"
-                className="ml-auto rounded-none rounded-l-[2px] border-r border-r-header"
+                className="ml-auto rounded-none rounded-l-[2px]"
               />
             )}
             {parsedActions && (
-              <Dropdown
-                className={cn(
-                  parsedPrimaryAction && 'rounded-none rounded-r-[2px]'
-                )}
-                styleType="header"
-                endIcon={
-                  <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+              <Tooltip
+                title={
+                  selectedRows.length === 0 ? `No ${tableName} selected.` : ''
                 }
-                {...parsedActions}
-              />
+              >
+                <Dropdown
+                  disabled={selectedRows.length === 0}
+                  className={cn(
+                    parsedPrimaryAction &&
+                      'rounded-none rounded-r-[2px] bg-header-dark disabled:bg-header-dark disabled:cursor-not-allowed'
+                  )}
+                  styleType="header"
+                  endIcon={<ChevronDownIcon className="size-3 stroke-[4px]" />}
+                  {...parsedActions}
+                />
+              </Tooltip>
             )}
           </div>
         </RenderHeaderExtraContentSection>

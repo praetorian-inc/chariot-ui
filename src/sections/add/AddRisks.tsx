@@ -180,6 +180,13 @@ export const AddRisks = () => {
                     type: Input.Type.SELECT,
                   },
                   {
+                    label: 'Comment',
+                    name: 'comment',
+                    value: '',
+                    placeholder: 'Add some optional comments',
+                    type: Input.Type.TEXT_AREA,
+                  },
+                  {
                     name: '',
                     value: '',
                     children: (
@@ -198,13 +205,6 @@ export const AddRisks = () => {
                         />
                       </div>
                     ),
-                  },
-                  {
-                    label: 'Comment',
-                    name: 'comment',
-                    value: '',
-                    placeholder: 'Add some optional comments',
-                    type: Input.Type.TEXT_AREA,
                   },
                 ]}
                 onChange={values =>

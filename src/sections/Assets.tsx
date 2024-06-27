@@ -314,7 +314,7 @@ const Assets: React.FC = () => {
               items: [
                 {
                   label: 'Add Risk',
-                  icon: <RisksIcon className="size-5" />,
+                  icon: <RisksIcon />,
                   onClick: () => {
                     setSelectedAssets(assets);
                     setShowAddRisk(true);
@@ -323,7 +323,7 @@ const Assets: React.FC = () => {
                 { type: 'divider', label: 'Divider' },
                 {
                   label: 'High Priority',
-                  icon: <ExclamationCircleIcon className="size-5" />,
+                  icon: <ExclamationCircleIcon />,
                   onClick: () => {
                     setSelectedAssets(assets);
                     setShowAssetStatusWarning(true);
@@ -332,12 +332,12 @@ const Assets: React.FC = () => {
                 },
                 {
                   label: 'Standard Priority',
-                  icon: <CheckCircleIcon className="size-5" />,
+                  icon: <CheckCircleIcon />,
                   onClick: () => updateStatus(assets, AssetStatus.Active),
                 },
                 {
                   label: 'Stop Scanning',
-                  icon: <PauseIcon className="size-5" />,
+                  icon: <PauseIcon />,
                   onClick: () => {
                     setSelectedAssets(assets);
                     setShowAssetStatusWarning(true);
@@ -347,7 +347,7 @@ const Assets: React.FC = () => {
                 { type: 'divider', label: 'Divider' },
                 {
                   label: "I don't recognize this",
-                  icon: <QuestionMarkCircleIcon className="size-5" />,
+                  icon: <QuestionMarkCircleIcon />,
                   onClick: () => updateStatus(assets, AssetStatus.Unknown),
                 },
               ],

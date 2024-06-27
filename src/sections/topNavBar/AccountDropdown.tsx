@@ -39,17 +39,17 @@ export const AccountDropdown: React.FC = () => {
         items: [
           {
             label: 'Integrations',
-            icon: <PuzzlePieceIcon className="w-5 text-default-light" />,
+            icon: <PuzzlePieceIcon />,
             to: getRoute(['app', 'integrations']),
           },
           {
             label: 'Documents',
-            icon: <DocumentTextIcon className="w-5 text-default-light" />,
+            icon: <DocumentTextIcon />,
             to: getRoute(['app', 'files']),
           },
           {
             label: 'Widgets',
-            icon: <ChartBarSquareIcon className="w-5 text-default-light" />,
+            icon: <ChartBarSquareIcon />,
             to: getRoute(['app', 'widgets']),
           },
           {
@@ -58,7 +58,7 @@ export const AccountDropdown: React.FC = () => {
           },
           {
             label: 'Organization Settings',
-            icon: <UserIcon className="w-5 text-default-light" />,
+            icon: <UserIcon />,
             to: getRoute(['app', 'account']),
           },
           {

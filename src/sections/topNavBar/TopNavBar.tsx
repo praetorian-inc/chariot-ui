@@ -35,7 +35,9 @@ export function TopNavBar() {
                     'Manage entry points to discover and monitor assets for scanning.',
                   helpText: <Shortcuts value="S" />,
                   icon: (
-                    <SeedsIcon className="-ml-2 size-7 stroke-1 text-default-light" />
+                    <div>
+                      <SeedsIcon className="-ml-2 size-7 stroke-1" />
+                    </div>
                   ),
                   to: getRoute(['app', 'seeds']),
                 },
@@ -45,7 +47,9 @@ export function TopNavBar() {
                     'Track and manage discovered assets to ensure comprehensive scanning.',
                   helpText: <Shortcuts value="A" />,
                   icon: (
-                    <AssetsIcon className="-ml-2 size-7 stroke-1 text-default-light" />
+                    <div>
+                      <AssetsIcon className="-ml-2 size-7 stroke-1" />
+                    </div>
                   ),
                   to: getRoute(['app', 'assets']),
                 },
@@ -55,7 +59,9 @@ export function TopNavBar() {
                     'Identify, evaluate, and prioritize risks in your assets to protect your organization.',
                   helpText: <Shortcuts value="R" />,
                   icon: (
-                    <RisksIcon className="-ml-2 size-7 stroke-1 text-default-light" />
+                    <div>
+                      <RisksIcon className="-ml-2 size-7 stroke-1" />
+                    </div>
                   ),
                   to: getRoute(['app', 'risks']),
                 },

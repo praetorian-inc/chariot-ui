@@ -224,7 +224,7 @@ const Seeds: React.FC = () => {
                 {
                   disabled: isFrozen(seed),
                   label: 'Stop Scanning',
-                  icon: <PauseIcon className="size-5" />,
+                  icon: <PauseIcon />,
                   onClick: () => {
                     updateSeed({ key: seed.key, status: SeedStatus.Frozen });
                   },
@@ -232,14 +232,14 @@ const Seeds: React.FC = () => {
                 {
                   disabled: !isFrozen(seed),
                   label: 'Resume Scanning',
-                  icon: <PlayIcon className="size-5" />,
+                  icon: <PlayIcon />,
                   onClick: () => {
                     updateSeed({ key: seed.key, status: SeedStatus.Active });
                   },
                 },
                 {
                   label: 'Remove Seed',
-                  icon: <TrashIcon className="size-5" />,
+                  icon: <TrashIcon />,
                   onClick: () => {
                     if (isIntegration(seed)) {
                       setIntegrationSeed(seed);
@@ -267,7 +267,7 @@ const Seeds: React.FC = () => {
               items: [
                 {
                   label: 'Stop Scanning',
-                  icon: <PauseIcon className="size-5" />,
+                  icon: <PauseIcon />,
                   disabled: selectedSeeds.length === 0,
                   onClick: () => {
                     selectedSeeds.forEach(seed => {
@@ -295,7 +295,7 @@ const Seeds: React.FC = () => {
                 },
                 {
                   label: 'Resume Scanning',
-                  icon: <PlayIcon className="size-5" />,
+                  icon: <PlayIcon />,
                   disabled: selectedSeeds.length === 0,
                   onClick: () => {
                     selectedSeeds.forEach(seed => {
@@ -324,7 +324,7 @@ const Seeds: React.FC = () => {
                 { type: 'divider', label: 'Divider' },
                 {
                   label: 'Remove Seed',
-                  icon: <TrashIcon className="size-5" />,
+                  icon: <TrashIcon />,
                   disabled: selectedSeeds.length === 0,
                   onClick: () => {
                     const showBulk = showBulkSnackbar(selectedSeeds.length);

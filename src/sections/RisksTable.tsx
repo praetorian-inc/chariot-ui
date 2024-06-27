@@ -470,50 +470,65 @@ export function Risks() {
             menu: {
               items: [
                 {
-                  label: 'Triage Status',
+                  label: 'Status',
+                  type: 'label',
+                },
+                {
+                  label: 'divider',
+                  type: 'divider',
+                },
+                {
+                  label: 'Triage',
                   icon: <AdjustmentsHorizontalIcon />,
                   onClick: () => {
                     console.log('show change status modal');
                   },
                 },
                 {
-                  label: 'Open Status',
+                  label: 'Open',
                   icon: <LockOpenIcon />,
                   onClick: () => {
                     console.log('show change status modal');
                   },
                 },
                 {
-                  label: 'Closed Status',
+                  label: 'Closed',
                   icon: <LockClosedIcon />,
                   onClick: () => {
                     console.log('show change status modal');
                   },
                 },
-                { label: 'Divider', type: 'divider' },
                 {
-                  label: 'Critical Severity',
+                  label: 'Severity',
+                  type: 'label',
+                },
+                {
+                  label: 'divider',
+                  type: 'divider',
+                },
+                {
+                  label: 'Critical',
                   icon: <ChevronDoubleUpIcon />,
                   onClick: () => {
                     console.log('show change status modal');
                   },
                 },
                 {
-                  label: 'High Severity',
+                  label: 'High',
                   icon: <ChevronUpIcon />,
                   onClick: () => {
                     console.log('show change status modal');
                   },
                 },
                 {
-                  label: 'Medium Severity',
+                  label: 'Medium',
                   icon: <Bars2Icon />,
                   onClick: () => {
                     console.log('show change status modal');
                   },
                 },
                 {
-                  label: 'Low Severity',
+                  label: 'Low',
                   icon: <ChevronDownIcon />,
                   onClick: () => {
                     console.log('show change status modal');

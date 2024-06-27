@@ -132,14 +132,14 @@ export const CollaboratingWith = () => {
                   onClick: () => {
                     downloadRisks(data.email, 'json');
                   },
-                  icon: <ArrowDownOnSquareStackIcon className="size-5" />,
+                  icon: <ArrowDownOnSquareStackIcon />,
                 },
                 {
                   label: 'Export (as csv)',
                   onClick: () => {
                     downloadRisks(data.email, 'csv');
                   },
-                  icon: <ArrowDownOnSquareStackIcon className="size-5" />,
+                  icon: <ArrowDownOnSquareStackIcon />,
                 },
               ],
             },

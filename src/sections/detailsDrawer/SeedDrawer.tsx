@@ -167,6 +167,7 @@ export const SeedDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     error={null}
                     header={false}
                     footer={false}
+                    showCount={false}
                   />
                   {showMoreAssets && (
                     <div className="flex w-full">
@@ -221,6 +222,7 @@ export const SeedDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     error={null}
                     header={false}
                     footer={false}
+                    showCount={false}
                   />
                   {risks.length - TABLE_LIMIT > 0 && (
                     <div className="flex w-full">

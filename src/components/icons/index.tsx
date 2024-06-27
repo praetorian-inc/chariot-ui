@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  GlobeAltIcon,
   CommandLineIcon,
   ExclamationTriangleIcon,
+  GlobeAltIcon,
   ServerStackIcon,
 } from '@heroicons/react/24/outline';
 

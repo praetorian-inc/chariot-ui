@@ -12,6 +12,7 @@ import { Dropdown } from '@/components/Dropdown';
 import { OverflowText } from '@/components/OverflowText';
 import { Tooltip } from '@/components/Tooltip';
 import { cn } from '@/utils/classname';
+import { useStorage } from '@/utils/storage/useStorage.util';
 
 export type MenuProps = {
   items: Omit<MenuItemProps, 'isFocused'>[];
@@ -20,6 +21,9 @@ export type MenuProps = {
   className?: string;
   multiSelect?: boolean;
   onSelect?: (value: string[]) => void;
+  emptyState?: {
+    label: ReactNode;
+  };
 };
 
 interface subMenuOpenProps {
@@ -32,16 +36,20 @@ export const Menu: React.FC<MenuProps> = props => {
     className,
     items: unparsedItems,
     onClick,
-    value,
     multiSelect,
-    onSelect,
+    emptyState,
   } = props;
 
   const ulRef = useRef<HTMLUListElement>(null);
 
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
-  const [selected, setSelected] = useState<string[]>(
-    (typeof value === 'string' ? [value] : value) || []
+  const [selected, setSelected] = useStorage<string[]>(
+    {
+      parentState:
+        typeof props.value === 'string' ? [props.value] : props.value,
+      onParentStateChange: props.onSelect,
+    },
+    []
   );
 
   const items = useMemo(() => {
@@ -56,6 +64,17 @@ export const Menu: React.FC<MenuProps> = props => {
         className
       )}
     >
+      {items.length === 0 && (
+        <li
+          className={cn(
+            'flex items-center min-h-16 p-3 text-xs font-medium text-default-light',
+            menuMarginClassName,
+            className
+          )}
+        >
+          {emptyState?.label || 'No items found'}
+        </li>
+      )}
       {items.map((item, index) => (
         <MenuItem
           key={index}
@@ -90,7 +109,6 @@ export const Menu: React.FC<MenuProps> = props => {
                   newSelected = [''];
                 }
               }
-              onSelect?.(newSelected);
               return newSelected;
             });
           }}

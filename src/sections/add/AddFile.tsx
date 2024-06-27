@@ -3,14 +3,14 @@ import React from 'react';
 import { Dropzone, Files } from '@/components/Dropzone';
 import { Modal } from '@/components/Modal';
 import { useUploadFile } from '@/hooks';
+import { useGlobalState } from '@/state/global.state';
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export const AddFile: React.FC<Props> = (props: Props) => {
-  const { isOpen, onClose } = props;
+export const AddFile = () => {
+  const {
+    modal: {
+      file: { open: isOpen, onOpenChange },
+    },
+  } = useGlobalState();
   const { mutate: uploadFile } = useUploadFile();
 
   const handleFilesDrop = (files: Files<'arrayBuffer'>): void => {
@@ -23,6 +23,10 @@ export const AddFile: React.FC<Props> = (props: Props) => {
       });
     });
   };
+
+  function onClose() {
+    onOpenChange(false);
+  }
 
   return (
     <Modal title="Upload Document" open={isOpen} onClose={onClose}>

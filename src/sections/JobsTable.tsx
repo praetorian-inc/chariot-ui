@@ -6,12 +6,11 @@ import { format } from 'date-fns';
 
 import { Dropdown } from '@/components/Dropdown';
 import { Loader } from '@/components/Loader';
-import { TableFilters } from '@/components/table/TableFilters';
 import { Body } from '@/components/ui/Body';
-import { FilterCounts } from '@/components/ui/FilterCounts';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
+import { RenderHeaderExtraContentSection } from '@/sections/AuthenticatedApp';
 import { Job, JobLabels, JobStatus } from '@/types';
 import { useMergeStatus } from '@/utils/api';
 
@@ -132,43 +131,37 @@ const JobsTable: React.FC = () => {
   return (
     <div className="flex w-full flex-col">
       <Body ref={parentRef}>
-        <TableFilters
-          filters={
-            <div className="flex gap-4">
-              <Dropdown
-                styleType="header"
-                label={filter ? `${JobLabels[filter]} Jobs` : 'All Jobs'}
-                endIcon={
-                  <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
-                }
-                menu={{
-                  items: [
-                    {
-                      label: 'All Jobs',
-                      labelSuffix: jobs.length?.toLocaleString(),
-                      value: '',
-                    },
-                    {
-                      label: 'Divider',
-                      type: 'divider',
-                    },
-                    ...Object.entries(JobLabels).map(([key, label]) => {
-                      return {
-                        label,
-                        labelSuffix: stats[key]?.toLocaleString() || 0,
-                        value: key,
-                      };
-                    }),
-                  ],
-                  onClick: value => setFilter(value || ''),
-                  value: filter,
-                }}
-              />
-              <FilterCounts count={filteredJobs.length} type="Jobs" />
-            </div>
-          }
-        />
-
+        <RenderHeaderExtraContentSection>
+          <Dropdown
+            styleType="header"
+            label={filter ? `${JobLabels[filter]} Jobs` : 'All Jobs'}
+            endIcon={
+              <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+            }
+            menu={{
+              items: [
+                {
+                  label: 'All Jobs',
+                  labelSuffix: jobs.length?.toLocaleString(),
+                  value: '',
+                },
+                {
+                  label: 'Divider',
+                  type: 'divider',
+                },
+                ...Object.entries(JobLabels).map(([key, label]) => {
+                  return {
+                    label,
+                    labelSuffix: stats[key]?.toLocaleString() || 0,
+                    value: key,
+                  };
+                }),
+              ],
+              onClick: value => setFilter(value || ''),
+              value: filter,
+            }}
+          />
+        </RenderHeaderExtraContentSection>
         <div
           style={{
             height: `${virtualizer.getTotalSize() + items.length * ROW_SPACING}px`,

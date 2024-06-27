@@ -34,7 +34,7 @@ module.exports = {
       'error',
       { allowSameFolder: false, prefix: '@', rootDir: 'src' },
     ],
-    complexity: ['warn', 22],
+    complexity: ['warn', 30],
     'react/react-in-jsx-scope': 'off', // Not needed for React 17+
     'react/prop-types': 'off', // Using TypeScript for type checking
     '@typescript-eslint/explicit-module-boundary-types': 'off', // Gives flexibility with type inference

@@ -5,59 +5,68 @@ import { Inputs } from '@/components/form/Inputs';
 import { Modal } from '@/components/Modal';
 import { riskSeverityOptions } from '@/components/ui/RiskDropdown';
 import { useCreateRisk } from '@/hooks/useRisks';
+import { SearchAndSelectTypes } from '@/sections/SearchByType';
+import { useGlobalState } from '@/state/global.state';
 import { RiskCombinedStatus } from '@/types';
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-  selectedAssetKeys: string[];
-}
+const DEFAULT_FORM_VALUE = {
+  key: '',
+  name: '',
+  status: 'T',
+  severity: 'I',
+  comment: '',
+};
 
-export const AddRisks: React.FC<Props> = (props: Props) => {
-  const { isOpen, onClose, selectedAssetKeys } = props;
-  const [formData, setFormData] = useState({
-    key: '',
-    name: '',
-    status: 'T',
-    severity: 'I',
-    comment: '',
-  });
-
+export const AddRisks = () => {
   const {
-    mutate: addRisk,
-    status: riskStatus,
-    reset: resetRiskAdded,
-  } = useCreateRisk();
-  const selectedRowCount = selectedAssetKeys?.length || 0;
+    modal: {
+      risk: {
+        open: isOpen,
+        onOpenChange,
+        selectedAssets,
+        onSelectedAssetsChange,
+      },
+    },
+  } = useGlobalState();
 
-  useEffect(() => {
-    if (riskStatus === 'success') {
-      setFormData({
-        key: '',
-        name: '',
-        status: 'T',
-        severity: 'I',
-        comment: '',
-      });
-      onClose();
-      resetRiskAdded();
-    }
-  }, [riskStatus]);
+  const [formData, setFormData] = useState(DEFAULT_FORM_VALUE);
 
-  const handleSubmit = () => {
-    selectedAssetKeys?.forEach(assetKey => {
+  const { mutate: addRisk } = useCreateRisk();
+
+  const handleSubmit = async () => {
+    const allRisk = selectedAssets?.map(asset => {
       return addRisk({
         ...formData,
-        key: assetKey,
+        key: asset.key,
         status: `${formData.status}${formData.severity}` as RiskCombinedStatus,
       });
     });
+
+    await Promise.all(allRisk);
+
     onClose();
   };
 
+  function onClose() {
+    onOpenChange(false);
+  }
+
+  function cleanUp() {
+    onSelectedAssetsChange([]);
+    setFormData(DEFAULT_FORM_VALUE);
+  }
+
+  useEffect(() => {
+    if (isOpen) {
+      return () => {
+        cleanUp();
+      };
+    }
+  }, [isOpen]);
+
   return (
     <Modal
-      title={`Add Risk (${selectedRowCount} asset${selectedRowCount > 1 ? 's' : ''} selected)`}
+      title={'Add Risk'}
       open={isOpen}
       onClose={onClose}
       footer={{
@@ -67,6 +76,11 @@ export const AddRisks: React.FC<Props> = (props: Props) => {
     >
       <div className="flex flex-col justify-center p-2">
         <form onSubmit={handleSubmit} className="space-y-4">
+          <SearchAndSelectTypes
+            type="assets"
+            value={selectedAssets}
+            onChange={onSelectedAssetsChange}
+          />
           <Inputs
             inputs={[
               {

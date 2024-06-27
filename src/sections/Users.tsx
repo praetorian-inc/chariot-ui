@@ -114,6 +114,7 @@ export const Users: React.FC = () => {
         }}
         footer={false}
         header={false}
+        showCount={false}
       />
       <Button
         styleType="none"

@@ -7,8 +7,8 @@ import React, {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  DocumentIcon,
   ChevronRightIcon,
+  DocumentIcon,
   UserIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
@@ -145,7 +145,7 @@ const GlobalSearch = () => {
   );
 };
 
-const SeverityBadge = ({ severity }: { severity: RiskSeverity }) => {
+export const SeverityBadge = ({ severity }: { severity: RiskSeverity }) => {
   const className = getSeverityClass(severity);
   const label = SeverityDef[severity];
 
@@ -158,7 +158,7 @@ const SeverityBadge = ({ severity }: { severity: RiskSeverity }) => {
   );
 };
 
-const StatusBadge = ({ status }: { status: RiskCombinedStatus }) => {
+export const StatusBadge = ({ status }: { status: RiskCombinedStatus }) => {
   return (
     <RiskDropdown
       risk={{

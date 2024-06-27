@@ -1,12 +1,12 @@
-import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import { PlusIcon } from '@heroicons/react/20/solid';
 
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { useMy } from '@/hooks';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { useGlobalState } from '@/state/global.state';
 import { Reference } from '@/types';
-import { exportContent } from '@/utils/download.util';
 import { prettyPrint } from '@/utils/prettyPrint.util';
 
 export function References() {
@@ -18,6 +18,10 @@ export function References() {
     fetchNextPage,
   } = useMy({ resource: 'ref', filterByGlobalSearch: true });
   const { getRiskDrawerLink } = useOpenDrawer();
+
+  const {
+    modal: { reference },
+  } = useGlobalState();
 
   const columns: Columns<Reference> = [
     {
@@ -93,19 +97,14 @@ export function References() {
       name={'references'}
       columns={columns}
       data={references}
-      actions={{
-        items: [
-          {
-            label: 'Export as JSON',
-            onClick: () => exportContent(references, 'references'),
-            icon: <DocumentArrowDownIcon className="size-5" />,
+      primaryAction={() => {
+        return {
+          label: 'Add Reference',
+          onClick: () => {
+            reference.onOpenChange(true);
           },
-          {
-            label: 'Export as CSV',
-            onClick: () => exportContent(references, 'references', 'csv'),
-            icon: <DocumentArrowDownIcon className="size-5" />,
-          },
-        ],
+          icon: <PlusIcon className="size-5" />,
+        };
       }}
       status={status}
       error={error}

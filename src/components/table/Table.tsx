@@ -2,30 +2,35 @@
 /* TODO: Fix the types for the Table component */
 
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronDownIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/24/outline';
 import { notUndefined, useVirtualizer } from '@tanstack/react-virtual';
 
-import { DropdownProps } from '@/components/Dropdown';
+import { Button } from '@/components/Button';
+import { Dropdown } from '@/components/Dropdown';
+import { Loader } from '@/components/Loader';
 import { CELL_WIDTHS, ROW_HEIGHT } from '@/components/table/constants';
-import { TableAction } from '@/components/table/TableAction';
 import { TableBody } from '@/components/table/TableBody';
 import { TableCheckBoxIcon } from '@/components/table/TableCheckboxIcon';
-import { TableFilters } from '@/components/table/TableFilters';
 import {
   CellAlignment,
   InternalTData,
   TableProps,
 } from '@/components/table/types';
-import { mapActionsWithRowSelection } from '@/components/table/util';
 import { Body } from '@/components/ui/Body';
 import { NoData } from '@/components/ui/NoData';
 import { useScroll } from '@/hooks';
+import {
+  RenderHeaderBreadcrumbSection,
+  RenderHeaderExtraContentSection,
+} from '@/sections/AuthenticatedApp';
 import { cn } from '@/utils/classname';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
 export function Table<TData>(props: TableProps<TData>) {
   const {
-    counters,
     className,
     filters,
     tableClassName,
@@ -45,6 +50,8 @@ export function Table<TData>(props: TableProps<TData>) {
     loadingRowCount = 25,
     footer = true,
     header = true,
+    showCount = true,
+    primaryAction,
   } = props;
 
   const [expandedGroups, setExpandedGroups] = useState(
@@ -145,14 +152,6 @@ export function Table<TData>(props: TableProps<TData>) {
 
     return false;
   }, [rawData.length, selectedRows.length, status]);
-
-  const actionsProps = mapActionsWithRowSelection(
-    selectedRows,
-    rawData,
-    rawData[0],
-    true,
-    actions
-  );
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -278,11 +277,54 @@ export function Table<TData>(props: TableProps<TData>) {
   const columnsLength =
     columns.length + (enableCheckbox ? 1 : 0) + (rowActions ? 1 : 0);
 
+  const { parsedActions, parsedPrimaryAction } = useMemo(() => {
+    const selectedRowData = selectedRows
+      .map(i => rawData[Number(i)])
+      .filter(Boolean);
+
+    return {
+      parsedActions: actions?.(selectedRowData),
+      parsedPrimaryAction: primaryAction?.(selectedRowData),
+    };
+  }, [JSON.stringify({ selectedRows, rawData }), actions]);
+
   return (
     <Body ref={parentRef} className={className} footer={footer} header={header}>
-      {counters && counters}
-      <TableFilters filters={filters} />
-      <TableAction actions={actionsProps as DropdownProps['menu']} />
+      {(filters || parsedActions || parsedPrimaryAction) && (
+        <RenderHeaderExtraContentSection>
+          <div className="flex justify-between">
+            {filters}
+            {parsedPrimaryAction && (
+              <Button
+                {...parsedPrimaryAction}
+                styleType="header"
+                className="ml-auto rounded-none rounded-l-[2px] border-r border-r-header"
+              />
+            )}
+            {parsedActions && (
+              <Dropdown
+                className={cn(
+                  parsedPrimaryAction && 'rounded-none rounded-r-[2px]'
+                )}
+                styleType="header"
+                endIcon={
+                  <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+                }
+                {...parsedActions}
+              />
+            )}
+          </div>
+        </RenderHeaderExtraContentSection>
+      )}
+      {showCount && (
+        <RenderHeaderBreadcrumbSection>
+          <Loader styleType="header" className="h-8 w-28" isLoading={isLoading}>
+            {rawData.length > 0 && (
+              <span className="ml-auto text-2xl font-bold">{`${rawData.length} Shown`}</span>
+            )}
+          </Loader>
+        </RenderHeaderBreadcrumbSection>
+      )}
       {isError && (
         <NoData
           title={`Unable to retrieve your ${tableName}`}

@@ -1,12 +1,19 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { XMarkIcon } from '@heroicons/react/20/solid';
 
 import { BreadCrumbs } from '@/components/BreadCrumbs';
+import ImpersonationBanner from '@/components/ImpersonationBanner';
 import { Loader } from '@/components/Loader';
 import { ShortcutsHelper } from '@/components/ui/Shortcuts';
 import { useMy } from '@/hooks';
 import { useGetDisplayName } from '@/hooks/useAccounts';
+import { AddAsset } from '@/sections/add/AddAsset';
+import { AddAttribute } from '@/sections/add/AddAttribute';
+import { AddFile } from '@/sections/add/AddFile';
+import { AddReference } from '@/sections/add/AddReference';
+import { AddRisks } from '@/sections/add/AddRisks';
+import { AddSeeds } from '@/sections/add/AddSeeds';
 import { DetailsDrawer } from '@/sections/detailsDrawer';
 import { NewUserSeedModal } from '@/sections/NewUserSeedModal';
 import { ProofOfExploit } from '@/sections/ProofOfExploit';
@@ -16,8 +23,6 @@ import { useAuth } from '@/state/auth';
 import { useBreadCrumbsContext } from '@/state/breadcrumbs';
 import { cn } from '@/utils/classname';
 import { getRoute } from '@/utils/route.util';
-import { Tooltip } from '@/components/Tooltip';
-import ImpersonationBanner from '@/components/ImpersonationBanner';
 
 const offsetViewMargin = 16;
 interface AuthenticatedApp {
@@ -113,54 +118,92 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
       >
         {children}
       </div>
-
       {shortcutsHelper && (
         <ShortcutsHelper onClose={() => setShortcutsHelper(false)} />
       )}
       <DetailsDrawer />
+      <ImpersonationBanner />
+      <NewUserSeedModal />
+      <ProofOfExploit />
+      <AddSeeds />
+      <AddRisks />
+      <AddAsset />
+      <AddFile />
+      <AddAttribute />
+      <AddReference />
       {accountsStatus === 'success' && showUpgrade && <Upgrade />}
     </div>
   );
 }
 
-interface HeaderProps {
-  filters?: JSX.Element;
-}
-export function Header({ filters }: HeaderProps) {
+const HeaderPortalSections = {
+  BREADCRUMBS: 'header-breadcrumbs-section',
+  EXTRA_CONTENT: 'header-extra-content-section',
+};
+
+export function Header() {
   const { friend } = useAuth();
   const { status: statusAccount } = useMy({ resource: 'account' });
   const { breadcrumbs } = useBreadCrumbsContext();
 
   return (
-    <>
-      <ImpersonationBanner />
-      <NewUserSeedModal />
-      <ProofOfExploit />
-      <div
-        className={cn(
-          `${friend?.email?.length > 0 && 'pt-[10px]'} flex flex-col items-center w-full bg-header text-header px-4`
-        )}
-      >
-        <div className="w-full max-w-screen-xl">
-          <TopNavBar />
-          <hr className="h-px bg-layer0 opacity-15" />
-
-          <div className={cn('flex items-center justify-between gap-2')}>
-            <Loader
-              styleType="header"
-              className="my-9 h-8 w-1/2"
-              isLoading={statusAccount === 'pending'}
-            >
-              <BreadCrumbs breadcrumbs={breadcrumbs} />
-            </Loader>
-            <div id="table-buttons" />
-          </div>
-          {!filters && <div id="table-filters" />}
-          {filters && <div className="mb-9">{filters}</div>}
+    <div
+      className={cn(
+        `${friend?.email?.length > 0 && 'pt-[10px]'} flex flex-col items-center w-full bg-header text-header px-4`
+      )}
+    >
+      <div className="w-full max-w-screen-xl">
+        <TopNavBar />
+        <hr className="h-px bg-layer0 opacity-15" />
+        <div className={cn('flex items-center justify-between gap-2')}>
+          <Loader
+            styleType="header"
+            className="my-9 h-8 w-1/2"
+            isLoading={statusAccount === 'pending'}
+          >
+            <BreadCrumbs breadcrumbs={breadcrumbs} />
+          </Loader>
+          <div id={HeaderPortalSections.BREADCRUMBS} />
         </div>
+        <div
+          id={HeaderPortalSections.EXTRA_CONTENT}
+          className="[&:has(*)]:pb-9"
+        />
       </div>
-    </>
+    </div>
   );
+}
+
+export function RenderHeaderBreadcrumbSection({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const BreadcrumbSection = document.getElementById(
+    HeaderPortalSections.BREADCRUMBS
+  );
+
+  if (!BreadcrumbSection) {
+    return null;
+  }
+
+  return createPortal(children, BreadcrumbSection);
+}
+
+export function RenderHeaderExtraContentSection({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const ExtraContentSection = document.getElementById(
+    HeaderPortalSections.EXTRA_CONTENT
+  );
+
+  if (!ExtraContentSection) {
+    return null;
+  }
+
+  return createPortal(children, ExtraContentSection);
 }
 
 function AuthenticatedAppProviders(props: { children: ReactNode }) {

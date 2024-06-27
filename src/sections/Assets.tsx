@@ -2,27 +2,29 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import {
-  DocumentArrowDownIcon,
-  PlayIcon,
-  PlusIcon,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  PauseIcon,
+  QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { Dropdown } from '@/components/Dropdown';
+import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { SpinnerIcon } from '@/components/icons/Spinner.icon';
+import { Link } from '@/components/Link';
 import { OverflowText } from '@/components/OverflowText';
 import { showBulkSnackbar, Snackbar } from '@/components/Snackbar';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
-import { AddRisks } from '@/components/ui/AddRisks';
 import { AssetStatusChip } from '@/components/ui/AssetStatusChip';
-import { FilterCounts } from '@/components/ui/FilterCounts';
 import { useMy } from '@/hooks';
 import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
 import { useCounts } from '@/hooks/useCounts';
 import { AssetStatusWarning } from '@/sections/AssetStatusWarning';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { useGlobalState } from '@/state/global.state';
 import {
   Asset,
   AssetLabels,
@@ -31,11 +33,8 @@ import {
   RiskScanMessage,
 } from '@/types';
 import { useMergeStatus } from '@/utils/api';
-import { exportContent } from '@/utils/download.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
-import { Link } from '@/components/Link';
-import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 
 type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
 type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
@@ -68,8 +67,16 @@ interface AssetsWithRisk extends Asset {
 }
 
 const Assets: React.FC = () => {
-  const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
-  const [showAddRisk, setShowAddRisk] = useState<boolean>(false);
+  const {
+    modal: {
+      risk: {
+        onOpenChange: setShowAddRisk,
+        selectedAssets,
+        onSelectedAssetsChange: setSelectedAssets,
+      },
+      asset: { onOpenChange: setShowAddAsset },
+    },
+  } = useGlobalState();
 
   const { data: stats = {}, status: countsStatus } = useCounts({
     resource: 'asset',
@@ -156,7 +163,7 @@ const Assets: React.FC = () => {
       fixedWidth: 100,
       align: 'center',
       cell: ({ status }: Asset) => (
-        <AssetStatusChip status={status} className={'px-2 py-1 w-20'} />
+        <AssetStatusChip status={status} className={'w-20 px-2 py-1'} />
       ),
     },
     {
@@ -240,68 +247,6 @@ const Assets: React.FC = () => {
     });
   }
 
-  const actionItems = useMemo(
-    () => [
-      {
-        label: 'Add Risk',
-        icon: <PlusIcon className="size-5" />,
-        disabled: (assets: Asset[]) => assets.length === 0,
-        onClick: (assets: Asset[]) => {
-          {
-            setSelectedAssets(assets);
-            setShowAddRisk(true);
-          }
-        },
-      },
-      {
-        label: 'Status',
-        icon: <PlayIcon className="size-5" />,
-        disabled: (assets: Asset[]) => assets.length === 0,
-        submenu: [
-          {
-            label: 'High Priority',
-            icon: getAssetStatusIcon(AssetStatus.ActiveHigh),
-            disabled: (assets: Asset[]) =>
-              assets.every(asset => asset.status === AssetStatus.ActiveHigh),
-            onClick: (assets: Asset[]) => {
-              setSelectedAssets(assets);
-              setShowAssetStatusWarning(true);
-              setAssetStatus(AssetStatus.ActiveHigh);
-            },
-          },
-          {
-            label: 'Standard Priority',
-            icon: getAssetStatusIcon(AssetStatus.Active),
-            disabled: (assets: Asset[]) =>
-              assets.every(asset => isActive(asset)),
-            onClick: (assets: Asset[]) =>
-              updateStatus(assets, AssetStatus.Active),
-          },
-          {
-            label: 'Pause Scan',
-            icon: getAssetStatusIcon(AssetStatus.Frozen),
-            disabled: (assets: Asset[]) =>
-              assets.every(asset => isFrozen(asset)),
-            onClick: (assets: Asset[]) => {
-              setSelectedAssets(assets);
-              setShowAssetStatusWarning(true);
-              setAssetStatus(AssetStatus.Frozen);
-            },
-          },
-          {
-            label: 'Unknown Asset',
-            icon: getAssetStatusIcon(AssetStatus.Unknown),
-            disabled: (assets: Asset[]) =>
-              assets.every(asset => isUnknown(asset)),
-            onClick: (assets: Asset[]) =>
-              updateStatus(assets, AssetStatus.Unknown),
-          },
-        ],
-      },
-    ],
-    []
-  );
-
   // get selected class from url param class:CLASS_NAME
   const searchParams = new URLSearchParams(window.location.search);
   const genericSearch = searchParams.get(StorageKey.GENERIC_SEARCH);
@@ -312,73 +257,102 @@ const Assets: React.FC = () => {
       <Table
         name="assets"
         filters={
-          <div className="flex gap-4">
-            <Dropdown
-              styleType="header"
-              label={
-                selectedFilter ? AssetLabels[selectedFilter] : 'All Assets'
-              }
-              endIcon={
-                <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
-              }
-              menu={{
-                items: [
-                  {
-                    label: 'All Assets',
-                    labelSuffix: Object.keys(stats)
-                      .reduce((acc, key) => acc + stats[key], 0)
-                      .toLocaleString(),
-                    value: '',
-                  },
-                  {
-                    label: 'Divider',
-                    type: 'divider',
-                  },
-                  ...Object.entries(AssetLabels).map(([key, label]) => {
-                    return {
-                      label,
-                      labelSuffix: stats[key]?.toLocaleString() || 0,
-                      value: key,
-                    };
-                  }),
-                ],
-                onClick: value => {
-                  const pathName = getRoute(['app', 'assets']);
-                  if (value === '') {
-                    navigate(pathName);
-                  } else {
-                    const filter = `class:${value}`;
-                    const searchQuery = `?${StorageKey.GENERIC_SEARCH}=${encodeURIComponent(filter)}`;
-                    navigate(`${pathName}${searchQuery}`);
-                  }
+          <Dropdown
+            styleType="header"
+            label={selectedFilter ? AssetLabels[selectedFilter] : 'All Assets'}
+            endIcon={
+              <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+            }
+            menu={{
+              items: [
+                {
+                  label: 'All Assets',
+                  labelSuffix: Object.keys(stats)
+                    .reduce((acc, key) => acc + stats[key], 0)
+                    .toLocaleString(),
+                  value: '',
                 },
-                value: selectedFilter ?? undefined,
-              }}
-            />
-            <FilterCounts count={assets.length} type="Assets" />
-          </div>
+                {
+                  label: 'Divider',
+                  type: 'divider',
+                },
+                ...Object.entries(AssetLabels).map(([key, label]) => {
+                  return {
+                    label,
+                    labelSuffix: stats[key]?.toLocaleString() || 0,
+                    value: key,
+                  };
+                }),
+              ],
+              onClick: value => {
+                const pathName = getRoute(['app', 'assets']);
+                if (value === '') {
+                  navigate(pathName);
+                } else {
+                  const filter = `class:${value}`;
+                  const searchQuery = `?${StorageKey.GENERIC_SEARCH}=${encodeURIComponent(filter)}`;
+                  navigate(`${pathName}${searchQuery}`);
+                }
+              },
+              value: selectedFilter ?? undefined,
+            }}
+          />
         }
-        rowActions={{
-          items: actionItems.map(item => ({
-            ...item,
-            disabled: false,
-          })),
-        }}
         selection={{}}
-        actions={{
-          items: [
-            ...actionItems,
-            {
-              label: 'Export as JSON',
-              onClick: () => exportContent(assets, 'assets'),
-              icon: <DocumentArrowDownIcon className="size-5" />,
+        primaryAction={() => {
+          return {
+            label: 'Add Asset',
+            icon: <AssetsIcon className="size-5" />,
+            onClick: () => {
+              setShowAddAsset(true);
             },
-            {
-              label: 'Export as CSV',
-              onClick: () => exportContent(assets, 'assets', 'csv'),
-              icon: <DocumentArrowDownIcon className="size-5" />,
+          };
+        }}
+        actions={(assets: Asset[]) => {
+          return {
+            menu: {
+              items: [
+                {
+                  label: 'Add Risk',
+                  icon: <RisksIcon className="size-5" />,
+                  onClick: () => {
+                    setSelectedAssets(assets);
+                    setShowAddRisk(true);
+                  },
+                },
+                { type: 'divider', label: 'Divider' },
+                {
+                  label: 'High Priority',
+                  icon: <ExclamationCircleIcon className="size-5" />,
+                  onClick: () => {
+                    setSelectedAssets(assets);
+                    setShowAssetStatusWarning(true);
+                    setAssetStatus(AssetStatus.ActiveHigh);
+                  },
+                },
+                {
+                  label: 'Standard Priority',
+                  icon: <CheckCircleIcon className="size-5" />,
+                  onClick: () => updateStatus(assets, AssetStatus.Active),
+                },
+                {
+                  label: 'Stop Scanning',
+                  icon: <PauseIcon className="size-5" />,
+                  onClick: () => {
+                    setSelectedAssets(assets);
+                    setShowAssetStatusWarning(true);
+                    setAssetStatus(AssetStatus.Frozen);
+                  },
+                },
+                { type: 'divider', label: 'Divider' },
+                {
+                  label: "I don't recognize this",
+                  icon: <QuestionMarkCircleIcon className="size-5" />,
+                  onClick: () => updateStatus(assets, AssetStatus.Unknown),
+                },
+              ],
             },
-          ],
+          };
         }}
         columns={columns}
         data={assetsWithRisk}
@@ -403,13 +377,7 @@ const Assets: React.FC = () => {
             'Your seeds are being scanned and your assets will appear here soon',
         }}
       />
-      <AddRisks
-        isOpen={showAddRisk}
-        onClose={() => {
-          setShowAddRisk(false);
-        }}
-        selectedAssetKeys={selectedAssets.map(asset => asset.key)}
-      />
+
       <AssetStatusWarning
         open={showAssetStatusWarning}
         onClose={() => setShowAssetStatusWarning(false)}
@@ -423,17 +391,5 @@ const Assets: React.FC = () => {
     </div>
   );
 };
-
-function isFrozen(asset: Asset) {
-  return asset.status === AssetStatus.Frozen;
-}
-
-function isUnknown(asset: Asset) {
-  return asset.status === AssetStatus.Unknown;
-}
-
-function isActive(asset: Asset) {
-  return asset.status === AssetStatus.Active;
-}
 
 export default Assets;

@@ -1,21 +1,22 @@
-import { forwardRef } from 'react';
+import { forwardRef, ReactNode } from 'react';
 
 import Footer from '@/components/ui/Footer';
 import { Header } from '@/sections/AuthenticatedApp';
 import { cn } from '@/utils/classname';
 
 export const Body = forwardRef(function Paper(
-  props: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  > & { footer?: boolean; header?: boolean; filters?: JSX.Element },
+  props: {
+    footer?: boolean;
+    header?: boolean;
+    className?: string;
+    children?: ReactNode;
+  },
   ref?: React.Ref<HTMLDivElement>
 ) {
-  const { footer = true, header = true, filters, ...rest } = props;
+  const { footer = true, header = true } = props;
 
   return (
     <div
-      {...rest}
       ref={ref}
       className={
         'flex size-full flex-col justify-between overflow-x-auto rounded-[2px]'
@@ -24,7 +25,7 @@ export const Body = forwardRef(function Paper(
       style={{ overflowAnchor: 'none' }}
     >
       <div>
-        {header && <Header filters={filters} />}
+        {header && <Header />}
         <div
           className={cn(
             'mx-auto w-full max-w-screen-xl rounded-sm',

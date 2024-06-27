@@ -1,29 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import {
-  ArrowDownOnSquareStackIcon,
-  PauseIcon,
-  PlayIcon,
-  PlusIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline';
+import { PauseIcon, PlayIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { isFQDN, isIP, isIPRange } from 'validator';
 
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Dropdown } from '@/components/Dropdown';
 import { Input } from '@/components/form/Input';
+import { SeedsIcon } from '@/components/icons';
 import { Modal } from '@/components/Modal';
 import { showBulkSnackbar, Snackbar } from '@/components/Snackbar';
 import { Table } from '@/components/table/Table';
-import { ActionsWithRowSelection, Columns } from '@/components/table/types';
-import { AddSeeds } from '@/components/ui/AddSeeds';
-import { FilterCounts } from '@/components/ui/FilterCounts';
+import { Columns } from '@/components/table/types';
 import { useModifyAccount, useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
 import { change as changeSeed, useDeleteSeed } from '@/hooks/useSeeds';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { useGlobalState } from '@/state/global.state';
 import {
   Account,
   RiskScanMessage,
@@ -37,14 +31,9 @@ import {
   AvailableIntegrations,
   IntegrationsMeta,
 } from '@/utils/availableIntegrations';
-import { exportContent } from '@/utils/download.util';
 
 const isFrozen = (item: Seed) => {
   return item?.status[0] === SeedStatus.Frozen;
-};
-
-const isActive = (item: Seed) => {
-  return item?.status[0] === SeedStatus.Active;
 };
 
 const Seeds: React.FC = () => {
@@ -102,7 +91,11 @@ const Seeds: React.FC = () => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [filter, setFilter] = useFilter('', setSelectedRows);
 
-  const [isAddSeedsDialogOpen, setIsAddSeedsDialogOpen] = useState(false);
+  const {
+    modal: {
+      seed: { onOpenChange: setIsAddSeedsDialogOpen },
+    },
+  } = useGlobalState();
 
   useEffect(() => {
     if (unlinkStatus === 'success') {
@@ -188,219 +181,184 @@ const Seeds: React.FC = () => {
     },
   ];
 
-  const DataExistActionItems: ActionsWithRowSelection<Seed>['items'] = [
-    {
-      label: 'Status',
-      icon: <PlayIcon className="size-5" />,
-      disabled: (seeds: Seed[]) => seeds.length === 0,
-      submenu: [
-        {
-          disabled: seeds => seeds.filter(seed => isActive(seed)).length === 0,
-          label: 'Pause Scanning',
-          icon: <PauseIcon className="size-5" />,
-          onClick: seeds => {
-            seeds.forEach(seed => {
-              const showBulk = showBulkSnackbar(seeds.length);
-              updateSeed(
-                {
-                  key: seed.key,
-                  status: SeedStatus.Frozen,
-                  showSnackbar: !showBulk,
-                },
-                {
-                  onSuccess: () => {
-                    if (showBulk) {
-                      Snackbar({
-                        title: `${seeds.length} seeds will be removed`,
-                        description: RiskScanMessage.Stop,
-                        variant: 'success',
-                      });
-                    }
-                  },
-                }
-              );
-            });
-          },
-        },
-        {
-          disabled: seeds => seeds.filter(seed => isFrozen(seed)).length === 0,
-          label: 'Resume Scanning',
-          icon: <PlayIcon className="size-5" />,
-          onClick: seeds => {
-            seeds.forEach(seed => {
-              const showBulk = showBulkSnackbar(seeds.length);
-              updateSeed(
-                {
-                  key: seed.key,
-                  status: SeedStatus.Active,
-                  showSnackbar: !showBulk,
-                },
-                {
-                  onSuccess: () => {
-                    if (showBulk) {
-                      Snackbar({
-                        title: `${seeds.length} seeds will be removed`,
-                        description: RiskScanMessage.Stop,
-                        variant: 'success',
-                      });
-                    }
-                  },
-                }
-              );
-            });
-          },
-        },
-      ],
-    },
-    {
-      label: 'Delete',
-      icon: <TrashIcon className="size-5" />,
-      disabled: seeds => seeds.length === 0,
-      onClick: seeds => {
-        const showBulk = showBulkSnackbar(seeds.length);
-        seeds.forEach(seed => {
-          if (isIntegration(seed)) {
-            Snackbar({
-              title: 'Cannot freeze integration seed',
-              description: 'Please remove the integration',
-              variant: 'error',
-            });
-          } else {
-            mutateAsync(
-              { seed: seed, showSnackbar: !showBulk },
-              {
-                onSuccess: () => {
-                  setSelectedRows([]);
-                  if (showBulk) {
-                    Snackbar({
-                      title: `${seeds.length} seeds removed`,
-                      description: '',
-                      variant: 'success',
-                    });
-                  }
-                },
-              }
-            );
-          }
-        });
-      },
-    },
-    {
-      label: 'Export as JSON',
-      onClick: () => exportContent(seeds, 'seeds'),
-      icon: <ArrowDownOnSquareStackIcon className="size-5" />,
-    },
-    {
-      label: 'Export as CSV',
-      onClick: () => exportContent(seeds, 'seeds', 'csv'),
-      icon: <ArrowDownOnSquareStackIcon className="size-5" />,
-    },
-  ];
-
-  const actions: ActionsWithRowSelection<Seed> = {
-    items: [
-      {
-        label: 'Add Seeds',
-        icon: <PlusIcon className="size-5" />,
-        onClick: () => {
-          setIsAddSeedsDialogOpen(true);
-        },
-      },
-      ...(seeds.length > 0 ? DataExistActionItems : []),
-    ],
-  };
-
   return (
     <div className="flex w-full flex-col">
       <Table
         filters={
-          <div className="flex gap-4">
-            <Dropdown
-              styleType="header"
-              label={filter ? `${SeedLabels[filter]}` : 'All Seeds'}
-              endIcon={
-                <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
-              }
-              menu={{
-                items: [
-                  {
-                    label: 'All Seeds',
-                    labelSuffix: seeds.length?.toLocaleString(),
-                    value: '',
-                  },
-                  {
-                    label: 'Divider',
-                    type: 'divider',
-                  },
-                  ...Object.entries(SeedLabels).map(([key, label]) => {
-                    return {
-                      label,
-                      labelSuffix: stats[key]?.toLocaleString() || 0,
-                      value: key,
-                    };
-                  }),
-                ],
-                onClick: value => {
-                  setFilter(value || '');
-                },
-                value: filter,
-              }}
-            />
-            <FilterCounts count={filteredSeeds.length} type="Seeds" />
-          </div>
-        }
-        rowActions={{
-          items: [
-            {
-              label: 'Status',
-              icon: <PlayIcon className="size-5" />,
-              disabled: (seeds: Seed[]) => seeds.length === 0,
-              submenu: [
+          <Dropdown
+            styleType="header"
+            label={filter ? `${SeedLabels[filter]}` : 'All Seeds'}
+            endIcon={
+              <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+            }
+            menu={{
+              items: [
                 {
-                  disabled: seeds =>
-                    seeds.filter(seed => isFrozen(seed)).length > 0,
-                  label: 'Pause',
+                  label: 'All Seeds',
+                  labelSuffix: seeds.length?.toLocaleString(),
+                  value: '',
+                },
+                {
+                  label: 'Divider',
+                  type: 'divider',
+                },
+                ...Object.entries(SeedLabels).map(([key, label]) => {
+                  return {
+                    label,
+                    labelSuffix: stats[key]?.toLocaleString() || 0,
+                    value: key,
+                  };
+                }),
+              ],
+              onClick: value => {
+                setFilter(value || '');
+              },
+              value: filter,
+            }}
+          />
+        }
+        rowActions={(seed: Seed) => {
+          return {
+            menu: {
+              items: [
+                {
+                  disabled: isFrozen(seed),
+                  label: 'Stop Scanning',
                   icon: <PauseIcon className="size-5" />,
-                  onClick: seeds => {
-                    seeds.forEach(seed => {
-                      updateSeed({ key: seed.key, status: SeedStatus.Frozen });
+                  onClick: () => {
+                    updateSeed({ key: seed.key, status: SeedStatus.Frozen });
+                  },
+                },
+                {
+                  disabled: !isFrozen(seed),
+                  label: 'Resume Scanning',
+                  icon: <PlayIcon className="size-5" />,
+                  onClick: () => {
+                    updateSeed({ key: seed.key, status: SeedStatus.Active });
+                  },
+                },
+                {
+                  label: 'Remove Seed',
+                  icon: <TrashIcon className="size-5" />,
+                  onClick: () => {
+                    if (isIntegration(seed)) {
+                      setIntegrationSeed(seed);
+                    } else {
+                      mutateAsync({ seed: seed });
+                    }
+                  },
+                },
+              ],
+            },
+          };
+        }}
+        primaryAction={() => {
+          return {
+            label: 'Add Seed',
+            icon: <SeedsIcon className="size-5" />,
+            onClick: () => {
+              setIsAddSeedsDialogOpen(true);
+            },
+          };
+        }}
+        actions={(selectedSeeds: Seed[]) => {
+          return {
+            menu: {
+              items: [
+                {
+                  label: 'Stop Scanning',
+                  icon: <PauseIcon className="size-5" />,
+                  disabled: selectedSeeds.length === 0,
+                  onClick: () => {
+                    selectedSeeds.forEach(seed => {
+                      const showBulk = showBulkSnackbar(selectedSeeds.length);
+                      updateSeed(
+                        {
+                          key: seed.key,
+                          status: SeedStatus.Frozen,
+                          showSnackbar: !showBulk,
+                        },
+                        {
+                          onSuccess: () => {
+                            if (showBulk) {
+                              Snackbar({
+                                title: `${selectedSeeds.length} seeds will be removed`,
+                                description: RiskScanMessage.Stop,
+                                variant: 'success',
+                              });
+                            }
+                          },
+                        }
+                      );
                     });
                   },
                 },
                 {
-                  disabled: seeds =>
-                    seeds.filter(seed => !isFrozen(seed)).length > 0,
                   label: 'Resume Scanning',
                   icon: <PlayIcon className="size-5" />,
-                  onClick: seeds => {
-                    seeds.forEach(seed => {
-                      updateSeed({ key: seed.key, status: SeedStatus.Active });
+                  disabled: selectedSeeds.length === 0,
+                  onClick: () => {
+                    selectedSeeds.forEach(seed => {
+                      const showBulk = showBulkSnackbar(selectedSeeds.length);
+                      updateSeed(
+                        {
+                          key: seed.key,
+                          status: SeedStatus.Active,
+                          showSnackbar: !showBulk,
+                        },
+                        {
+                          onSuccess: () => {
+                            if (showBulk) {
+                              Snackbar({
+                                title: `${selectedSeeds.length} seeds will be removed`,
+                                description: RiskScanMessage.Stop,
+                                variant: 'success',
+                              });
+                            }
+                          },
+                        }
+                      );
+                    });
+                  },
+                },
+                { type: 'divider', label: 'Divider' },
+                {
+                  label: 'Remove Seed',
+                  icon: <TrashIcon className="size-5" />,
+                  disabled: selectedSeeds.length === 0,
+                  onClick: () => {
+                    const showBulk = showBulkSnackbar(selectedSeeds.length);
+                    selectedSeeds.forEach(seed => {
+                      if (isIntegration(seed)) {
+                        Snackbar({
+                          title: 'Cannot freeze integration seed',
+                          description: 'Please remove the integration',
+                          variant: 'error',
+                        });
+                      } else {
+                        mutateAsync(
+                          { seed: seed, showSnackbar: !showBulk },
+                          {
+                            onSuccess: () => {
+                              setSelectedRows([]);
+                              if (showBulk) {
+                                Snackbar({
+                                  title: `${selectedSeeds.length} seeds removed`,
+                                  description: '',
+                                  variant: 'success',
+                                });
+                              }
+                            },
+                          }
+                        );
+                      }
                     });
                   },
                 },
               ],
             },
-            {
-              label: 'Delete',
-              icon: <TrashIcon className="size-5" />,
-              onClick: seeds => {
-                if (isIntegration(seeds[0])) {
-                  setIntegrationSeed(seeds[0]);
-                } else {
-                  mutateAsync(
-                    { seed: seeds[0] },
-                    {
-                      onSuccess: () => {
-                        setSelectedRows([]);
-                      },
-                    }
-                  );
-                }
-              },
-            },
-          ],
+          };
         }}
-        actions={status === 'pending' ? undefined : actions}
         columns={columns}
         data={filteredSeeds}
         selection={{
@@ -428,12 +386,6 @@ const Seeds: React.FC = () => {
               </Button>
             </p>
           ),
-        }}
-      />
-      <AddSeeds
-        isOpen={isAddSeedsDialogOpen}
-        onClose={() => {
-          setIsAddSeedsDialogOpen(false);
         }}
       />
       <Modal

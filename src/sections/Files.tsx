@@ -16,12 +16,11 @@ import { Modal } from '@/components/Modal';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
-import { AddFile } from '@/components/ui/AddFile';
-import { FilterCounts } from '@/components/ui/FilterCounts';
 import { useDownloadFile, useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { useGlobalState } from '@/state/global.state';
 import { FileLabels, MyFile } from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { sortByDate } from '@/utils/date.util';
@@ -57,8 +56,11 @@ const Files: React.FC = () => {
     return files;
   }, [filter, JSON.stringify(files)]);
 
-  const [isUploadFileDialogOpen, setIsUploadFileDialogOpen] =
-    React.useState(false);
+  const {
+    modal: {
+      file: { onOpenChange: setIsUploadFileDialogOpen },
+    },
+  } = useGlobalState();
   const sortedFiles = sortByDate(filteredFiles);
   const filteredAndSortedFiles = sortedFiles.filter(
     file => !file.name.endsWith('/')
@@ -95,11 +97,11 @@ const Files: React.FC = () => {
       const poeLink = getProofOfExploitLink({ dns, name });
 
       return (
-        <div className="flex flex-row mr-2">
+        <div className="mr-2 flex flex-row">
           <Tooltip title="View Risk">
             <button
               onClick={() => navigate(riskDrawerLink)}
-              className="p-0 m-0"
+              className="m-0 p-0"
             >
               <RisksIcon className="size-5" />
             </button>
@@ -114,7 +116,7 @@ const Files: React.FC = () => {
     } else if (item.class === 'manual') {
       if (item.name.endsWith('png') || item.name.endsWith('jpg')) {
         return (
-          <div className="flex flex-row mr-2">
+          <div className="mr-2 flex flex-row">
             <Tooltip title="Preview Image">
               <button
                 onClick={() => {
@@ -129,7 +131,7 @@ const Files: React.FC = () => {
         );
       } else {
         return (
-          <div className="flex flex-row mr-2">
+          <div className="mr-2 flex flex-row">
             <Tooltip title="View File">
               <button
                 onClick={() => {
@@ -175,7 +177,7 @@ const Files: React.FC = () => {
       label: 'Actions',
       id: '',
       cell: (item: MyFile) => (
-        <div className="flex flex-row w-full justify-center">
+        <div className="flex w-full flex-row justify-center">
           <Tooltip title={'Download'}>
             <button
               onClick={() => handleDownload(item)}
@@ -201,53 +203,45 @@ const Files: React.FC = () => {
         fetchNextPage={fetchNextPage}
         isFetchingNextPage={isFetchingNextPage}
         filters={
-          <div className="flex gap-4">
-            <Dropdown
-              styleType="header"
-              label={filter ? `${FileLabels[filter]}` : 'All Classes'}
-              endIcon={
-                <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
-              }
-              menu={{
-                items: [
-                  {
-                    label: 'All Classes',
-                    labelSuffix: files.length?.toLocaleString(),
-                    value: '',
-                  },
-                  {
-                    label: 'Divider',
-                    type: 'divider',
-                  },
-                  ...Object.entries(FileLabels).map(([key, label]) => {
-                    return {
-                      label,
-                      labelSuffix: stats[key]?.toLocaleString() || 0,
-                      value: key,
-                    };
-                  }),
-                ],
-                onClick: value => {
-                  setFilter(value || '');
+          <Dropdown
+            styleType="header"
+            label={filter ? `${FileLabels[filter]}` : 'All Documents'}
+            endIcon={
+              <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+            }
+            menu={{
+              items: [
+                {
+                  label: 'All Classes',
+                  labelSuffix: files.length?.toLocaleString(),
+                  value: '',
                 },
-                value: filter,
-              }}
-            />
-            <FilterCounts
-              count={filteredAndSortedFiles.length}
-              type="Documents"
-            />
-          </div>
-        }
-        actions={{
-          items: [
-            {
-              label: 'Upload Document',
-              onClick: () => {
-                setIsUploadFileDialogOpen(true);
+                {
+                  label: 'Divider',
+                  type: 'divider',
+                },
+                ...Object.entries(FileLabels).map(([key, label]) => {
+                  return {
+                    label,
+                    labelSuffix: stats[key]?.toLocaleString() || 0,
+                    value: key,
+                  };
+                }),
+              ],
+              onClick: value => {
+                setFilter(value || '');
               },
+              value: filter,
+            }}
+          />
+        }
+        primaryAction={() => {
+          return {
+            label: 'Upload Document',
+            onClick: () => {
+              setIsUploadFileDialogOpen(true);
             },
-          ],
+          };
         }}
         name="documents"
         noData={{
@@ -269,10 +263,6 @@ const Files: React.FC = () => {
             </p>
           ),
         }}
-      />
-      <AddFile
-        isOpen={isUploadFileDialogOpen}
-        onClose={() => setIsUploadFileDialogOpen(false)}
       />
       <Modal
         open={filename.length > 0 && filetype.length > 0}

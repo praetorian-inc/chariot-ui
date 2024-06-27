@@ -1,15 +1,15 @@
 import { ReactNode } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { VirtualItem } from '@tanstack/react-virtual';
 
+import { Dropdown } from '@/components/Dropdown';
 import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { Loader } from '@/components/Loader';
 import { ROW_HEIGHT } from '@/components/table/constants';
 import { TableCellContent } from '@/components/table/TableCellContent';
 import { TableCheckBoxIcon } from '@/components/table/TableCheckboxIcon';
-import { TableRowActions } from '@/components/table/TableRowActions';
 import {
-  ActionsWithRowSelection,
   CellAlignment,
   Columns,
   InternalTData,
@@ -21,7 +21,7 @@ import { cn } from '@/utils/classname';
 interface TableBodyProps<TData> {
   selectedRows: string[];
   data: InternalTData<TData>[];
-  rowActions?: ActionsWithRowSelection<TData>;
+  rowActions?: TableProps<TData>['rowActions'];
   rowData: InternalTData<TData>;
   rowIndex: number;
   virtualRow: VirtualItem;
@@ -147,11 +147,15 @@ export function TableBody<TData>(props: TableBodyProps<TData>) {
       {rowActions && (
         <Td align="center" isFirstRow={isFirstRow} isLoading={isLoading}>
           <Loader isLoading={isLoading}>
-            <TableRowActions
-              selectedRows={selectedRows}
-              data={data}
-              rowData={rowData}
-              rowActions={rowActions}
+            <Dropdown
+              onClick={event => {
+                event.stopPropagation();
+              }}
+              startIcon={
+                <EllipsisVerticalIcon className="m-auto size-6 text-default-light" />
+              }
+              styleType="none"
+              {...rowActions(rowData)}
             />
           </Loader>
         </Td>

@@ -1,18 +1,26 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowDownOnSquareStackIcon,
   ChevronDownIcon,
   DocumentTextIcon,
+  LockOpenIcon,
+} from '@heroicons/react/24/outline';
+import {
+  AdjustmentsHorizontalIcon,
+  Bars2Icon,
+  ChevronDoubleDownIcon,
+  ChevronDoubleUpIcon,
+  ChevronUpIcon,
+  LockClosedIcon,
 } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
+import { RisksIcon } from '@/components/icons';
 import { HorseIcon } from '@/components/icons/Horse.icon';
 import { SpinnerIcon } from '@/components/icons/Spinner.icon';
 import { MenuItemProps } from '@/components/Menu';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
-import { FilterCounts } from '@/components/ui/FilterCounts';
 import {
   RiskDropdown,
   riskStatusFilterOptions,
@@ -21,9 +29,9 @@ import { useGetKev } from '@/hooks/kev';
 import { useFilter } from '@/hooks/useFilter';
 import { useMy } from '@/hooks/useMy';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { useGlobalState } from '@/state/global.state';
 import { Risk, RiskStatus, RiskStatusLabel, SeverityDef } from '@/types';
 import { useMergeStatus } from '@/utils/api';
-import { exportContent } from '@/utils/download.util';
 import { Regex } from '@/utils/regex.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch } from '@/utils/url.util';
@@ -113,6 +121,10 @@ const getFilteredRisks = (
 
 export function Risks() {
   const { getRiskDrawerLink } = useOpenDrawer();
+
+  const {
+    modal: { risk },
+  } = useGlobalState();
 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [statusFilter, setStatusesFilter] = useFilter<RiskStatus[]>(
@@ -452,9 +464,82 @@ export function Risks() {
                 multiSelect: true,
               }}
             />
-            <FilterCounts count={filteredRisks.length} type="Risks" />
           </div>
         }
+        primaryAction={() => {
+          return {
+            label: 'Add Risk',
+            icon: <RisksIcon className="size-5" />,
+            onClick: () => {
+              risk.onOpenChange(true);
+            },
+          };
+        }}
+        actions={() => {
+          return {
+            menu: {
+              items: [
+                {
+                  label: 'Triage Status',
+                  icon: <AdjustmentsHorizontalIcon />,
+                  onClick: () => {
+                    console.log('show change status modal');
+                  },
+                },
+                {
+                  label: 'Open Status',
+                  icon: <LockOpenIcon />,
+                  onClick: () => {
+                    console.log('show change status modal');
+                  },
+                },
+                {
+                  label: 'Closed Status',
+                  icon: <LockClosedIcon />,
+                  onClick: () => {
+                    console.log('show change status modal');
+                  },
+                },
+                { label: 'Divider', type: 'divider' },
+                {
+                  label: 'Critical Severity',
+                  icon: <ChevronDoubleUpIcon />,
+                  onClick: () => {
+                    console.log('show change status modal');
+                  },
+                },
+                {
+                  label: 'High Severity',
+                  icon: <ChevronUpIcon />,
+                  onClick: () => {
+                    console.log('show change status modal');
+                  },
+                },
+                {
+                  label: 'Medium Severity',
+                  icon: <Bars2Icon />,
+                  onClick: () => {
+                    console.log('show change status modal');
+                  },
+                },
+                {
+                  label: 'Low Severity',
+                  icon: <ChevronDownIcon />,
+                  onClick: () => {
+                    console.log('show change status modal');
+                  },
+                },
+                {
+                  label: 'Info Severity',
+                  icon: <ChevronDoubleDownIcon />,
+                  onClick: () => {
+                    console.log('show change status modal');
+                  },
+                },
+              ],
+            },
+          };
+        }}
         columns={columns}
         data={filteredRisks}
         status={status}
@@ -475,20 +560,6 @@ export function Risks() {
         }}
         isFetchingNextPage={isFetchingNextPage}
         fetchNextPage={fetchNextPage}
-        actions={{
-          items: [
-            {
-              label: 'Export as JSON',
-              onClick: () => exportContent(risks, 'risks'),
-              icon: <ArrowDownOnSquareStackIcon className="size-5" />,
-            },
-            {
-              label: 'Export as CSV',
-              onClick: () => exportContent(risks, 'risks', 'csv'),
-              icon: <ArrowDownOnSquareStackIcon className="size-5" />,
-            },
-          ],
-        }}
       />
     </div>
   );

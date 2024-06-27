@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { cloneElement, forwardRef, isValidElement } from 'react';
 import {
   autoUpdate,
   flip,
@@ -31,11 +31,12 @@ export interface DropdownMenu extends MenuProps {
 
 export interface DropdownProps extends ButtonProps {
   menu: DropdownMenu;
+  asChild?: boolean;
 }
 
 export const Dropdown = forwardRef<HTMLButtonElement, DropdownProps>(
   function Dropdown(props: DropdownProps, ref) {
-    const { menu, ...buttonProps } = props;
+    const { menu, asChild = true, ...buttonProps } = props;
     const { placement = 'bottom-start', onClose, ...menuProps } = menu;
 
     const [open, setOpen] = useStorage(
@@ -88,15 +89,31 @@ export const Dropdown = forwardRef<HTMLButtonElement, DropdownProps>(
     const role = useRole(floatingProps.context);
 
     const interactions = useInteractions([click, dismiss, role]);
-    const triggerRef = useMergeRefs([floatingProps.refs.setReference, ref]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const childrenRef = (props?.children as any)?.ref;
+    const triggerRef = useMergeRefs([
+      floatingProps.refs.setReference,
+      ref,
+      childrenRef,
+    ]);
 
     return (
       <>
-        <Button
-          className={props.className}
-          ref={triggerRef}
-          {...interactions.getReferenceProps(buttonProps)}
-        />
+        {asChild && isValidElement(props.children) ? (
+          cloneElement(
+            props.children as React.ReactElement,
+            interactions.getReferenceProps({
+              ref: triggerRef,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ...(props.children as unknown as any).props,
+            })
+          )
+        ) : (
+          <Button
+            ref={triggerRef}
+            {...interactions.getReferenceProps(buttonProps)}
+          />
+        )}
         {open && (
           <FloatingPortal>
             <FloatingFocusManager

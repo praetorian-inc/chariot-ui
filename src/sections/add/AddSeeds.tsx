@@ -7,16 +7,17 @@ import { Dropzone, Files } from '@/components/Dropzone';
 import { Modal } from '@/components/Modal';
 import { Tooltip } from '@/components/Tooltip';
 import { create as createSeed, useBulkAddSeed } from '@/hooks/useSeeds';
+import { useGlobalState } from '@/state/global.state';
 import { IntegrationType } from '@/types';
 import { AllowedSeedRegex, GetSeeds } from '@/utils/regex.util';
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-}
+export const AddSeeds = () => {
+  const {
+    modal: {
+      seed: { open: isOpen, onOpenChange },
+    },
+  } = useGlobalState();
 
-export const AddSeeds: React.FC<Props> = (props: Props) => {
-  const { isOpen, onClose } = props;
   const [seedInput, setSeedInput] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -51,6 +52,10 @@ export const AddSeeds: React.FC<Props> = (props: Props) => {
 
     bulkAddSeed(seeds);
   };
+
+  function onClose() {
+    onOpenChange(false);
+  }
 
   return (
     <Modal title="Add Seeds" open={isOpen} onClose={onClose} size="xl">

@@ -154,6 +154,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     error={null}
                     header={false}
                     footer={false}
+                    showCount={false}
                   />
                   {hasMorelinkedHostnames > 0 && (
                     <div className="flex w-full">
@@ -196,6 +197,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     error={null}
                     header={false}
                     footer={false}
+                    showCount={false}
                   />
                   {hasMoreLinkedIps > 0 && (
                     <div className="flex w-full">

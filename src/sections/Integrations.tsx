@@ -6,10 +6,10 @@ import { twMerge } from 'tailwind-merge';
 import { Button } from '@/components/Button';
 import { Dropdown } from '@/components/Dropdown';
 import { Body } from '@/components/ui/Body';
-import { FilterCounts } from '@/components/ui/FilterCounts';
 import { IntegrationModal } from '@/components/ui/IntegrationModal';
 import { useModifyAccount, useMy } from '@/hooks';
 import { useFilter } from '@/hooks/useFilter';
+import { RenderHeaderExtraContentSection } from '@/sections/AuthenticatedApp';
 import { Account, IntegrationType } from '@/types';
 import { partition } from '@/utils/array.util';
 import {
@@ -117,47 +117,40 @@ const Integrations: React.FC = () => {
   });
 
   return (
-    <Body
-      filters={
-        <div className="flex gap-4">
-          <Dropdown
-            styleType="header"
-            label={integrationTypeFilter || 'All Integrations'}
-            endIcon={
-              <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
-            }
-            menu={{
-              items: [
-                {
-                  label: 'All Integrations',
-                  value: '',
-                  labelSuffix: filteredIntegrations.length,
-                },
-                {
-                  label: 'Divider',
-                  type: 'divider',
-                },
-                ...Object.values(IntegrationType).map(integrationType => {
-                  return {
-                    label: integrationType,
-                    value: integrationType,
-                    labelSuffix: integrationCounts[integrationType],
-                  };
-                }),
-              ],
-              onClick: value => {
-                setIntegrationTypeFilter(value || '');
+    <Body>
+      <RenderHeaderExtraContentSection>
+        <Dropdown
+          styleType="header"
+          label={integrationTypeFilter || 'All Integrations'}
+          endIcon={
+            <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+          }
+          menu={{
+            items: [
+              {
+                label: 'All Integrations',
+                value: '',
+                labelSuffix: filteredIntegrations.length,
               },
-              value: integrationTypeFilter,
-            }}
-          />
-          <FilterCounts
-            count={filteredIntegrations.length}
-            type="Integrations"
-          />
-        </div>
-      }
-    >
+              {
+                label: 'Divider',
+                type: 'divider',
+              },
+              ...Object.values(IntegrationType).map(integrationType => {
+                return {
+                  label: integrationType,
+                  value: integrationType,
+                  labelSuffix: integrationCounts[integrationType],
+                };
+              }),
+            ],
+            onClick: value => {
+              setIntegrationTypeFilter(value || '');
+            },
+            value: integrationTypeFilter,
+          }}
+        />
+      </RenderHeaderExtraContentSection>
       <div className="justify-left flex size-full h-max flex-wrap gap-5 overflow-x-auto pb-4">
         {filteredIntegrations.map(integrationMeta => {
           const connectedAccounts = integrationList.filter(

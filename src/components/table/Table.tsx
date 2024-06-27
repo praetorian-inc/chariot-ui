@@ -49,9 +49,7 @@ export function Table<TData>(props: TableProps<TData>) {
     groupBy,
     onRowClick,
     loadingRowCount = 25,
-    footer = true,
-    header = true,
-    showCount = true,
+    isTableView = true,
     primaryAction,
   } = props;
 
@@ -290,7 +288,12 @@ export function Table<TData>(props: TableProps<TData>) {
   }, [JSON.stringify({ selectedRows, rawData }), actions]);
 
   return (
-    <Body ref={parentRef} className={className} footer={footer} header={header}>
+    <Body
+      ref={parentRef}
+      className={className}
+      footer={isTableView}
+      header={isTableView}
+    >
       {(filters || parsedActions || parsedPrimaryAction) && (
         <RenderHeaderExtraContentSection>
           <div className="flex justify-between">
@@ -323,7 +326,7 @@ export function Table<TData>(props: TableProps<TData>) {
           </div>
         </RenderHeaderExtraContentSection>
       )}
-      {showCount && (
+      {isTableView && (
         <RenderHeaderBreadcrumbSection>
           <Loader styleType="header" className="h-8 w-28" isLoading={isLoading}>
             {rawData.length > 0 && (
@@ -356,7 +359,10 @@ export function Table<TData>(props: TableProps<TData>) {
             tableClassName
           )}
         >
-          <thead className="sticky top-20 bg-layer0" style={{ zIndex: 1 }}>
+          <thead
+            className={cn('sticky bg-layer0', isTableView ? 'top-20' : 'top-0')}
+            style={{ zIndex: 1 }}
+          >
             <tr>
               {enableCheckbox && (
                 <Th fixedWidth={CELL_WIDTHS.checkbox} align="center">

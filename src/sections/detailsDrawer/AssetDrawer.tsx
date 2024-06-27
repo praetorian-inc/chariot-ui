@@ -4,6 +4,7 @@ import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
 import { HorizontalSplit } from '@/components/HorizontalSplit';
+import { AssetsIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { Table } from '@/components/table/Table';
 import { AssetStatusText } from '@/components/ui/AssetStatusChip';
@@ -21,7 +22,6 @@ import { StorageKey } from '@/utils/storage/useStorage.util';
 import { useSearchParams } from '@/utils/url.util';
 
 import { DRAWER_WIDTH } from '.';
-import { AssetsIcon } from '@/components/icons';
 
 interface Props {
   compositeKey: string;
@@ -157,9 +157,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                       },
                     ]}
                     error={null}
-                    header={false}
-                    footer={false}
-                    showCount={false}
+                    isTableView={false}
                   />
                   {hasMorelinkedHostnames > 0 && (
                     <div className="flex w-full">
@@ -200,9 +198,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                       },
                     ]}
                     error={null}
-                    header={false}
-                    footer={false}
-                    showCount={false}
+                    isTableView={false}
                   />
                   {hasMoreLinkedIps > 0 && (
                     <div className="flex w-full">

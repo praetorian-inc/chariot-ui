@@ -6,10 +6,12 @@ import MDEditor from '@uiw/react-md-editor';
 
 import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
+import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { Drawer } from '@/components/Drawer';
 import { Dropdown } from '@/components/Dropdown';
 import { HorizontalSplit } from '@/components/HorizontalSplit';
 import { HorizontalTimeline } from '@/components/HorizontalTimeline';
+import { RisksIcon } from '@/components/icons';
 import { UnionIcon } from '@/components/icons/Union.icon';
 import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
@@ -33,8 +35,6 @@ import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch, useSearchParams } from '@/utils/url.util';
 
 import { DRAWER_WIDTH } from '.';
-import { CopyToClipboard } from '@/components/CopyToClipboard';
-import { RisksIcon } from '@/components/icons';
 
 const getJobTimeline = ({
   status,
@@ -272,7 +272,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
             title={risk.name}
             subtitle={risk.dns}
             prefix={
-              <div className="flex flex-row space-x-1 items-center">
+              <div className="flex flex-row items-center space-x-1">
                 <RisksIcon className="size-5" />
                 {knownExploitedThreats.includes(risk.name) && (
                   <Tooltip
@@ -451,8 +451,8 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       value:
                         urlsImpacted?.length === 0
                           ? ''
-                          : urlsImpacted?.map(url => (
-                              <CopyToClipboard textToCopy={url}>
+                          : urlsImpacted?.map((url, index) => (
+                              <CopyToClipboard key={index} textToCopy={url}>
                                 <a
                                   key={url}
                                   href={url}

@@ -119,9 +119,7 @@ export const CollaboratingWith = () => {
         noData={{
           description: 'No collaborating organizations found.',
         }}
-        header={false}
-        footer={false}
-        showCount={false}
+        isTableView={false}
         error={null}
         rowActions={(data: TableData) => {
           return {

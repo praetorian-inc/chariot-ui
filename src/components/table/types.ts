@@ -28,9 +28,7 @@ export interface TableProps<TData> {
   actions?: (selectedRowsData: TData[]) => TableActions;
   rowActions?: (rowData: TData) => TableActions;
   loadingRowCount?: number;
-  footer?: boolean;
-  header?: boolean;
-  showCount?: boolean;
+  isTableView?: boolean;
   groupBy?: {
     label: string;
     filter: (data: TData) => boolean;

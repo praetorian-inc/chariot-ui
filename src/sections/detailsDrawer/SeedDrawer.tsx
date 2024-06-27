@@ -6,6 +6,7 @@ import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Drawer } from '@/components/Drawer';
 import { HorizontalSplit } from '@/components/HorizontalSplit';
+import { SeedsIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { OverflowText } from '@/components/OverflowText';
 import { Table } from '@/components/table/Table';
@@ -22,7 +23,6 @@ import { StorageKey } from '@/utils/storage/useStorage.util';
 import { useSearchParams } from '@/utils/url.util';
 
 import { DRAWER_WIDTH } from '.';
-import { SeedsIcon } from '@/components/icons';
 
 interface Props {
   compositeKey: string;
@@ -167,9 +167,7 @@ export const SeedDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                       },
                     ]}
                     error={null}
-                    header={false}
-                    footer={false}
-                    showCount={false}
+                    isTableView={false}
                   />
                   {showMoreAssets && (
                     <div className="flex w-full">
@@ -222,9 +220,7 @@ export const SeedDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                       },
                     ]}
                     error={null}
-                    header={false}
-                    footer={false}
-                    showCount={false}
+                    isTableView={false}
                   />
                   {risks.length - TABLE_LIMIT > 0 && (
                     <div className="flex w-full">

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 import { Dropdown } from '@/components/Dropdown';
@@ -11,9 +11,11 @@ import { Shortcuts } from '@/components/ui/Shortcuts';
 import { AccountDropdown } from '@/sections/topNavBar/AccountDropdown';
 import { Notifications } from '@/sections/topNavBar/Notifications';
 import { getRoute } from '@/utils/route.util';
+import { Button } from '@/components/Button';
 
 export function TopNavBar() {
   const [showNotification, setShowNotification] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col items-center justify-between py-3 md:flex-row">
@@ -22,6 +24,15 @@ export function TopNavBar() {
           <Link to={getRoute(['app', 'risks'])}>
             <LogoIcon className="mr-4 size-9" />
           </Link>
+          <Button
+            styleType="header"
+            onClick={() => {
+              navigate(getRoute(['app', 'overview']));
+            }}
+            className="header bg-header text-medium"
+          >
+            Overview
+          </Button>
           <Dropdown
             label="Attack Surface"
             styleType="none"

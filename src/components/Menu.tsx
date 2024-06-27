@@ -68,7 +68,7 @@ export const Menu: React.FC<MenuProps> = props => {
       {items.length === 0 && !emptyState?.hide && (
         <li
           className={cn(
-            'flex items-center min-h-16 p-3 text-xs font-medium text-default-light',
+            'flex items-center text-xs font-medium text-default-light',
             menuMarginClassName,
             className
           )}

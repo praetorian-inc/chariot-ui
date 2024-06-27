@@ -80,6 +80,7 @@ export const AddRisks = () => {
             type="assets"
             value={selectedAssets}
             onChange={onSelectedAssetsChange}
+            placeholder="8.8.8.8"
           />
           <Inputs
             inputs={[

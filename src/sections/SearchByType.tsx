@@ -11,6 +11,8 @@ import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { Asset, GenericResource, Risk, RiskSeverity } from '@/types';
 import { useStorage } from '@/utils/storage/useStorage.util';
+import { capitalize } from '@/utils/lodash.util';
+import { depluralize } from '@/utils/depluralize.util';
 
 export interface SearchTypeProps<T extends keyof GenericResource> {
   type: T;
@@ -18,6 +20,7 @@ export interface SearchTypeProps<T extends keyof GenericResource> {
   onClick?: (type: GenericResource[T][number]) => void;
   multiSelect?: boolean;
   value?: string[];
+  placeholder?: string;
 }
 
 export function SearchByType<T extends keyof GenericResource>(
@@ -44,7 +47,7 @@ export function SearchByType<T extends keyof GenericResource>(
         );
 
         return [
-          { label: genericSearchKey, type: 'label' },
+          { label: capitalize(genericSearchKey), type: 'label' },
           { type: 'divider' },
           ...typeOptions,
         ] as DropdownMenu['items'];
@@ -65,15 +68,17 @@ export function SearchByType<T extends keyof GenericResource>(
         hide: !search,
         label: search
           ? genericSearchStatus === 'pending'
-            ? 'Loading...'
+            ? 'Searching...'
             : 'No results found'
           : '',
       }}
+      placeholder={props.placeholder}
     />
   );
 }
 
 export interface SearchAndSelectTypes<T extends keyof GenericResource> {
+  placeholder?: string;
   type: T;
   value: GenericResource[T];
   onChange: (updated: GenericResource[T]) => void;
@@ -115,7 +120,8 @@ export function SearchAndSelectTypes<T extends keyof GenericResource>(
       <SearchByType
         type={props.type}
         multiSelect
-        label={`Search for ${props.type}`}
+        placeholder={props.placeholder}
+        label={depluralize(capitalize(props.type))}
         value={selectedOptions.map(option => option.key)}
         onClick={option => {
           setSelectedOptions(prevOption => {
@@ -146,6 +152,7 @@ interface SelectProps<IsMultiSelect extends boolean> {
   search?: string;
   onSearchChange?: (search: string) => void;
   emptyState?: DropdownProps['menu']['emptyState'];
+  placeholder?: string;
 }
 
 function Select<IsMultiSelect extends boolean>(
@@ -189,6 +196,7 @@ function Select<IsMultiSelect extends boolean>(
             onChange={event => {
               setSearch(event.target.value);
             }}
+            placeholder={props?.placeholder}
           />
         </FormGroup>
       </div>

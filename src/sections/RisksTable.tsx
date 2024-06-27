@@ -22,6 +22,7 @@ import { MenuItemProps } from '@/components/Menu';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
+import { ClosedStateModal } from '@/components/ui/ClosedStateModal';
 import {
   RiskDropdown,
   riskStatusFilterOptions,
@@ -29,9 +30,16 @@ import {
 import { useGetKev } from '@/hooks/kev';
 import { useFilter } from '@/hooks/useFilter';
 import { useMy } from '@/hooks/useMy';
+import { useBulkUpdateRisk } from '@/hooks/useRisks';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
 import { useGlobalState } from '@/state/global.state';
-import { Risk, RiskStatus, RiskStatusLabel, SeverityDef } from '@/types';
+import {
+  Risk,
+  RiskSeverity,
+  RiskStatus,
+  RiskStatusLabel,
+  SeverityDef,
+} from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { Regex } from '@/utils/regex.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
@@ -121,6 +129,7 @@ const getFilteredRisks = (
 
 export function Risks() {
   const { getRiskDrawerLink } = useOpenDrawer();
+  const updateRisk = useBulkUpdateRisk();
 
   const {
     modal: { risk },
@@ -134,6 +143,9 @@ export function Risks() {
   const [severityFilter, setSeverityFilter] = useFilter([''], setSelectedRows);
   const [classFilter, setClassFilter] = useFilter([''], setSelectedRows);
   const [sourceFilter, setSourceFilter] = useFilter([''], setSelectedRows);
+
+  const [isClosedSubStateModalOpen, setIsClosedSubStateModalOpen] =
+    useState(false);
 
   const { data: knownExploitedThreats = [], status: threatsStatus } =
     useGetKev();
@@ -465,7 +477,7 @@ export function Risks() {
             },
           };
         }}
-        actions={() => {
+        actions={(selectedRows: Risk[]) => {
           return {
             menu: {
               items: [
@@ -480,22 +492,26 @@ export function Risks() {
                 {
                   label: 'Triage',
                   icon: <AdjustmentsHorizontalIcon />,
-                  onClick: () => {
-                    console.log('show change status modal');
-                  },
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      status: RiskStatus.Triaged,
+                    }),
                 },
                 {
                   label: 'Open',
                   icon: <LockOpenIcon />,
-                  onClick: () => {
-                    console.log('show change status modal');
-                  },
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      status: RiskStatus.Opened,
+                    }),
                 },
                 {
                   label: 'Closed',
                   icon: <LockClosedIcon />,
                   onClick: () => {
-                    console.log('show change status modal');
+                    setIsClosedSubStateModalOpen(true);
                   },
                 },
                 {
@@ -509,37 +525,47 @@ export function Risks() {
                 {
                   label: 'Critical',
                   icon: <ChevronDoubleUpIcon />,
-                  onClick: () => {
-                    console.log('show change status modal');
-                  },
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.Critical,
+                    }),
                 },
                 {
                   label: 'High',
                   icon: <ChevronUpIcon />,
-                  onClick: () => {
-                    console.log('show change status modal');
-                  },
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.High,
+                    }),
                 },
                 {
                   label: 'Medium',
                   icon: <Bars2Icon />,
-                  onClick: () => {
-                    console.log('show change status modal');
-                  },
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.Medium,
+                    }),
                 },
                 {
                   label: 'Low',
                   icon: <ChevronDownIcon />,
-                  onClick: () => {
-                    console.log('show change status modal');
-                  },
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.Low,
+                    }),
                 },
                 {
                   label: 'Info Severity',
                   icon: <ChevronDoubleDownIcon />,
-                  onClick: () => {
-                    console.log('show change status modal');
-                  },
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.Info,
+                    }),
                 },
               ],
             },
@@ -565,6 +591,18 @@ export function Risks() {
         }}
         isFetchingNextPage={isFetchingNextPage}
         fetchNextPage={fetchNextPage}
+      />
+      <ClosedStateModal
+        isOpen={isClosedSubStateModalOpen}
+        onClose={() => setIsClosedSubStateModalOpen(false)}
+        onStatusChange={({ status }) => {
+          updateRisk({
+            selectedRows: selectedRows
+              .map(i => filteredRisks[Number(i)])
+              .filter(Boolean),
+            status,
+          });
+        }}
       />
     </div>
   );

@@ -12,15 +12,10 @@ import {
 
 import { Chip } from '@/components/Chip';
 import { Dropdown } from '@/components/Dropdown';
-import { Modal } from '@/components/Modal';
-import { Snackbar } from '@/components/Snackbar';
-import { useUpdateRisk } from '@/hooks/useRisks';
+import { ClosedStateModal } from '@/components/ui/ClosedStateModal';
+import { useBulkUpdateRisk } from '@/hooks/useRisks';
 import {
   Risk,
-  RiskClosedStatus,
-  RiskClosedStatusLongDesc,
-  RiskClosedStatusLongLabel,
-  RiskCombinedStatus,
   RiskSeverity,
   RiskStatus,
   RiskStatusLabel,
@@ -54,16 +49,6 @@ const riskStatusOptions = [
     icon: <LockClosedIcon className="size-4 stroke-2" />,
   },
 ];
-
-const riskClosedStatusList = Object.values(RiskClosedStatus).map(
-  riskClosedStatus => {
-    return {
-      label: RiskClosedStatusLongLabel[riskClosedStatus],
-      desc: RiskClosedStatusLongDesc[riskClosedStatus],
-      value: riskClosedStatus,
-    };
-  }
-);
 
 export const riskSeverityOptions = [
   {
@@ -102,12 +87,11 @@ export const RiskDropdown: React.FC<Props> = ({
 }: Props) => {
   const [isClosedSubStateModalOpen, setIsClosedSubStateModalOpen] =
     useState(false);
-  const [selectRiskClosedStatus, setSelectRiskClosedStatus] =
-    useState<RiskClosedStatus>();
+
+  const updateRisk = useBulkUpdateRisk();
 
   const data =
     selectedRowsData && selectedRowsData.length > 1 ? selectedRowsData : [risk];
-  const { mutate: updateRisk } = useUpdateRisk();
 
   const generalChipClass = 'inline-flex min-h-[26px] py-1 whitespace-nowrap';
 
@@ -118,32 +102,17 @@ export const RiskDropdown: React.FC<Props> = ({
   const statusLabel = RiskStatusLabel[riskStatusKey] || 'Closed'; // Closed is added to handle the old statuses
   const severityLabel = SeverityDef[riskSeverityKey];
 
-  function handleStatusChange(value: RiskCombinedStatus) {
-    data.forEach(item => {
-      const riskComposite = item.key.split('#');
-      const finding = riskComposite[4];
-
-      updateRisk(
-        // asset.Key for POST, risk.Key for PUT
-        {
-          key: item.key,
-          name: finding,
-          status: value,
-          comment: item.comment,
-          showSnackbar: data.length === 1,
-        },
-        {
-          onSuccess: () => {
-            if (data.length > 1) {
-              Snackbar({
-                title: `${data.length} risks updated`,
-                description: 'All the risks have been successfully updated.',
-                variant: 'success',
-              });
-            }
-          },
-        }
-      );
+  function handleStatusChange({
+    status,
+    severity,
+  }: {
+    status?: RiskStatus;
+    severity?: string;
+  }) {
+    updateRisk({
+      selectedRows: data as Risk[],
+      status,
+      severity,
     });
   }
 
@@ -177,12 +146,7 @@ export const RiskDropdown: React.FC<Props> = ({
                 if (value === RiskStatus.Resolved) {
                   setIsClosedSubStateModalOpen(true);
                 } else {
-                  const newStatus =
-                    value.length === 1
-                      ? `${value}${riskSeverityKey}`
-                      : `${value[0]}${riskSeverityKey}${value[1]}`;
-
-                  handleStatusChange(newStatus as RiskCombinedStatus);
+                  handleStatusChange({ status: value as RiskStatus });
                 }
               }
             },
@@ -196,64 +160,12 @@ export const RiskDropdown: React.FC<Props> = ({
         >
           <div className="flex-1 text-left">{statusLabel}</div>
         </Dropdown>
-        {isClosedSubStateModalOpen && (
-          <Modal
-            title="Select Reason"
-            open={isClosedSubStateModalOpen}
-            onClose={() => {
-              setIsClosedSubStateModalOpen(false);
-            }}
-            footer={{
-              text: 'Submit',
-              disabled: selectRiskClosedStatus === undefined,
-              onClick: () => {
-                if (selectRiskClosedStatus) {
-                  const newStatus =
-                    selectRiskClosedStatus.length === 1
-                      ? `${selectRiskClosedStatus}${riskSeverityKey}`
-                      : `${selectRiskClosedStatus[0]}${riskSeverityKey}${selectRiskClosedStatus[1]}`;
 
-                  handleStatusChange(newStatus);
-                  setIsClosedSubStateModalOpen(false);
-                }
-              },
-            }}
-          >
-            <div className="space-y-4">
-              <p className="text-gray-600">
-                Please select a reason for closing this risk. This information
-                helps us understand how risks are managed and ensure appropriate
-                follow-up actions.
-              </p>
-              {riskClosedStatusList.map((riskClosedStatus, index) => (
-                <label
-                  key={index}
-                  className="flex cursor-pointer items-center rounded-lg bg-layer2 p-3 transition duration-150 ease-in-out hover:bg-gray-100"
-                >
-                  <input
-                    type="radio"
-                    name="closedSubState"
-                    value={riskClosedStatus.value}
-                    onChange={() =>
-                      setSelectRiskClosedStatus(
-                        riskClosedStatus.value as RiskClosedStatus
-                      )
-                    }
-                    className="form-radio size-5 text-indigo-600 transition duration-150 ease-in-out"
-                  />
-                  <div className="ml-3 text-sm">
-                    <span className="font-medium text-gray-900">
-                      {riskClosedStatus.label}
-                    </span>
-                    <span className="block text-gray-500">
-                      {riskClosedStatus.desc}
-                    </span>
-                  </div>
-                </label>
-              ))}
-            </div>
-          </Modal>
-        )}
+        <ClosedStateModal
+          isOpen={isClosedSubStateModalOpen}
+          onClose={() => setIsClosedSubStateModalOpen(false)}
+          onStatusChange={handleStatusChange}
+        />
       </>
     );
   }
@@ -265,10 +177,7 @@ export const RiskDropdown: React.FC<Props> = ({
         items: riskSeverityOptions,
         onClick: value => {
           if (value) {
-            const oldStatus = risk.status;
-            const newStatus = `${oldStatus[0]}${value}${oldStatus[2] ?? ''}`;
-
-            handleStatusChange(newStatus as RiskCombinedStatus);
+            handleStatusChange({ severity: value });
           }
         },
       }}

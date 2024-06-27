@@ -36,7 +36,7 @@ export interface DropdownProps extends ButtonProps {
 
 export const Dropdown = forwardRef<HTMLButtonElement, DropdownProps>(
   function Dropdown(props: DropdownProps, ref) {
-    const { menu, asChild = true, ...buttonProps } = props;
+    const { menu, asChild, ...buttonProps } = props;
     const { placement = 'bottom-start', onClose, ...menuProps } = menu;
 
     const [open, setOpen] = useStorage(

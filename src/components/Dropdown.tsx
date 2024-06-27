@@ -12,6 +12,7 @@ import {
   useClick,
   useDismiss,
   useFloating,
+  useFocus,
   useInteractions,
   useMergeRefs,
   useRole,
@@ -31,12 +32,13 @@ export interface DropdownMenu extends MenuProps {
 
 export interface DropdownProps extends ButtonProps {
   menu: DropdownMenu;
+  focusType?: 'click' | 'focus';
   asChild?: boolean;
 }
 
 export const Dropdown = forwardRef<HTMLButtonElement, DropdownProps>(
   function Dropdown(props: DropdownProps, ref) {
-    const { menu, asChild, ...buttonProps } = props;
+    const { menu, asChild, focusType, ...buttonProps } = props;
     const { placement = 'bottom-start', onClose, ...menuProps } = menu;
 
     const [open, setOpen] = useStorage(
@@ -84,11 +86,16 @@ export const Dropdown = forwardRef<HTMLButtonElement, DropdownProps>(
       ],
     });
 
+    const focus = useFocus(floatingProps.context);
     const click = useClick(floatingProps.context);
     const dismiss = useDismiss(floatingProps.context);
     const role = useRole(floatingProps.context);
 
-    const interactions = useInteractions([click, dismiss, role]);
+    const interactions = useInteractions([
+      focusType === 'focus' ? focus : click,
+      dismiss,
+      role,
+    ]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const childrenRef = (props?.children as any)?.ref;
     const triggerRef = useMergeRefs([

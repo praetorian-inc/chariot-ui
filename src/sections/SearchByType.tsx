@@ -55,7 +55,7 @@ export function SearchByType<T extends keyof GenericResource>(
 
   return (
     <Select
-      multiSelect={props.multiSelect}
+      // multiSelect={props.multiSelect}
       value={props.value}
       search={search}
       onSearchChange={setSearch}
@@ -165,6 +165,7 @@ function Select<IsMultiSelect extends boolean>(
 
   return (
     <Dropdown
+      focusType="focus"
       menu={{
         items: props.options,
         multiSelect: props.multiSelect,
@@ -183,7 +184,7 @@ function Select<IsMultiSelect extends boolean>(
       <div>
         <FormGroup label={props.label} name={props.label || ''}>
           <InputText
-            name="asd"
+            name=""
             value={search}
             onChange={event => {
               setSearch(event.target.value);

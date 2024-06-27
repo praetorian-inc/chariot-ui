@@ -21,6 +21,7 @@ import { SpinnerIcon } from '@/components/icons/Spinner.icon';
 import { MenuItemProps } from '@/components/Menu';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
+import { Tooltip } from '@/components/Tooltip';
 import {
   RiskDropdown,
   riskStatusFilterOptions,
@@ -35,7 +36,6 @@ import { useMergeStatus } from '@/utils/api';
 import { Regex } from '@/utils/regex.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch } from '@/utils/url.util';
-import { Tooltip } from '@/components/Tooltip';
 
 const DownIcon = (
   <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
@@ -192,14 +192,9 @@ export function Risks() {
         id: 'status',
         className: 'text-left',
         fixedWidth: 200,
-        cell: (risk: Risk, selectedRowsData?: Risk[]) => {
+        cell: (risk: Risk) => {
           return (
-            <RiskDropdown
-              type="status"
-              risk={risk}
-              selectedRowsData={selectedRowsData}
-              className="w-[170px]"
-            />
+            <RiskDropdown type="status" risk={risk} className="w-[170px]" />
           );
         },
       },
@@ -207,14 +202,9 @@ export function Risks() {
         label: 'Severity',
         id: 'status',
         fixedWidth: 140,
-        cell: (risk: Risk, selectedRowsData?: Risk[]) => {
+        cell: (risk: Risk) => {
           return (
-            <RiskDropdown
-              type="severity"
-              risk={risk}
-              selectedRowsData={selectedRowsData}
-              className="w-[120px]"
-            />
+            <RiskDropdown type="severity" risk={risk} className="w-[120px]" />
           );
         },
       },

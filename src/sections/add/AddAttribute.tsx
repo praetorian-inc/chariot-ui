@@ -48,7 +48,6 @@ export function AddAttribute() {
           event.preventDefault();
 
           const allAtt = selectedAssets?.map(asset => {
-            console.log('asset.key', asset.key);
             return createAttribute({
               key: asset.key,
               class: formData.class,

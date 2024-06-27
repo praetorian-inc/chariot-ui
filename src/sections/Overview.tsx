@@ -57,7 +57,7 @@ export const Overview = () => {
 
   const reportSections = useMemo(
     () => getReportSections({ report: fileContent, data: { client_short } }),
-    []
+    [fileContent]
   );
 
   // example filename: #file#geoff.storbeck@praetorian.com/reports/1719519204.md

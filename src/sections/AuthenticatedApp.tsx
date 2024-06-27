@@ -146,6 +146,11 @@ export function Header() {
   const { status: statusAccount } = useMy({ resource: 'account' });
   const { breadcrumbs } = useBreadCrumbsContext();
 
+  // TODO: FIXME - this is a hack to not show sticky header on table pages
+  const showSticky = ['assets', 'risks', 'seeds', 'jobs', 'documents'].includes(
+    breadcrumbs[1]?.label?.toLowerCase()
+  );
+
   return (
     <>
       <div
@@ -168,12 +173,22 @@ export function Header() {
           </div>
         </div>
       </div>
-      <div className="sticky top-0 w-full bg-header pt-4" style={{ zIndex: 1 }}>
+      {showSticky ? (
+        <div
+          className="sticky top-0 w-full bg-header pt-4"
+          style={{ zIndex: 1 }}
+        >
+          <div
+            id={HeaderPortalSections.EXTRA_CONTENT}
+            className="m-auto max-w-screen-xl [&:has(*)]:pb-9"
+          />
+        </div>
+      ) : (
         <div
           id={HeaderPortalSections.EXTRA_CONTENT}
           className="m-auto max-w-screen-xl [&:has(*)]:pb-9"
         />
-      </div>
+      )}
     </>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import {
   ChevronDoubleLeftIcon,
@@ -16,10 +16,8 @@ import { useAggregateCounts } from '@/hooks/useAggregateCounts';
 import { getReportSections } from '@/sections/overview/constants';
 import { cn } from '@/utils/classname';
 import { addDays, subtractDays } from '@/utils/date.util';
-import { useMy } from '@/hooks/useMy';
 import { useAuth } from '@/state/auth';
 import { useGetFile } from '@/hooks/useFiles';
-import { MyFile } from '@/types';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
@@ -33,49 +31,19 @@ export const Overview = () => {
   const { me } = useAuth();
   const client_short = 'Acme Corp.';
   const [showDetails, setShowDetails] = useState(false);
-  const [date, setDate] = useState(TODAY);
   const { counts } = useAggregateCounts();
-  const [selectedFile, setSelectedFile] = useState<MyFile>();
   const jobsRunning = counts.jobsRunning;
-  const { data: files, isLoading } = useMy({
-    resource: 'file',
-    query: `#${me}/reports`,
+
+  const { data: fileContent, status } = useGetFile({
+    name: `#${me}/reports/report.latest`,
   });
 
-  const reportReady = useMemo(() => {
-    return files.length > 0;
-  }, [files]);
-
-  const { data: fileContent } = useGetFile(
-    {
-      name: selectedFile?.name,
-    },
-    {
-      enabled: !!selectedFile,
-    }
-  );
+  const reportReady = status === 'success' && fileContent;
 
   const reportSections = useMemo(
     () => getReportSections({ report: fileContent, data: { client_short } }),
     [fileContent]
   );
-
-  // example filename: #file#geoff.storbeck@praetorian.com/reports/1719519204.md
-  // get latest file by filename.md as filename is the unix timestamp
-  const latestFile = useMemo(() => {
-    return files.reduce((acc, file) => {
-      const timestamp = file.key.split('/').pop()?.split('.')[0];
-      if (!timestamp) return acc;
-      return acc < timestamp ? timestamp : acc;
-    }, '0');
-  }, [files]);
-
-  useEffect(() => {
-    if (!latestFile) return;
-    setSelectedFile(files.find(file => file.key.includes(latestFile)));
-  }, [latestFile]);
-
-  console.log('latest file', latestFile);
 
   const getBorderClass = (subHeading = '') => {
     if (subHeading.includes('Non-Critical')) {
@@ -89,7 +57,7 @@ export const Overview = () => {
     return '';
   };
 
-  if (isLoading) return <></>;
+  if (status === 'pending') return <></>;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -112,7 +80,6 @@ export const Overview = () => {
               </Button>
             </Tooltip>
           </h1>
-          <DateComp className="mt-3" date={date} setDate={setDate} />
         </div>
       )}
       <div

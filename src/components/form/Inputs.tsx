@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 
 import { Input, InputEvent, InputProps } from '@/components/form/Input';
 import { Option } from '@/components/form/Select';
 
 export type Values = Record<string, InputProps['value']>;
 type InputType = Omit<InputProps, 'onChange'>;
-export type InputsT = InputType[];
+export type InputsT = (InputType & { children?: ReactNode })[];
 
 interface Props {
   className?: string;
@@ -15,6 +15,9 @@ interface Props {
 
 export const getFormValues = (inputs: InputsT) => {
   return inputs.reduce((acc, current) => {
+    if (current.children) {
+      return acc;
+    }
     return {
       ...acc,
       [current.name]: current.value,
@@ -49,6 +52,10 @@ export const Inputs: React.FC<Props> = (props: Props) => {
   }
 
   return inputs.map(input => {
+    if (input.children) {
+      return input.children;
+    }
+
     return (
       <Input
         {...input}

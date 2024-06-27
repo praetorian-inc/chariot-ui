@@ -73,7 +73,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           disabled={isLoading || disabled}
         >
           {isLoading && (
-            <div className="absolute left-0 top-0 z-10 size-full rounded-[2px] bg-layer1">
+            <div className="bg-layer1 absolute left-0 top-0 z-10 size-full rounded-[2px]">
               <Loader isLoading className="size-full rounded-[2px]" />
             </div>
           )}

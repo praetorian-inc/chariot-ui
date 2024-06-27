@@ -486,10 +486,6 @@ export function Risks() {
                   type: 'label',
                 },
                 {
-                  label: 'divider',
-                  type: 'divider',
-                },
-                {
                   label: 'Triage',
                   icon: <AdjustmentsHorizontalIcon />,
                   onClick: () =>
@@ -517,10 +513,6 @@ export function Risks() {
                 {
                   label: 'Severity',
                   type: 'label',
-                },
-                {
-                  label: 'divider',
-                  type: 'divider',
                 },
                 {
                   label: 'Critical',

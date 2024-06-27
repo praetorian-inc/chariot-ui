@@ -108,7 +108,7 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
 
   return (
     <div
-      className={'flex h-full flex-col items-center overflow-hidden bg-layer1'}
+      className={'bg-layer1 flex h-full flex-col items-center overflow-hidden'}
     >
       <div
         className="grow-1 flex size-full justify-center"
@@ -160,11 +160,11 @@ export function Header() {
       >
         <div className="w-full max-w-screen-xl">
           <TopNavBar />
-          <hr className="h-px bg-layer0 opacity-15" />
+          <hr className="bg-layer0 h-px opacity-15" />
           <div className={cn('flex items-center justify-between gap-2')}>
             <Loader
               styleType="header"
-              className="my-9 h-8 w-1/2"
+              className="my-9 h-11 w-1/2"
               isLoading={statusAccount === 'pending'}
             >
               <BreadCrumbs breadcrumbs={breadcrumbs} />

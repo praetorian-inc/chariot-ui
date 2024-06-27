@@ -75,7 +75,7 @@ export const AddRisks = () => {
         onClick: handleSubmit,
       }}
     >
-      <div className="flex flex-row space-y-6 p-6 flex-nowrap">
+      <div className="flex flex-row flex-nowrap space-y-6 p-6">
         <div className="flex-1">
           <div>
             <h3 className="text-sm font-medium text-gray-700">
@@ -115,7 +115,7 @@ export const AddRisks = () => {
             <div className="absolute -left-[50%] top-[50%] w-full bg-layer0 text-center text-sm text-gray-300" />
           </div>
         </div>
-        <div className="flex flex-col justify-center p-2 flex-1">
+        <div className="flex flex-1 flex-col justify-center p-2">
           <form onSubmit={handleSubmit} className="space-y-4">
             <SearchAndSelectTypes
               type="assets"
@@ -151,7 +151,7 @@ export const AddRisks = () => {
                 setFormData(formData => ({ ...formData, ...values }))
               }
             />
-            <p className="mt-3 text-xs text-gray-500 text-center">
+            <p className="mt-3 text-center text-xs text-gray-500">
               Manually entered risks will be tracked but not automatically
               monitored.
             </p>

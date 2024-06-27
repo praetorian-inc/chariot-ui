@@ -158,8 +158,7 @@ const MenuItem: React.FC<
     return (
       <li
         className={cn(
-          'p-3 pb-0 text-xs font-medium text-default-light',
-          menuMarginClassName,
+          'p-3 pb-2 text-xs font-medium text-default-light sticky top-0 border-b border-default bg-layer0 z-10',
           className
         )}
       >

@@ -10,9 +10,9 @@ import { SeverityBadge, StatusBadge } from '@/components/GlobalSearch';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { Asset, GenericResource, Risk, RiskSeverity } from '@/types';
-import { useStorage } from '@/utils/storage/useStorage.util';
-import { capitalize } from '@/utils/lodash.util';
 import { depluralize } from '@/utils/depluralize.util';
+import { capitalize } from '@/utils/lodash.util';
+import { useStorage } from '@/utils/storage/useStorage.util';
 
 export interface SearchTypeProps<T extends keyof GenericResource> {
   type: T;
@@ -48,7 +48,6 @@ export function SearchByType<T extends keyof GenericResource>(
 
         return [
           { label: capitalize(genericSearchKey), type: 'label' },
-          { type: 'divider' },
           ...typeOptions,
         ] as DropdownMenu['items'];
       })

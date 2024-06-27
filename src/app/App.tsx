@@ -7,6 +7,7 @@ import { useInitAxiosInterceptors } from '@/hooks/useAxios';
 import { queryClient } from '@/queryclient';
 import AuthProvider from '@/state/auth';
 import { BreadCrumbsProvider } from '@/state/breadcrumbs';
+import { GlobalStateProvider } from '@/state/global.state';
 import { SearchProvider } from '@/state/search';
 import { QueryClientProvider } from '@/utils/api';
 
@@ -38,6 +39,7 @@ function ThirdPartyProviders({ children }: { children: React.ReactNode }) {
           autoClose={3000}
           draggablePercent={30}
           draggable
+          limit={3}
         />
         {children}
       </QueryClientProvider>
@@ -48,11 +50,13 @@ function ThirdPartyProviders({ children }: { children: React.ReactNode }) {
 // AppProviders is a wrapper for providers like AuthProvider, etc that can be used anywhere in the app.
 function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <SearchProvider>
-        <BreadCrumbsProvider>{children}</BreadCrumbsProvider>
-      </SearchProvider>
-    </AuthProvider>
+    <GlobalStateProvider>
+      <AuthProvider>
+        <SearchProvider>
+          <BreadCrumbsProvider>{children}</BreadCrumbsProvider>
+        </SearchProvider>
+      </AuthProvider>
+    </GlobalStateProvider>
   );
 }
 

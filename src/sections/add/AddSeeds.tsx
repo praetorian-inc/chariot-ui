@@ -7,16 +7,17 @@ import { Dropzone, Files } from '@/components/Dropzone';
 import { Modal } from '@/components/Modal';
 import { Tooltip } from '@/components/Tooltip';
 import { create as createSeed, useBulkAddSeed } from '@/hooks/useSeeds';
+import { useGlobalState } from '@/state/global.state';
 import { IntegrationType } from '@/types';
 import { AllowedSeedRegex, GetSeeds } from '@/utils/regex.util';
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-}
+export const AddSeeds = () => {
+  const {
+    modal: {
+      seed: { open: isOpen, onOpenChange },
+    },
+  } = useGlobalState();
 
-export const AddSeeds: React.FC<Props> = (props: Props) => {
-  const { isOpen, onClose } = props;
   const [seedInput, setSeedInput] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -52,6 +53,10 @@ export const AddSeeds: React.FC<Props> = (props: Props) => {
     bulkAddSeed(seeds);
   };
 
+  function onClose() {
+    onOpenChange(false);
+  }
+
   return (
     <Modal title="Add Seeds" open={isOpen} onClose={onClose} size="xl">
       <div className="flex flex-row space-y-6 p-6">
@@ -61,48 +66,39 @@ export const AddSeeds: React.FC<Props> = (props: Props) => {
               What is a Seed?
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              A seed can be a domain, IPv4, IPv6, CIDR range, or GitHub
-              organization. Add assets you want to monitor and we’ll start
-              discovering and assessing them.
+              A seed can be a domain, IP address, CIDR range, GitHub
+              organization, or integration. Add seeds directly, through
+              integrations, or via file upload to start monitoring and
+              discovering assets.
+            </p>
+            <p className="mt-3 text-sm text-gray-500">
+              For example, if you work for Acme Corporation, you might add seeds
+              such as:
+              <ul className="mt-1 list-disc pl-5 text-sm text-gray-500">
+                <li>
+                  Domains: <code>acme.com</code>, <code>mail.acme.com</code>
+                </li>
+                <li>
+                  IP Addresses: <code>8.8.8.8</code>
+                </li>
+                <li>
+                  CIDR Ranges: <code>8.8.8.0/24</code>
+                </li>
+                <li>
+                  GitHub Organizations:{' '}
+                  <code>https://github.com/acme-corp</code>
+                </li>
+                <li>
+                  Integrations: <code>NS1</code>, <code>AWS</code>
+                </li>
+              </ul>
+            </p>
+            <p className="mt-3 text-sm text-gray-500">
+              We will monitor these seeds, discover any associated assets you
+              may have missed, and identify risks, enhancing your security by
+              mitigating threats early.
             </p>
           </div>
-          <p className="mt-1 text-sm text-gray-500">
-            For example, if you work for Acme Corporation, you might add seeds
-            such as:
-            <ul className="mt-1 list-disc pl-5 text-sm text-gray-500">
-              <li>
-                Domains: <code>acme.com</code>, <code>mail.acme.com</code>,{' '}
-                <code>employee-login.acme.com</code>
-              </li>
-              <li>
-                IP Addresses: <code>8.8.8.8</code>
-              </li>
-              <li>
-                CIDR Ranges: <code>8.8.8.0/24</code>
-              </li>
-              <li>
-                GitHub Organizations: <code>https://github.com/acme-corp</code>
-              </li>
-            </ul>
-          </p>
-          <p className="mt-1 text-sm text-gray-500">
-            Connect with{' '}
-            <i>GitHub, AWS, NS1, Google Cloud, Azure, CrowdStrike,</i>
-            and <i>GitLab</i> through our{' '}
-            <Link
-              to={'/app/integrations?type=' + IntegrationType.AssetDiscovery}
-              className="underline"
-            >
-              integrations page
-            </Link>{' '}
-            to enhance visibility into your attack surface and improve our risk
-            detection capabilities.
-          </p>
-          <p className="mt-1 text-sm text-gray-500">
-            We will monitor these seeds, discover any associated assets you may
-            have missed, and identify risks, enhancing your security by
-            mitigating threats early.
-          </p>
 
           <div className="flex-1"></div>
 
@@ -158,7 +154,7 @@ export const AddSeeds: React.FC<Props> = (props: Props) => {
             maxFileSizeInMb={6}
             maxFileSizeMessage={
               <div className="flex items-center justify-center gap-1 text-xs italic text-gray-500">
-                Bulk Uploads Cannot Exceed 500 Seeds or 6MB in file size.
+                Uploads are limited to 500 seeds and 6MB.
                 <Tooltip
                   title={
                     <div className="max-w-xs p-4">

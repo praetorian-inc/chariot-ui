@@ -112,8 +112,7 @@ export const Users: React.FC = () => {
         noData={{
           description: 'No authorized users found.',
         }}
-        footer={false}
-        header={false}
+        isTableView={false}
       />
       <Button
         styleType="none"

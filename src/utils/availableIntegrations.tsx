@@ -313,6 +313,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     logo: '/icons/GoogleCloud.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
+    multiple: true,
     inputs: [
       {
         name: 'username',
@@ -357,6 +358,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     logo: '/icons/Azure.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
+    multiple: true,
     inputs: [
       {
         name: 'username',
@@ -392,7 +394,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     name: 'crowdstrike',
     displayName: 'CrowdStrike',
     description:
-      'Import your assets from CloudStrike and identify policy risks',
+      'Import your assets from CrowdStrike and identify policy risks',
     logo: '/icons/Crowdstrike.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery, IntegrationType.RiskIdentification],

@@ -11,7 +11,7 @@ import Files from '@/sections/Files';
 import Hello from '@/sections/Hello';
 import Integrations from '@/sections/Integrations';
 import Intelligence from '@/sections/Intelligence';
-import JobsTable from '@/sections/JobsTable';
+import Jobs from '@/sections/Jobs';
 import Login from '@/sections/Login';
 import Logout from '@/sections/Logout';
 import { Overview } from '@/sections/Overview';
@@ -56,13 +56,13 @@ const appRoutes = {
       element: <Logout />,
       title: 'logout',
     },
-    intelligence: {
+    widgets: {
       element: (
         <Body>
           <Intelligence />
         </Body>
       ),
-      title: 'Intelligence',
+      title: 'Widgets',
     },
     assets: {
       element: <Assets />,
@@ -77,8 +77,8 @@ const appRoutes = {
       title: 'Risks',
     },
     jobs: {
-      element: <JobsTable />,
-      title: 'Last 24 hours',
+      element: <Jobs />,
+      title: 'Jobs',
     },
     account: {
       element: (

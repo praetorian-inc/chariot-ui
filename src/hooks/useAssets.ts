@@ -86,3 +86,37 @@ export function mapAssetStataus(asset: Asset) {
     asset.status.length === 1 ? asset.status : asset.status[1]
   ) as AssetStatus;
 }
+
+export const useCreateAsset = () => {
+  const axios = useAxios();
+  const { invalidate: invalidateJob } = useMy(
+    { resource: 'job' },
+    { enabled: false }
+  );
+  const { invalidate: invalidateAssets } = useMy(
+    { resource: 'asset' },
+    { enabled: false }
+  );
+
+  return useMutation<Asset, Error, Pick<Asset, 'name'>>({
+    defaultErrorMessage: `Failed to add seed`,
+    mutationFn: async asset => {
+      const { data } = await axios.post(`/asset`, {
+        dns: asset.name,
+        name: asset.name,
+        status: AssetStatus.Active,
+      });
+
+      Snackbar({
+        title: `${asset.name} added`,
+        description: '',
+        variant: 'success',
+      });
+
+      invalidateJob();
+      invalidateAssets();
+
+      return data;
+    },
+  });
+};

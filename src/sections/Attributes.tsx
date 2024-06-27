@@ -1,4 +1,4 @@
-import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 import { Link } from '@/components/Link';
 import { Table } from '@/components/table/Table';
@@ -6,8 +6,8 @@ import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { useMy } from '@/hooks';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { useGlobalState } from '@/state/global.state';
 import { Attribute } from '@/types';
-import { exportContent } from '@/utils/download.util';
 import { prettyPrint } from '@/utils/prettyPrint.util';
 
 export function Attributes() {
@@ -19,6 +19,10 @@ export function Attributes() {
     fetchNextPage,
   } = useMy({ resource: 'attribute', filterByGlobalSearch: true });
   const { getAssetDrawerLink } = useOpenDrawer();
+
+  const {
+    modal: { attribute },
+  } = useGlobalState();
 
   const columns: Columns<Attribute> = [
     {
@@ -89,19 +93,14 @@ export function Attributes() {
       name={'attributes'}
       columns={columns}
       data={attributes}
-      actions={{
-        items: [
-          {
-            label: 'Export as JSON',
-            onClick: () => exportContent(attributes, 'attributes'),
-            icon: <DocumentArrowDownIcon className="size-5" />,
+      primaryAction={() => {
+        return {
+          label: 'Add Attribute',
+          onClick: () => {
+            attribute.onOpenChange(true);
           },
-          {
-            label: 'Export as CSV',
-            onClick: () => exportContent(attributes, 'attributes', 'csv'),
-            icon: <DocumentArrowDownIcon className="size-5" />,
-          },
-        ],
+          icon: <PlusIcon className="size-5" />,
+        };
       }}
       status={status}
       error={error}

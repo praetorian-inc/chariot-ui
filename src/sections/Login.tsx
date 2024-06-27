@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
-import { LockClosedIcon } from '@heroicons/react/24/solid';
 import { ConfigIniParser } from 'config-ini-parser';
 
 import { Button } from '@/components/Button';
@@ -10,6 +9,7 @@ import { useBackends } from '@/hooks';
 import { useAuth } from '@/state/auth';
 import { BackendType } from '@/types';
 import { getRoute } from '@/utils/route.util';
+import { LockClosedIcon } from '@heroicons/react/24/solid';
 
 function Login() {
   const navigate = useNavigate();
@@ -78,25 +78,25 @@ function Login() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center overflow-hidden rounded-[4px] bg-gray-50 font-sans">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-layer2 font-sans">
       <div
         {...dropzoneProps}
-        className={`w-full max-w-md rounded-b-[4px] ${isDragAccept ? 'border-2 border-dashed bg-gray-50' : 'bg-white'} border border-default`}
+        className={`w-full max-w-md ${isDragAccept ? 'border-2 border-dashed bg-layer2' : 'bg-white'} border border-default rounded`}
       >
         <input {...getInputProps()} />
         <img
           src="/icons/header.png"
           alt="Chariot logo"
-          className="rounded-t-[4px]"
+          className="w-full rounded-t"
         />
         <div className="p-8">
           <BackendSelector />
           <Button
-            className="mt-4 w-full rounded-[4px] bg-brand py-4 text-layer0"
+            className="mt-4 w-full bg-brand py-4 text-white rounded text-xl"
             onClick={() => handleSubmit('United States')}
           >
-            <LockClosedIcon className="mr-2 size-5" />
-            Continue to Login
+            <LockClosedIcon className="w-6 h-6 mr-1 text-brand-light" />
+            <p>Enter</p>
           </Button>
           <input
             ref={fileInputRef}
@@ -108,12 +108,17 @@ function Login() {
               }
             }}
           />
+          <p className="mt-8 text-center text-gray-500 text-sm">
+            Free Registration Available
+          </p>
+          <p className="w-[400px] text-center text-gray-500 text-xs">
+            By logging in, you agree to perform scans only on assets you own.
+          </p>
+          <p className="mt-6 w-[400px] text-center text-gray-500">
+            Continuous Threat Exposure Management
+          </p>
         </div>
       </div>
-      <p className="mt-6 w-[400px] text-center font-normal text-disabled">
-        By logging in, you agree to only perform vulnerability scans on assets
-        you own.
-      </p>
     </div>
   );
 }

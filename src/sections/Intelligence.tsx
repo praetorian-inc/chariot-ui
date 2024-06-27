@@ -181,6 +181,7 @@ const Intelligence: React.FC = () => {
         className="bg-header-light text-header-light"
         startIcon={<PlusIcon className="size-4" />}
         label="Add Widget"
+        style={{ zIndex: 1 }}
       >
         <div className="w-[300px]">
           <Input

@@ -12,6 +12,7 @@ export enum UniqueQueryKeys {
   GET_FILE = 'GET_FILE',
   COUNTS = 'COUNTS',
   GAVATAR_PROFILE_PICTURE = 'GAVATAR_PROFILE_PICTURE',
+  KEV = 'KEV',
 }
 
 export enum JobStatus {
@@ -113,6 +114,7 @@ export const FileLabels: Record<string, string> = {
   report: 'Reports',
   proof: 'Proof of Exploits',
   manual: 'Manually Uploaded Files',
+  cti: 'Threat Intelligence',
 };
 
 export const AssetLabels: Record<string, string> = {
@@ -370,7 +372,6 @@ export interface MyResource {
   seed: Seed[];
   attribute: Attribute[];
   file: MyFile[];
-  threat: Threat[];
 }
 
 export interface GenericResource {

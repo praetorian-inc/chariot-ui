@@ -72,7 +72,7 @@ export function TableCellContent<TData>(props: {
                   event.stopPropagation();
                 }}
                 className="flex overflow-hidden"
-                buttonClass="flex overflow-hidden"
+                buttonClass="flex overflow-hidden p-0"
               >
                 {children}
               </Link>

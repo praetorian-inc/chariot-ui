@@ -1,11 +1,27 @@
+import React from 'react';
 import {
-  CircleStackIcon,
   CommandLineIcon,
   ExclamationTriangleIcon,
+  GlobeAltIcon,
   ServerStackIcon,
-} from '@heroicons/react/24/solid';
+} from '@heroicons/react/24/outline';
 
-export const SeedsIcon = CircleStackIcon;
-export const AssetsIcon = ServerStackIcon;
-export const RisksIcon = ExclamationTriangleIcon;
-export const AttributesIcon = CommandLineIcon;
+interface IconProps {
+  className?: string;
+}
+
+export const SeedsIcon: React.FC<IconProps> = ({ className }) => (
+  <GlobeAltIcon className={className} />
+);
+
+export const AssetsIcon: React.FC<IconProps> = ({ className }) => (
+  <ServerStackIcon className={className} />
+);
+
+export const RisksIcon: React.FC<IconProps> = ({ className }) => (
+  <ExclamationTriangleIcon className={className} />
+);
+
+export const AttributesIcon: React.FC<IconProps> = ({ className }) => (
+  <CommandLineIcon className={className} />
+);

@@ -6,10 +6,12 @@ import MDEditor from '@uiw/react-md-editor';
 
 import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
+import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { Drawer } from '@/components/Drawer';
 import { Dropdown } from '@/components/Dropdown';
 import { HorizontalSplit } from '@/components/HorizontalSplit';
 import { HorizontalTimeline } from '@/components/HorizontalTimeline';
+import { RisksIcon } from '@/components/icons';
 import { UnionIcon } from '@/components/icons/Union.icon';
 import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
@@ -18,6 +20,7 @@ import { Tooltip } from '@/components/Tooltip';
 import { DetailsListContainer } from '@/components/ui/DetailsListContainer';
 import { RiskDropdown } from '@/components/ui/RiskDropdown';
 import { useMy } from '@/hooks';
+import { useGetKev } from '@/hooks/kev';
 import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useReRunJob } from '@/hooks/useJobs';
@@ -139,15 +142,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   );
   const { data: riskNameGenericSearch, status: riskNameGenericSearchStatus } =
     useGenericSearch({ query: name }, { enabled: open });
+  const { data: knownExploitedThreats = [] } = useGetKev({ enabled: open });
 
   const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
-
-  const { data: threats } = useMy({
-    resource: 'threat',
-  });
-  const knownExploitedThreats = useMemo(() => {
-    return threats.map(threat => threat.name);
-  }, [JSON.stringify(threats)]);
 
   const hostRef = references.find(ref => ref.class === 'host');
   const [ip, port] = hostRef?.name?.split(/:(?=[^:]*$)/) ?? '';
@@ -225,7 +222,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
             menu={{
               items: [
                 {
-                  label: 'Show References',
+                  label: 'References',
                   to: {
                     pathname: getRoute(['app', 'references']),
                     search: `?${StorageKey.HASH_SEARCH}=${encodeURIComponent(referenceFilter)}`,
@@ -275,27 +272,30 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
             title={risk.name}
             subtitle={risk.dns}
             prefix={
-              knownExploitedThreats.includes(risk.name) && (
-                <Tooltip
-                  title={
-                    <span>
-                      This risk was found in the{' '}
-                      <a
-                        href={`https://nvd.nist.gov/vuln/detail/${risk.name}`}
-                        className="underline"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        CISA Known Exploited Vulnerabilities catalog
-                      </a>
-                      , which helps organizations prioritize and manage
-                      vulnerabilities that are actively being exploited.
-                    </span>
-                  }
-                >
-                  <ExclamationCircleIcon className="size-5 text-error" />
-                </Tooltip>
-              )
+              <div className="flex flex-row items-center space-x-1">
+                <RisksIcon className="size-5" />
+                {knownExploitedThreats.includes(risk.name) && (
+                  <Tooltip
+                    title={
+                      <span>
+                        This risk was found in the{' '}
+                        <a
+                          href={`https://nvd.nist.gov/vuln/detail/${risk.name}`}
+                          className="underline"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          CISA Known Exploited Vulnerabilities catalog
+                        </a>
+                        , which helps organizations prioritize and manage
+                        vulnerabilities that are actively being exploited.
+                      </span>
+                    }
+                  >
+                    <ExclamationCircleIcon className="size-5 text-error" />
+                  </Tooltip>
+                )}
+              </div>
             }
           />
           <HorizontalTimeline
@@ -307,26 +307,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
           <HorizontalSplit
             leftContainer={
               <>
-                <Accordian title="Risk History" contentClassName="pt-0">
-                  <Timeline
-                    items={[
-                      ...(history
-                        ?.map((item, itemIndex) => {
-                          const { title, updated } = getHistoryDiff(
-                            item,
-                            itemIndex === 0
-                          );
-                          return {
-                            title,
-                            description: updated,
-                            icon:
-                              itemIndex === 0 ? <CheckCircleIcon /> : undefined,
-                          };
-                        })
-                        .reverse() || []),
-                    ]}
-                  />
-                </Accordian>
                 <Accordian
                   title="Description & Remediation"
                   titlerightContainer={
@@ -418,6 +398,26 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                     </>
                   </Loader>
                 </Accordian>
+                <Accordian title="Risk History" contentClassName="pt-0">
+                  <Timeline
+                    items={[
+                      ...(history
+                        ?.map((item, itemIndex) => {
+                          const { title, updated } = getHistoryDiff(
+                            item,
+                            itemIndex === 0
+                          );
+                          return {
+                            title,
+                            description: updated,
+                            icon:
+                              itemIndex === 0 ? <CheckCircleIcon /> : undefined,
+                          };
+                        })
+                        .reverse() || []),
+                    ]}
+                  />
+                </Accordian>
               </>
             }
             rightContainer={
@@ -429,16 +429,8 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       label: '',
                       value: (
                         <div className="flex gap-2 text-sm">
-                          <RiskDropdown
-                            type="status"
-                            className="justify-center py-2"
-                            risk={risk}
-                          />
-                          <RiskDropdown
-                            type="severity"
-                            className="justify-center py-2"
-                            risk={risk}
-                          />
+                          <RiskDropdown type="status" risk={risk} />
+                          <RiskDropdown type="severity" risk={risk} />
                         </div>
                       ),
                     },
@@ -459,16 +451,18 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       value:
                         urlsImpacted?.length === 0
                           ? ''
-                          : urlsImpacted?.map(url => (
-                              <a
-                                key={url}
-                                href={url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="cursor-hand block text-brand"
-                              >
-                                {url}
-                              </a>
+                          : urlsImpacted?.map((url, index) => (
+                              <CopyToClipboard key={index} textToCopy={url}>
+                                <a
+                                  key={url}
+                                  href={url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="cursor-hand block text-brand"
+                                >
+                                  {url}
+                                </a>
+                              </CopyToClipboard>
                             )),
                     },
                     {

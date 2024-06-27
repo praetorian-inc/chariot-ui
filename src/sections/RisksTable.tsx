@@ -1,28 +1,46 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowDownOnSquareStackIcon,
   ChevronDownIcon,
   DocumentTextIcon,
+  LockOpenIcon,
+} from '@heroicons/react/24/outline';
+import {
+  AdjustmentsHorizontalIcon,
+  Bars2Icon,
+  ChevronDoubleDownIcon,
+  ChevronDoubleUpIcon,
+  ChevronUpIcon,
+  LockClosedIcon,
 } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
+import { RisksIcon } from '@/components/icons';
 import { HorseIcon } from '@/components/icons/Horse.icon';
 import { SpinnerIcon } from '@/components/icons/Spinner.icon';
 import { MenuItemProps } from '@/components/Menu';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
-import { FilterCounts } from '@/components/ui/FilterCounts';
+import { Tooltip } from '@/components/Tooltip';
+import { ClosedStateModal } from '@/components/ui/ClosedStateModal';
 import {
   RiskDropdown,
   riskStatusFilterOptions,
 } from '@/components/ui/RiskDropdown';
+import { useGetKev } from '@/hooks/kev';
 import { useFilter } from '@/hooks/useFilter';
 import { useMy } from '@/hooks/useMy';
+import { useBulkUpdateRisk } from '@/hooks/useRisks';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
-import { Risk, RiskStatus, RiskStatusLabel, SeverityDef } from '@/types';
+import { useGlobalState } from '@/state/global.state';
+import {
+  Risk,
+  RiskSeverity,
+  RiskStatus,
+  RiskStatusLabel,
+  SeverityDef,
+} from '@/types';
 import { useMergeStatus } from '@/utils/api';
-import { exportContent } from '@/utils/download.util';
 import { Regex } from '@/utils/regex.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch } from '@/utils/url.util';
@@ -50,18 +68,17 @@ const getFilteredRisksByCISA = (
   risks: Risk[],
   knownExploitedThreats?: string[]
 ) => {
-  let filteredRisks = risks;
   if (knownExploitedThreats && knownExploitedThreats.length > 0) {
-    filteredRisks = filteredRisks.filter(risk => {
-      const matchedCVEID = Regex.CVE_ID.exec(risk.name)?.[0];
+    return risks.filter(risk => {
+      const parsedCVEIDFromRisk = Regex.CVE_ID.exec(risk.name)?.[0];
 
       return (
-        (matchedCVEID && knownExploitedThreats.includes(matchedCVEID)) ||
-        knownExploitedThreats.includes(risk.name)
+        parsedCVEIDFromRisk &&
+        knownExploitedThreats.includes(parsedCVEIDFromRisk)
       );
     });
   }
-  return filteredRisks;
+  return [];
 };
 
 const getFilteredRisks = (
@@ -112,6 +129,11 @@ const getFilteredRisks = (
 
 export function Risks() {
   const { getRiskDrawerLink } = useOpenDrawer();
+  const updateRisk = useBulkUpdateRisk();
+
+  const {
+    modal: { risk },
+  } = useGlobalState();
 
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [statusFilter, setStatusesFilter] = useFilter<RiskStatus[]>(
@@ -122,9 +144,12 @@ export function Risks() {
   const [classFilter, setClassFilter] = useFilter([''], setSelectedRows);
   const [sourceFilter, setSourceFilter] = useFilter([''], setSelectedRows);
 
-  const { data: threats, status: threatsStatus } = useMy({
-    resource: 'threat',
-  });
+  const [isClosedSubStateModalOpen, setIsClosedSubStateModalOpen] =
+    useState(false);
+
+  const { data: knownExploitedThreats = [], status: threatsStatus } =
+    useGetKev();
+
   const {
     data: risks = [],
     status: risksStatus,
@@ -137,10 +162,6 @@ export function Risks() {
   });
 
   const status = useMergeStatus(risksStatus, threatsStatus);
-
-  const knownExploitedThreats = useMemo(() => {
-    return threats.map(threat => threat.name);
-  }, [JSON.stringify(threats)]);
 
   const filteredRisks = useMemo(() => {
     let filteredRisks = risks;
@@ -182,30 +203,20 @@ export function Risks() {
         label: 'Status',
         id: 'status',
         className: 'text-left',
-        fixedWidth: 212,
-        cell: (risk: Risk, selectedRowsData?: Risk[]) => {
+        fixedWidth: 200,
+        cell: (risk: Risk) => {
           return (
-            <div className="border-1 flex justify-start ">
-              <RiskDropdown
-                type="status"
-                risk={risk}
-                selectedRowsData={selectedRowsData}
-              />
-            </div>
+            <RiskDropdown type="status" risk={risk} className="w-[170px]" />
           );
         },
       },
       {
         label: 'Severity',
         id: 'status',
-        fixedWidth: 120,
-        cell: (risk: Risk, selectedRowsData?: Risk[]) => {
+        fixedWidth: 140,
+        cell: (risk: Risk) => {
           return (
-            <RiskDropdown
-              type="severity"
-              risk={risk}
-              selectedRowsData={selectedRowsData}
-            />
+            <RiskDropdown type="severity" risk={risk} className="w-[120px]" />
           );
         },
       },
@@ -231,14 +242,16 @@ export function Risks() {
         label: 'Proof',
         id: '',
         cell: risk => (
-          <Link
-            to={generatePathWithSearch({
-              appendSearch: [[StorageKey.POE, `${risk.dns}/${risk.name}`]],
-            })}
-            className="cursor-pointer"
-          >
-            <DocumentTextIcon className="size-5 text-default-light" />
-          </Link>
+          <Tooltip title="View Proof">
+            <Link
+              to={generatePathWithSearch({
+                appendSearch: [[StorageKey.POE, `${risk.dns}/${risk.name}`]],
+              })}
+              className="cursor-pointer"
+            >
+              <DocumentTextIcon className="size-5 text-default-light" />
+            </Link>
+          </Tooltip>
         ),
         align: 'center',
         fixedWidth: 70,
@@ -424,14 +437,14 @@ export function Risks() {
             />
             <Dropdown
               styleType="header"
-              label={getFilterLabel('Sources', sourceFilter, [
+              label={getFilterLabel('Threat Intel', sourceFilter, [
                 { label: 'CISA KEV', value: 'cisa_kev' },
               ])}
               endIcon={DownIcon}
               menu={{
                 items: [
                   {
-                    label: 'All Sources',
+                    label: 'All Threat Intel',
                     labelSuffix: risksExceptSource.length,
                     value: '',
                   },
@@ -453,9 +466,111 @@ export function Risks() {
                 multiSelect: true,
               }}
             />
-            <FilterCounts count={filteredRisks.length} type="Risks" />
           </div>
         }
+        primaryAction={() => {
+          return {
+            label: 'Add Risk',
+            icon: <RisksIcon className="size-5" />,
+            onClick: () => {
+              risk.onOpenChange(true);
+            },
+          };
+        }}
+        actions={(selectedRows: Risk[]) => {
+          return {
+            menu: {
+              items: [
+                {
+                  label: 'Status',
+                  type: 'label',
+                },
+                {
+                  label: 'divider',
+                  type: 'divider',
+                },
+                {
+                  label: 'Triage',
+                  icon: <AdjustmentsHorizontalIcon />,
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      status: RiskStatus.Triaged,
+                    }),
+                },
+                {
+                  label: 'Open',
+                  icon: <LockOpenIcon />,
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      status: RiskStatus.Opened,
+                    }),
+                },
+                {
+                  label: 'Closed',
+                  icon: <LockClosedIcon />,
+                  onClick: () => {
+                    setIsClosedSubStateModalOpen(true);
+                  },
+                },
+                {
+                  label: 'Severity',
+                  type: 'label',
+                },
+                {
+                  label: 'divider',
+                  type: 'divider',
+                },
+                {
+                  label: 'Critical',
+                  icon: <ChevronDoubleUpIcon />,
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.Critical,
+                    }),
+                },
+                {
+                  label: 'High',
+                  icon: <ChevronUpIcon />,
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.High,
+                    }),
+                },
+                {
+                  label: 'Medium',
+                  icon: <Bars2Icon />,
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.Medium,
+                    }),
+                },
+                {
+                  label: 'Low',
+                  icon: <ChevronDownIcon />,
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.Low,
+                    }),
+                },
+                {
+                  label: 'Informational',
+                  icon: <ChevronDoubleDownIcon />,
+                  onClick: () =>
+                    updateRisk({
+                      selectedRows,
+                      severity: RiskSeverity.Info,
+                    }),
+                },
+              ],
+            },
+          };
+        }}
         columns={columns}
         data={filteredRisks}
         status={status}
@@ -476,19 +591,17 @@ export function Risks() {
         }}
         isFetchingNextPage={isFetchingNextPage}
         fetchNextPage={fetchNextPage}
-        actions={{
-          items: [
-            {
-              label: 'Export as JSON',
-              onClick: () => exportContent(risks, 'risks'),
-              icon: <ArrowDownOnSquareStackIcon className="size-5" />,
-            },
-            {
-              label: 'Export as CSV',
-              onClick: () => exportContent(risks, 'risks', 'csv'),
-              icon: <ArrowDownOnSquareStackIcon className="size-5" />,
-            },
-          ],
+      />
+      <ClosedStateModal
+        isOpen={isClosedSubStateModalOpen}
+        onClose={() => setIsClosedSubStateModalOpen(false)}
+        onStatusChange={({ status }) => {
+          updateRisk({
+            selectedRows: selectedRows
+              .map(i => filteredRisks[Number(i)])
+              .filter(Boolean),
+            status,
+          });
         }}
       />
     </div>

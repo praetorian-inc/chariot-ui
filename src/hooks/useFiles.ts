@@ -93,6 +93,28 @@ export function useDownloadFile() {
   });
 }
 
+export function useOpenFile() {
+  const axios = useAxios();
+
+  return useMutation({
+    defaultErrorMessage: 'Failed to load file',
+    mutationFn: async (props: DownloadFilesProps) => {
+      try {
+        const res = await axios.get(`/file`, {
+          params: {
+            name: props.name,
+          },
+          responseType: 'blob',
+        });
+
+        return res.data;
+      } catch (error) {
+        console.log('retrying', error);
+      }
+    },
+  });
+}
+
 export interface GetFilesProps {
   name?: string;
 }

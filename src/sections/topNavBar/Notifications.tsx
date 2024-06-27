@@ -6,6 +6,7 @@ import { JobStatus } from '@/types';
 import { sToMs } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
+import { cn } from '@/utils/classname';
 
 interface Props {
   onNotify?: (showNotification: boolean) => void;
@@ -50,7 +51,10 @@ export const Notifications: React.FC<Props> = ({ onNotify, onClick }) => {
         <span className="relative inline-flex">
           <button
             type="button"
-            className="inline-flex items-center  text-sm font-semibold leading-6 text-white transition duration-150 ease-in-out"
+            className={cn(
+              'inline-flex items-center  text-sm font-semibold leading-6 transition duration-150 ease-in-out',
+              runningJobs === 0 ? 'text-gray-500' : 'text-white'
+            )}
             onClick={onClick}
           >
             {isPending ? '' : runningJobs}

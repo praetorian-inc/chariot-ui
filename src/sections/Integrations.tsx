@@ -1,15 +1,15 @@
 import { useCallback, useMemo, useState } from 'react';
-import { MinusCircleIcon } from '@heroicons/react/24/outline';
-import { ChevronDownIcon, PlusCircleIcon } from '@heroicons/react/24/solid';
+import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import { twMerge } from 'tailwind-merge';
 
 import { Button } from '@/components/Button';
 import { Dropdown } from '@/components/Dropdown';
 import { Body } from '@/components/ui/Body';
-import { FilterCounts } from '@/components/ui/FilterCounts';
 import { IntegrationModal } from '@/components/ui/IntegrationModal';
 import { useModifyAccount, useMy } from '@/hooks';
 import { useFilter } from '@/hooks/useFilter';
+import { RenderHeaderExtraContentSection } from '@/sections/AuthenticatedApp';
 import { Account, IntegrationType } from '@/types';
 import { partition } from '@/utils/array.util';
 import {
@@ -117,47 +117,40 @@ const Integrations: React.FC = () => {
   });
 
   return (
-    <Body
-      filters={
-        <div className="flex gap-4">
-          <Dropdown
-            styleType="header"
-            label={integrationTypeFilter || 'All Integrations'}
-            endIcon={
-              <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
-            }
-            menu={{
-              items: [
-                {
-                  label: 'All Integrations',
-                  value: '',
-                  labelSuffix: filteredIntegrations.length,
-                },
-                {
-                  label: 'Divider',
-                  type: 'divider',
-                },
-                ...Object.values(IntegrationType).map(integrationType => {
-                  return {
-                    label: integrationType,
-                    value: integrationType,
-                    labelSuffix: integrationCounts[integrationType],
-                  };
-                }),
-              ],
-              onClick: value => {
-                setIntegrationTypeFilter(value || '');
+    <Body>
+      <RenderHeaderExtraContentSection>
+        <Dropdown
+          styleType="header"
+          label={integrationTypeFilter || 'All Integrations'}
+          endIcon={
+            <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+          }
+          menu={{
+            items: [
+              {
+                label: 'All Integrations',
+                value: '',
+                labelSuffix: filteredIntegrations.length,
               },
-              value: integrationTypeFilter,
-            }}
-          />
-          <FilterCounts
-            count={filteredIntegrations.length}
-            type="Integrations"
-          />
-        </div>
-      }
-    >
+              {
+                label: 'Divider',
+                type: 'divider',
+              },
+              ...Object.values(IntegrationType).map(integrationType => {
+                return {
+                  label: integrationType,
+                  value: integrationType,
+                  labelSuffix: integrationCounts[integrationType],
+                };
+              }),
+            ],
+            onClick: value => {
+              setIntegrationTypeFilter(value || '');
+            },
+            value: integrationTypeFilter,
+          }}
+        />
+      </RenderHeaderExtraContentSection>
       <div className="justify-left flex size-full h-max flex-wrap gap-5 overflow-x-auto pb-4">
         {filteredIntegrations.map(integrationMeta => {
           const connectedAccounts = integrationList.filter(
@@ -173,6 +166,7 @@ const Integrations: React.FC = () => {
             <div
               key={integration.id}
               className="w-[302px] max-w-[302px] rounded-[2px] bg-layer0 shadow"
+              style={{ zIndex: 1 }}
             >
               <div className="relative flex flex-col items-center p-8">
                 <img
@@ -204,9 +198,7 @@ const Integrations: React.FC = () => {
                     'grow basis-1/2 py-4 bg-layer0 rounded-none border-t-2 border-gray-100',
                     integration.connected &&
                       'text-red-600 hover:text-red-500 rounded-br-[2px]',
-                    !integration.connected && !isComingSoon
-                      ? 'text-brand hover:text-brand-hover'
-                      : 'cursor-default'
+                    isComingSoon && 'cursor-default text-disabled'
                   )}
                   startIcon={
                     integration.connected ? (
@@ -217,7 +209,7 @@ const Integrations: React.FC = () => {
                   }
                   onClick={() => !isComingSoon && handleCTA(integration)}
                 >
-                  {isLoading ? 'Loading...' : getButtonText(integration)}
+                  {getButtonText(integration)}
                 </Button>
               </div>
             </div>

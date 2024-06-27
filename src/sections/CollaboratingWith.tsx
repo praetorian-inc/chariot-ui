@@ -119,24 +119,29 @@ export const CollaboratingWith = () => {
         noData={{
           description: 'No collaborating organizations found.',
         }}
-        header={false}
-        footer={false}
+        isTableView={false}
         error={null}
-        rowActions={{
-          items: [
-            {
-              label: 'Export as JSON',
-              onClick: rows =>
-                rows.forEach(row => downloadRisks(row.email, 'json')),
-              icon: <ArrowDownOnSquareStackIcon className="size-5" />,
+        rowActions={(data: TableData) => {
+          return {
+            menu: {
+              items: [
+                {
+                  label: 'Export',
+                  onClick: () => {
+                    downloadRisks(data.email, 'json');
+                  },
+                  icon: <ArrowDownOnSquareStackIcon />,
+                },
+                {
+                  label: 'Export (as csv)',
+                  onClick: () => {
+                    downloadRisks(data.email, 'csv');
+                  },
+                  icon: <ArrowDownOnSquareStackIcon />,
+                },
+              ],
             },
-            {
-              label: 'Export as CSV',
-              onClick: rows =>
-                rows.forEach(row => downloadRisks(row.email, 'csv')),
-              icon: <ArrowDownOnSquareStackIcon className="size-5" />,
-            },
-          ],
+          };
         }}
       />
     </div>

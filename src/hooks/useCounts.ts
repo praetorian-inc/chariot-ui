@@ -49,7 +49,7 @@ export const useCounts = <ResourceKey extends MyResourceKey>(
   return useQuery<Statistics, Error>({
     ...options,
     defaultErrorMessage: `Failed to fetch ${props.resource} counts`,
-    refetchInterval: sToMs(10),
+    refetchInterval: sToMs(30),
     queryKey,
     queryFn: async () => {
       const { data } = await axios.get(`/my/count`, {

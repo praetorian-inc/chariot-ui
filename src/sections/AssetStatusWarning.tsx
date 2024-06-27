@@ -1,4 +1,8 @@
-import { ArrowUpCircleIcon, PauseCircleIcon } from '@heroicons/react/24/solid';
+import {
+  BoltIcon,
+  ArrowUpCircleIcon,
+  PauseCircleIcon,
+} from '@heroicons/react/24/solid';
 
 import { Modal } from '@/components/Modal';
 import { AssetStatus } from '@/types';
@@ -19,15 +23,14 @@ export function AssetStatusWarning({
   if (status === AssetStatus.ActiveHigh) {
     return (
       <Modal
-        title="Change Status to High"
+        title="Change Status to High Priority"
         open={open}
         onClose={onClose}
         style="dialog"
-        icon={<ArrowUpCircleIcon className="size-5" />}
+        icon={<BoltIcon className="size-5" />}
         footer={{
           text: 'Change Status',
           className: 'w-fit',
-          startIcon: <ArrowUpCircleIcon className="size-4" />,
           onClick: onConfirm,
         }}
       >

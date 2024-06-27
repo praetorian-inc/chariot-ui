@@ -20,4 +20,5 @@ export const getQueryKey = {
     UniqueQueryKeys.GAVATAR_PROFILE_PICTURE,
     email,
   ],
+  getKev: () => [UniqueQueryKeys.KEV],
 };

@@ -1,12 +1,19 @@
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
-import { XMarkIcon } from '@heroicons/react/20/solid';
 
 import { BreadCrumbs } from '@/components/BreadCrumbs';
+import ImpersonationBanner from '@/components/ImpersonationBanner';
 import { Loader } from '@/components/Loader';
 import { ShortcutsHelper } from '@/components/ui/Shortcuts';
 import { useMy } from '@/hooks';
 import { useGetDisplayName } from '@/hooks/useAccounts';
+import { AddAsset } from '@/sections/add/AddAsset';
+import { AddAttribute } from '@/sections/add/AddAttribute';
+import { AddFile } from '@/sections/add/AddFile';
+import { AddReference } from '@/sections/add/AddReference';
+import { AddRisks } from '@/sections/add/AddRisks';
+import { AddSeeds } from '@/sections/add/AddSeeds';
 import { DetailsDrawer } from '@/sections/detailsDrawer';
 import { NewUserSeedModal } from '@/sections/NewUserSeedModal';
 import { ProofOfExploit } from '@/sections/ProofOfExploit';
@@ -111,54 +118,36 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
       >
         {children}
       </div>
-
       {shortcutsHelper && (
         <ShortcutsHelper onClose={() => setShortcutsHelper(false)} />
       )}
       <DetailsDrawer />
+      <ImpersonationBanner />
+      <NewUserSeedModal />
+      <ProofOfExploit />
+      <AddSeeds />
+      <AddRisks />
+      <AddAsset />
+      <AddFile />
+      <AddAttribute />
+      <AddReference />
       {accountsStatus === 'success' && showUpgrade && <Upgrade />}
     </div>
   );
 }
 
-const ImpersonationBanner: React.FC = () => {
-  const { friend, stopImpersonation } = useAuth();
-
-  if (friend?.email === '') {
-    return null;
-  }
-
-  return (
-    <div className="absolute top-0 z-[99999] flex w-full items-center bg-brand px-10 py-1 text-xs text-white">
-      <button
-        className="hover:bg-brand-hover mr-2 w-4 rounded text-center"
-        onClick={stopImpersonation}
-      >
-        <XMarkIcon className="mr-2 size-4" />
-      </button>
-      <div>
-        Viewing{' '}
-        <span className="italic">
-          {friend?.displayName?.length > 0 ? friend.displayName : friend.email}
-        </span>
-      </div>
-    </div>
-  );
+const HeaderPortalSections = {
+  BREADCRUMBS: 'header-breadcrumbs-section',
+  EXTRA_CONTENT: 'header-extra-content-section',
 };
 
-interface HeaderProps {
-  filters?: JSX.Element;
-}
-export function Header({ filters }: HeaderProps) {
+export function Header() {
   const { friend } = useAuth();
   const { status: statusAccount } = useMy({ resource: 'account' });
   const { breadcrumbs } = useBreadCrumbsContext();
 
   return (
     <>
-      <ImpersonationBanner />
-      <NewUserSeedModal />
-      <ProofOfExploit />
       <div
         className={cn(
           `${friend?.email?.length > 0 && 'pt-[10px]'} flex flex-col items-center w-full bg-header text-header px-4`
@@ -167,7 +156,6 @@ export function Header({ filters }: HeaderProps) {
         <div className="w-full max-w-screen-xl">
           <TopNavBar />
           <hr className="h-px bg-layer0 opacity-15" />
-
           <div className={cn('flex items-center justify-between gap-2')}>
             <Loader
               styleType="header"
@@ -176,14 +164,50 @@ export function Header({ filters }: HeaderProps) {
             >
               <BreadCrumbs breadcrumbs={breadcrumbs} />
             </Loader>
-            <div id="table-buttons" />
+            <div id={HeaderPortalSections.BREADCRUMBS} />
           </div>
-          {!filters && <div id="table-filters" />}
-          {filters && <div className="mb-9">{filters}</div>}
         </div>
+      </div>
+      <div className="sticky top-0 w-full bg-header pt-4" style={{ zIndex: 1 }}>
+        <div
+          id={HeaderPortalSections.EXTRA_CONTENT}
+          className="m-auto max-w-screen-xl [&:has(*)]:pb-9"
+        />
       </div>
     </>
   );
+}
+
+export function RenderHeaderBreadcrumbSection({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const BreadcrumbSection = document.getElementById(
+    HeaderPortalSections.BREADCRUMBS
+  );
+
+  if (!BreadcrumbSection) {
+    return null;
+  }
+
+  return createPortal(children, BreadcrumbSection);
+}
+
+export function RenderHeaderExtraContentSection({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const ExtraContentSection = document.getElementById(
+    HeaderPortalSections.EXTRA_CONTENT
+  );
+
+  if (!ExtraContentSection) {
+    return null;
+  }
+
+  return createPortal(children, ExtraContentSection);
 }
 
 function AuthenticatedAppProviders(props: { children: ReactNode }) {

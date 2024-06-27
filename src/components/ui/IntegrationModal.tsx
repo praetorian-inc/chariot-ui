@@ -87,7 +87,7 @@ export const IntegrationModal = (props: Props) => {
               Recent Activity
             </Button>
           ) : undefined,
-        text: updateForm ? 'Update' : 'Add',
+        text: updateForm ? 'Update' : 'Connect',
         form: 'integration-modal',
       }}
       size={'lg'}

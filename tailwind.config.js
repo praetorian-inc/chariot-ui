@@ -105,6 +105,7 @@ module.exports = {
       },
       layer0: addAlphaValue('var(--layer0)'),
       layer1: addAlphaValue('var(--layer1)'),
+      layer2: addAlphaValue('var(--layer2)'),
     },
     textColor: theme => {
       return {

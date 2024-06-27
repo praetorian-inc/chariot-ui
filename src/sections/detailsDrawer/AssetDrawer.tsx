@@ -1,14 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowUpCircleIcon } from '@heroicons/react/24/solid';
 
 import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
 import { HorizontalSplit } from '@/components/HorizontalSplit';
+import { AssetsIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { Table } from '@/components/table/Table';
-import { Tooltip } from '@/components/Tooltip';
-import { AssetStatusChip } from '@/components/ui/AssetStatusChip';
+import { AssetStatusText } from '@/components/ui/AssetStatusChip';
 import { DetailsListContainer } from '@/components/ui/DetailsListContainer';
 import { useMy } from '@/hooks';
 import { useUpdateAsset } from '@/hooks/useAssets';
@@ -16,7 +15,7 @@ import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
-import { Asset, AssetStatus } from '@/types';
+import { Asset } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
@@ -130,15 +129,9 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
       <Loader isLoading={isInitialLoading} type="spinner">
         <div className="flex h-[calc(100%-24px)] flex-col gap-8">
           <DetailsDrawerHeader
-            prefix={
-              asset.status === AssetStatus.ActiveHigh && (
-                <Tooltip title="High Priority Asset" placement="left">
-                  <ArrowUpCircleIcon className="size-5 text-brand" />
-                </Tooltip>
-              )
-            }
             title={asset.name}
             subtitle={asset.dns}
+            prefix={<AssetsIcon className="size-5" />}
           />
           <HorizontalSplit
             leftContainer={
@@ -164,8 +157,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                       },
                     ]}
                     error={null}
-                    header={false}
-                    footer={false}
+                    isTableView={false}
                   />
                   {hasMorelinkedHostnames > 0 && (
                     <div className="flex w-full">
@@ -206,8 +198,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                       },
                     ]}
                     error={null}
-                    header={false}
-                    footer={false}
+                    isTableView={false}
                   />
                   {hasMoreLinkedIps > 0 && (
                     <div className="flex w-full">
@@ -231,14 +222,12 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                   title="Asset Details"
                   list={[
                     {
-                      label: '',
+                      label: 'Status',
                       value: (
-                        <div className="flex gap-2 text-sm">
-                          <AssetStatusChip
-                            className="p-2"
-                            status={asset.status}
-                          />
-                        </div>
+                        <AssetStatusText
+                          status={asset.status}
+                          showIcon={false}
+                        />
                       ),
                     },
                     {

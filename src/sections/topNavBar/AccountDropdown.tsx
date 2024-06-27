@@ -1,18 +1,20 @@
+import {
+  ArrowRightCircleIcon,
+  ChartBarSquareIcon,
+  DocumentTextIcon,
+  PuzzlePieceIcon,
+  UserIcon,
+} from '@heroicons/react/24/outline';
+
 import { Dropdown } from '@/components/Dropdown';
 import { Hexagon } from '@/components/Hexagon';
+import { Tooltip } from '@/components/Tooltip';
 import { useGetCollaborators } from '@/hooks/collaborators';
 import { useGetDisplayName } from '@/hooks/useAccounts';
 import { useMy } from '@/hooks/useMy';
 import Avatar from '@/sections/topNavBar/Avatar';
 import { useAuth } from '@/state/auth';
 import { getRoute } from '@/utils/route.util';
-import {
-  ChartBarSquareIcon,
-  DocumentTextIcon,
-  PuzzlePieceIcon,
-  UserIcon,
-  ArrowRightCircleIcon,
-} from '@heroicons/react/24/outline';
 
 export const AccountDropdown: React.FC = () => {
   const { friend, me, startImpersonation, stopImpersonation } = useAuth();
@@ -48,7 +50,7 @@ export const AccountDropdown: React.FC = () => {
           {
             label: 'Widgets',
             icon: <ChartBarSquareIcon />,
-            to: getRoute(['app', 'intelligence']),
+            to: getRoute(['app', 'widgets']),
           },
           {
             label: 'Divider',
@@ -69,7 +71,11 @@ export const AccountDropdown: React.FC = () => {
             hide:
               collaboratorsStatus === 'error' ||
               (collaboratorsStatus === 'success' && collaborators.length === 0),
-            label: displayName || me,
+            label: displayName ? (
+              <Tooltip title={me}>{displayName}</Tooltip>
+            ) : (
+              me
+            ),
             icon: (
               <Avatar
                 email={me}
@@ -80,7 +86,15 @@ export const AccountDropdown: React.FC = () => {
             onClick: () => friend?.email && stopImpersonation(),
           },
           ...collaborators.map(collaborator => ({
-            label: collaborator.displayName || collaborator.email,
+            label:
+              collaborator.displayName &&
+              collaborator.displayName?.length > 0 ? (
+                <Tooltip title={collaborator.email}>
+                  {collaborator.displayName}
+                </Tooltip>
+              ) : (
+                <span>{collaborator.email}</span>
+              ),
             icon: (
               <Avatar
                 email={String(collaborator.email)}

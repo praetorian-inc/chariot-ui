@@ -5,4 +5,4 @@ export const ERROR_CLASS =
   'pr-10 ring-red-300 placeholder:text-red-300 focus:ring-red-500';
 
 export const DISABLED_CLASS =
-  'disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500 disabled:ring-gray-200';
+  'disabled:cursor-not-allowed disabled:bg-layer2 disabled:text-gray-500 disabled:ring-gray-200';

@@ -64,7 +64,7 @@ export const NewUserSeedModal = () => {
         </Button>
         <div className="px-20 pb-16 pt-10 text-center">
           <div className="mb-4 text-3xl font-extrabold text-header">
-            We Find Risks to Your Assets
+            We Find Risks in Your Assets
           </div>
           <p className="text-sm text-default-light">
             Enter your domain and our intelligent algorithms will map your
@@ -83,21 +83,21 @@ export const NewUserSeedModal = () => {
               placeholder="domain.com"
               value={seedInput}
               onChange={e => setSeedInput(e.target.value)}
-              className="block h-16 w-full  rounded-l-[2px] border border-gray-300 bg-layer0 px-3 py-2 text-xl font-bold shadow-sm focus:outline-none"
+              className="block h-16 w-full rounded-l-[2px] bg-layer0 px-3 py-2 text-xl font-bold shadow-sm focus:outline-none"
             />
             <Button
               styleType="primary"
               type="submit"
               disabled={!seedInput}
               style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-              className="hover:bg-brand-hover block h-16 w-[150px] items-center rounded-r-[2px] border border-none border-brand bg-brand px-6  py-2.5 text-sm text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:bg-brand-light disabled:text-white"
+              className="hover:bg-brand-hover block h-16 w-[150px] items-center rounded-r-[2px] border border-none border-brand bg-brand px-6  py-2.5 text-md text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:bg-brand-light disabled:text-white"
             >
               Scan Now
             </Button>
           </form>
           <Button
-            className="m-auto"
-            styleType={'textPrimary'}
+            className="m-auto text-default-light"
+            styleType={'none'}
             endIcon={<ChevronRightIcon className="size-5" />}
             onClick={handleClose}
           >

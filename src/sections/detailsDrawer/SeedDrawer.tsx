@@ -6,6 +6,7 @@ import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Drawer } from '@/components/Drawer';
 import { HorizontalSplit } from '@/components/HorizontalSplit';
+import { SeedsIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { OverflowText } from '@/components/OverflowText';
 import { Table } from '@/components/table/Table';
@@ -126,6 +127,7 @@ export const SeedDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
             title={seed.name}
             subtitle={isLoading ? '' : `${refs?.length} Risks Found`}
             isLoading={isLoading}
+            prefix={<SeedsIcon className="size-5" />}
           />
 
           <HorizontalSplit
@@ -165,8 +167,7 @@ export const SeedDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                       },
                     ]}
                     error={null}
-                    header={false}
-                    footer={false}
+                    isTableView={false}
                   />
                   {showMoreAssets && (
                     <div className="flex w-full">
@@ -219,8 +220,7 @@ export const SeedDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                       },
                     ]}
                     error={null}
-                    header={false}
-                    footer={false}
+                    isTableView={false}
                   />
                   {risks.length - TABLE_LIMIT > 0 && (
                     <div className="flex w-full">

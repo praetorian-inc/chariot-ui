@@ -40,7 +40,7 @@ export default function BackendSelector() {
     <Menu as="div" className="relative inline-block w-full">
       <div>
         <div className="font-sm mb-2 font-medium">Select a Region</div>
-        <MenuButton className="flex w-full rounded-[4px] border border-gray-300 p-3 px-6 text-center transition duration-300 ease-in-out hover:bg-gray-50">
+        <MenuButton className="flex w-full rounded-[4px] border border-gray-300 p-3 px-6 text-center transition duration-300 ease-in-out hover:bg-layer2">
           <span className="flex w-full items-center text-left">
             <img
               src="https://hatscripts.github.io/circle-flags/flags/us.svg"

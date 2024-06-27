@@ -1,25 +1,27 @@
 import { ReactNode } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { VirtualItem } from '@tanstack/react-virtual';
 
+import { Dropdown } from '@/components/Dropdown';
+import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { Loader } from '@/components/Loader';
 import { ROW_HEIGHT } from '@/components/table/constants';
 import { TableCellContent } from '@/components/table/TableCellContent';
 import { TableCheckBoxIcon } from '@/components/table/TableCheckboxIcon';
-import { TableRowActions } from '@/components/table/TableRowActions';
 import {
-  ActionsWithRowSelection,
   CellAlignment,
   Columns,
   InternalTData,
   TableProps,
 } from '@/components/table/types';
+import { AssetStatus } from '@/types';
 import { cn } from '@/utils/classname';
 
 interface TableBodyProps<TData> {
   selectedRows: string[];
   data: InternalTData<TData>[];
-  rowActions?: ActionsWithRowSelection<TData>;
+  rowActions?: TableProps<TData>['rowActions'];
   rowData: InternalTData<TData>;
   rowIndex: number;
   virtualRow: VirtualItem;
@@ -37,6 +39,13 @@ interface TableBodyProps<TData> {
   groupBy?: TableProps<TData>['groupBy'];
 }
 
+const getGroupIcon = (label: string) => {
+  if (label === 'High Priority')
+    return getAssetStatusIcon(AssetStatus.ActiveHigh);
+  if (label === 'Standard Priority')
+    return getAssetStatusIcon(AssetStatus.Active);
+  return null;
+};
 export function TableBody<TData>(props: TableBodyProps<TData>) {
   const {
     selectedRows,
@@ -63,7 +72,7 @@ export function TableBody<TData>(props: TableBodyProps<TData>) {
     const isExpanded = expandedGroups.includes(GroupName);
     return (
       <tr
-        className="cursor-pointer border-t border-gray-200 bg-layer1 text-sm font-semibold"
+        className="cursor-pointer border-t border-default bg-layer2 text-sm font-semibold"
         key={`row-${rowIndex}`}
         style={{
           height: `${virtualRow.size}px`,
@@ -76,7 +85,12 @@ export function TableBody<TData>(props: TableBodyProps<TData>) {
           />
         </th>
         <th className="text-left" colSpan={columns.length + 2} scope="colgroup">
-          <Loader isLoading={isLoading}>{GroupName}</Loader>
+          <Loader isLoading={isLoading}>
+            <div className="flex flex-row items-center space-x-2">
+              {getGroupIcon(GroupName)}
+              <p>{GroupName}</p>
+            </div>
+          </Loader>
         </th>
       </tr>
     );
@@ -133,11 +147,15 @@ export function TableBody<TData>(props: TableBodyProps<TData>) {
       {rowActions && (
         <Td align="center" isFirstRow={isFirstRow} isLoading={isLoading}>
           <Loader isLoading={isLoading}>
-            <TableRowActions
-              selectedRows={selectedRows}
-              data={data}
-              rowData={rowData}
-              rowActions={rowActions}
+            <Dropdown
+              onClick={event => {
+                event.stopPropagation();
+              }}
+              startIcon={
+                <EllipsisVerticalIcon className="m-auto size-6 text-default-light" />
+              }
+              styleType="none"
+              {...rowActions(rowData)}
             />
           </Loader>
         </Td>
@@ -160,6 +178,7 @@ export function Td(props: {
       className={cn(
         'px-3 text-default max-w-full truncate text-sm relative',
         props.align === 'center' && '[&>*]:m-auto text-center',
+        props.align === 'right' && 'text-right',
         props.className
       )}
       style={{

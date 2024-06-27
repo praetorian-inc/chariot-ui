@@ -92,7 +92,7 @@ export function SearchAndSelectTypes<T extends keyof GenericResource>(
       <div className="flex flex-col gap-2 [&:has(*)]:pb-2">
         {selectedOptions.map((option, index) => {
           return (
-            <Button key={index} className="w-full">
+            <Button key={index} className="flex w-full justify-between">
               {getTypeOption(props.type, option).label}
               <Button
                 aria-label="CloseIcon"
@@ -219,15 +219,11 @@ function getTypeOption<T extends keyof GenericResource>(
 
       return {
         label: (
-          <div className="flex w-full items-center gap-2">
-            <AssetsIcon className="size-4 text-gray-400" />
-            <span className="text-gray-600">
-              <div className="flex items-center space-x-2">
-                <span className="text-nowrap">{asset.name}</span>
-                <ChevronRightIcon className="size-2" />
-                <span className="text-nowrap">{asset.dns}</span>
-              </div>
-            </span>
+          <div className="flex items-center gap-2 overflow-hidden">
+            <AssetsIcon className="size-4 flex-none text-gray-400" />
+            <span className="text-nowrap">{asset.name}</span>
+            <ChevronRightIcon className="size-2 flex-none shrink-0" />
+            <span className="truncate text-nowrap">{asset.dns}</span>
           </div>
         ),
         value: asset.key,
@@ -241,15 +237,12 @@ function getTypeOption<T extends keyof GenericResource>(
 
       return {
         label: (
-          <div className="flex w-full items-center gap-2">
-            <RisksIcon className="size-4 text-gray-400" />
-            <div className="flex items-center space-x-2">
-              <span className="text-nowrap">{risk.name}</span>
-              <ChevronRightIcon className="size-2" />
-              <span className="text-nowrap">{risk.dns}</span>
-              <StatusBadge status={risk.status} />
-              <SeverityBadge severity={severity} />
-            </div>
+          <div className="flex w-full items-center gap-2 overflow-hidden">
+            <RisksIcon className="size-4  flex-none text-gray-400" />
+            <span className="text-nowrap">{risk.name}</span>
+            <ChevronRightIcon className="size-2 flex-none" />
+            <StatusBadge status={risk.status} />
+            <SeverityBadge severity={severity} />
           </div>
         ),
         value: risk.key,

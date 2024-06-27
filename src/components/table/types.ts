@@ -5,7 +5,7 @@ import { ButtonProps } from '@/components/Button';
 import { DropdownProps } from '@/components/Dropdown';
 import { NoDataProps } from '@/components/ui/NoData';
 
-export type CellAlignment = 'center';
+export type CellAlignment = 'center' | 'left' | 'right';
 
 export interface TableProps<TData> {
   className?: string;

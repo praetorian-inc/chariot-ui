@@ -19,6 +19,7 @@ import {
   InternalTData,
   TableProps,
 } from '@/components/table/types';
+import { Tooltip } from '@/components/Tooltip';
 import { Body } from '@/components/ui/Body';
 import { NoData } from '@/components/ui/NoData';
 import { useScroll } from '@/hooks';
@@ -28,7 +29,6 @@ import {
 } from '@/sections/AuthenticatedApp';
 import { cn } from '@/utils/classname';
 import { useStorage } from '@/utils/storage/useStorage.util';
-import { Tooltip } from '@/components/Tooltip';
 
 export function Table<TData>(props: TableProps<TData>) {
   const {
@@ -356,7 +356,7 @@ export function Table<TData>(props: TableProps<TData>) {
             tableClassName
           )}
         >
-          <thead className="sticky top-0 bg-layer0" style={{ zIndex: 1 }}>
+          <thead className="sticky top-12 bg-layer0" style={{ zIndex: 1 }}>
             <tr>
               {enableCheckbox && (
                 <Th fixedWidth={CELL_WIDTHS.checkbox} align="center">
@@ -454,6 +454,7 @@ export function Th(props: {
       className={cn(
         'p-3 text-bold text-left text-sm font-bold relative text-nowrap',
         props.align === 'center' && 'text-center',
+        props.align === 'right' && 'text-right',
         props.className
       )}
       style={{

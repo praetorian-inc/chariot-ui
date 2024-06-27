@@ -11,7 +11,7 @@ import Files from '@/sections/Files';
 import Hello from '@/sections/Hello';
 import Integrations from '@/sections/Integrations';
 import Intelligence from '@/sections/Intelligence';
-import JobsTable from '@/sections/JobsTable';
+import Jobs from '@/sections/Jobs';
 import Login from '@/sections/Login';
 import Logout from '@/sections/Logout';
 import { References } from '@/sections/References';
@@ -76,7 +76,7 @@ const appRoutes = {
       title: 'Risks',
     },
     jobs: {
-      element: <JobsTable />,
+      element: <Jobs />,
       title: 'Jobs',
     },
     account: {

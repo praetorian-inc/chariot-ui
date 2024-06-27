@@ -178,6 +178,7 @@ export function Td(props: {
       className={cn(
         'px-3 text-default max-w-full truncate text-sm relative',
         props.align === 'center' && '[&>*]:m-auto text-center',
+        props.align === 'right' && 'text-right',
         props.className
       )}
       style={{

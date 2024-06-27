@@ -147,30 +147,34 @@ export function Header() {
   const { breadcrumbs } = useBreadCrumbsContext();
 
   return (
-    <div
-      className={cn(
-        `${friend?.email?.length > 0 && 'pt-[10px]'} flex flex-col items-center w-full bg-header text-header px-4`
-      )}
-    >
-      <div className="w-full max-w-screen-xl">
-        <TopNavBar />
-        <hr className="h-px bg-layer0 opacity-15" />
-        <div className={cn('flex items-center justify-between gap-2')}>
-          <Loader
-            styleType="header"
-            className="my-9 h-8 w-1/2"
-            isLoading={statusAccount === 'pending'}
-          >
-            <BreadCrumbs breadcrumbs={breadcrumbs} />
-          </Loader>
-          <div id={HeaderPortalSections.BREADCRUMBS} />
+    <>
+      <div
+        className={cn(
+          `${friend?.email?.length > 0 && 'pt-[10px]'} flex flex-col items-center w-full bg-header text-header px-4`
+        )}
+      >
+        <div className="w-full max-w-screen-xl">
+          <TopNavBar />
+          <hr className="h-px bg-layer0 opacity-15" />
+          <div className={cn('flex items-center justify-between gap-2')}>
+            <Loader
+              styleType="header"
+              className="my-9 h-8 w-1/2"
+              isLoading={statusAccount === 'pending'}
+            >
+              <BreadCrumbs breadcrumbs={breadcrumbs} />
+            </Loader>
+            <div id={HeaderPortalSections.BREADCRUMBS} />
+          </div>
         </div>
+      </div>
+      <div className="sticky top-0 w-full bg-header" style={{ zIndex: 1 }}>
         <div
           id={HeaderPortalSections.EXTRA_CONTENT}
-          className="[&:has(*)]:pb-9"
+          className="m-auto max-w-screen-xl [&:has(*)]:pb-9"
         />
       </div>
-    </div>
+    </>
   );
 }
 

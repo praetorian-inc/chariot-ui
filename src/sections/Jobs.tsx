@@ -1,16 +1,14 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import { format } from 'date-fns';
 
 import { Dropdown } from '@/components/Dropdown';
-import { Loader } from '@/components/Loader';
-import { Body } from '@/components/ui/Body';
+import { Table } from '@/components/table/Table';
+import { Columns } from '@/components/table/types';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
-import { RenderHeaderExtraContentSection } from '@/sections/AuthenticatedApp';
 import { Job, JobLabels, JobStatus } from '@/types';
 
 const formatDate = (dateString: string) => {
@@ -32,10 +30,6 @@ export const getStatusColor = (status: JobStatus) => {
   }
 };
 
-const ROW_HEIGHT = 44;
-const EMPTY_ROWS_COUNT = 25;
-const ROW_SPACING = 6;
-
 const getStatusText = (status: JobStatus) => {
   const classes = 'px-1 text-xs leading-5 font-medium rounded-full text-center';
   switch (status) {
@@ -51,7 +45,7 @@ const getStatusText = (status: JobStatus) => {
   }
 };
 
-const JobsTable: React.FC = () => {
+const Jobs: React.FC = () => {
   const location = useLocation();
 
   const { data: stats = {} } = useCounts({
@@ -61,7 +55,10 @@ const JobsTable: React.FC = () => {
   const {
     data: jobs = [],
     refetch,
+    error,
     status,
+    isFetchingNextPage,
+    fetchNextPage,
   } = useMy({
     resource: 'job',
     filterByGlobalSearch: true,
@@ -71,7 +68,6 @@ const JobsTable: React.FC = () => {
   const initialFilter = searchParams.get('status') || '';
 
   const [filter, setFilter] = useFilter(initialFilter);
-  const parentRef = useRef<HTMLDivElement>(null);
 
   const filteredJobs: Job[] = useMemo(() => {
     if (filter?.length > 0) {
@@ -93,15 +89,6 @@ const JobsTable: React.FC = () => {
     setFilter(newFilter);
   }, [location.search, setFilter]);
 
-  const virtualizer = useVirtualizer({
-    count: status === 'pending' ? EMPTY_ROWS_COUNT : filteredJobs.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => ROW_HEIGHT,
-    overscan: 5,
-  });
-
-  const items = virtualizer.getVirtualItems();
-
   const designedDate = (date: string) => {
     const parts = date.split('@');
     return (
@@ -113,22 +100,69 @@ const JobsTable: React.FC = () => {
     );
   };
 
-  if (status === 'pending') {
-    return (
-      <Body>
-        {[...Array(EMPTY_ROWS_COUNT).keys()].map(item => (
-          <div className="bg-layer0" key={`loader-${item}`}>
-            <Loader className="mb-2 h-12" isLoading={true} />
+  const columns: Columns<Job> = [
+    {
+      label: 'Status',
+      id: 'status',
+      cell: (job: Job) => {
+        return (
+          <div
+            className={`flex w-[100px] justify-center rounded-l-[2px] px-4 py-1.5 ${getStatusColor(job.status)}`}
+          >
+            {getStatusText(job.status)}
           </div>
-        ))}
-      </Body>
-    );
-  }
+        );
+      },
+      fixedWidth: 120,
+    },
+    {
+      label: 'Name',
+      id: 'name',
+      cell: (job: Job) => {
+        return (
+          <div className="flex">
+            {job.status === 'JQ' ? (
+              <div className="w-4" />
+            ) : (
+              <>
+                <div className="hidden shrink-0 items-center lg:flex">
+                  <span className="mr-1 font-semibold">Praetorian</span>
+                  <span className="hidden md:inline">({job.name})</span>
+                </div>
+                <span className="mx-1 hidden lg:block">to</span>
+              </>
+            )}
+            <div className="ml-4 flex flex-1 items-center lg:ml-0">
+              <span className="mr-1 font-semibold">{job.dns}</span>
+              <span className="hidden sm:inline">
+                ({job.key.split('#')[4]})
+              </span>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      label: 'Updated',
+      id: 'updated',
+      fixedWidth: 220,
+      cell: (job: Job) => {
+        return (
+          <div className="mr-4">
+            <span className="hidden md:inline">on</span>
+            <span className="mx-1 ">
+              {designedDate(formatDate(job.updated))}
+            </span>
+          </div>
+        );
+      },
+    },
+  ];
 
   return (
     <div className="flex w-full flex-col">
-      <Body ref={parentRef}>
-        <RenderHeaderExtraContentSection>
+      <Table
+        filters={
           <Dropdown
             styleType="header"
             label={filter ? `${JobLabels[filter]} Jobs` : 'All Jobs'}
@@ -158,70 +192,26 @@ const JobsTable: React.FC = () => {
               value: filter,
             }}
           />
-        </RenderHeaderExtraContentSection>
-        <div
-          style={{
-            height: `${virtualizer.getTotalSize() + items.length * ROW_SPACING}px`,
-            width: '100%',
-            position: 'relative',
-          }}
-        >
-          {status === 'success' &&
-            items.map((virtualItem, index) => {
-              if (virtualItem.index >= filteredJobs.length) {
-                return null;
-              }
-              const job = filteredJobs[virtualItem.index];
-
-              return (
-                <div
-                  key={job.key}
-                  className="flex items-center rounded-[2px] bg-layer0 text-sm shadow-md"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: `${virtualItem.size}px`,
-                    transform: `translateY(${virtualItem.start + index * ROW_SPACING}px)`,
-                  }}
-                >
-                  <div
-                    className={`flex w-[100px] rounded-l-[2px] px-4 py-3 ${getStatusColor(job.status)}`}
-                  >
-                    {getStatusText(job.status)}
-                  </div>
-                  {job.status === 'JQ' ? (
-                    <div className="w-4" />
-                  ) : (
-                    <>
-                      <div className="ml-4 hidden shrink-0 items-center lg:flex">
-                        <span className="mr-1 font-semibold">Praetorian</span>
-                        <span className="hidden md:inline">({job.name})</span>
-                      </div>
-                      <span className="mx-1 hidden lg:block">to</span>
-                    </>
-                  )}
-                  <div className="ml-4 flex flex-1 items-center lg:ml-0">
-                    <span className="mr-1 font-semibold">{job.dns}</span>
-                    <span className="hidden sm:inline">
-                      ({job.key.split('#')[4]})
-                    </span>
-                  </div>
-
-                  <div className="mr-4">
-                    <span className="hidden md:inline">on</span>
-                    <span className="mx-1 ">
-                      {designedDate(formatDate(job.updated))}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-        </div>
-      </Body>
+        }
+        columns={columns}
+        data={filteredJobs}
+        error={error}
+        status={status}
+        name="seeds"
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+        noData={{
+          title: 'No Jobs Found',
+          description: (
+            <p>
+              There are no current jobs running. Click on Scan now button under
+              Risk drawer to trigger new jobs
+            </p>
+          ),
+        }}
+      />
     </div>
   );
 };
 
-export default JobsTable;
+export default Jobs;

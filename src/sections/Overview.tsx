@@ -16,7 +16,6 @@ import { useAggregateCounts } from '@/hooks/useAggregateCounts';
 import { getReportSections } from '@/sections/overview/constants';
 import { cn } from '@/utils/classname';
 import { addDays, subtractDays } from '@/utils/date.util';
-import { useAuth } from '@/state/auth';
 import { useGetFile } from '@/hooks/useFiles';
 
 function classNames(...classes: string[]) {
@@ -28,14 +27,13 @@ const formatDate = (date: Date): string => date.toISOString().split('T')[0];
 const TODAY = formatDate(new Date());
 
 export const Overview = () => {
-  const { me } = useAuth();
   const client_short = 'Acme Corp.';
   const [showDetails, setShowDetails] = useState(false);
   const { counts } = useAggregateCounts();
   const jobsRunning = counts.jobsRunning;
 
   const { data: fileContent, status } = useGetFile({
-    name: `#${me}/reports/report.latest`,
+    name: `reports/report.latest`,
   });
 
   const reportReady = status === 'success' && fileContent;
@@ -59,6 +57,15 @@ export const Overview = () => {
 
   if (status === 'pending') return <></>;
 
+  const downloadFileContent = () => {
+    const element = document.createElement('a');
+    const file = new Blob([fileContent], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = 'report.md';
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <Counts
@@ -74,8 +81,8 @@ export const Overview = () => {
         <div className="flex ">
           <h1 className="center-align mb-1 mt-6 flex items-center text-2xl font-light text-gray-500">
             Daily Report
-            <Tooltip title="Download PDF" placement="right">
-              <Button onClick={() => {}} styleType="none">
+            <Tooltip title="Download Markdown" placement="right">
+              <Button onClick={() => downloadFileContent()} styleType="none">
                 <DocumentArrowDownIcon className="size-6" />
               </Button>
             </Tooltip>

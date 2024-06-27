@@ -77,7 +77,7 @@ const appRoutes = {
     },
     jobs: {
       element: <JobsTable />,
-      title: 'Last 24 hours',
+      title: 'Jobs',
     },
     account: {
       element: (

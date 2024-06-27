@@ -21,6 +21,7 @@ const pageTitles = {
   'Organization Settings': 'Adjust settings specific to your organization.',
   Attributes: 'Manage additional metadata associated with assets.',
   References: 'Manage external references linked to your risks.',
+  Jobs: 'Track the status and results of recent security scans from the past 24 hours.',
 };
 
 export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {

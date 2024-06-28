@@ -21,6 +21,7 @@ export interface SearchTypeProps<T extends keyof GenericResource> {
   multiSelect?: boolean;
   value?: string[];
   placeholder?: string;
+  required?: boolean;
 }
 
 export function SearchByType<T extends keyof GenericResource>(
@@ -63,6 +64,7 @@ export function SearchByType<T extends keyof GenericResource>(
       onSearchChange={setSearch}
       options={options}
       label={props.label}
+      required={props.required}
       emptyState={{
         hide: !search,
         label: search
@@ -117,6 +119,7 @@ export function SearchAndSelectTypes<T extends keyof GenericResource>(
         })}
       </div>
       <SearchByType
+        required
         type={props.type}
         multiSelect
         placeholder={props.placeholder}
@@ -152,6 +155,7 @@ interface SelectProps<IsMultiSelect extends boolean> {
   onSearchChange?: (search: string) => void;
   emptyState?: DropdownProps['menu']['emptyState'];
   placeholder?: string;
+  required?: boolean;
 }
 
 function Select<IsMultiSelect extends boolean>(
@@ -189,14 +193,27 @@ function Select<IsMultiSelect extends boolean>(
     >
       <div>
         <FormGroup label={props.label} name={props.label || ''}>
-          <InputText
-            name=""
-            value={search}
-            onChange={event => {
-              setSearch(event.target.value);
-            }}
-            placeholder={props?.placeholder}
-          />
+          <div className="relative">
+            <input
+              value={Array.isArray(value) ? value.join(',') : value}
+              className="absolute bottom-0 h-px w-full"
+              style={{ opacity: '0' }}
+              required={props.required}
+              onInvalid={(e: React.FormEvent<HTMLInputElement>) => {
+                (e.target as HTMLInputElement).setCustomValidity(
+                  'Search and select a value'
+                );
+              }}
+            />
+            <InputText
+              name=""
+              value={search}
+              onChange={event => {
+                setSearch(event.target.value);
+              }}
+              placeholder={props?.placeholder}
+            />
+          </div>
         </FormGroup>
       </div>
     </Dropdown>

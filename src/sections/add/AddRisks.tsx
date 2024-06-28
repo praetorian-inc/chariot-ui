@@ -5,6 +5,7 @@ import MDEditor from '@uiw/react-md-editor';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/form/Input';
 import { Inputs } from '@/components/form/Inputs';
+import { RisksIcon } from '@/components/icons';
 import { Modal } from '@/components/Modal';
 import { riskSeverityOptions } from '@/components/ui/RiskDropdown';
 import { useUploadFile } from '@/hooks';
@@ -12,7 +13,6 @@ import { useCreateRisk } from '@/hooks/useRisks';
 import { SearchAndSelectTypes } from '@/sections/SearchByType';
 import { useGlobalState } from '@/state/global.state';
 import { RiskCombinedStatus } from '@/types';
-import { RisksIcon } from '@/components/icons';
 
 const DEFAULT_FORM_VALUE = {
   key: '',
@@ -117,7 +117,7 @@ export const AddRisks = () => {
         size="xl"
         footer={{
           text: 'Add',
-          onClick: handleSubmit,
+          form: 'addRisk',
         }}
       >
         <div className="flex flex-row flex-nowrap p-2">
@@ -126,14 +126,14 @@ export const AddRisks = () => {
               <h3 className="text-xl font-medium text-gray-700">
                 What is a Risk?
               </h3>
-              <p className="mt-1 text-md text-gray-500">
+              <p className="text-md mt-1 text-gray-500">
                 A risk refers to any potential threat or vulnerability within
                 your organization's IT infrastructure that could be exploited by
                 attackers. Risks are identified through various security scans
                 and assessments.
               </p>
             </div>
-            <p className="mt-1 text-sm text-gray-500 bg-layer1 p-4 rounded-sm">
+            <p className="mt-1 rounded-sm bg-layer1 p-4 text-sm text-gray-500">
               For example, if you work for Acme Corporation, a risk might
               include:
               <ul className="mt-1 list-disc pl-5 text-sm text-gray-500">
@@ -153,11 +153,11 @@ export const AddRisks = () => {
           <div className="px-10 text-center">
             <div className="relative m-auto ml-4 flex h-[400px] w-full">
               <div className=" w-px bg-gray-200" />
-              <div className="bg-layer0 absolute -left-[50%] top-[50%] w-full text-center text-sm text-gray-300" />
+              <div className="absolute -left-[50%] top-[50%] w-full bg-layer0 text-center text-sm text-gray-300" />
             </div>
           </div>
           <div className="flex flex-1 flex-col justify-center p-2">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form id="addRisk" onSubmit={handleSubmit} className="space-y-4">
               <SearchAndSelectTypes
                 type="assets"
                 value={selectedAssets}

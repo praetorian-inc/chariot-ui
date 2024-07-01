@@ -214,6 +214,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       "Discover your GitHub organization's repositories and identify risks",
     logo: '/icons/GitHub.svg',
     connected: true,
+    multiple: true,
     types: [IntegrationType.AssetDiscovery, IntegrationType.RiskIdentification],
     inputs: [
       {
@@ -436,6 +437,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       "Discover your GitLab organization's repositories and identify risks",
     logo: '/icons/GitLab.svg',
     connected: true,
+    multiple: true,
     types: [IntegrationType.AssetDiscovery, IntegrationType.RiskIdentification],
     inputs: [
       {

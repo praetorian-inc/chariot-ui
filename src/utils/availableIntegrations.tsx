@@ -491,6 +491,48 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     connected: false,
     types: [IntegrationType.RiskIdentification],
   },
+  {
+    id: 17,
+    name: 'zulip',
+    displayName: 'Zulip',
+    description: 'Receive Zulip notifications when new risks are discovered',
+    logo: '/icons/Zulip.svg',
+    connected: true,
+    types: [IntegrationType.Workflow],
+    inputs: [
+      {
+        name: 'username',
+        value: 'zulip',
+        hidden: true,
+      },
+      {
+        label: 'Webhook URL',
+        value: '',
+        placeholder: 'https://yourZulipDomain.zulipchat.com/api/v1/external/slack_incoming',
+        name: 'webhook',
+        required: true,
+        info: {
+          url: 'https://zulip.com/integrations/doc/slack_incoming',
+          text: 'Learn more',
+        },
+      },
+      {
+        label: 'Severity',
+        value: 'MHC',
+        placeholder: 'Select a minimum severity level for your Zulip alerts',
+        name: 'severities',
+        required: true,
+        type: Input.Type.SELECT,
+        options: [
+          { label: 'Info', value: 'ILMHC' },
+          { label: 'Low', value: 'LMHC' },
+          { label: 'Medium', value: 'MHC' },
+          { label: 'High', value: 'HC' },
+          { label: 'Critical', value: 'C' },
+        ],
+      },
+    ],
+  }
 ];
 
 export const AccountMeta: IntegrationMeta = {

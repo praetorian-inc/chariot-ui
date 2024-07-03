@@ -40,7 +40,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const [, dns, name] = compositeKey.split('#');
   const riskFilter = `#${dns}`;
   const linkedIpsFilter = `#${dns}#`;
-  const attributeFilter = `#${dns}#${name}`;
+  const attributeFilter = `#asset#${dns}#${name}`;
 
   const [assetsLimit, setAssetsLimit] = useState(TABLE_LIMIT);
   const [riskLimit, setRiskLimit] = useState(TABLE_LIMIT);
@@ -139,6 +139,8 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
     attributesStatus === 'pending' ||
     assetNameGenericSearchStatus === 'pending';
 
+  const isTypeAsset = assetType === 'asset';
+
   return (
     <Drawer
       open={open}
@@ -146,20 +148,22 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
       onBack={() => navigate(-1)}
       className={DRAWER_WIDTH}
       footer={
-        <Link
-          to={{
-            pathname: getRoute(['app', 'attributes']),
-            search: `?${StorageKey.HASH_SEARCH}=${encodeURIComponent(attributeFilter)}`,
-          }}
-        >
-          <Button
-            startIcon={<IdentificationIcon className="size-5" />}
-            className="ml-auto hover:bg-layer0"
-            styleType="secondary"
+        isTypeAsset && (
+          <Link
+            to={{
+              pathname: getRoute(['app', 'attributes']),
+              search: `?${StorageKey.HASH_SEARCH}=${encodeURIComponent(attributeFilter)}`,
+            }}
           >
-            Attributes
-          </Button>
-        </Link>
+            <Button
+              startIcon={<IdentificationIcon className="size-5" />}
+              className="ml-auto hover:bg-layer0"
+              styleType="secondary"
+            >
+              Asset Attributes
+            </Button>
+          </Link>
+        )
       }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
@@ -181,11 +185,11 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
           <HorizontalSplit
             leftContainer={
               <>
-                {['seed', 'integration'].includes(assetType) && (
-                  <Accordian title="Associated Assets" contentClassName="pt-0">
+                {!isTypeAsset && (
+                  <Accordian title="Discovered Assets" contentClassName="pt-0">
                     <Table
                       tableClassName="border-none p-0 shadow-none [&_.th-top-border]:hidden"
-                      name="Associated Assets"
+                      name="Discovered Assets"
                       status="success"
                       className="max-h-[550px]"
                       data={associatedAssets.slice(0, assetsLimit)}
@@ -232,11 +236,11 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     )}
                   </Accordian>
                 )}
-                {['seed', 'integration'].includes(assetType) && (
-                  <Accordian title="Associated Risks" contentClassName="pt-0">
+                {!isTypeAsset && (
+                  <Accordian title="Discovered Risks" contentClassName="pt-0">
                     <Table
                       tableClassName="border-none p-0 shadow-none [&_.th-top-border]:hidden"
-                      name="Associated Risks"
+                      name="Discovered Risks"
                       status="success"
                       data={associatedRisks.slice(0, riskLimit)}
                       columns={[
@@ -282,7 +286,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     )}
                   </Accordian>
                 )}
-                {assetType === 'asset' && (
+                {isTypeAsset && (
                   <Accordian
                     title="Associated Hostnames"
                     contentClassName="pt-0"
@@ -326,7 +330,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     )}
                   </Accordian>
                 )}
-                {assetType === 'asset' && (
+                {isTypeAsset && (
                   <Accordian
                     title="Associated IP Addresses"
                     contentClassName="pt-0"
@@ -401,7 +405,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                         search: `?${StorageKey.DRAWER_COMPOSITE_KEY}=${encodeURIComponent(`#asset#${seed?.name}#${seed?.name}`)}`,
                       },
                     },
-                    ...(assetType === 'asset'
+                    ...(isTypeAsset
                       ? [
                           {
                             label: 'Found Risks',

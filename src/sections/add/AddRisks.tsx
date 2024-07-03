@@ -248,6 +248,7 @@ export const AddRisks = () => {
                     className="space-y-4"
                   >
                     <SearchAndSelectTypes
+                      label="Select Assets"
                       types={['assets']}
                       value={{ assets: selectedAssets }}
                       onChange={updatedValue => {

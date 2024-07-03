@@ -10,7 +10,6 @@ import { SeverityBadge, StatusBadge } from '@/components/GlobalSearch';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { Asset, GenericResource, Risk, RiskSeverity } from '@/types';
-import { depluralize } from '@/utils/depluralize.util';
 import { capitalize } from '@/utils/lodash.util';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
@@ -82,6 +81,7 @@ export function SearchByType(props: SearchTypeProps) {
 export interface SearchAndSelectTypes {
   placeholder?: string;
   types: SearchTypeProps['types'];
+  label?: string;
   value: Partial<GenericResource>;
   onChange: (updatedValue: Partial<GenericResource>) => void;
 }
@@ -129,7 +129,7 @@ export function SearchAndSelectTypes(props: SearchAndSelectTypes) {
         types={props.types}
         multiSelect
         placeholder={props.placeholder}
-        label={depluralize(capitalize(props.types.join(',')))}
+        label={props.label}
         value={Object.values(selectedTypes).flatMap(typeOption => {
           return typeOption.map(option => option.key);
         })}
@@ -218,7 +218,7 @@ function Select<IsMultiSelect extends boolean>(
       asChild
     >
       <div>
-        <FormGroup label={''} name={props.label || ''}>
+        <FormGroup label={props.label} name={props.label || ''}>
           <div className="relative">
             <input
               ref={fakeInput}

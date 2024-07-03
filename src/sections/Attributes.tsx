@@ -7,7 +7,7 @@ import { useMy } from '@/hooks';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { useGlobalState } from '@/state/global.state';
 import { Attribute } from '@/types';
-import { prettyPrint } from '@/utils/prettyPrint.util';
+import { capitalize } from '@/utils/lodash.util';
 
 export function Attributes() {
   const {
@@ -35,20 +35,13 @@ export function Attributes() {
       label: 'Type',
       id: '',
       fixedWidth: 80,
-      cell: item => getAttributeDetails(item).attributeType,
+      cell: item => capitalize(getAttributeDetails(item).attributeType),
     },
     {
       label: 'Class',
       id: 'class',
       fixedWidth: 220,
       copy: true,
-      cell: item => {
-        if (Number.isNaN(Number.parseInt(item.class))) {
-          return prettyPrint(item.class);
-        } else {
-          return item.class;
-        }
-      },
     },
     {
       label: 'Value',

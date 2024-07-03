@@ -94,7 +94,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
 
   const [, dns, name] = compositeKey.split('#');
 
-  const referenceFilter = `#${dns}#${name}`;
+  const referenceFilter = `#risk#${dns}#${name}`;
 
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [markdownValue, setMarkdownValue] = useState('');
@@ -129,7 +129,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const { data: attributes } = useMy(
     {
       resource: 'attribute',
-      query: `#${dns}#${name}`,
+      query: referenceFilter,
     },
     {
       enabled: open,
@@ -235,7 +235,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
             styleType="secondary"
             className="ml-auto"
           >
-            Attributes
+            Risk Attributes
           </Button>
           <Button
             startIcon={<DocumentTextIcon className="size-5" />}

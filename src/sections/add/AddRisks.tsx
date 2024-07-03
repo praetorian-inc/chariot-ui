@@ -1,18 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { PlusIcon } from '@heroicons/react/24/solid';
+import React, { FormEvent, useEffect, useState } from 'react';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import { ChevronRightIcon, PlusIcon } from '@heroicons/react/24/solid';
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import MDEditor from '@uiw/react-md-editor';
 
 import { Button } from '@/components/Button';
 import { Input } from '@/components/form/Input';
-import { Inputs } from '@/components/form/Inputs';
+import { Inputs, Values } from '@/components/form/Inputs';
 import { RisksIcon } from '@/components/icons';
 import { Modal } from '@/components/Modal';
 import { riskSeverityOptions } from '@/components/ui/RiskDropdown';
-import { useUploadFile } from '@/hooks';
+import { useModifyAccount, useUploadFile } from '@/hooks';
+import { useIntegration } from '@/hooks/useIntegration';
 import { useCreateRisk } from '@/hooks/useRisks';
+import { TabPanelContent } from '@/sections/add/AddAsset';
 import { SearchAndSelectTypes } from '@/sections/SearchByType';
 import { useGlobalState } from '@/state/global.state';
-import { RiskCombinedStatus } from '@/types';
+import {
+  Account,
+  IntegrationType,
+  LinkAccount,
+  RiskCombinedStatus,
+} from '@/types';
+import {
+  IntegrationMeta,
+  IntegrationsMeta,
+} from '@/utils/availableIntegrations';
+import { cn } from '@/utils/classname';
 
 const DEFAULT_FORM_VALUE = {
   key: '',
@@ -21,6 +35,9 @@ const DEFAULT_FORM_VALUE = {
   severity: 'I',
   comment: '',
 };
+const Tabs: IntegrationMeta[] = IntegrationsMeta.filter(({ types }) =>
+  types?.includes(IntegrationType.Workflow)
+);
 
 export const AddRisks = () => {
   const {
@@ -33,6 +50,7 @@ export const AddRisks = () => {
       },
     },
   } = useGlobalState();
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   const [isDefinitionOpen, setIsDefinitionOpen] = useState(false);
   const [definition, setDefinition] = useState('');
@@ -41,11 +59,21 @@ export const AddRisks = () => {
   const [poe, setPOE] = useState('');
 
   const [formData, setFormData] = useState(DEFAULT_FORM_VALUE);
+  const [integrationFormData, setIntegrationFormData] = useState<Values[]>([]);
+  const { mutate: link } = useModifyAccount('link');
+  const { mutate: unlink, status: unlinkStatus } = useModifyAccount('unlink');
 
   const { mutateAsync: addRisk } = useCreateRisk();
   const { mutateAsync: uploadFile } = useUploadFile();
+  const { isIntegrationConnected, getConnectedIntegration } = useIntegration();
 
-  const handleSubmit = async () => {
+  const selectedIntegration =
+    selectedIndex > 0
+      ? getConnectedIntegration(Tabs[selectedIndex - 1].name)
+      : [];
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const allPromise: Promise<any>[] = selectedAssets?.flatMap(asset => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -88,6 +116,7 @@ export const AddRisks = () => {
 
   function onClose() {
     onOpenChange(false);
+    setSelectedIndex(0);
   }
 
   function cleanUp() {
@@ -107,120 +136,195 @@ export const AddRisks = () => {
     }
   }, [isOpen]);
 
+  async function handleConfigureIntegration() {
+    integrationFormData.map(data => link(data as unknown as LinkAccount));
+    onClose();
+  }
+
+  async function handleDisconnect() {
+    if (selectedIntegration.length > 0) {
+      selectedIntegration.forEach(account =>
+        unlink({
+          username: account.member,
+          member: account.member,
+          config: account.config,
+          value: account.value,
+          key: account.key,
+        })
+      );
+      onClose();
+    }
+  }
+
   return (
     <>
       <Modal
-        title={'Add Risk'}
+        className="h-[72vh]"
+        title="Configure Risks"
         icon={<RisksIcon className="size-6 text-default-light" />}
         open={isOpen}
         onClose={onClose}
-        size="xl"
+        size="lg"
         footer={{
-          text: 'Add',
-          form: 'addRisk',
+          onClick:
+            selectedIndex === 0 ? () => null : handleConfigureIntegration,
+          text: selectedIndex === 0 ? 'Add' : 'Configure',
+          form: selectedIndex === 0 ? 'addRisk' : undefined,
+
+          secondary: selectedIntegration.length
+            ? {
+                text: 'Disconnect',
+                onClick: handleDisconnect,
+                isLoading: unlinkStatus === 'pending',
+              }
+            : undefined,
         }}
       >
-        <div className="flex flex-row flex-nowrap p-2">
-          <div className="flex flex-1 flex-col space-y-4 p-2">
-            <div>
-              <h3 className="text-xl font-medium text-gray-700">
-                What is a Risk?
-              </h3>
-              <p className="text-md mt-1 text-gray-500">
-                A risk refers to any potential threat or vulnerability within
-                your organization's IT infrastructure that could be exploited by
-                attackers. Risks are identified through various security scans
-                and assessments.
-              </p>
-            </div>
-            <p className="mt-1 rounded-sm bg-layer1 p-4 text-sm text-gray-500">
-              For example, if you work for Acme Corporation, a risk might
-              include:
-              <ul className="mt-1 list-disc pl-5 text-sm text-gray-500">
-                <li>
-                  Asset: <code className="font-extrabold">123.45.6.78</code>
-                </li>
-                <li>
-                  Finding:{' '}
-                  <code className="font-extrabold">CVE-2021-34527</code>
-                </li>
-                <li>
-                  Severity: <code className="font-extrabold">High</code>
-                </li>
-              </ul>
-            </p>
-          </div>
-          <div className="px-10 text-center">
-            <div className="relative m-auto ml-4 flex h-[400px] w-full">
-              <div className=" w-px bg-gray-200" />
-              <div className="absolute -left-[50%] top-[50%] w-full bg-layer0 text-center text-sm text-gray-300" />
-            </div>
-          </div>
-          <div className="flex flex-1 flex-col justify-center p-2">
-            <form id="addRisk" onSubmit={handleSubmit} className="space-y-4">
-              <SearchAndSelectTypes
-                types={['assets']}
-                value={{ assets: selectedAssets }}
-                onChange={updatedValue => {
-                  onSelectedAssetsChange(updatedValue.assets || []);
-                }}
-                placeholder="8.8.8.8"
-              />
-              <Inputs
-                inputs={[
-                  {
-                    label: 'Finding',
-                    value: '',
-                    placeholder: 'CVE-2021-1234',
-                    name: 'name',
-                    required: true,
-                  },
-                  {
-                    label: 'Severity',
-                    name: 'severity',
-                    value: 'I',
-                    options: riskSeverityOptions,
-                    type: Input.Type.SELECT,
-                  },
-                  {
-                    label: 'Comment',
-                    name: 'comment',
-                    value: '',
-                    placeholder: 'Add some optional comments',
-                    type: Input.Type.TEXT_AREA,
-                  },
-                  {
-                    name: '',
-                    value: '',
-                    children: (
-                      <div className="flex justify-around gap-2">
-                        <Button
-                          startIcon={<PlusIcon className="size-5" />}
-                          styleType="textPrimary"
-                          label="Proof of Exploit"
-                          onClick={() => setIsPOEOpen(true)}
-                        />
-                        <Button
-                          startIcon={<PlusIcon className="size-5" />}
-                          styleType="textPrimary"
-                          label="Description & Remediation"
-                          onClick={() => setIsDefinitionOpen(true)}
-                        />
-                      </div>
-                    ),
-                  },
-                ]}
-                onChange={values =>
-                  setFormData(formData => ({ ...formData, ...values }))
-                }
-              />
-              <p className="mt-3 text-center text-xs text-gray-500">
-                Manually entered risks will be tracked but not automatically
-                monitored.
-              </p>
-            </form>
-          </div>
-        </div>
+        <TabGroup className="flex h-full gap-6" onChange={setSelectedIndex}>
+          <TabList className="border-1 w-44 shrink-0 overflow-auto border border-y-0 border-l-0 border-layer1 p-1 pr-4">
+            <Tab
+              className={cn(
+                'relative w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0 border-b-2 border-gray-100 bg-layer0',
+                selectedIndex === 0 && 'bg-layer1'
+              )}
+            >
+              <div className="relative flex items-center justify-center">
+                Add Risk
+                {selectedIndex === 0 && (
+                  <ChevronRightIcon className="absolute right-0 size-4" />
+                )}
+              </div>
+            </Tab>
+            {Tabs.map(({ id, displayName, logo, connected, name }, index) => {
+              const isConnected = connected && isIntegrationConnected(name);
+              const selected = index + 1 === selectedIndex;
+              return (
+                <Tab
+                  key={'tab-' + id}
+                  className={cn(
+                    'w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0 border-b-2 border-gray-100 bg-layer0',
+                    selected && 'bg-layer1'
+                  )}
+                >
+                  <div className="relative flex items-center justify-center">
+                    {isConnected && (
+                      <CheckCircleIcon className="absolute left-0 size-5 text-green-500" />
+                    )}
+                    {logo && (
+                      <img
+                        className="h-4"
+                        src={logo || ''}
+                        alt={displayName || ''}
+                      />
+                    )}
+                    {!logo && displayName && <span>{displayName}</span>}
+                    {selected && (
+                      <ChevronRightIcon className="absolute right-0 size-4" />
+                    )}
+                  </div>
+                </Tab>
+              );
+            })}
+          </TabList>
+          <TabPanels className="size-full overflow-auto pr-6">
+            <TabPanel>
+              <div>
+                <div className="flex flex-1 flex-col space-y-4">
+                  <div>
+                    <h3 className="mt-4 text-xl font-medium text-gray-700">
+                      What is a Risk?
+                    </h3>
+                    <p className="text-md text-gray-500">
+                      Any exploitable threat or vulnerability in your IT
+                      infrastructure.
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 flex flex-1 flex-col justify-center">
+                  <form
+                    id="addRisk"
+                    onSubmit={handleSubmit}
+                    className="space-y-4"
+                  >
+                    <SearchAndSelectTypes
+                      types={['assets']}
+                      value={{ assets: selectedAssets }}
+                      onChange={updatedValue => {
+                        onSelectedAssetsChange(updatedValue.assets || []);
+                      }}
+                      placeholder="8.8.8.8"
+                    />
+                    <Inputs
+                      inputs={[
+                        {
+                          label: 'Risk Name',
+                          value: '',
+                          placeholder: 'CVE-2021-1234',
+                          name: 'name',
+                          required: true,
+                        },
+                        {
+                          label: 'Severity',
+                          name: 'severity',
+                          value: 'I',
+                          options: riskSeverityOptions,
+                          type: Input.Type.SELECT,
+                        },
+                        {
+                          label: 'Comment',
+                          name: 'comment',
+                          value: '',
+                          placeholder: 'Add some optional comments',
+                          type: Input.Type.TEXT_AREA,
+                        },
+                        {
+                          name: '',
+                          value: '',
+                          children: (
+                            <div className="flex justify-around">
+                              <Button
+                                startIcon={<PlusIcon className="size-5" />}
+                                styleType="textPrimary"
+                                label="Proof of Exploit"
+                                onClick={() => setIsPOEOpen(true)}
+                              />
+                              <Button
+                                startIcon={<PlusIcon className="size-5" />}
+                                styleType="textPrimary"
+                                label="Description & Remediation"
+                                onClick={() => setIsDefinitionOpen(true)}
+                              />
+                            </div>
+                          ),
+                        },
+                      ]}
+                      onChange={values =>
+                        setFormData(formData => ({ ...formData, ...values }))
+                      }
+                    />
+                    <p className="mt-3 text-center text-xs text-gray-500">
+                      Manually entered risks will be tracked but not
+                      automatically monitored.
+                    </p>
+                  </form>
+                </div>
+              </div>
+            </TabPanel>
+            {Tabs.map(tab => {
+              const connectedIntegration: Account[] = getConnectedIntegration(
+                tab.name
+              );
+              return (
+                <TabPanelContent
+                  connectedIntegration={connectedIntegration}
+                  key={tab.id}
+                  onChange={setIntegrationFormData}
+                  tab={tab}
+                />
+              );
+            })}
+          </TabPanels>
+        </TabGroup>
         <AddDefinition
           open={isDefinitionOpen}
           onOpenChange={setIsDefinitionOpen}

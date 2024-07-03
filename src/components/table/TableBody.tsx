@@ -44,6 +44,8 @@ const getGroupIcon = (label: string) => {
     return getAssetStatusIcon(AssetStatus.ActiveHigh);
   if (label === 'Standard Priority')
     return getAssetStatusIcon(AssetStatus.Active);
+  if (label === 'Low Priority')
+    return getAssetStatusIcon(AssetStatus.ActiveLow);
   return null;
 };
 export function TableBody<TData>(props: TableBodyProps<TData>) {

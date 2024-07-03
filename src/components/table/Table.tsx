@@ -30,6 +30,7 @@ import {
 import { cn } from '@/utils/classname';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
+// eslint-disable-next-line complexity
 export function Table<TData>(props: TableProps<TData>) {
   const {
     className,

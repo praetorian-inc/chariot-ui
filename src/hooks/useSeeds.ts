@@ -16,7 +16,7 @@ interface InfiniteQueryData {
 }
 
 const stopMessage = 'Risk scanning will stop.';
-const startMessage = 'Risk scanning will start automatically.';
+export const startMessage = 'Risk scanning will start automatically.';
 
 export const create = () => {
   const axios = useAxios();

@@ -11,6 +11,7 @@ interface Props {
   isLoading?: boolean;
   onClick?: () => void;
   prefix?: React.ReactNode;
+  tag?: React.ReactNode;
 }
 
 export const DetailsDrawerHeader: React.FC<Props> = ({
@@ -18,6 +19,7 @@ export const DetailsDrawerHeader: React.FC<Props> = ({
   subtitle,
   isLoading,
   onClick,
+  tag,
   prefix,
 }: Props) => {
   return (
@@ -26,7 +28,10 @@ export const DetailsDrawerHeader: React.FC<Props> = ({
         <div className="flex items-center gap-2">
           {prefix}
           <CopyToClipboard>
-            <OverflowText text={title} className="text-2xl font-extrabold" />
+            <div className="flex items-center gap-2">
+              <OverflowText text={title} className="text-2xl font-extrabold" />
+              {tag}
+            </div>
           </CopyToClipboard>
         </div>
         {subtitle && (

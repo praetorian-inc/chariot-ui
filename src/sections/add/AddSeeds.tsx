@@ -4,13 +4,12 @@ import { InformationCircleIcon } from '@heroicons/react/24/solid';
 
 import { Button } from '@/components/Button';
 import { Dropzone, Files } from '@/components/Dropzone';
+import { SeedsIcon } from '@/components/icons';
 import { Modal } from '@/components/Modal';
 import { Tooltip } from '@/components/Tooltip';
 import { create as createSeed, useBulkAddSeed } from '@/hooks/useSeeds';
 import { useGlobalState } from '@/state/global.state';
-import { IntegrationType } from '@/types';
 import { AllowedSeedRegex, GetSeeds } from '@/utils/regex.util';
-import { SeedsIcon } from '@/components/icons';
 
 export const AddSeeds = () => {
   const {
@@ -72,14 +71,14 @@ export const AddSeeds = () => {
             <h3 className="text-xl font-medium text-gray-700">
               What is a Seed?
             </h3>
-            <p className="mt-1 text-md text-gray-500">
+            <p className="text-md mt-1 text-gray-500">
               A seed can be a domain, IP address, CIDR range, GitHub
               organization, or integration. Add seeds directly, through
               integrations, or via file upload to start monitoring and
               discovering assets.
             </p>
           </div>
-          <p className="mt-1 text-sm text-gray-500 bg-layer1 p-4 rounded-sm">
+          <p className="mt-1 rounded-sm bg-layer1 p-4 text-sm text-gray-500">
             For example, if you work for Acme Corporation, you might add seeds
             such as:
             <ul className="mt-1 list-disc pl-5 text-sm text-gray-500">

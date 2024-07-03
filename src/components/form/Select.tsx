@@ -37,9 +37,7 @@ export const Select = (props: InputProps & SelectProps) => {
   );
 
   const [options, setOptions] = useState<Option[]>(optionsProps);
-  const [value, setValue] = useState<string | number>(
-    selectedOption?.label || defaultValue
-  );
+  const [value, setValue] = useState(selectedOption?.label || defaultValue);
   const [selected, setSelected] = useState<Option>(
     selectedOption ?? optionsProps[0]
   );

@@ -4,6 +4,7 @@ import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
 
 import { Loader } from '@/components/Loader';
 import { Tooltip } from '@/components/Tooltip';
+import { cn } from '@/utils/classname';
 
 export interface FormInfo {
   url?: string;
@@ -12,12 +13,13 @@ export interface FormInfo {
 }
 
 interface FormGroupProps extends PropsWithChildren {
-  label?: string;
+  label?: JSX.Element | string;
   error?: string;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   name: string;
   info?: FormInfo;
+  className?: string;
   isLoading?: boolean;
 }
 
@@ -30,6 +32,7 @@ export const FormGroup = (props: FormGroupProps) => {
     startIcon,
     name,
     isLoading,
+    className,
     info,
   } = props;
   const rightIcon = error || endIcon;
@@ -58,7 +61,12 @@ export const FormGroup = (props: FormGroupProps) => {
           )}
         </div>
       )}
-      <div className="relative rounded-[2px] text-default-light shadow-sm">
+      <div
+        className={cn(
+          'relative rounded-[2px] text-default-light shadow-sm',
+          className
+        )}
+      >
         {startIcon && (
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             {startIcon}

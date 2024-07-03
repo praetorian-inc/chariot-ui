@@ -12,6 +12,7 @@ export const AssetStatusChip: React.FC<{
     [AssetStatus.Unknown]: 'secondary',
     [AssetStatus.Active]: 'primary',
     [AssetStatus.ActiveHigh]: 'primary',
+    [AssetStatus.ActiveLow]: 'primary',
   };
 
   const chipText = {
@@ -19,6 +20,7 @@ export const AssetStatusChip: React.FC<{
     [AssetStatus.Unknown]: 'Unknown',
     [AssetStatus.Active]: 'Active',
     [AssetStatus.ActiveHigh]: 'Active',
+    [AssetStatus.ActiveLow]: 'Active',
   };
 
   return (
@@ -38,6 +40,7 @@ export const AssetStatusText: React.FC<{
     [AssetStatus.Unknown]: 'Paused',
     [AssetStatus.Active]: 'Standard Priority',
     [AssetStatus.ActiveHigh]: 'High Priority',
+    [AssetStatus.ActiveLow]: 'Low Priority',
   };
 
   return (

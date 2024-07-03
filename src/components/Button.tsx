@@ -16,7 +16,8 @@ export interface ButtonProps extends BaseButtonProps {
     | 'none'
     | 'secondary'
     | 'textPrimary'
-    | 'header';
+    | 'header'
+    | 'primaryLight';
   endIcon?: React.ReactNode;
   label?: string;
   className?: string;
@@ -46,12 +47,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         case 'textPrimary':
           return 'text-brand';
         case 'primary':
-          return 'bg-brand text-white shadow-sm hover:bg-brand-hover';
+          return 'bg-brand text-layer0 shadow-sm hover:bg-brand-hover disabled:text-default';
         case 'secondary':
           return 'bg-layer0 text-default hover:bg-layer1 shadow-sm border border-default';
-        case 'header': {
+        case 'header':
           return 'bg-header-light font-semibold text-header shadow-sm';
-        }
+        case 'primaryLight':
+          return 'bg-brand/10 shadow-sm hover:bg-brand/20 text-brand';
         case 'none':
           return '';
         default:
@@ -73,7 +75,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           disabled={isLoading || disabled}
         >
           {isLoading && (
-            <div className="bg-layer1 absolute left-0 top-0 z-10 size-full rounded-[2px]">
+            <div className="absolute left-0 top-0 z-10 size-full rounded-[2px] bg-layer1">
               <Loader isLoading className="size-full rounded-[2px]" />
             </div>
           )}

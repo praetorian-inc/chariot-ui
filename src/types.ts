@@ -42,6 +42,7 @@ export enum SeedStatus {
 }
 export enum AssetStatus {
   ActiveHigh = 'AH',
+  ActiveLow = 'AL',
   Active = 'A',
   Frozen = 'F',
   Unknown = 'U',
@@ -168,6 +169,7 @@ export interface Asset {
   config: unknown;
   created: string;
   dns: string;
+  seed: boolean;
   history: unknown;
   key: string;
   name: string;

@@ -23,15 +23,22 @@ interface Props extends PropsWithChildren {
     isLoading?: boolean;
     startIcon?: React.ReactNode;
     disabled?: boolean;
+    secondary?: {
+      text?: string;
+      onClick?: () => void;
+      disabled?: boolean;
+      isLoading?: boolean;
+    };
   };
   logo?: string;
   icon?: React.ReactNode;
-  subtitle?: string;
   onClose: () => void;
   open: boolean;
   size?: Size;
   title: ReactNode;
+  subtitle?: ReactNode;
   style?: 'default' | 'dialog';
+  closeOnOutsideClick?: boolean;
 }
 
 /**
@@ -53,6 +60,7 @@ export const Modal: React.FC<Props> = props => {
     title = '',
     icon,
     style = 'default',
+    closeOnOutsideClick = true,
   } = props;
   const isDialog = style === 'dialog';
 
@@ -72,7 +80,12 @@ export const Modal: React.FC<Props> = props => {
   }, [open]);
 
   return (
-    <ModalWrapper open={open} size={size} onClose={onClose}>
+    <ModalWrapper
+      open={open}
+      size={size}
+      onClose={onClose}
+      closeOnOutsideClick={closeOnOutsideClick}
+    >
       <div className={cn(isDialog && 'p-6')}>
         <Dialog.Title
           className={cn(
@@ -130,6 +143,17 @@ export const Modal: React.FC<Props> = props => {
             >
               Cancel
             </Button>
+            {footer?.secondary && (
+              <Button
+                onClick={footer?.secondary?.onClick}
+                styleType="primaryLight"
+                className={cn('ml-2 w-24', footer?.className)}
+                isLoading={footer?.secondary?.isLoading}
+                disabled={footer?.secondary?.disabled}
+              >
+                {footer?.secondary?.text}
+              </Button>
+            )}
             {footer?.text && (
               <Button
                 onClick={footer?.onClick}
@@ -156,6 +180,7 @@ interface ModalWrapperProps extends PropsWithChildren {
   open: boolean;
   size?: Size;
   onClose: () => void;
+  closeOnOutsideClick?: boolean;
 }
 
 export const ModalWrapper: React.FC<ModalWrapperProps> = props => {
@@ -165,6 +190,7 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = props => {
     onClose = () => {},
     open = false,
     size = 'md',
+    closeOnOutsideClick = true,
   } = props;
 
   const widthMap = {
@@ -176,7 +202,11 @@ export const ModalWrapper: React.FC<ModalWrapperProps> = props => {
 
   return (
     <Transition appear show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-20" onClose={onClose}>
+      <Dialog
+        as="div"
+        className="relative z-20"
+        onClose={closeOnOutsideClick ? onClose : () => null}
+      >
         <Transition.Child
           as={Fragment}
           {...getTransitionSettings({ type: 'fade' })}

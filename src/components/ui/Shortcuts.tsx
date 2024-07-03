@@ -10,11 +10,9 @@ export const Shortcuts = ({ value = '' }: { value: string }) => {
 };
 
 const ShortcutsArr = [
-  ['Control', 'S', 'Seeds'],
   ['Control', 'A', 'Assets'],
   ['Control', 'R', 'Risk'],
   ['Control', 'J', 'Jobs'],
-  ['Control', 'I', 'Integrations'],
 ];
 
 export const ShortcutsHelper = ({ onClose }: { onClose: () => void }) => {

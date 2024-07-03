@@ -2,7 +2,6 @@ import {
   ArrowRightStartOnRectangleIcon,
   ChartBarSquareIcon,
   DocumentTextIcon,
-  PuzzlePieceIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
 
@@ -37,11 +36,11 @@ export const AccountDropdown: React.FC = () => {
       menu={{
         className: 'w-64',
         items: [
-          {
-            label: 'Integrations',
-            icon: <PuzzlePieceIcon />,
-            to: getRoute(['app', 'integrations']),
-          },
+          // {
+          //   label: 'Integrations',
+          //   icon: <PuzzlePieceIcon />,
+          //   to: getRoute(['app', 'integrations']),
+          // },
           {
             label: 'Documents',
             icon: <DocumentTextIcon />,
@@ -88,7 +87,7 @@ export const AccountDropdown: React.FC = () => {
           ...collaborators.map(collaborator => ({
             label: (
               <Tooltip title={collaborator.email}>
-                <span className="text-nowrap text-ellipsis overflow-hidden">
+                <span className="overflow-hidden text-ellipsis text-nowrap">
                   {collaborator.displayName || collaborator.email}
                 </span>
               </Tooltip>

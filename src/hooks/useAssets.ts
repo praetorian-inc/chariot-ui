@@ -1,6 +1,7 @@
 import { Snackbar } from '@/components/Snackbar';
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
+import { startMessage } from '@/hooks/useSeeds';
 import { Asset, AssetStatus, RiskScanMessage } from '@/types';
 import { useMutation } from '@/utils/api';
 
@@ -17,6 +18,7 @@ export const AssetsSnackbarTitle = {
   [AssetStatus.Active]: 'will resume scanning',
   [AssetStatus.ActiveHigh]: 'will be marked as high priority',
   [AssetStatus.Frozen]: 'will be removed',
+  [AssetStatus.ActiveLow]: 'will be marked as low priority',
 };
 
 export const useUpdateAsset = () => {
@@ -79,7 +81,7 @@ export const useUpdateAsset = () => {
 };
 
 export function mapAssetStataus(asset: Asset) {
-  if (asset.status === AssetStatus.ActiveHigh) {
+  if ([AssetStatus.ActiveHigh, AssetStatus.ActiveLow].includes(asset.status)) {
     return asset.status;
   }
   return (
@@ -98,13 +100,13 @@ export const useCreateAsset = () => {
     { enabled: false }
   );
 
-  return useMutation<Asset, Error, Pick<Asset, 'name'>>({
-    defaultErrorMessage: `Failed to add seed`,
+  return useMutation<Asset, Error, Pick<Asset, 'name' | 'status'>>({
+    defaultErrorMessage: `Failed to add asset`,
     mutationFn: async asset => {
       const { data } = await axios.post(`/asset`, {
         dns: asset.name,
         name: asset.name,
-        status: AssetStatus.Active,
+        status: asset.status || AssetStatus.Active,
       });
 
       Snackbar({
@@ -117,6 +119,62 @@ export const useCreateAsset = () => {
       invalidateAssets();
 
       return data;
+    },
+  });
+};
+
+export const useBulkAddAsset = () => {
+  const axios = useAxios();
+  const { invalidate: invalidateJob } = useMy(
+    { resource: 'job' },
+    { enabled: false }
+  );
+  const { invalidate: invalidateAsset } = useMy(
+    { resource: 'asset' },
+    { enabled: false }
+  );
+
+  return useMutation<void, Error, string[]>({
+    defaultErrorMessage: 'Failed to bulk add assets',
+    errorByStatusCode: {
+      402: 'License is required to add more assets',
+    },
+    mutationFn: async (assets: string[]) => {
+      const response = await Promise.all(
+        assets
+          .map(async asset => {
+            await axios.post(`/asset`, {
+              dns: asset,
+              status: AssetStatus.Active,
+            });
+          })
+          // Note: Catch error so we can continue adding assets even if some fail
+          .map(p => p.catch(e => e))
+      );
+
+      const validResults = response.filter(
+        result => !(result instanceof Error)
+      );
+
+      if (validResults.length > 0) {
+        Snackbar({
+          title: `Added ${validResults.length} assets`,
+          description: startMessage,
+          variant: 'success',
+        });
+
+        invalidateJob();
+        invalidateAsset();
+      }
+
+      if (validResults.length !== assets.length) {
+        const firstError = response.find(result => result instanceof Error);
+        // Note: Some assets failed to add, so throwing the first error, and useMutation will handle the error toast
+
+        throw firstError;
+      }
+
+      return;
     },
   });
 };

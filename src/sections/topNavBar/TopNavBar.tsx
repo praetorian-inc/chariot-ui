@@ -5,13 +5,12 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Dropdown } from '@/components/Dropdown';
 import GlobalSearch from '@/components/GlobalSearch';
 import { Hexagon } from '@/components/Hexagon';
-import { AssetsIcon, RisksIcon, SeedsIcon } from '@/components/icons';
+import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { LogoIcon } from '@/components/icons/Logo.icon';
 import { Shortcuts } from '@/components/ui/Shortcuts';
 import { AccountDropdown } from '@/sections/topNavBar/AccountDropdown';
 import { Notifications } from '@/sections/topNavBar/Notifications';
 import { getRoute } from '@/utils/route.util';
-import { Button } from '@/components/Button';
 
 export function TopNavBar() {
   const [showNotification, setShowNotification] = useState<boolean>(false);
@@ -32,18 +31,18 @@ export function TopNavBar() {
             menu={{
               className: 'w-96',
               items: [
-                {
-                  label: 'Seeds',
-                  description:
-                    'Manage entry points to identify and monitor assets for scans.',
-                  helpText: <Shortcuts value="S" />,
-                  icon: (
-                    <div>
-                      <SeedsIcon className="-ml-2 size-7 stroke-1 text-default-light" />
-                    </div>
-                  ),
-                  to: getRoute(['app', 'seeds']),
-                },
+                // {
+                //   label: 'Seeds',
+                //   description:
+                //     'Manage entry points to identify and monitor assets for scans.',
+                //   helpText: <Shortcuts value="S" />,
+                //   icon: (
+                //     <div>
+                //       <SeedsIcon className="-ml-2 size-7 stroke-1 text-default-light" />
+                //     </div>
+                //   ),
+                //   to: getRoute(['app', 'seeds']),
+                // },
                 {
                   label: 'Assets',
                   description:
@@ -75,10 +74,10 @@ export function TopNavBar() {
             onClick={() => {
               navigate(getRoute(['app', 'overview']));
             }}
-            className="ml-2 font-normal text-sm flex flex-row space-x-1"
+            className="ml-2 flex flex-row space-x-1 text-sm font-normal"
           >
             <p className="mr-1">Overview</p>
-            <p className="rounded-[4px] font-medium border border-header text-xs capitalize px-1 text-[#5a5a7a]">
+            <p className="rounded-[4px] border border-header px-1 text-xs font-medium capitalize text-[#5a5a7a]">
               Beta
             </p>
           </button>

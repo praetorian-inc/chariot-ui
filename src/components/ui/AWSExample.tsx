@@ -1,7 +1,7 @@
 function AWSExample() {
   return (
     <div>
-      <p className="mb-4 text-sm font-medium text-gray-700">
+      <p className="my-4 text-sm">
         In addition to providing your account ID, add{' '}
         <a
           href="/templates/aws-permissions-template.yaml"
@@ -15,7 +15,7 @@ function AWSExample() {
         a Stack in the management account and as a StackSet to the desired
         Organization Units.
       </p>
-      <p className="mb-4 text-sm font-medium text-gray-700">
+      <p className="text-sm">
         To provide real-time updates to Chariot from your AWS account, add{' '}
         <a
           href="/templates/aws-events-template.yaml"

@@ -9,14 +9,12 @@ import { Attributes } from '@/sections/Attributes';
 import { AuthenticatedApp } from '@/sections/AuthenticatedApp';
 import Files from '@/sections/Files';
 import Hello from '@/sections/Hello';
-import Integrations from '@/sections/Integrations';
 import Intelligence from '@/sections/Intelligence';
 import Jobs from '@/sections/Jobs';
 import Login from '@/sections/Login';
 import Logout from '@/sections/Logout';
 import { Overview } from '@/sections/Overview';
 import { Risks } from '@/sections/RisksTable';
-import Seeds from '@/sections/Seeds';
 import { useAuth } from '@/state/auth';
 import { validateRoutes } from '@/utils/route.util';
 import { getRoute } from '@/utils/route.util';
@@ -67,10 +65,10 @@ const appRoutes = {
       element: <Assets />,
       title: 'Assets',
     },
-    seeds: {
-      element: <Seeds />,
-      title: 'Seeds',
-    },
+    // seeds: {
+    //   element: <Seeds />,
+    //   title: 'Seeds',
+    // },
     risks: {
       element: <Risks />,
       title: 'Risks',
@@ -95,10 +93,10 @@ const appRoutes = {
       element: <Files />,
       title: 'Documents',
     },
-    integrations: {
-      element: <Integrations />,
-      title: 'Integrations',
-    },
+    // integrations: {
+    //   element: <Integrations />,
+    //   title: 'Integrations',
+    // },
     overview: {
       element: (
         <Body>

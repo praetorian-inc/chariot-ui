@@ -4,28 +4,29 @@ import { ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/components/Button';
 import { ModalWrapper } from '@/components/Modal';
 import { useMy } from '@/hooks';
-import { create as createSeed } from '@/hooks/useSeeds';
+import { useCreateAsset } from '@/hooks/useAssets';
+import { AssetStatus } from '@/types';
 import { AllowedSeedRegex } from '@/utils/regex.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
 export const NewUserSeedModal = () => {
-  const { data: seeds = [], status } = useMy({
-    resource: 'seed',
+  const { data: assets = [], status } = useMy({
+    resource: 'asset',
   });
 
   const [open, setOpen] = useState(false);
   const [seedInput, setSeedInput] = useState<string>('');
-  const { mutate: addSeed } = createSeed();
+  const { mutate: createAsset } = useCreateAsset();
   const [newUserSeedModal, setNewUserSeedModal] = useStorage(
     { key: StorageKey.SHOW_NEW_USER_SEED_MODAL },
     false
   );
 
   useEffect(() => {
-    if (status === 'success' && seeds.length === 0 && newUserSeedModal) {
+    if (status === 'success' && assets.length === 0 && newUserSeedModal) {
       setOpen(true);
     }
-  }, [seeds, status, newUserSeedModal]);
+  }, [assets, status, newUserSeedModal]);
 
   function handleClose() {
     setNewUserSeedModal(false);
@@ -36,7 +37,7 @@ export const NewUserSeedModal = () => {
     if (seedInput.match(AllowedSeedRegex)) {
       try {
         const asset = seedInput;
-        addSeed({ asset });
+        createAsset({ name: asset, status: AssetStatus.Active });
       } catch (error) {
         console.error(error);
       } finally {
@@ -90,7 +91,7 @@ export const NewUserSeedModal = () => {
               type="submit"
               disabled={!seedInput}
               style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-              className="hover:bg-brand-hover block h-16 w-[150px] items-center rounded-r-[2px] border border-none border-brand bg-brand px-6  py-2.5 text-md text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:bg-brand-light disabled:text-white"
+              className="hover:bg-brand-hover text-md block h-16 w-[150px] items-center rounded-r-[2px] border border-none border-brand bg-brand  px-6 py-2.5 text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:bg-brand-light disabled:text-white"
             >
               Scan Now
             </Button>

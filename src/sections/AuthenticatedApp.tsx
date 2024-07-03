@@ -59,10 +59,6 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
       resetShortcuts();
       if (event.ctrlKey && event.key) {
         switch (event.key) {
-          case 's':
-          case 'S':
-            navigate(getRoute(['app', 'seeds']));
-            break;
           case 'a':
           case 'A':
             navigate(getRoute(['app', 'assets']));
@@ -70,10 +66,6 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
           case 'r':
           case 'R':
             navigate(getRoute(['app', 'risks']));
-            break;
-          case 'i':
-          case 'I':
-            navigate(getRoute(['app', 'integrations']));
             break;
           case 'j':
           case 'J':

@@ -471,7 +471,7 @@ export function Risks() {
         }
         primaryAction={() => {
           return {
-            label: 'Add Risk',
+            label: 'Configure',
             startIcon: <PlusIcon className="size-5" />,
             icon: <RisksIcon className="size-5" />,
             onClick: () => {

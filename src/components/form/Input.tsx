@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 
+import { Checkbox } from '@/components/form/Checkbox';
 import { Date, DateProps } from '@/components/form/Date';
 import { FormGroup, FormInfo } from '@/components/form/FormGroup';
 import { InputText } from '@/components/form/InputText';
@@ -11,6 +12,7 @@ export enum Type {
   TEXT_AREA = 'TEXT_AREA',
   SELECT = 'SELECT',
   DATE = 'DATE',
+  CHECKBOX = 'CHECKBOX',
 }
 
 export type InputEvent = React.ChangeEvent<
@@ -19,7 +21,7 @@ export type InputEvent = React.ChangeEvent<
 
 export interface InputProps extends SelectProps, DateProps {
   className?: string;
-  label?: string;
+  label?: JSX.Element | string;
   value: string | number;
   onChange: (e: InputEvent) => void;
   type?: Type;
@@ -75,6 +77,22 @@ export function Input(props: InputProps) {
           }
         >
           <Select {...rest} className={className} />
+        </FormGroup>
+      );
+
+    case Type.CHECKBOX:
+      return (
+        <FormGroup
+          {...rest}
+          className="shadow-none"
+          label={''}
+          error={props.error}
+          name={props.name}
+          startIcon={startIcon}
+          isLoading={isLoading}
+          info={info}
+        >
+          <Checkbox {...rest} className={className} />
         </FormGroup>
       );
 

@@ -14,7 +14,14 @@ export const useModifyAccount = (
   action: 'link' | 'unlink' | 'updateSetting'
 ) => {
   const axios = useAxios();
-  const { invalidate } = useMy({ resource: 'account' }, { enabled: false });
+  const { invalidate: invalidateAccount } = useMy(
+    { resource: 'account' },
+    { enabled: false }
+  );
+  const { invalidate: invalidateAsset } = useMy(
+    { resource: 'asset' },
+    { enabled: false }
+  );
   const { me, api } = useAuth();
 
   return useMutation<Account, Error, LinkAccount>({
@@ -50,7 +57,8 @@ export const useModifyAccount = (
           data = response.data as Account;
         }
 
-        invalidate();
+        invalidateAccount();
+        invalidateAsset();
 
         const snackbarTitle = AvailableIntegrations.includes(username)
           ? 'integration'

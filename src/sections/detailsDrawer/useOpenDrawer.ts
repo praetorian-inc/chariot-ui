@@ -30,7 +30,9 @@ export function useOpenDrawer() {
     },
     getSeedDrawerLink: (seed: Pick<Seed, 'name'>): To => {
       return generatePathWithSearch({
-        appendSearch: [[StorageKey.DRAWER_COMPOSITE_KEY, `#seed#${seed.name}`]],
+        appendSearch: [
+          [StorageKey.DRAWER_COMPOSITE_KEY, `#seed#${seed.name}#${seed.name}`],
+        ],
       });
     },
   };

@@ -1,4 +1,5 @@
 import { CopyToClipboard } from '@/components/CopyToClipboard';
+import { Input } from '@/components/form/Input';
 import { useMy } from '@/hooks';
 import { useAuth } from '@/state/auth';
 import { getChariotWebhookURL } from '@/utils/integration.util';
@@ -27,7 +28,7 @@ const WebhookExample: React.FC<Props> = ({ defaultPin }) => {
       comment: (
         <p>
           Finding is a regex pattern that matches{' '}
-          <pre className="inline rounded-[2px] bg-gray-200 p-1 text-xs">
+          <pre className="inline rounded-[2px] bg-gray-200 p-1 text-xs text-default">
             {`/^\\S+$/`}
           </pre>
         </p>
@@ -45,18 +46,20 @@ const WebhookExample: React.FC<Props> = ({ defaultPin }) => {
       <p className="block text-sm font-medium leading-6 text-gray-900">
         Webhook URL
       </p>
-      <p className="mb-4 break-all text-xs">
-        <CopyToClipboard textToCopy={url}>{url}</CopyToClipboard>
-      </p>
+      <Input
+        onChange={() => null}
+        name="webhook_url"
+        className="mb-4 break-all text-xs"
+        value={url}
+      />
       {samples.map(sample => (
-        <div key={sample.id} className="mb-6">
-          <span className="block text-sm font-medium leading-6 text-gray-900">
+        <div key={sample.id} className="mt-4 ">
+          <p className="text-sm font-medium pb-1">
             {sample.id} Payload Example
-          </span>
-          {sample.comment && <p className="mb-2 text-xs">{sample.comment}</p>}
-          <pre className="overflow-x-auto whitespace-pre-wrap rounded bg-gray-100 text-xs">
+          </p>
+          <code className="p-2 block prose overflow-x-auto whitespace-pre-wrap rounded bg-gray-100 text-xs text-default">
             {sample.payload}
-          </pre>
+          </code>
         </div>
       ))}
     </div>

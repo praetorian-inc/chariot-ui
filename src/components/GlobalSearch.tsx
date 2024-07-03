@@ -16,12 +16,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Menu } from '@headlessui/react';
 
 import { Input, InputEvent } from '@/components/form/Input';
-import {
-  AssetsIcon,
-  AttributesIcon,
-  RisksIcon,
-  SeedsIcon,
-} from '@/components/icons';
+import { AssetsIcon, AttributesIcon, RisksIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { RiskDropdown } from '@/components/ui/RiskDropdown';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
@@ -38,7 +33,6 @@ import {
   RiskCombinedStatus,
   RiskSeverity,
   Search,
-  Seed,
   SeverityDef,
 } from '@/types';
 import { cn } from '@/utils/classname';
@@ -188,8 +182,7 @@ const SearchResultDropdown: React.FC<Search> = ({
 }) => {
   const navigate = useNavigate();
 
-  const { getSeedDrawerLink, getRiskDrawerLink, getAssetDrawerLink } =
-    useOpenDrawer();
+  const { getRiskDrawerLink, getAssetDrawerLink } = useOpenDrawer();
 
   const { search } = useSearchContext();
   const isEmpty =
@@ -260,16 +253,6 @@ const SearchResultDropdown: React.FC<Search> = ({
                   <span className="text-nowrap">{item.dns}</span>
                 </div>
               )}
-            />
-            <SearchResultDropdownSeaction<Seed>
-              title="Seeds"
-              items={seeds}
-              onSelect={() => onSelect('seed')}
-              Icon={SeedsIcon}
-              onClick={item => {
-                navigate(getSeedDrawerLink(item));
-              }}
-              row={item => item.name}
             />
             <SearchResultDropdownSeaction<Risk>
               title="Risks"

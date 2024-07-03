@@ -15,7 +15,10 @@ export const useIntegration = () => {
 
   const isIntegration = useCallback(
     (asset: Asset) => {
-      return integrationList.some(account => account.member === asset.dns);
+      return (
+        asset.seed &&
+        integrationList.some(account => account.member === asset.dns)
+      );
     },
     [accountStatus]
   );

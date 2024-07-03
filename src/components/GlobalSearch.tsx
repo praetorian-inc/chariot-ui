@@ -16,7 +16,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Menu } from '@headlessui/react';
 
 import { Input, InputEvent } from '@/components/form/Input';
-import { AssetsIcon, RisksIcon } from '@/components/icons';
+import { AssetsIcon, AttributesIcon, RisksIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { RiskDropdown } from '@/components/ui/RiskDropdown';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
@@ -222,22 +222,31 @@ const SearchResultDropdown: React.FC<Search> = ({
             <SearchResultDropdownSeaction<Attribute>
               title="Attributes"
               items={attributes}
-              Icon={AssetsIcon}
               onSelect={() => onSelect('attribute')}
               onClick={item => {
-                const dns = item.key.split('#')[2];
-                const name = item.key.split('#')[3];
-                navigate(getAssetDrawerLink({ dns, name }));
+                navigate(getAttributeDetails(item).url);
               }}
-              row={item => (
-                <div className="flex items-center space-x-2">
-                  <span className="text-nowrap">
-                    {item.name} ({item.class})
-                  </span>
-                  <ChevronRightIcon className="size-2" />
-                  <span className="text-nowrap">{item.key.split('#')[3]}</span>
-                </div>
-              )}
+              row={item => {
+                const attDetail = getAttributeDetails(item);
+
+                const icon =
+                  attDetail.attributeType === 'asset' ? (
+                    <AssetsIcon className="mr-2 size-4 text-gray-400" />
+                  ) : (
+                    <RisksIcon className="mr-2 size-4 text-gray-400" />
+                  );
+
+                return (
+                  <div className="flex items-center space-x-2">
+                    {icon}
+                    <span className="text-nowrap">
+                      {attDetail.name} ({attDetail.class})
+                    </span>
+                    <ChevronRightIcon className="size-2" />
+                    <span className="text-nowrap">{attDetail.dns}</span>
+                  </div>
+                );
+              }}
             />
             <SearchResultDropdownSeaction<Asset>
               title="Assets"
@@ -286,6 +295,7 @@ const SearchResultDropdown: React.FC<Search> = ({
             <SearchResultDropdownSeaction<Attribute>
               title="Attribute"
               items={attribute}
+              Icon={AttributesIcon}
               onClick={item => {
                 navigate(getAttributeDetails(item).url);
               }}

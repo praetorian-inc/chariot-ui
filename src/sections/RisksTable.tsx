@@ -32,7 +32,7 @@ import { useGetKev } from '@/hooks/kev';
 import { useFilter } from '@/hooks/useFilter';
 import { useMy } from '@/hooks/useMy';
 import { useBulkUpdateRisk } from '@/hooks/useRisks';
-import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { useGlobalState } from '@/state/global.state';
 import {
   Risk,
@@ -129,7 +129,7 @@ const getFilteredRisks = (
 };
 
 export function Risks() {
-  const { getRiskDrawerLink } = useOpenDrawer();
+  const { getRiskDrawerLink } = getDrawerLink();
   const updateRisk = useBulkUpdateRisk();
 
   const {

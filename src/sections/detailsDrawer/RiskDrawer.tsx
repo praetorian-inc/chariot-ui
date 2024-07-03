@@ -31,6 +31,7 @@ import { useReRunJob } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { JobStatus, Risk, RiskCombinedStatus, RiskHistory } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { sToMs } from '@/utils/date.util';
@@ -39,7 +40,6 @@ import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch, useSearchParams } from '@/utils/url.util';
 
 import { DRAWER_WIDTH } from '.';
-import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
 
 const getJobTimeline = ({
   status,
@@ -89,7 +89,7 @@ interface RiskDrawerProps {
 
 export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const navigate = useNavigate();
-  const { getAssetDrawerLink } = useOpenDrawer();
+  const { getAssetDrawerLink } = getDrawerLink();
   const { removeSearchParams } = useSearchParams();
 
   const [, dns, name] = compositeKey.split('#');

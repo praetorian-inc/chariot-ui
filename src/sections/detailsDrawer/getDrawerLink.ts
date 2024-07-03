@@ -4,7 +4,7 @@ import { Asset, Risk, Seed } from '@/types';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch } from '@/utils/url.util';
 
-export function useOpenDrawer() {
+export function getDrawerLink() {
   return {
     getAssetDrawerLink: (asset: Pick<Asset, 'dns' | 'name'>): To => {
       return generatePathWithSearch({

@@ -238,7 +238,6 @@ export interface Seed {
 
 export interface Attribute {
   key: string;
-  dns: string;
   name: string;
   class: string;
   ttl: number;

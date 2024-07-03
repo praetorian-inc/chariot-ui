@@ -16,7 +16,7 @@ import { useModifyAccount, useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
 import { change as changeSeed, useDeleteSeed } from '@/hooks/useSeeds';
-import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { useGlobalState } from '@/state/global.state';
 import {
   Account,
@@ -84,7 +84,7 @@ const Seeds: React.FC = () => {
 
     return account?.displayName;
   };
-  const { getSeedDrawerLink } = useOpenDrawer();
+  const { getSeedDrawerLink } = getDrawerLink();
   const { mutate: updateSeed } = changeSeed();
   const [descriptionSeed, setDescriptionSeed] = useState<Seed>();
   const [integrationSeed, setIntegrationSeed] = useState<Seed>();

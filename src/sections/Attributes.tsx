@@ -1,15 +1,13 @@
 import { PlusIcon } from '@heroicons/react/24/outline';
 
-import { Link } from '@/components/Link';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { useMy } from '@/hooks';
-import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { useGlobalState } from '@/state/global.state';
 import { Attribute } from '@/types';
 import { prettyPrint } from '@/utils/prettyPrint.util';
-import { useNavigate } from 'react-router-dom';
 
 export function Attributes() {
   const {
@@ -19,8 +17,6 @@ export function Attributes() {
     isFetchingNextPage,
     fetchNextPage,
   } = useMy({ resource: 'attribute', filterByGlobalSearch: true });
-  const { getAssetDrawerLink } = useOpenDrawer();
-  const navigate = useNavigate();
 
   const {
     modal: { attribute },
@@ -28,34 +24,23 @@ export function Attributes() {
 
   const columns: Columns<Attribute> = [
     {
-      label: 'Asset',
+      label: 'Name',
       id: 'name',
       className: 'w-full',
-      copy: false,
-      cell: item => {
-        const ip = item.key.split('#')[3];
-        return (
-          <button
-            className="cursor-pointer truncate font-medium text-brand"
-            onClick={() => {
-              navigate(getAssetDrawerLink({ dns: item.dns, name: ip }));
-            }}
-          >
-            {ip !== item.dns ? (
-              <span>
-                {item.dns} ({ip})
-              </span>
-            ) : (
-              item.dns
-            )}
-          </button>
-        );
-      },
+      copy: true,
+      cell: item => getAttributeDetails(item).parsedName,
+      to: item => getAttributeDetails(item).url,
+    },
+    {
+      label: 'Type',
+      id: '',
+      fixedWidth: 80,
+      cell: item => getAttributeDetails(item).attributeType,
     },
     {
       label: 'Class',
       id: 'class',
-      className: 'w-[220px]',
+      fixedWidth: 220,
       copy: true,
       cell: item => {
         if (Number.isNaN(Number.parseInt(item.class))) {
@@ -66,7 +51,7 @@ export function Attributes() {
       },
     },
     {
-      label: 'Name',
+      label: 'Value',
       id: 'name',
       className: 'w-[190px]',
       copy: true,
@@ -111,4 +96,22 @@ export function Attributes() {
       skipHeader
     />
   );
+}
+
+export function getAttributeDetails(attribute: Attribute) {
+  const [, , attributeType, dns, name] = attribute.key.split('#');
+
+  const url =
+    attributeType === 'asset'
+      ? getDrawerLink().getAssetDrawerLink({ dns, name })
+      : getDrawerLink().getRiskDrawerLink({ dns, name });
+
+  return {
+    attributeType,
+    dns,
+    name,
+    parsedName: `${dns} (${name})`,
+    class: attribute.class,
+    url: url,
+  };
 }

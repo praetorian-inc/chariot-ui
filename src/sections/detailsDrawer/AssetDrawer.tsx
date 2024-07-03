@@ -16,9 +16,10 @@ import { useMy } from '@/hooks';
 import { useUpdateAsset } from '@/hooks/useAssets';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useIntegration } from '@/hooks/useIntegration';
+import { getAttributeDetails } from '@/sections/Attributes';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
-import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { Asset } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { capitalize } from '@/utils/lodash.util';
@@ -44,7 +45,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const [assetsLimit, setAssetsLimit] = useState(TABLE_LIMIT);
   const [riskLimit, setRiskLimit] = useState(TABLE_LIMIT);
 
-  const { getRiskDrawerLink, getAssetDrawerLink } = useOpenDrawer();
+  const { getAssetDrawerLink } = getDrawerLink();
   const { removeSearchParams } = useSearchParams();
   const navigate = useNavigate();
 
@@ -194,18 +195,11 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                           id: 'name',
                           className: 'w-full cursor-pointer pl-0',
                           cell: item => {
-                            const [, , , dns, name] = item.key.split('#');
-
-                            return `${name} (${dns})`;
+                            return getAttributeDetails(item).parsedName;
                           },
                           copy: true,
                           to: item => {
-                            const [, , , dns, name] = item.key.split('#');
-
-                            return getAssetDrawerLink({
-                              dns,
-                              name,
-                            });
+                            return getAttributeDetails(item).url;
                           },
                         },
                         {
@@ -251,15 +245,11 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                           id: 'name',
                           className: 'w-full cursor-pointer pl-0',
                           cell: item => {
-                            const [, , , dns, name] = item.key.split('#');
-
-                            return `${name} (${dns})`;
+                            return getAttributeDetails(item).parsedName;
                           },
                           copy: true,
                           to: item => {
-                            const [, , , dns, name] = item.key.split('#');
-
-                            return getRiskDrawerLink({ dns, name });
+                            return getAttributeDetails(item).url;
                           },
                         },
                         {

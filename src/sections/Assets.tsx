@@ -26,7 +26,7 @@ import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
 import { useCounts } from '@/hooks/useCounts';
 import { useIntegration } from '@/hooks/useIntegration';
 import { AssetStatusWarning } from '@/sections/AssetStatusWarning';
-import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { useGlobalState } from '@/state/global.state';
 import {
   Asset,
@@ -103,7 +103,7 @@ const Assets: React.FC = () => {
 
   const status = useMergeStatus(riskStatus, assetsStatus);
 
-  const { getAssetDrawerLink } = useOpenDrawer();
+  const { getAssetDrawerLink } = getDrawerLink();
   const openRiskDataset = useMemo(
     () => buildOpenRiskDataset(risks as Risk[]),
     [risks]

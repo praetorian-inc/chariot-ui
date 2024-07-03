@@ -13,7 +13,7 @@ import { DetailsListContainer } from '@/components/ui/DetailsListContainer';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { change as changeSeed } from '@/hooks/useSeeds';
 import { Comment } from '@/sections/detailsDrawer/Comment';
-import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { Asset, Attribute, Seed, SeedStatus } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
@@ -29,7 +29,7 @@ interface Props {
 const TABLE_LIMIT = 10;
 
 export const SeedDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
-  const { getAssetDrawerLink } = useOpenDrawer();
+  const { getAssetDrawerLink } = getDrawerLink();
   const {
     data: seedObj,
     isLoading,

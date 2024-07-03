@@ -20,7 +20,7 @@ import { Tooltip } from '@/components/Tooltip';
 import { useDownloadFile, useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
-import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { useGlobalState } from '@/state/global.state';
 import { FileLabels, MyFile } from '@/types';
 import { useMergeStatus } from '@/utils/api';
@@ -28,7 +28,7 @@ import { sortByDate } from '@/utils/date.util';
 
 const Files: React.FC = () => {
   const navigate = useNavigate();
-  const { getRiskDrawerLink, getProofOfExploitLink } = useOpenDrawer();
+  const { getRiskDrawerLink, getProofOfExploitLink } = getDrawerLink();
   const [filename, setFilename] = React.useState('');
   const [filetype, setFiletype] = React.useState('');
   const {

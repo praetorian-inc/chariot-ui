@@ -165,6 +165,7 @@ export const AddRisks = () => {
         open={isOpen}
         onClose={onClose}
         size="lg"
+        closeOnOutsideClick={false}
         footer={{
           onClick:
             selectedIndex === 0 ? () => null : handleConfigureIntegration,

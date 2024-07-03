@@ -275,7 +275,11 @@ const Assets: React.FC = () => {
         filters={
           <Dropdown
             styleType="header"
-            label={selectedFilter ? AssetLabels[selectedFilter] : 'All Assets'}
+            label={
+              selectedFilter && AssetLabels[selectedFilter]
+                ? AssetLabels[selectedFilter]
+                : 'All Assets'
+            }
             endIcon={
               <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
             }

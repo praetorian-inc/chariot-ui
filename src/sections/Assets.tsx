@@ -12,7 +12,6 @@ import {
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 import { Chip } from '@/components/Chip';
-import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { Dropdown } from '@/components/Dropdown';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { SpinnerIcon } from '@/components/icons/Spinner.icon';
@@ -165,13 +164,9 @@ const Assets: React.FC = () => {
       id: 'dns',
       className: 'w-full hidden md:table-cell',
       cell: (asset: Asset) => {
-        return (
-          <CopyToClipboard textToCopy={asset.dns}>
-            <OverflowText text={asset.dns} truncateType="center" />
-          </CopyToClipboard>
-        );
+        return <OverflowText text={asset.dns} truncateType="center" />;
       },
-      copy: false,
+      copy: true,
     },
     {
       label: 'Status',

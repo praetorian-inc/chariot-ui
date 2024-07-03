@@ -44,7 +44,6 @@ export interface Column<TData> {
     | 'highlight'
     | ((item: TData, selectedRowsData?: TData[]) => ReactNode);
   to?: (item: TData, selectedRowsData?: TData[]) => To;
-  formatText?: (item: TData) => string;
   className?: string;
   fixedWidth?: number;
   align?: CellAlignment;

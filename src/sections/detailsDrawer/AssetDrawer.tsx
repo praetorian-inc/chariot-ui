@@ -9,7 +9,6 @@ import { Drawer } from '@/components/Drawer';
 import { HorizontalSplit } from '@/components/HorizontalSplit';
 import { AssetsIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
-import { OverflowText } from '@/components/OverflowText';
 import { Table } from '@/components/table/Table';
 import { AssetStatusText } from '@/components/ui/AssetStatusChip';
 import { DetailsListContainer } from '@/components/ui/DetailsListContainer';
@@ -20,7 +19,7 @@ import { useIntegration } from '@/hooks/useIntegration';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
 import { useOpenDrawer } from '@/sections/detailsDrawer/useOpenDrawer';
-import { Asset, Risk } from '@/types';
+import { Asset } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { capitalize } from '@/utils/lodash.util';
 import { getRoute } from '@/utils/route.util';
@@ -88,14 +87,15 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
     attributes: genericAttributes = [],
   } = assetNameGenericSearch || {};
 
-  // Note: Update class name for the following two variables to get assets and risks
   const associatedAssets = genericAttributes.filter(
-    attribute => attribute.class === 'seed'
-  ) as unknown as Asset[];
+    attribute =>
+      attribute.class === 'seed' && attribute.key.startsWith('#attribute#asset')
+  );
 
   const associatedRisks = genericAttributes.filter(
-    attribute => attribute.class === 'seed'
-  ) as unknown as Risk[];
+    attribute =>
+      attribute.class === 'seed' && attribute.key.startsWith('#attribute#risk')
+  );
 
   const showMoreAssets = associatedAssets.length > TABLE_LIMIT;
   const showMoreRisks = associatedRisks.length > TABLE_LIMIT;
@@ -193,18 +193,18 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                           label: 'Name',
                           id: 'name',
                           className: 'w-full cursor-pointer pl-0',
-                          cell: (item: Asset) => (
-                            <div className="w-full font-medium text-brand">
-                              <OverflowText
-                                text={`${item.key.split('#')[3]} (${item.dns})`}
-                              />
-                            </div>
-                          ),
+                          cell: item => {
+                            const [, , , dns, name] = item.key.split('#');
+
+                            return `${name} (${dns})`;
+                          },
                           copy: true,
                           to: item => {
+                            const [, , , dns, name] = item.key.split('#');
+
                             return getAssetDrawerLink({
-                              dns: item.dns,
-                              name: item.key.split('#')[3],
+                              dns,
+                              name,
                             });
                           },
                         },
@@ -224,15 +224,15 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                           styleType="textPrimary"
                           onClick={() =>
                             setAssetsLimit(limit =>
-                              limit === assets.length
+                              limit === associatedAssets.length
                                 ? TABLE_LIMIT
-                                : assets.length
+                                : associatedAssets.length
                             )
                           }
                         >
-                          {assetsLimit >= assets.length
+                          {assetsLimit === associatedAssets.length
                             ? 'View Less'
-                            : `and ${assets.length - assetsLimit} more`}
+                            : `and ${associatedAssets.length - assetsLimit} more`}
                         </Button>
                       </div>
                     )}
@@ -250,17 +250,15 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                           label: 'Name',
                           id: 'name',
                           className: 'w-full cursor-pointer pl-0',
-                          cell: (item: Risk) => (
-                            <div className="w-full font-medium text-brand">
-                              <OverflowText
-                                text={`${item.key.split('#')[3]}`}
-                              />
-                            </div>
-                          ),
+                          cell: item => {
+                            const [, , , dns, name] = item.key.split('#');
+
+                            return `${name} (${dns})`;
+                          },
                           copy: true,
-                          to: (item: Risk) => {
-                            const dns = item.key.split('#')[2];
-                            const name = item.key.split('#')[3];
+                          to: item => {
+                            const [, , , dns, name] = item.key.split('#');
+
                             return getRiskDrawerLink({ dns, name });
                           },
                         },

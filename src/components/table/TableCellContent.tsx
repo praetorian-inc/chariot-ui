@@ -18,14 +18,17 @@ export function TableCellContent<TData>(props: {
   function getCell() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const itemContent: any = (item as unknown as Record<any, any>)[col.id];
-    const content = col.formatText
-      ? col.formatText(item)
-      : typeof itemContent === 'string'
-        ? itemContent
-        : `${itemContent}`;
+    const content =
+      typeof itemContent === 'string' ? itemContent : `${itemContent}`;
 
     if (typeof col.cell === 'function') {
-      return col.cell(item, selectedRowsData);
+      const cellContent = col.cell(item, selectedRowsData);
+
+      if (typeof cellContent === 'string') {
+        return <OverflowText text={cellContent || '-'} />;
+      } else {
+        return cellContent;
+      }
     }
 
     if (col.cell === 'highlight') {

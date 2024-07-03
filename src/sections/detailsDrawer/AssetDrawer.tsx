@@ -230,7 +230,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                             )
                           }
                         >
-                          {assetsLimit === assets.length
+                          {assetsLimit >= assets.length
                             ? 'View Less'
                             : `and ${assets.length - assetsLimit} more`}
                         </Button>
@@ -286,7 +286,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                             )
                           }
                         >
-                          {assetsLimit === assets.length
+                          {assetsLimit >= assets.length
                             ? 'View Less'
                             : `and ${assets.length - assetsLimit} more`}
                         </Button>

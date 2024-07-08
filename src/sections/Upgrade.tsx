@@ -49,6 +49,7 @@ const UpgradeModal = ({ isOpen, setIsOpen }: UpgradeModalProps) => {
   return (
     <Modal
       title={'Free Upgrade'}
+      size="lg"
       open={isOpen}
       onClose={() => setIsOpen(false)}
       footer={{
@@ -60,30 +61,70 @@ const UpgradeModal = ({ isOpen, setIsOpen }: UpgradeModalProps) => {
         },
       }}
     >
-      <div className="flex flex-col justify-center gap-4 p-2">
-        <p>
-          <b>We&apos;re excited to have you using Chariot! 🎉</b>
-        </p>
-        <p>
-          Right now, you&apos;re on the <b>free plan</b>.
-        </p>
-        <p>This plan is self-service and lets you manage one seed.</p>
+      <div className="flex flex-col p-2 text-gray-800">
+        <div className="mb-6 text-center">
+          <p className="text-2xl font-semibold">Free Managed-Service Trial</p>
+          <p className="text-xl text-gray-700">
+            Enjoy a 7-day free trial of our managed-service plan.
+          </p>
+        </div>
 
-        <p>We also offer other plans:</p>
-        <ol className="list-inside list-decimal">
-          <li>
-            <b>Self-service</b> plan with unlimited seeds.
-          </li>
-          <li>
-            <b>Managed-service</b> plan with unlimited seeds. Our expert team
-            will triage your risks and notify you about critical, exploitable
-            risks.
-          </li>
-        </ol>
+        <div className="flex justify-around mt-6 space-x-2">
+          <div className="flex flex-col items-center p-6 bg-gray-50 rounded-sm w-1/3 h-60">
+            <p className="text-lg font-bold  h-1/4">Free Tier</p>
+            <p className="text-gray-700 text-center h-1/2">
+              Enter one domain for asset and risk discovery
+            </p>
+            <button
+              className="mt-4 px-4 py-2 bg-gray-200 text-gray-600 rounded-sm cursor-not-allowed h-1/4"
+              disabled
+            >
+              Current Plan
+            </button>
+          </div>
 
-        <p>
-          Give our managed-service plan a try for free! Upgrade now to have our
-          team triage your risks for 7 days.
+          <div className="flex flex-col items-center p-6 bg-gray-50 rounded-sm w-1/3 h-60">
+            <p className="text-lg font-bold  h-1/4">Self-Service</p>
+            <p className="text-gray-700 text-center h-1/2">
+              Enter unlimited domains for asset and risk discovery
+            </p>
+            <button
+              onClick={e => {
+                e.preventDefault();
+                window.open(
+                  'https://www.praetorian.com/contact-us',
+                  '_blank',
+                  'noopener noreferrer'
+                );
+              }}
+              className="mt-4 px-4 py-2 border border-brand-light h-1/4 text-brand rounded-sm"
+            >
+              Contact Us
+            </button>
+          </div>
+
+          <div className="flex flex-col items-center p-6 bg-gray-50 rounded-sm w-1/3 h-60 border border-brand">
+            <p className="text-lg font-bold h-1/4">Managed-Service</p>
+            <p className="text-gray-700 text-center h-1/2">
+              Unlimited domains + expert risk assessment
+            </p>
+            <button
+              onClick={e => {
+                e.preventDefault();
+                window.open(
+                  'https://www.praetorian.com/contact-us',
+                  '_blank',
+                  'noopener noreferrer'
+                );
+              }}
+              className="mt-4 px-4 py-2 border border-brand-light h-1/4 text-brand rounded-sm"
+            >
+              Contact Us
+            </button>
+          </div>
+        </div>
+        <p className="text-md text-gray-600 text-right mt-12">
+          We will contact you to confirm before starting your trial.
         </p>
       </div>
     </Modal>

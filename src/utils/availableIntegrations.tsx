@@ -47,8 +47,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 12,
     name: 'hook',
     displayName: 'Chariot Webhook',
-    description:
-      'Receive streaming events when new assets and risks are discovered',
+    description: 'Push assets and risks to Chariot',
     logo: '/icons/PraetorianWebhook.svg',
     connected: true,
     types: [IntegrationType.Workflow],
@@ -508,7 +507,8 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       {
         label: 'Webhook URL',
         value: '',
-        placeholder: 'https://yourZulipDomain.zulipchat.com/api/v1/external/slack_incoming',
+        placeholder:
+          'https://yourZulipDomain.zulipchat.com/api/v1/external/slack_incoming',
         name: 'webhook',
         required: true,
         info: {
@@ -532,7 +532,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
         ],
       },
     ],
-  }
+  },
 ];
 
 export const AccountMeta: IntegrationMeta = {

@@ -34,6 +34,7 @@ export interface TableProps<TData> {
     filter: (data: TData) => boolean;
   }[];
   skipHeader?: boolean;
+  resize?: boolean;
 }
 
 export interface Column<TData> {

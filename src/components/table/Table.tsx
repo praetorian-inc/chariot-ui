@@ -23,6 +23,7 @@ import { Tooltip } from '@/components/Tooltip';
 import { Body } from '@/components/ui/Body';
 import { NoData } from '@/components/ui/NoData';
 import { useScroll } from '@/hooks';
+import { useResize } from '@/hooks/useResize';
 import {
   RenderHeaderBreadcrumbSection,
   RenderHeaderExtraContentSection,
@@ -53,6 +54,7 @@ export function Table<TData>(props: TableProps<TData>) {
     isTableView = true,
     primaryAction,
     skipHeader,
+    resize = false,
   } = props;
 
   const [expandedGroups, setExpandedGroups] = useState(
@@ -393,6 +395,7 @@ export function Table<TData>(props: TableProps<TData>) {
                         : column.fixedWidth
                     }
                     align={column.align}
+                    resize={resize}
                   >
                     {column.label}
                   </Th>
@@ -456,8 +459,14 @@ export function Th(props: {
   fixedWidth?: number;
   children: ReactNode;
   align?: CellAlignment;
+  resize?: boolean;
 }) {
-  const { fixedWidth, ...restProps } = props;
+  const ref = useRef<HTMLTableCellElement>(null);
+  const { fixedWidth, resize = false, ...restProps } = props;
+  const { size, onMouseDown } = useResize({
+    el: ref.current || document.createElement('div'),
+    minWidth: fixedWidth || 100,
+  });
 
   return (
     <th
@@ -468,15 +477,32 @@ export function Th(props: {
         props.align === 'right' && 'text-right',
         props.className
       )}
-      style={{
-        ...(fixedWidth
-          ? { maxWidth: fixedWidth, minWidth: fixedWidth, width: fixedWidth }
-          : {}),
-      }}
+      style={
+        resize
+          ? {
+              minWidth: fixedWidth || 100,
+              width: size.x || fixedWidth,
+            }
+          : fixedWidth
+            ? { maxWidth: fixedWidth, minWidth: fixedWidth, width: fixedWidth }
+            : {}
+      }
+      ref={ref}
     >
       <div className="th-top-border absolute left-0 top-0 w-full border-b border-solid border-default" />
       <div className="th-bottom-border absolute bottom-0 left-0 w-full border-b border-solid border-default" />
-      {props.children}
+
+      <div className="flex justify-between">
+        {props.children}
+        {resize && (
+          <span
+            className="resize-el text-layer1 hover:cursor-col-resize"
+            onMouseDown={onMouseDown}
+          >
+            |
+          </span>
+        )}
+      </div>
     </th>
   );
 }

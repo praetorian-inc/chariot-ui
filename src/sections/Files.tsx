@@ -195,6 +195,7 @@ const Files: React.FC = () => {
       <Table
         columns={columns}
         data={filteredAndSortedFiles}
+        resize={true}
         error={error}
         status={status}
         fetchNextPage={fetchNextPage}

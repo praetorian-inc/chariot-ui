@@ -7,6 +7,10 @@
   color: #fff;
 }
 
+.col-resize {
+  cursor: col-resize;
+}
+
 .markdownSelection textarea::selection {
   background-color: #7f67d75f;
   color: #fff;

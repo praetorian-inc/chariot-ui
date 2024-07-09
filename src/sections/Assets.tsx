@@ -1,16 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import {
-  PauseIcon,
-  PlusIcon,
-  QuestionMarkCircleIcon,
-} from '@heroicons/react/24/outline';
+import { PauseIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 import { Chip } from '@/components/Chip';
 import { Dropdown } from '@/components/Dropdown';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
+import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { SpinnerIcon } from '@/components/icons/Spinner.icon';
 import { Link } from '@/components/Link';
 import { OverflowText } from '@/components/OverflowText';
@@ -35,7 +32,6 @@ import {
 import { useMergeStatus } from '@/utils/api';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
-import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 
 type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
 type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
@@ -151,7 +147,6 @@ const Assets: React.FC = () => {
         return (
           <div className="flex gap-2">
             <span>{asset.name}</span>
-            {/* {asset.seed && <Chip>Seed</Chip>} */}
             {integration && <Chip>Integration</Chip>}
           </div>
         );
@@ -311,6 +306,7 @@ const Assets: React.FC = () => {
             }}
           />
         }
+        resize={true}
         selection={{}}
         primaryAction={() => {
           return {
@@ -378,7 +374,7 @@ const Assets: React.FC = () => {
                   label: (
                     <span>
                       Freeze
-                      <span className="text-xs text-gray-600 bg-layer1 p-2 ml-2 rounded-md">
+                      <span className="ml-2 rounded-md bg-layer1 p-2 text-xs text-gray-600">
                         Unknown Asset
                       </span>
                     </span>

@@ -5,7 +5,6 @@ import {
   ExclamationTriangleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
 import { Button } from '@/components/Button';
@@ -13,7 +12,6 @@ import { Input } from '@/components/form/Input';
 import { Inputs, Values } from '@/components/form/Inputs';
 import { AssetsIcon } from '@/components/icons';
 import { Modal } from '@/components/Modal';
-import { Tooltip } from '@/components/Tooltip';
 import { useModifyAccount } from '@/hooks';
 import { useCreateAsset } from '@/hooks/useAssets';
 import { useIntegration } from '@/hooks/useIntegration';
@@ -22,6 +20,7 @@ import {
   Account,
   Asset,
   AssetStatus,
+  AssetStatusLabel,
   IntegrationType,
   LinkAccount,
 } from '@/types';
@@ -44,7 +43,7 @@ const AddAssetMessage = () => (
       </p>
       <p className="mt-0 rounded-sm bg-layer1 p-4 text-sm text-gray-500">
         For example, at Acme Corporation, an asset could be:
-        <ul className="my-0 marker:text-gray-300 list-disc pl-5 text-sm ">
+        <ul className="my-0 list-disc pl-5 text-sm marker:text-gray-300 ">
           <li>
             Domains: <span className="font-semibold">acme.com</span>
           </li>
@@ -88,47 +87,22 @@ const Tabs: IntegrationMeta[] = [
         className: 'h-11',
       },
       {
-        label: (
-          <div className="flex justify-center space-x-1 text-center">
-            Priority{' '}
-            <Tooltip
-              title={
-                <div className="flex flex-col space-y-1">
-                  <p>
-                    <span className="font-semibold">High Priority:</span>{' '}
-                    Discovers Assets, Finds Risks (Aggressive Scan)
-                  </p>
-                  <p>
-                    <span className="font-semibold">Standard Priority:</span>{' '}
-                    Discovers Assets, Finds Risks
-                  </p>
-                  <p>
-                    <span className="font-semibold">Low Priority:</span>{' '}
-                    Discovers Assets
-                  </p>
-                </div>
-              }
-            >
-              <InformationCircleIcon className="size-5 text-gray-500" />
-            </Tooltip>
-          </div>
-        ),
+        label: 'Priority',
         value: AssetStatus.Active,
         type: Input.Type.SELECT,
         placeholder: 'Select Priority',
-
         name: 'status',
         options: [
           {
-            label: 'High Priority',
+            label: AssetStatusLabel[AssetStatus.ActiveHigh],
             value: AssetStatus.ActiveHigh,
           },
           {
-            label: 'Standard Priority',
+            label: AssetStatusLabel[AssetStatus.Active],
             value: AssetStatus.Active,
           },
           {
-            label: 'Low Priority',
+            label: AssetStatusLabel[AssetStatus.ActiveLow],
             value: AssetStatus.ActiveLow,
           },
         ],

@@ -1,16 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import {
-  PauseIcon,
-  PlusIcon,
-  QuestionMarkCircleIcon,
-} from '@heroicons/react/24/outline';
+import { PauseIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 import { Chip } from '@/components/Chip';
 import { Dropdown } from '@/components/Dropdown';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
+import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { SpinnerIcon } from '@/components/icons/Spinner.icon';
 import { Link } from '@/components/Link';
 import { OverflowText } from '@/components/OverflowText';
@@ -29,13 +26,13 @@ import {
   Asset,
   AssetLabels,
   AssetStatus,
+  AssetStatusLabel,
   Risk,
   RiskScanMessage,
 } from '@/types';
 import { useMergeStatus } from '@/utils/api';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
-import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 
 type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
 type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
@@ -336,7 +333,7 @@ const Assets: React.FC = () => {
                 },
                 { type: 'divider', label: 'Divider' },
                 {
-                  label: 'High Priority',
+                  label: AssetStatusLabel[AssetStatus.ActiveHigh],
                   icon: getAssetStatusIcon(AssetStatus.ActiveHigh),
                   disabled: assets.every(
                     asset => asset.status === AssetStatus.ActiveHigh
@@ -348,7 +345,7 @@ const Assets: React.FC = () => {
                   },
                 },
                 {
-                  label: 'Standard Priority',
+                  label: AssetStatusLabel[AssetStatus.Active],
                   icon: getAssetStatusIcon(AssetStatus.Active),
                   disabled: assets.every(
                     asset => asset.status === AssetStatus.Active
@@ -356,7 +353,7 @@ const Assets: React.FC = () => {
                   onClick: () => updateStatus(assets, AssetStatus.Active),
                 },
                 {
-                  label: 'Low Priority',
+                  label: AssetStatusLabel[AssetStatus.ActiveLow],
                   icon: getAssetStatusIcon(AssetStatus.ActiveLow),
                   disabled: assets.every(
                     asset => asset.status === AssetStatus.ActiveLow
@@ -378,7 +375,7 @@ const Assets: React.FC = () => {
                   label: (
                     <span>
                       Freeze
-                      <span className="text-xs text-gray-600 bg-layer1 p-2 ml-2 rounded-md">
+                      <span className="ml-2 rounded-md bg-layer1 p-2 text-xs text-gray-600">
                         Unknown Asset
                       </span>
                     </span>
@@ -394,21 +391,24 @@ const Assets: React.FC = () => {
         data={assetsWithRisk}
         groupBy={[
           {
-            label: 'High Priority',
+            label: AssetStatusLabel[AssetStatus.ActiveHigh],
             filter: asset => asset.status === AssetStatus.ActiveHigh,
+            icon: getAssetStatusIcon(AssetStatus.ActiveHigh),
           },
           {
-            label: 'Standard Priority',
+            label: AssetStatusLabel[AssetStatus.Active],
             filter: asset =>
               [
                 AssetStatus.Active,
                 AssetStatus.Frozen,
                 AssetStatus.Unknown,
               ].includes(asset.status),
+            icon: getAssetStatusIcon(AssetStatus.Active),
           },
           {
-            label: 'Low Priority',
+            label: AssetStatusLabel[AssetStatus.ActiveLow],
             filter: asset => asset.status === AssetStatus.ActiveLow,
+            icon: getAssetStatusIcon(AssetStatus.ActiveLow),
           },
         ]}
         error={error}

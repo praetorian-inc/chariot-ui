@@ -32,6 +32,7 @@ export interface TableProps<TData> {
   groupBy?: {
     label: string;
     filter: (data: TData) => boolean;
+    icon?: ReactNode;
   }[];
   skipHeader?: boolean;
 }
@@ -57,6 +58,7 @@ export type InternalTData<TData> = TData & {
   _type?: 'colgroup';
   _label?: string;
   _idx: string;
+  _icon?: ReactNode;
 };
 
 export type TableActions = Pick<DropdownProps, 'menu' | 'disabled'>;

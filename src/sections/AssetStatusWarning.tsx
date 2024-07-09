@@ -1,11 +1,7 @@
-import {
-  BoltIcon,
-  ArrowUpCircleIcon,
-  PauseCircleIcon,
-} from '@heroicons/react/24/solid';
+import { BoltIcon, PauseCircleIcon } from '@heroicons/react/24/solid';
 
 import { Modal } from '@/components/Modal';
-import { AssetStatus } from '@/types';
+import { AssetStatus, AssetStatusLabel } from '@/types';
 
 interface Props {
   open: boolean;
@@ -23,7 +19,7 @@ export function AssetStatusWarning({
   if (status === AssetStatus.ActiveHigh) {
     return (
       <Modal
-        title="Change Status to High Priority"
+        title={`Change Status to ${AssetStatusLabel[AssetStatus.ActiveHigh]}`}
         open={open}
         onClose={onClose}
         style="dialog"

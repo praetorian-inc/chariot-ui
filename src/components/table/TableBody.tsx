@@ -4,7 +4,6 @@ import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { VirtualItem } from '@tanstack/react-virtual';
 
 import { Dropdown } from '@/components/Dropdown';
-import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { Loader } from '@/components/Loader';
 import { ROW_HEIGHT } from '@/components/table/constants';
 import { TableCellContent } from '@/components/table/TableCellContent';
@@ -15,7 +14,6 @@ import {
   InternalTData,
   TableProps,
 } from '@/components/table/types';
-import { AssetStatus } from '@/types';
 import { cn } from '@/utils/classname';
 
 interface TableBodyProps<TData> {
@@ -39,15 +37,6 @@ interface TableBodyProps<TData> {
   groupBy?: TableProps<TData>['groupBy'];
 }
 
-const getGroupIcon = (label: string) => {
-  if (label === 'High Priority')
-    return getAssetStatusIcon(AssetStatus.ActiveHigh);
-  if (label === 'Standard Priority')
-    return getAssetStatusIcon(AssetStatus.Active);
-  if (label === 'Low Priority')
-    return getAssetStatusIcon(AssetStatus.ActiveLow);
-  return null;
-};
 export function TableBody<TData>(props: TableBodyProps<TData>) {
   const {
     selectedRows,
@@ -89,7 +78,7 @@ export function TableBody<TData>(props: TableBodyProps<TData>) {
         <th className="text-left" colSpan={columns.length + 2} scope="colgroup">
           <Loader isLoading={isLoading}>
             <div className="flex flex-row items-center space-x-2">
-              {getGroupIcon(GroupName)}
+              {rowData?._icon}
               <p>{GroupName}</p>
             </div>
           </Loader>

@@ -2,7 +2,7 @@ import { Snackbar } from '@/components/Snackbar';
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
 import { startMessage } from '@/hooks/useSeeds';
-import { Asset, AssetStatus, RiskScanMessage } from '@/types';
+import { Asset, AssetStatus, AssetStatusLabel, RiskScanMessage } from '@/types';
 import { useMutation } from '@/utils/api';
 
 interface UpdateAssetProps {
@@ -15,10 +15,10 @@ interface UpdateAssetProps {
 
 export const AssetsSnackbarTitle = {
   [AssetStatus.Unknown]: 'will be marked as unknown',
-  [AssetStatus.Active]: 'will resume scanning',
-  [AssetStatus.ActiveHigh]: 'will be marked as high priority',
+  [AssetStatus.Active]: `will be marked as ${AssetStatusLabel[AssetStatus.Active].toLocaleLowerCase()}`,
+  [AssetStatus.ActiveHigh]: `will be marked as ${AssetStatusLabel[AssetStatus.ActiveHigh].toLocaleLowerCase()}`,
   [AssetStatus.Frozen]: 'will be removed',
-  [AssetStatus.ActiveLow]: 'will be marked as low priority',
+  [AssetStatus.ActiveLow]: `will be marked as ${AssetStatusLabel[AssetStatus.ActiveLow].toLocaleLowerCase()}`,
 };
 
 export const useUpdateAsset = () => {

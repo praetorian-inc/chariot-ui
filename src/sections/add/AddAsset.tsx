@@ -212,7 +212,7 @@ export function AddAsset() {
                 onClose();
                 navigate({
                   pathname: getRoute(['app', 'jobs']),
-                  search: `?hashSearch=%23${encodeURIComponent(selectedIntegration[0].member)}`,
+                  search: `?hashSearch=${encodeURIComponent(`#${selectedIntegration[0].member}`)}`,
                 });
               }}
             >

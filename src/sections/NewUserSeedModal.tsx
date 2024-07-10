@@ -99,7 +99,7 @@ export const NewUserSeedModal = () => {
                 placeholder="domain.com"
                 value={seedInput}
                 onChange={e => setSeedInput(e.target.value)}
-                className="block h-16 w-full rounded-l-[2px] bg-layer0 px-3 py-2 pr-[278px] text-xl font-bold shadow-sm focus:outline-none"
+                className="block h-16 w-full rounded-l-[2px] bg-layer0 px-3 py-2 pr-[400px] text-xl font-bold shadow-sm focus:outline-none"
               />
               <div className="absolute right-2 top-2 flex w-fit items-center gap-1 rounded-full bg-header-light p-2 text-sm text-header-light">
                 {options.map((option, index) => {

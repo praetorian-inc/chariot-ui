@@ -10,6 +10,19 @@ import { cn } from '@/utils/classname';
 import { AllowedSeedRegex } from '@/utils/regex.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
+const options = [
+  {
+    label: 'Discovery',
+    description: 'description1',
+    value: AssetStatus.ActiveLow,
+  },
+  {
+    label: 'Discovery + Scan',
+    description: 'description2',
+    value: AssetStatus.Active,
+  },
+];
+
 export const NewUserSeedModal = () => {
   const { data: assets = [], status } = useMy({
     resource: 'asset',
@@ -17,9 +30,7 @@ export const NewUserSeedModal = () => {
 
   const [open, setOpen] = useState(false);
   const [seedInput, setSeedInput] = useState<string>('');
-  const [assetStatus, setAssetStatus] = useState<
-    AssetStatus.Active | AssetStatus.ActiveLow
-  >(AssetStatus.ActiveLow);
+  const [assetStatus, setAssetStatus] = useState<AssetStatus>(options[0].value);
 
   const { mutate: createAsset } = useCreateAsset();
   const [newUserSeedModal, setNewUserSeedModal] = useStorage(
@@ -93,28 +104,22 @@ export const NewUserSeedModal = () => {
                 className="block h-16 w-full rounded-l-[2px] bg-layer0 px-3 py-2 pr-[278px] text-xl font-bold shadow-sm focus:outline-none"
               />
               <div className="absolute right-2 top-2 flex w-fit items-center gap-2 rounded-full bg-header-light p-2 text-header-light">
-                <div
-                  className={cn(
-                    'rounded-full px-2 py-1 cursor-pointer',
-                    assetStatus === AssetStatus.ActiveLow && 'bg-primary'
-                  )}
-                  onClick={() => {
-                    setAssetStatus(AssetStatus.ActiveLow);
-                  }}
-                >
-                  Discovery
-                </div>
-                <div
-                  className={cn(
-                    'rounded-full px-2 py-1 cursor-pointer',
-                    assetStatus === AssetStatus.Active && 'bg-primary'
-                  )}
-                  onClick={() => {
-                    setAssetStatus(AssetStatus.Active);
-                  }}
-                >
-                  Discovery + scan
-                </div>
+                {options.map((option, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className={cn(
+                        'rounded-full px-2 py-1 cursor-pointer',
+                        assetStatus === option.value && 'bg-primary'
+                      )}
+                      onClick={() => {
+                        setAssetStatus(option.value);
+                      }}
+                    >
+                      {option.label}
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <Button
@@ -127,10 +132,7 @@ export const NewUserSeedModal = () => {
             </Button>
           </form>
           <div className="text-default-light">
-            {assetStatus === AssetStatus.ActiveLow &&
-              'Enter your domain and our intelligent algorithms will map your attack surface.'}
-            {assetStatus === AssetStatus.Active &&
-              'tasdlkansdlansld als d aljsd ajlsd jas dsj.'}
+            {options.find(option => option.value === assetStatus)?.description}
           </div>
           <Button
             className="m-auto text-default-light"

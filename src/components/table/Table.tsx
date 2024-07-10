@@ -95,9 +95,7 @@ export function Table<TData>(props: TableProps<TData>) {
 
     return groupedData;
   }, [
-    JSON.stringify(
-      groupBy?.map(group => ({ label: group.label, filter: group.filter }))
-    ),
+    JSON.stringify(groupBy?.map(group => ({ ...group, _icon: undefined }))),
     JSON.stringify(indexedData),
     JSON.stringify(expandedGroups),
     status,

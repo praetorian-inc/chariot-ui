@@ -35,6 +35,7 @@ export interface TableProps<TData> {
     icon?: ReactNode;
   }[];
   skipHeader?: boolean;
+  resize?: boolean;
 }
 
 export interface Column<TData> {

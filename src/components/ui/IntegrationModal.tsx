@@ -80,7 +80,7 @@ export const IntegrationModal = (props: Props) => {
               onClick={() => {
                 navigate({
                   pathname: getRoute(['app', 'jobs']),
-                  search: `?hashSearch=%23${encodeURIComponent(form.name)}`,
+                  search: `?hashSearch=${encodeURIComponent(`#${form.name}`)}`,
                 });
               }}
             >

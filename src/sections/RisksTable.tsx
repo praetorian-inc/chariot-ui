@@ -360,6 +360,7 @@ export function Risks() {
     <div className="flex w-full flex-col">
       <Table
         name={'risks'}
+        resize={true}
         filters={
           <div className="flex gap-4">
             <Dropdown

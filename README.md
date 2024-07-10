@@ -2,7 +2,7 @@
 
 # Chariot Offensive Security Platform
 
-[![Node Version](https://img.shields.io/badge/node-v20.15.0-339933)](https://nodejs.org/)
+[![Node Version](https://img.shields.io/badge/node-v20.15.1-339933)](https://nodejs.org/)
 [![NPM Version](https://img.shields.io/badge/npm-v10.8.1-CB3837)](https://www.npmjs.com/)
 [![License](https://img.shields.io/badge/license-MIT-007EC6.svg)](LICENSE)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-007EC6.svg)](CODE_OF_CONDUCT.md)
@@ -19,6 +19,7 @@
 - [Key Features](#key-features)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
+  - [Configuring Node Version](#configuring-node-version)
   - [Installation](#installation)
   - [Running the Development Server](#running-the-development-server)
   - [Building the Project](#building-the-project)
@@ -45,9 +46,52 @@ Chariot is an expert-driven, all-in-one offensive security platform that helps o
 
 ### Prerequisites
 
-- Node.js (v20.15.0)
+- Node.js (LTS)
 - npm (10.8.1)
 - `mkcert` (for creating local HTTPS certificates)
+- `nvm` (optional, for managing Node.js versions)
+
+### Configuring Node Version
+
+_Note: This step is optional. If you use other tools to manage Node.js versions, please refer to their documentation._
+
+To ensure your Node.js version is on LTS when contributing or running the project locally using `nvm`, add the following script to your `~/.zshrc` file.
+
+```sh
+load-nvmrc() {
+  [[ -a .nvmrc ]] || return
+  local node_version="$(nvm version)"
+  local nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$node_version" ]; then
+      nvm use
+    fi
+  elif [ "$node_version" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
+```
+
+When you change directories into the project, `nvm` will automatically detect the required Node.js version specified in the `.nvmrc` file and switch to it. Here is an example of what you might see:
+
+```sh
+[~]$ cd ./repos/chariot-ui
+Found '/Users/username/repos/chariot-ui/.nvmrc' with version <lts/*>
+Downloading and installing node v20.15.1...
+Downloading https://nodejs.org/dist/v20.15.1/node-v20.15.1-darwin-x64.tar.xz...
+######################################################################################## 100.0%
+Computing checksum with sha256sum
+Checksums matched!
+Now using node v20.15.1 (npm v10.8.1)
+```
 
 ### Installation
 
@@ -152,3 +196,5 @@ If you have any questions or need support, please open an issue or reach out via
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---

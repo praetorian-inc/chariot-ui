@@ -148,7 +148,6 @@ const Assets: React.FC = () => {
         return (
           <div className="flex gap-2">
             <span>{asset.name}</span>
-            {/* {asset.seed && <Chip>Seed</Chip>} */}
             {integration && <Chip>Integration</Chip>}
           </div>
         );
@@ -308,6 +307,7 @@ const Assets: React.FC = () => {
             }}
           />
         }
+        resize={true}
         selection={{}}
         primaryAction={() => {
           return {

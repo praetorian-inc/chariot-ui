@@ -160,6 +160,7 @@ const Jobs: React.FC = () => {
   return (
     <div className="flex w-full flex-col">
       <Table
+        resize={true}
         filters={
           <Dropdown
             styleType="header"

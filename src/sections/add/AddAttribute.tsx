@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { IdentificationIcon } from '@heroicons/react/24/outline';
-import { Tab, TabGroup, TabList } from '@headlessui/react';
+import { TabGroup, TabList } from '@headlessui/react';
 
 import { Button } from '@/components/Button';
 import { Inputs } from '@/components/form/Inputs';
 import { Modal } from '@/components/Modal';
+import { TabWrapper } from '@/components/ui/TabWrapper';
 import { useCreateAttribute } from '@/hooks/useAttribute';
 import { SearchAndSelectTypes } from '@/sections/SearchByType';
 import { useGlobalState } from '@/state/global.state';
-import { cn } from '@/utils/classname';
+import { capitalize } from '@/utils/lodash.util';
 
 const DEFAULT_FORM_VALUE = {
   class: '',
@@ -114,20 +115,13 @@ export function AddAttribute() {
           <TabGroup>
             <TabList className="flex overflow-x-auto p-1">
               {Object.values(AttributeType).map(tab => (
-                <Tab
+                <TabWrapper
                   key={tab}
                   value={selectedType}
                   onClick={() => setSelectedType(tab as AttributeType)}
-                  className={({ selected }) =>
-                    cn(
-                      'capitalize w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0',
-                      selected ? 'border-b-4 border-brand text-brand' : '',
-                      !selected ? 'border-b-2 border-gray-100 bg-layer0' : ''
-                    )
-                  }
                 >
-                  {tab}
-                </Tab>
+                  {capitalize(tab)}
+                </TabWrapper>
               ))}
             </TabList>
           </TabGroup>

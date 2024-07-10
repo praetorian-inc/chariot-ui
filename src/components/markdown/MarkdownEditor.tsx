@@ -41,53 +41,71 @@ export function MarkdownEditor(
         if (event.dataTransfer.files.length > 0) {
           event.preventDefault();
 
-          const uploadingImagePromise = Array(event.dataTransfer.items.length)
+          const uploadingImages = Array(event.dataTransfer.items.length)
             .fill(0)
-            .map(async (_, index) => {
+            .map((_, index): UploadingImage | undefined => {
               const file = event.dataTransfer.files.item(index);
 
               if (file) {
-                const src = `${filePathPrefix}/${uuidv4()}`;
+                if (/image\/.*/.test(file.type)) {
+                  const id = uuidv4();
+                  const src = `${filePathPrefix}/${id}`;
 
-                await updateFile({
-                  ignoreSnackbar: true,
-                  name: src,
-                  content: await file.arrayBuffer(),
-                });
-
-                return {
-                  src,
-                  alt: file.name,
-                };
+                  return {
+                    markdownText: `![${file.name}](${AppMediaStoragePrefix}${src})`,
+                    mutate: async () => {
+                      await updateFile({
+                        ignoreSnackbar: true,
+                        name: src,
+                        content: await file.arrayBuffer(),
+                      });
+                    },
+                  };
+                }
               }
+            })
+            .filter(x => x) as UploadingImage[];
+
+          if (uploadingImages.length > 0) {
+            const uploadingImagesPromise = uploadingImages.map(i => i.mutate());
+            const uploadingImagesText = uploadingImages
+              .map(i => i.markdownText)
+              .join('\n');
+
+            const uploadingId = uuidv4();
+            const uploadingText = `Uploading ${uploadingId}`;
+
+            const textarea = event.target as HTMLTextAreaElement;
+
+            const currentText = textarea.value;
+            const cursorPosition = textarea.selectionStart;
+
+            // Insert the text at the cursor position
+            const newText =
+              currentText.slice(0, cursorPosition) +
+              uploadingText +
+              currentText.slice(cursorPosition);
+
+            // Update the textarea with the new text
+            setMarkdown(newText);
+
+            // Move the cursor to the end of the inserted text
+            textarea.selectionStart = textarea.selectionEnd =
+              cursorPosition + uploadingText.length;
+
+            await Promise.all(uploadingImagesPromise);
+
+            setMarkdown(text => {
+              return text.replace(uploadingText, uploadingImagesText);
             });
-
-          const res = await Promise.all(uploadingImagePromise);
-
-          const textToInsert = res
-            .map(r => `![${r?.alt}](${AppMediaStoragePrefix}${r?.src})`)
-            .join('\n');
-          console.log('res', event.target);
-
-          const textarea = event.target as HTMLTextAreaElement;
-
-          const currentText = textarea.value;
-          const cursorPosition = textarea.selectionStart;
-
-          // Insert the text at the cursor position
-          const newText =
-            currentText.slice(0, cursorPosition) +
-            textToInsert +
-            currentText.slice(cursorPosition);
-
-          // Update the textarea with the new text
-          setMarkdown(newText);
-
-          // Move the cursor to the end of the inserted text
-          textarea.selectionStart = textarea.selectionEnd =
-            cursorPosition + textToInsert.length;
+          }
         }
       }}
     />
   );
+}
+
+interface UploadingImage {
+  markdownText: string;
+  mutate: () => Promise<void>;
 }

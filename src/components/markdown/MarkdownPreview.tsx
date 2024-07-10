@@ -44,7 +44,7 @@ function MarkdownMedia(props: MarkdownMediaProps) {
   const [imageLoadError, setImageLoadError] = useState(false);
 
   return (
-    <Loader isLoading={isMediaFetching} className="h-5">
+    <Loader isLoading={isMediaFetching} className="mb-2 h-5">
       {media && !imageLoadError ? (
         <img
           src={media}

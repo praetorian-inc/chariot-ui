@@ -15,9 +15,9 @@ export function MarkdownEditor(
     filePathPrefix?: string;
   }
 ) {
-  const { filePathPrefix = 'markdownFiles' } = props;
+  const { filePathPrefix = 'user-attachment' } = props;
 
-  const { mutateAsync: updateFile, status: updateFileStatus } = useUploadFile();
+  const { mutateAsync: updateFile } = useUploadFile();
 
   const [markdown, setMarkdown] = useStorage(
     { parentState: props.value, onParentStateChange: props.onChange },
@@ -47,8 +47,7 @@ export function MarkdownEditor(
               const file = event.dataTransfer.files.item(index);
 
               if (file) {
-                const alt = uuidv4();
-                const src = `${filePathPrefix}/${alt}`;
+                const src = `${filePathPrefix}/${uuidv4()}`;
 
                 await updateFile({
                   ignoreSnackbar: true,
@@ -58,7 +57,7 @@ export function MarkdownEditor(
 
                 return {
                   src,
-                  alt,
+                  alt: file.name,
                 };
               }
             });
@@ -66,7 +65,7 @@ export function MarkdownEditor(
           const res = await Promise.all(uploadingImagePromise);
 
           const textToInsert = res
-            .map(r => `![${r?.alt}}](${AppMediaStoragePrefix}${r?.src})`)
+            .map(r => `![${r?.alt}](${AppMediaStoragePrefix}${r?.src})`)
             .join('\n');
           console.log('res', event.target);
 

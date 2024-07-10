@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { Radio, RadioGroup } from '@headlessui/react';
 
 import { Button } from '@/components/Button';
 import { ModalWrapper } from '@/components/Modal';
 import { useMy } from '@/hooks';
 import { useCreateAsset } from '@/hooks/useAssets';
 import { AssetStatus } from '@/types';
-import { cn } from '@/utils/classname';
 import { AllowedSeedRegex } from '@/utils/regex.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
@@ -86,7 +87,6 @@ export const NewUserSeedModal = () => {
             attack surface.
           </p>
           <form
-            className="flex flex-row items-center py-6"
             onSubmit={event => {
               event.preventDefault();
               handleSubmitSeed();
@@ -101,35 +101,37 @@ export const NewUserSeedModal = () => {
                 onChange={e => setSeedInput(e.target.value)}
                 className="block h-16 w-full rounded-l-[2px] bg-layer0 px-3 py-2 pr-[400px] text-xl font-bold shadow-sm focus:outline-none"
               />
-              <div className="text-md absolute right-2 top-2 flex w-fit items-center gap-1 rounded-full bg-header-light p-2 font-medium text-header-light">
-                {options.map((option, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className={cn(
-                        'transition-all duration-100 ease-in-out rounded-full px-3 py-1 cursor-pointer',
-                        assetStatus === option.value && 'bg-primary',
-                        index === 0 ? 'rounded-r-none' : 'rounded-l-none'
-                      )}
-                      onClick={() => {
-                        setAssetStatus(option.value);
-                      }}
-                    >
-                      {option.label}
+              <RadioGroup
+                value={assetStatus}
+                onChange={setAssetStatus}
+                aria-label="Server size"
+                className="mt-8 flex items-center justify-center gap-8"
+              >
+                {options.map(plan => (
+                  <Radio
+                    key={plan.value}
+                    value={plan.value}
+                    className="group relative flex w-[350px] cursor-pointer rounded-lg bg-white/5 px-5 py-4 text-white shadow-md transition focus:outline-none data-[checked]:bg-white/10 data-[focus]:outline-1 data-[focus]:outline-white"
+                  >
+                    <div className="flex w-full items-center justify-between">
+                      <div className="text-sm/6">
+                        <p className="font-semibold text-white">{plan.label}</p>
+                      </div>
+                      <CheckCircleIcon className="ml-4 size-6 fill-white opacity-0 transition group-data-[checked]:opacity-100" />
                     </div>
-                  );
-                })}
-              </div>
+                  </Radio>
+                ))}
+              </RadioGroup>
             </div>
             <Button
               styleType="primary"
               type="submit"
-              style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-              className="hover:bg-brand-hover text-md block h-16 w-[150px] items-center rounded-r-[2px] border border-none border-brand bg-brand  px-6 py-2.5 text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:bg-brand-light disabled:text-white"
+              className="m-auto mt-6 w-3/4 rounded-full"
             >
               Scan Now
             </Button>
           </form>
+
           <Button
             className="m-auto text-default-light"
             styleType={'none'}

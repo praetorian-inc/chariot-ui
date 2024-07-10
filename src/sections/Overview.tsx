@@ -5,12 +5,13 @@ import {
   ChevronDoubleRightIcon,
   DocumentArrowDownIcon,
 } from '@heroicons/react/24/outline';
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
 import CircularProgressBar from '@/components/CircularProgressBar';
 import { Input } from '@/components/form/Input';
 import { Tooltip } from '@/components/Tooltip';
 import Counts from '@/components/ui/Counts';
+import { TabWrapper } from '@/components/ui/TabWrapper';
 import { useGetDisplayName } from '@/hooks/useAccounts';
 import { useAggregateCounts } from '@/hooks/useAggregateCounts';
 import { useGetFile } from '@/hooks/useFiles';
@@ -109,18 +110,7 @@ export const Overview = () => {
           <TabGroup>
             <TabList className="flex overflow-x-auto p-1">
               {Object.keys(reportSections).map(tab => (
-                <Tab
-                  key={tab}
-                  className={({ selected }) =>
-                    cn(
-                      'w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0',
-                      selected ? 'border-b-4 border-brand text-brand' : '',
-                      !selected ? 'border-b-2 border-gray-100 bg-layer0' : ''
-                    )
-                  }
-                >
-                  {tab}
-                </Tab>
+                <TabWrapper key={tab}>{tab}</TabWrapper>
               ))}
             </TabList>
             <TabPanels className="p-6">

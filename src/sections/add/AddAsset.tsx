@@ -6,13 +6,14 @@ import {
   ExclamationTriangleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
 import { Button } from '@/components/Button';
 import { Input } from '@/components/form/Input';
 import { Inputs, Values } from '@/components/form/Inputs';
 import { AssetsIcon } from '@/components/icons';
 import { Modal } from '@/components/Modal';
+import { TabWrapper } from '@/components/ui/TabWrapper';
 import { useModifyAccount } from '@/hooks';
 import { useCreateAsset } from '@/hooks/useAssets';
 import { useIntegration } from '@/hooks/useIntegration';
@@ -29,7 +30,6 @@ import {
   IntegrationMeta,
   IntegrationsMeta,
 } from '@/utils/availableIntegrations';
-import { cn } from '@/utils/classname';
 import { getRoute } from '@/utils/route.util';
 
 const PUBLIC_ASSET = 'publicAsset';
@@ -212,15 +212,8 @@ export function AddAsset() {
         <TabList className="border-1 w-44 shrink-0 overflow-auto border border-y-0 border-l-0 border-layer1 p-1 pr-4">
           {Tabs.map(({ id, displayName, logo, connected, name }, index) => {
             const isConnected = connected && isIntegrationConnected(name);
-            const selected = index === selectedIndex;
             return (
-              <Tab
-                key={id}
-                className={cn(
-                  'w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0 border-b-2 border-gray-100 bg-layer0',
-                  selected && 'bg-layer1'
-                )}
-              >
+              <TabWrapper key={id} vertical={true}>
                 <div className="relative flex items-center justify-center">
                   {isConnected && (
                     <CheckCircleIcon className="absolute left-0 size-5 text-green-500" />
@@ -233,11 +226,11 @@ export function AddAsset() {
                     />
                   )}
                   {!logo && displayName && <span>{displayName}</span>}
-                  {selected && (
+                  {selectedIndex === index && (
                     <ChevronRightIcon className="absolute right-0 size-4" />
                   )}
                 </div>
-              </Tab>
+              </TabWrapper>
             );
           })}
         </TabList>

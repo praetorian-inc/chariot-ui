@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronRightIcon, PlusIcon } from '@heroicons/react/24/solid';
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import MDEditor from '@uiw/react-md-editor';
 
 import { Button } from '@/components/Button';
@@ -10,6 +10,7 @@ import { Inputs, Values } from '@/components/form/Inputs';
 import { RisksIcon } from '@/components/icons';
 import { Modal } from '@/components/Modal';
 import { riskSeverityOptions } from '@/components/ui/RiskDropdown';
+import { TabWrapper } from '@/components/ui/TabWrapper';
 import { useModifyAccount, useUploadFile } from '@/hooks';
 import { useIntegration } from '@/hooks/useIntegration';
 import { useCreateRisk } from '@/hooks/useRisks';
@@ -26,7 +27,6 @@ import {
   IntegrationMeta,
   IntegrationsMeta,
 } from '@/utils/availableIntegrations';
-import { cn } from '@/utils/classname';
 
 const DEFAULT_FORM_VALUE = {
   key: '',
@@ -183,30 +183,18 @@ export const AddRisks = () => {
       >
         <TabGroup className="flex h-full gap-6" onChange={setSelectedIndex}>
           <TabList className="border-1 w-44 shrink-0 overflow-auto border border-y-0 border-l-0 border-layer1 p-1 pr-4">
-            <Tab
-              className={cn(
-                'relative w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0 border-b-2 border-gray-100 bg-layer0',
-                selectedIndex === 0 && 'bg-layer1'
-              )}
-            >
+            <TabWrapper vertical={true}>
               <div className="relative flex items-center justify-center">
                 Add Risk
                 {selectedIndex === 0 && (
                   <ChevronRightIcon className="absolute right-0 size-4" />
                 )}
               </div>
-            </Tab>
+            </TabWrapper>
             {Tabs.map(({ id, displayName, logo, connected, name }, index) => {
               const isConnected = connected && isIntegrationConnected(name);
-              const selected = index + 1 === selectedIndex;
               return (
-                <Tab
-                  key={'tab-' + id}
-                  className={cn(
-                    'w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0 border-b-2 border-gray-100 bg-layer0',
-                    selected && 'bg-layer1'
-                  )}
-                >
+                <TabWrapper key={'tab-' + id} vertical={true}>
                   <div className="relative flex items-center justify-center">
                     {isConnected && (
                       <CheckCircleIcon className="absolute left-0 size-5 text-green-500" />
@@ -219,11 +207,11 @@ export const AddRisks = () => {
                       />
                     )}
                     {!logo && displayName && <span>{displayName}</span>}
-                    {selected && (
+                    {selectedIndex === index + 1 && (
                       <ChevronRightIcon className="absolute right-0 size-4" />
                     )}
                   </div>
-                </Tab>
+                </TabWrapper>
               );
             })}
           </TabList>

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { Radio, RadioGroup } from '@headlessui/react';
 
@@ -71,12 +70,11 @@ export const NewUserSeedModal = () => {
     >
       <div className="bg-header">
         <Button
-          aria-label="CloseIcon"
           className="ml-auto text-default-light"
+          styleType={'none'}
           onClick={handleClose}
-          styleType="none"
         >
-          <XMarkIcon className="size-6" />
+          Skip for Now
         </Button>
         <div className="px-20 pb-16 pt-10 text-center">
           <div className="mb-4 text-3xl font-extrabold text-header">
@@ -92,7 +90,7 @@ export const NewUserSeedModal = () => {
               handleSubmitSeed();
             }}
           >
-            <div className="relative w-full">
+            <div className="relative mt-6 w-full">
               <input
                 required
                 type="text"
@@ -131,15 +129,6 @@ export const NewUserSeedModal = () => {
               Scan Now
             </Button>
           </form>
-
-          <Button
-            className="m-auto text-default-light"
-            styleType={'none'}
-            endIcon={<ChevronRightIcon className="size-5" />}
-            onClick={handleClose}
-          >
-            Skip for Now
-          </Button>
         </div>
       </div>
     </ModalWrapper>

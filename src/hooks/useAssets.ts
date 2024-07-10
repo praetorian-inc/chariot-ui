@@ -14,7 +14,6 @@ interface UpdateAssetProps {
 }
 
 export const AssetsSnackbarTitle = {
-  [AssetStatus.Unknown]: 'will be marked as unknown',
   [AssetStatus.Active]: `will be marked as ${AssetStatusLabel[AssetStatus.Active].toLocaleLowerCase()}`,
   [AssetStatus.ActiveHigh]: `will be marked as ${AssetStatusLabel[AssetStatus.ActiveHigh].toLocaleLowerCase()}`,
   [AssetStatus.Frozen]: 'will be removed',
@@ -48,7 +47,7 @@ export const useUpdateAsset = () => {
         Snackbar({
           title: `${name} ${AssetsSnackbarTitle[status]}`,
           description:
-            status === AssetStatus.Frozen || status === AssetStatus.Unknown
+            status === AssetStatus.Frozen
               ? RiskScanMessage.Stop
               : RiskScanMessage.Start,
           variant: 'success',

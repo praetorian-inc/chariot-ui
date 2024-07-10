@@ -10,7 +10,6 @@ import { AssetStatus } from '@/types';
 export const getAssetStatusIcon = (status: AssetStatus) => {
   switch (status) {
     case AssetStatus.Frozen:
-    case AssetStatus.Unknown:
       return <PauseIcon className="size-5" />;
     case AssetStatus.Active:
       return <ClockIcon className="size-5" />;

@@ -6,7 +6,6 @@ import { cn } from '@/utils/classname';
 const getStatusProperties = (status: AssetStatus) => {
   const styles: Record<AssetStatus, ChipProps['style']> = {
     [AssetStatus.Frozen]: 'error',
-    [AssetStatus.Unknown]: 'secondary',
     [AssetStatus.Active]: 'primary',
     [AssetStatus.ActiveHigh]: 'primary',
     [AssetStatus.ActiveLow]: 'primary',
@@ -14,7 +13,6 @@ const getStatusProperties = (status: AssetStatus) => {
 
   const texts: Record<AssetStatus, string> = {
     [AssetStatus.Frozen]: 'Frozen',
-    [AssetStatus.Unknown]: 'Frozen',
     [AssetStatus.Active]: 'Active',
     [AssetStatus.ActiveHigh]: 'Active',
     [AssetStatus.ActiveLow]: 'Active',

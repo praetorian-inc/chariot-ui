@@ -360,7 +360,6 @@ const Assets: React.FC = () => {
                   ),
                   onClick: () => updateStatus(assets, AssetStatus.ActiveLow),
                 },
-                { type: 'divider', label: 'Divider' },
                 {
                   label: 'Freeze Asset',
                   icon: <PauseIcon />,
@@ -369,19 +368,6 @@ const Assets: React.FC = () => {
                     setShowAssetStatusWarning(true);
                     setAssetStatus(AssetStatus.Frozen);
                   },
-                },
-
-                {
-                  label: (
-                    <span>
-                      Freeze
-                      <span className="ml-2 rounded-md bg-layer1 p-2 text-xs text-gray-600">
-                        Unknown Asset
-                      </span>
-                    </span>
-                  ),
-                  icon: <PauseIcon />,
-                  onClick: () => updateStatus(assets, AssetStatus.Unknown),
                 },
               ],
             },
@@ -398,11 +384,7 @@ const Assets: React.FC = () => {
           {
             label: AssetStatusLabel[AssetStatus.Active],
             filter: asset =>
-              [
-                AssetStatus.Active,
-                AssetStatus.Frozen,
-                AssetStatus.Unknown,
-              ].includes(asset.status),
+              [AssetStatus.Active, AssetStatus.Frozen].includes(asset.status),
             icon: getAssetStatusIcon(AssetStatus.Active),
           },
           {

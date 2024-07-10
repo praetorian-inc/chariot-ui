@@ -108,7 +108,8 @@ export const NewUserSeedModal = () => {
                       key={index}
                       className={cn(
                         'transition-all duration-100 ease-in-out rounded-full px-3 py-1 cursor-pointer',
-                        assetStatus === option.value && 'bg-primary'
+                        assetStatus === option.value && 'bg-primary',
+                        index === 0 ? 'rounded-r-none' : 'rounded-l-none'
                       )}
                       onClick={() => {
                         setAssetStatus(option.value);

@@ -6,6 +6,7 @@ import { ModalWrapper } from '@/components/Modal';
 import { useMy } from '@/hooks';
 import { useCreateAsset } from '@/hooks/useAssets';
 import { AssetStatus } from '@/types';
+import { cn } from '@/utils/classname';
 import { AllowedSeedRegex } from '@/utils/regex.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
@@ -16,6 +17,10 @@ export const NewUserSeedModal = () => {
 
   const [open, setOpen] = useState(false);
   const [seedInput, setSeedInput] = useState<string>('');
+  const [assetStatus, setAssetStatus] = useState<
+    AssetStatus.Active | AssetStatus.ActiveLow
+  >(AssetStatus.ActiveLow);
+
   const { mutate: createAsset } = useCreateAsset();
   const [newUserSeedModal, setNewUserSeedModal] = useStorage(
     { key: StorageKey.SHOW_NEW_USER_SEED_MODAL },
@@ -23,7 +28,7 @@ export const NewUserSeedModal = () => {
   );
 
   useEffect(() => {
-    if (status === 'success' && assets.length === 0 && newUserSeedModal) {
+    if (status === 'success' && assets.length > 0) {
       setOpen(true);
     }
   }, [assets, status, newUserSeedModal]);
@@ -37,7 +42,7 @@ export const NewUserSeedModal = () => {
     if (seedInput.match(AllowedSeedRegex)) {
       try {
         const asset = seedInput;
-        createAsset({ name: asset, status: AssetStatus.Active });
+        createAsset({ name: asset, status: assetStatus });
       } catch (error) {
         console.error(error);
       } finally {
@@ -51,7 +56,7 @@ export const NewUserSeedModal = () => {
     <ModalWrapper
       open={open}
       onClose={handleClose}
-      size="lg"
+      size="xl"
       className="border-none"
     >
       <div className="bg-header">
@@ -78,24 +83,55 @@ export const NewUserSeedModal = () => {
               handleSubmitSeed();
             }}
           >
-            <input
-              required
-              type="text"
-              placeholder="domain.com"
-              value={seedInput}
-              onChange={e => setSeedInput(e.target.value)}
-              className="block h-16 w-full rounded-l-[2px] bg-layer0 px-3 py-2 text-xl font-bold shadow-sm focus:outline-none"
-            />
+            <div className="relative w-full">
+              <input
+                required
+                type="text"
+                placeholder="domain.com"
+                value={seedInput}
+                onChange={e => setSeedInput(e.target.value)}
+                className="block h-16 w-full rounded-l-[2px] bg-layer0 px-3 py-2 pr-[278px] text-xl font-bold shadow-sm focus:outline-none"
+              />
+              <div className="absolute right-2 top-2 flex w-fit items-center gap-2 rounded-full bg-header-light p-2 text-header-light">
+                <div
+                  className={cn(
+                    'rounded-full px-2 py-1 cursor-pointer',
+                    assetStatus === AssetStatus.ActiveLow && 'bg-primary'
+                  )}
+                  onClick={() => {
+                    setAssetStatus(AssetStatus.ActiveLow);
+                  }}
+                >
+                  Discovery
+                </div>
+                <div
+                  className={cn(
+                    'rounded-full px-2 py-1 cursor-pointer',
+                    assetStatus === AssetStatus.Active && 'bg-primary'
+                  )}
+                  onClick={() => {
+                    setAssetStatus(AssetStatus.Active);
+                  }}
+                >
+                  Discovery + scan
+                </div>
+              </div>
+            </div>
             <Button
               styleType="primary"
               type="submit"
-              disabled={!seedInput}
               style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
               className="hover:bg-brand-hover text-md block h-16 w-[150px] items-center rounded-r-[2px] border border-none border-brand bg-brand  px-6 py-2.5 text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:bg-brand-light disabled:text-white"
             >
               Scan Now
             </Button>
           </form>
+          <div className="text-default-light">
+            {assetStatus === AssetStatus.ActiveLow &&
+              'Enter your domain and our intelligent algorithms will map your attack surface.'}
+            {assetStatus === AssetStatus.Active &&
+              'tasdlkansdlansld als d aljsd ajlsd jas dsj.'}
+          </div>
           <Button
             className="m-auto text-default-light"
             styleType={'none'}

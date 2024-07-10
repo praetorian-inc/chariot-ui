@@ -1,5 +1,6 @@
-import { useStorage } from '@/utils/storage/useStorage.util';
 import { useEffect } from 'react';
+
+import { useStorage } from '@/utils/storage/useStorage.util';
 
 export const useFilter = <T>(
   defaultValue: T,

@@ -50,7 +50,7 @@ const DownIcon = (
   <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
 );
 
-const getFilterLabel = (
+export const getFilterLabel = (
   label = '',
   filter: string[],
   options: MenuItemProps[]

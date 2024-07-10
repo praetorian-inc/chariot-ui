@@ -8,12 +8,12 @@ import { queryStorge } from '@/utils/storage/queryStorage.util';
 export enum StorageKey {
   AUTH = 'chariot.auth',
   SHOW_NEW_USER_SEED_MODAL = 'chariot.showNewUserSeedModal',
-
   DRAWER_COMPOSITE_KEY = 'drawerCompositeKey',
   HASH_SEARCH = 'hashSearch',
   GENERIC_SEARCH = 'q',
   POE = 'POE',
   RUNNING_JOBS = 'RUNNING_JOBS',
+  ASESET_PRIORITY_FILTER = 'asset-priority',
 }
 
 interface UseStorageOptions<S> {

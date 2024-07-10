@@ -15,16 +15,12 @@ export const TabWrapper = ({ children, vertical, value, onClick }: Props) => {
       value={value}
       onClick={onClick}
       className={({ selected }) =>
-        vertical
-          ? cn(
-              'w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0 border-b-2 border-gray-100 bg-layer0',
-              selected && 'bg-layer1'
-            )
-          : cn(
-              'w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0',
-              selected ? 'border-b-4 border-brand text-brand' : '',
-              !selected ? 'border-b-2 border-gray-100 bg-layer0' : ''
-            )
+        cn(
+          'w-full py-4 px-2 text-sm font-semibold leading-5 hover:bg-gray-50 focus:outline-0',
+          (vertical || !selected) && 'border-b-2 border-gray-100 bg-layer0',
+          vertical && selected && 'bg-layer1',
+          !vertical && selected && 'border-b-4 border-brand text-brand'
+        )
       }
     >
       {children}

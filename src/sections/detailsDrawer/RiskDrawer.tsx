@@ -7,7 +7,6 @@ import {
   IdentificationIcon,
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
-import MDEditor from '@uiw/react-md-editor';
 
 import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
@@ -18,6 +17,8 @@ import { HorizontalTimeline } from '@/components/HorizontalTimeline';
 import { RisksIcon } from '@/components/icons';
 import { UnionIcon } from '@/components/icons/Union.icon';
 import { Loader } from '@/components/Loader';
+import { MarkdownEditor } from '@/components/markdown/MarkdownEditor';
+import { MarkdownPreview } from '@/components/markdown/MarkdownPreview';
 import { Modal } from '@/components/Modal';
 import { Timeline } from '@/components/Timeline';
 import { Tooltip } from '@/components/Tooltip';
@@ -362,18 +363,18 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                         },
                       }}
                     >
-                      <MDEditor
-                        className="markdownSelection"
+                      <MarkdownEditor
                         height={'60vh'}
                         value={markdownValue}
                         onChange={value => {
                           setMarkdownValue(value || '');
                         }}
+                        filePathPrefix="definitions/files"
                       />
                     </Modal>
                     <>
                       {definitionsFile && (
-                        <MDEditor.Markdown
+                        <MarkdownPreview
                           source={definitionsFileValue}
                           style={{
                             wordBreak: 'break-word',

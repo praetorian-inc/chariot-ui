@@ -9,6 +9,7 @@ import { getQueryKey } from '@/hooks/useQueryKeys';
 import { queryClient } from '@/queryclient';
 import { useAuth } from '@/state/auth';
 import { UseExtendQueryOptions, useMutation, useQuery } from '@/utils/api';
+import { isArrayBufferEmpty } from '@/utils/misc.util';
 
 interface UploadFilesProps {
   name: string;
@@ -44,9 +45,9 @@ export function useUploadFile() {
       queryClient.invalidateQueries({
         queryKey: getQueryKey.getFile({ name: variable.name }),
       });
-      invalidateProfilePicture();
       if (!variable.ignoreSnackbar) {
         if (variable.name === PROFILE_PICTURE_ID) {
+          invalidateProfilePicture();
           Snackbar({
             variant: 'success',
             title: `Profile picture uploaded successfully`,
@@ -122,7 +123,10 @@ export interface GetFilesProps {
 export function useGetFile(
   props: GetFilesProps,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  options?: UseExtendQueryOptions<any>
+  options?: UseExtendQueryOptions<any> & {
+    responseType?: import('axios').ResponseType;
+    getBlobType?: string;
+  }
 ) {
   const axios = useAxios();
 
@@ -138,9 +142,26 @@ export function useGetFile(
           params: {
             name: props.name,
           },
+          responseType: options?.responseType,
         });
 
-        return res.data;
+        if (options?.getBlobType) {
+          if (options?.responseType === 'arraybuffer') {
+            if (!isArrayBufferEmpty(res.data || '""')) {
+              return URL.createObjectURL(
+                new Blob([res.data], { type: 'options?.getBlobType' })
+              );
+            }
+          } else {
+            if (res.data) {
+              return URL.createObjectURL(
+                new Blob([res.data], { type: options?.getBlobType })
+              );
+            }
+          }
+        } else {
+          return res.data;
+        }
       } catch (e) {
         return '';
       }

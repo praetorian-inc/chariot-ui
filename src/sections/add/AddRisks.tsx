@@ -2,12 +2,12 @@ import React, { FormEvent, useEffect, useState } from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronRightIcon, PlusIcon } from '@heroicons/react/24/solid';
 import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
-import MDEditor from '@uiw/react-md-editor';
 
 import { Button } from '@/components/Button';
 import { Input } from '@/components/form/Input';
 import { Inputs, Values } from '@/components/form/Inputs';
 import { RisksIcon } from '@/components/icons';
+import { MarkdownEditor } from '@/components/markdown/MarkdownEditor';
 import { Modal } from '@/components/Modal';
 import { riskSeverityOptions } from '@/components/ui/RiskDropdown';
 import { TabWrapper } from '@/components/ui/TabWrapper';
@@ -367,13 +367,13 @@ function AddDefinition(props: AddDefinitionProps) {
         },
       }}
     >
-      <MDEditor
-        className="markdownSelection"
+      <MarkdownEditor
         height={'60vh'}
         value={definition}
         onChange={value => {
           setDefinition(value || '');
         }}
+        filePathPrefix="definitions/files"
       />
     </Modal>
   );
@@ -414,13 +414,13 @@ function AddProofOfExploit(props: AddProofOfExploitProps) {
         },
       }}
     >
-      <MDEditor
-        className="markdownSelection"
+      <MarkdownEditor
         height={'60vh'}
         value={poe}
         onChange={value => {
           setPoe(value || '');
         }}
+        filePathPrefix="proof-of-exploit/files"
       />
     </Modal>
   );

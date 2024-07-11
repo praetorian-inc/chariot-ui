@@ -366,7 +366,7 @@ const Assets: React.FC = () => {
                 items: [
                   {
                     label: 'All Priorities',
-                    labelSuffix: filteredAssets.length.toLocaleString(),
+                    labelSuffix: assets.length.toLocaleString(),
                     value: '',
                   },
                   {

@@ -14,13 +14,19 @@ import { OverflowText } from '@/components/OverflowText';
 import { showBulkSnackbar, Snackbar } from '@/components/Snackbar';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
-import { AssetStatusChip } from '@/components/ui/AssetStatusChip';
+import { Tooltip } from '@/components/Tooltip';
+import {
+  AssetStatusChip,
+  getAssetStatusProperties,
+} from '@/components/ui/AssetStatusChip';
 import { useMy } from '@/hooks';
 import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
 import { useCounts } from '@/hooks/useCounts';
+import { useFilter } from '@/hooks/useFilter';
 import { useIntegration } from '@/hooks/useIntegration';
 import { AssetStatusWarning } from '@/sections/AssetStatusWarning';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
+import { getFilterLabel } from '@/sections/RisksTable';
 import { useGlobalState } from '@/state/global.state';
 import {
   Asset,
@@ -95,6 +101,12 @@ const Assets: React.FC = () => {
   });
   const { data: risks = [], status: riskStatus } = useMy({ resource: 'risk' });
   const { isIntegration } = useIntegration();
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [priorityFilter, setPriorityFilter] = useFilter(
+    [''],
+    'asset-priority',
+    setSelectedRows
+  );
 
   const status = useMergeStatus(riskStatus, assetsStatus);
 
@@ -136,6 +148,23 @@ const Assets: React.FC = () => {
     return asset;
   });
 
+  const filteredAssets = useMemo(() => {
+    let filteredAssets = assetsWithRisk;
+    if (priorityFilter?.filter(Boolean).length > 0) {
+      filteredAssets = filteredAssets.filter(({ status }) =>
+        priorityFilter.includes(status)
+      );
+    }
+    const sortOrder = Object.keys(AssetStatusLabel);
+    filteredAssets = filteredAssets.sort((a, b) => {
+      return (
+        sortOrder.indexOf(a.status) - sortOrder.indexOf(b.status) ||
+        new Date(b.updated).getTime() - new Date(a.updated).getTime()
+      );
+    });
+    return filteredAssets;
+  }, [assetsWithRisk, priorityFilter]);
+
   const columns: Columns<AssetsWithRisk> = [
     {
       label: 'Asset Name',
@@ -145,8 +174,13 @@ const Assets: React.FC = () => {
       copy: true,
       cell: (asset: Asset) => {
         const integration = isIntegration(asset);
+        const { detail } = getAssetStatusProperties(asset.status);
+        const icon = getAssetStatusIcon(asset.status);
         return (
           <div className="flex gap-2">
+            <Tooltip title={detail}>
+              <span className="text-default">{icon}</span>
+            </Tooltip>
             <span>{asset.name}</span>
             {integration && <Chip>Integration</Chip>}
           </div>
@@ -165,7 +199,7 @@ const Assets: React.FC = () => {
     {
       label: 'Status',
       id: 'status',
-      fixedWidth: 100,
+      fixedWidth: 150,
       align: 'center',
       cell: ({ status }: Asset) => (
         <AssetStatusChip status={status} className={'w-20 px-2 py-1'} />
@@ -219,6 +253,17 @@ const Assets: React.FC = () => {
     },
   ];
 
+  const priorityOptions = useMemo(
+    () =>
+      Object.entries(AssetStatusLabel).map(([value, label]) => ({
+        label,
+        labelSuffix: assetsWithRisk.filter(({ status }) => status === value)
+          .length,
+        value,
+      })),
+    [assetsWithRisk]
+  );
+
   function updateStatus(assets: Asset[], status: AssetStatus) {
     const showBulk = showBulkSnackbar(assets.length);
     setShowAssetStatusWarning(false);
@@ -262,53 +307,83 @@ const Assets: React.FC = () => {
       <Table
         name="assets"
         filters={
-          <Dropdown
-            styleType="header"
-            label={
-              selectedFilter && AssetLabels[selectedFilter]
-                ? AssetLabels[selectedFilter]
-                : 'All Assets'
-            }
-            endIcon={
-              <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
-            }
-            menu={{
-              items: [
-                {
-                  label: 'All Assets',
-                  labelSuffix: Object.keys(stats)
-                    .reduce((acc, key) => acc + stats[key], 0)
-                    .toLocaleString(),
-                  value: '',
+          <div className="flex gap-4">
+            <Dropdown
+              styleType="header"
+              label={
+                selectedFilter && AssetLabels[selectedFilter]
+                  ? AssetLabels[selectedFilter]
+                  : 'All Assets'
+              }
+              endIcon={
+                <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+              }
+              menu={{
+                items: [
+                  {
+                    label: 'All Assets',
+                    labelSuffix: Object.keys(stats)
+                      .reduce((acc, key) => acc + stats[key], 0)
+                      .toLocaleString(),
+                    value: '',
+                  },
+                  {
+                    label: 'Divider',
+                    type: 'divider',
+                  },
+                  ...Object.entries(AssetLabels).map(([key, label]) => {
+                    return {
+                      label,
+                      labelSuffix: stats[key]?.toLocaleString() || 0,
+                      value: key,
+                    };
+                  }),
+                ],
+                onClick: value => {
+                  const pathName = getRoute(['app', 'assets']);
+                  if (value === '') {
+                    navigate(pathName);
+                  } else {
+                    const filter = `class:${value}`;
+                    const searchQuery = `?${StorageKey.GENERIC_SEARCH}=${encodeURIComponent(filter)}`;
+                    navigate(`${pathName}${searchQuery}`);
+                  }
                 },
-                {
-                  label: 'Divider',
-                  type: 'divider',
-                },
-                ...Object.entries(AssetLabels).map(([key, label]) => {
-                  return {
-                    label,
-                    labelSuffix: stats[key]?.toLocaleString() || 0,
-                    value: key,
-                  };
-                }),
-              ],
-              onClick: value => {
-                const pathName = getRoute(['app', 'assets']);
-                if (value === '') {
-                  navigate(pathName);
-                } else {
-                  const filter = `class:${value}`;
-                  const searchQuery = `?${StorageKey.GENERIC_SEARCH}=${encodeURIComponent(filter)}`;
-                  navigate(`${pathName}${searchQuery}`);
-                }
-              },
-              value: selectedFilter ?? undefined,
-            }}
-          />
+                value: selectedFilter ?? undefined,
+              }}
+            />
+            <Dropdown
+              styleType="header"
+              label={getFilterLabel(
+                'Priority',
+                priorityFilter,
+                priorityOptions
+              )}
+              endIcon={
+                <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+              }
+              menu={{
+                items: [
+                  {
+                    label: 'All Priorities',
+                    labelSuffix: filteredAssets.length.toLocaleString(),
+                    value: '',
+                  },
+                  {
+                    label: 'Divider',
+                    type: 'divider',
+                  },
+                  ...priorityOptions,
+                ],
+                onSelect: selectedRows => setPriorityFilter(selectedRows),
+                value: priorityFilter,
+                multiSelect: true,
+              }}
+            />
+          </div>
         }
         resize={true}
-        selection={{}}
+        selection={{ value: selectedRows, onChange: setSelectedRows }}
         primaryAction={() => {
           return {
             label: 'Configure',
@@ -374,25 +449,7 @@ const Assets: React.FC = () => {
           };
         }}
         columns={columns}
-        data={assetsWithRisk}
-        groupBy={[
-          {
-            label: AssetStatusLabel[AssetStatus.ActiveHigh],
-            filter: asset => asset.status === AssetStatus.ActiveHigh,
-            icon: getAssetStatusIcon(AssetStatus.ActiveHigh),
-          },
-          {
-            label: AssetStatusLabel[AssetStatus.Active],
-            filter: asset =>
-              [AssetStatus.Active, AssetStatus.Frozen].includes(asset.status),
-            icon: getAssetStatusIcon(AssetStatus.Active),
-          },
-          {
-            label: AssetStatusLabel[AssetStatus.ActiveLow],
-            filter: asset => asset.status === AssetStatus.ActiveLow,
-            icon: getAssetStatusIcon(AssetStatus.ActiveLow),
-          },
-        ]}
+        data={filteredAssets}
         error={error}
         status={status}
         fetchNextPage={fetchNextPage}

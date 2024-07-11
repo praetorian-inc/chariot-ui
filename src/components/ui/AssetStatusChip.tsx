@@ -3,7 +3,7 @@ import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { AssetStatus, AssetStatusLabel } from '@/types';
 import { cn } from '@/utils/classname';
 
-const getStatusProperties = (status: AssetStatus) => {
+export const getAssetStatusProperties = (status: AssetStatus) => {
   const styles: Record<AssetStatus, ChipProps['style']> = {
     [AssetStatus.Frozen]: 'error',
     [AssetStatus.Active]: 'primary',
@@ -29,7 +29,7 @@ export const AssetStatusChip: React.FC<{
   className?: string;
   status: AssetStatus;
 }> = ({ className, status }) => {
-  const { style, text } = getStatusProperties(status);
+  const { style, text } = getAssetStatusProperties(status);
 
   return (
     <Chip className={className} style={style}>
@@ -43,7 +43,7 @@ export const AssetStatusText: React.FC<{
   status: AssetStatus;
   showIcon?: boolean;
 }> = ({ className, status, showIcon }) => {
-  const { text, detail } = getStatusProperties(status);
+  const { text, detail } = getAssetStatusProperties(status);
 
   return (
     <div className={cn('flex items-center flex-row space-x-1', className)}>

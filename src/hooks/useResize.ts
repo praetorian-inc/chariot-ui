@@ -19,7 +19,7 @@ export const useResize = (props: Props) => {
       x: getWidth(width),
       y: height,
     });
-  }, []);
+  }, [el]);
 
   const getWidth = (width: number) => {
     return width < minWidth ? minWidth : width;

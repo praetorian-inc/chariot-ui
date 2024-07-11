@@ -1,17 +1,12 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
-import {
-  ChevronLeftIcon,
-  EllipsisVerticalIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Transition } from '@headlessui/react';
 import { twMerge } from 'tailwind-merge';
 
 import { MODAL_WRAPPER_ID } from '@/components/Modal';
 import { Tooltip } from '@/components/Tooltip';
 import { useMutationObserver } from '@/hooks/useMutationObserver';
-import { useResize } from '@/hooks/useResize';
 import { cn } from '@/utils/classname';
 import { getTransitionSettings } from '@/utils/transition.util';
 
@@ -43,11 +38,11 @@ export function Drawer({
   minWidth = 600,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
-  const { size, onMouseDown } = useResize({
-    el: ref.current || document.createElement('div'),
-    minWidth,
-    position: 'right',
-  });
+  // const { size, onMouseDown } = useResize({
+  //   el: ref.current || document.createElement('div'),
+  //   minWidth,
+  //   position: 'right',
+  // });
   const [domHasModal, setDomHasModal] = useState(false);
 
   /**
@@ -127,16 +122,16 @@ export function Drawer({
                 )}
                 onClick={event => event.stopPropagation()}
                 style={{
-                  width: size.x,
+                  width: minWidth,
                 }}
                 ref={ref}
               >
-                <div
+                {/* <div
                   onMouseDown={onMouseDown}
                   className="absolute left-[-20px] top-1/2 flex size-5 h-8 -translate-y-2/4 translate-x-2/4 items-center rounded-full bg-layer1 shadow-md hover:cursor-col-resize"
                 >
                   <EllipsisVerticalIcon className="w-6" />
-                </div>
+                </div> */}
                 <div className="h-full">
                   <div className="mx-2 my-4 flex justify-between">
                     <div className="flex">

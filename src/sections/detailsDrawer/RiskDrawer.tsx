@@ -435,6 +435,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 <AddAttribute resourceKey={risk.key} />
                 <div>
                   <DrawerList
+                    allowEmpty={true}
                     items={attributes.map(data => ({
                       label: data.class,
                       value: data.name,

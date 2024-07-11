@@ -15,14 +15,19 @@ interface Props {
     updated?: string;
     to?: To;
   }[];
+  allowEmpty?: boolean;
 }
 
 export const DrawerList = (props: Props) => {
-  const { items } = props;
+  const { items, allowEmpty } = props;
   const parentRef = useRef<HTMLDivElement>(null);
 
-  if (items.length === 0) {
+  if (items.length === 0 && !allowEmpty) {
     return <NoData title={'No data found'} />;
+  }
+
+  if (items.length === 0 && allowEmpty) {
+    return null;
   }
 
   const virtualizer = useVirtualizer({

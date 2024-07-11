@@ -188,6 +188,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
               <AddAttribute resourceKey={asset.key} />
               <div>
                 <DrawerList
+                  allowEmpty={true}
                   items={attributes.map(data => ({
                     label: data.class,
                     value: data.name,

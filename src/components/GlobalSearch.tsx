@@ -16,15 +16,17 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Menu } from '@headlessui/react';
 
 import { Input, InputEvent } from '@/components/form/Input';
-import { AssetsIcon, RisksIcon } from '@/components/icons';
+import { AssetsIcon, AttributesIcon, RisksIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { RiskDropdown } from '@/components/ui/RiskDropdown';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
+import { getAttributeDetails } from '@/sections/Attributes';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { useSearchContext } from '@/state/search';
 import {
   Account,
   Asset,
+  Attribute,
   Job,
   MyFile,
   MyResource,
@@ -171,8 +173,10 @@ const SearchResultDropdown: React.FC<Search> = ({
   risks,
   files,
   assets,
+  attributes,
   accounts,
   seeds,
+  attribute,
   jobs,
   isLoading,
   setIsFocused,
@@ -186,8 +190,10 @@ const SearchResultDropdown: React.FC<Search> = ({
     !risks &&
     !files &&
     !assets &&
+    !attributes &&
     !accounts &&
     !seeds &&
+    !attribute &&
     !jobs &&
     search?.length > 0;
 
@@ -213,6 +219,35 @@ const SearchResultDropdown: React.FC<Search> = ({
         )}
         {!isLoading && (
           <>
+            <SearchResultDropdownSeaction<Attribute>
+              title="Attributes"
+              items={attributes}
+              onSelect={() => onSelect('attribute')}
+              onClick={item => {
+                navigate(getAttributeDetails(item).url);
+              }}
+              row={item => {
+                const attDetail = getAttributeDetails(item);
+
+                const icon =
+                  attDetail.attributeType === 'asset' ? (
+                    <AssetsIcon className="mr-2 size-4 text-gray-400" />
+                  ) : (
+                    <RisksIcon className="mr-2 size-4 text-gray-400" />
+                  );
+
+                return (
+                  <div className="flex items-center space-x-2">
+                    {icon}
+                    <span className="text-nowrap">
+                      {attDetail.name} ({attDetail.class})
+                    </span>
+                    <ChevronRightIcon className="size-2" />
+                    <span className="text-nowrap">{attDetail.dns}</span>
+                  </div>
+                );
+              }}
+            />
             <SearchResultDropdownSeaction<Asset>
               title="Assets"
               items={assets}
@@ -256,6 +291,26 @@ const SearchResultDropdown: React.FC<Search> = ({
               onSelect={() => onSelect('file')}
               Icon={DocumentIcon}
               row={item => item.name}
+            />
+            <SearchResultDropdownSeaction<Attribute>
+              title="Attribute"
+              items={attribute}
+              Icon={AttributesIcon}
+              onClick={item => {
+                navigate(getAttributeDetails(item).url);
+              }}
+              row={item => {
+                const attDetail = getAttributeDetails(item);
+
+                return (
+                  <div className="flex flex-nowrap items-center space-x-2">
+                    <span className="text-nowrap">{attDetail.name}</span>
+                    <span className="text-nowrap">({attDetail.class})</span>
+                    <ChevronRightIcon className="size-2" />
+                    <span className="text-nowrap">{attDetail.dns}</span>
+                  </div>
+                );
+              }}
             />
             <SearchResultDropdownSeaction<Job>
               title="Jobs"

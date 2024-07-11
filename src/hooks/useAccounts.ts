@@ -115,7 +115,7 @@ export function usePurgeAccount() {
       enabled: false,
     }
   );
-  const { me } = useAuth();
+  const { me, logout } = useAuth();
 
   return useMutation<void, Error, void>({
     defaultErrorMessage: `Failed to purge account`,
@@ -129,6 +129,9 @@ export function usePurgeAccount() {
       });
 
       return;
+    },
+    onSuccess: () => {
+      logout();
     },
   });
 }

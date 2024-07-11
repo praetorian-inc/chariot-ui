@@ -320,7 +320,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
 
           <TabGroup className="h-full">
             <TabList className="flex overflow-x-auto">
-              {['Description', 'History', 'Attributes'].map(tab => (
+              {['Description', 'Attributes', 'History'].map(tab => (
                 <TabWrapper key={tab}>{tab}</TabWrapper>
               ))}
             </TabList>
@@ -411,6 +411,19 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                   </Button>
                 </Loader>
               </TabPanel>
+              <TabPanel className="h-full">
+                <AddAttribute resourceKey={risk.key} />
+                <div>
+                  <DrawerList
+                    allowEmpty={true}
+                    items={attributes.map(data => ({
+                      label: data.class,
+                      value: data.name,
+                      updated: data.updated,
+                    }))}
+                  />
+                </div>
+              </TabPanel>
               <TabPanel className="h-full px-6">
                 <Timeline
                   items={[
@@ -430,19 +443,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       .reverse() || []),
                   ]}
                 />
-              </TabPanel>
-              <TabPanel className="h-full">
-                <AddAttribute resourceKey={risk.key} />
-                <div>
-                  <DrawerList
-                    allowEmpty={true}
-                    items={attributes.map(data => ({
-                      label: data.class,
-                      value: data.name,
-                      updated: data.updated,
-                    }))}
-                  />
-                </div>
               </TabPanel>
             </TabPanels>
           </TabGroup>

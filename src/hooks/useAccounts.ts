@@ -112,13 +112,17 @@ export function usePurgeAccount() {
   return useMutation<void, Error, void>({
     defaultErrorMessage: `Failed to purge account`,
     mutationFn: async () => {
-      await axios.delete(`/account/purge`);
-      Snackbar({
-        title: `Account ${me} purged`,
-        description: '',
-        variant: 'success',
-      });
-      logout();
+      try {
+        axios.delete(`/account/purge`);
+        Snackbar({
+          title: `Account ${me} purged`,
+          description: '',
+          variant: 'success',
+        });
+        logout();
+      } catch {
+        // ignore
+      }
       return;
     },
   });

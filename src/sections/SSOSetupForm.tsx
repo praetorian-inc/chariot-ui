@@ -4,10 +4,8 @@ import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
 import { useMy } from '@/hooks';
 import { useModifyAccount } from '@/hooks/useAccounts';
-import { useAuth } from '@/state/auth';
 
 export const SSOSetupForm = () => {
-  const { friend, me } = useAuth();
   const { data: accounts, refetch } = useMy({ resource: 'account' });
   const { mutate: link, status } = useModifyAccount('link');
   const { mutate: unlink } = useModifyAccount('unlink');
@@ -24,16 +22,15 @@ export const SSOSetupForm = () => {
   );
 
   useEffect(() => {
-    refetch();
+    if (status === 'success') {
+      refetch();
+    }
   }, [status]);
-
-  console.log('ssoAccount', ssoAccount);
 
   const handleFormSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     link({
-      username: friend.email || me,
-      member: `sso:${domain}`,
+      username: `sso:${domain}`,
       value: `sso:${domain}`,
       config: {
         name: `sso:${domain}`,
@@ -49,7 +46,12 @@ export const SSOSetupForm = () => {
   return (
     <>
       {ssoAccount ? (
-        <Button onClick={() => unlink(ssoAccount)}>Disconnect</Button>
+        <Button
+          onClick={() => unlink(ssoAccount)}
+          className="border border-red-500 bg-red-50 text-red-600"
+        >
+          Disconnect
+        </Button>
       ) : (
         <Button onClick={() => setShowModal(true)}>Setup</Button>
       )}

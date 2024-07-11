@@ -144,48 +144,6 @@ const Account: React.FC = () => {
                 Save
               </Button>
             )}
-            {!isImpersonating && (
-              <>
-                <Button
-                  type="button"
-                  styleType="error"
-                  onClick={() => {
-                    setIsDeleteModalOpen(true);
-                  }}
-                  startIcon={<TrashIcon className="size-5" />}
-                >
-                  Delete Org
-                </Button>
-                <Modal
-                  style="dialog"
-                  title={
-                    <div className="flex items-center gap-1">
-                      <ExclamationTriangleIcon className="size-5 text-red-600" />
-                      Delete Org
-                    </div>
-                  }
-                  open={isDeleteModalOpen}
-                  onClose={() => {
-                    setIsDeleteModalOpen(false);
-                  }}
-                  footer={{
-                    text: 'Delete',
-                    onClick: async () => {
-                      await purgeAccount();
-                      // Call api to delete account
-                      setIsDeleteModalOpen(false);
-                    },
-                    styleType: 'error',
-                  }}
-                >
-                  <div className="space-y-2 text-sm text-default-light">
-                    Deleting your account is a permanent action that cannot be
-                    reversed. This will remove all your data from Praetorian
-                    servers and delete your login credentials.
-                  </div>
-                </Modal>
-              </>
-            )}
           </div>
         </form>
       </Section>
@@ -227,6 +185,53 @@ const Account: React.FC = () => {
           </div>
         </div>
       </Section>
+      {!isImpersonating && (
+        <Section
+          title="Delete Account"
+          description="Deleting your account is a permanent action that cannot be reversed."
+        >
+          <>
+            <Button
+              type="button"
+              styleType="error"
+              onClick={() => {
+                setIsDeleteModalOpen(true);
+              }}
+              startIcon={<TrashIcon className="size-5" />}
+            >
+              Delete Account
+            </Button>
+            <Modal
+              style="dialog"
+              title={
+                <div className="flex items-center gap-1">
+                  <ExclamationTriangleIcon className="size-5 text-red-600" />
+                  Delete Account
+                </div>
+              }
+              open={isDeleteModalOpen}
+              onClose={() => {
+                setIsDeleteModalOpen(false);
+              }}
+              footer={{
+                text: 'Delete',
+                onClick: async () => {
+                  await purgeAccount();
+                  // Call api to delete account
+                  setIsDeleteModalOpen(false);
+                },
+                styleType: 'error',
+              }}
+            >
+              <div className="space-y-2 text-sm text-default-light">
+                Deleting your account is a permanent action that cannot be
+                reversed. This will remove all your data from Praetorian servers
+                and delete your login credentials.
+              </div>
+            </Modal>
+          </>
+        </Section>
+      )}
     </div>
   );
 };

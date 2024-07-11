@@ -274,7 +274,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
               <RiskDropdown type="status" risk={risk} />
               <RiskDropdown type="severity" risk={risk} />
               <Button
-                className="h-8"
+                className="border-1 h-8 border border-default"
                 startIcon={<DocumentTextIcon className="size-5" />}
                 onClick={() => {
                   navigate(
@@ -283,7 +283,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                     })
                   );
                 }}
-                styleType="secondary"
               >
                 Proof of Exploit
               </Button>
@@ -297,9 +296,8 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 }
               >
                 <Button
-                  className="h-8"
+                  className="border-1 h-8 border border-default"
                   startIcon={<ArrowPathIcon className="size-5" />}
-                  styleType="primary"
                   disabled={!risk.source || Boolean(isJobRunningForThisRisk)}
                   isLoading={
                     reRunJobStatus === 'pending' ||

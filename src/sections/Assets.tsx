@@ -1,14 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { PlusIcon } from '@heroicons/react/24/outline';
-import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { PlusIcon, PuzzlePieceIcon } from '@heroicons/react/24/outline';
 
-import { Chip } from '@/components/Chip';
 import { Dropdown } from '@/components/Dropdown';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { SpinnerIcon } from '@/components/icons/Spinner.icon';
-import { Link } from '@/components/Link';
 import { OverflowText } from '@/components/OverflowText';
 import { showBulkSnackbar, Snackbar } from '@/components/Snackbar';
 import { Table } from '@/components/table/Table';
@@ -31,8 +28,6 @@ import {
   RiskScanMessage,
 } from '@/types';
 import { useMergeStatus } from '@/utils/api';
-import { getRoute } from '@/utils/route.util';
-import { StorageKey } from '@/utils/storage/useStorage.util';
 
 type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
 type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
@@ -98,7 +93,6 @@ const Assets: React.FC = () => {
   );
 
   const status = useMergeStatus(riskStatus, assetsStatus);
-
   const { getAssetDrawerLink } = getDrawerLink();
   const openRiskDataset = useMemo(
     () => buildOpenRiskDataset(risks as Risk[]),
@@ -154,25 +148,46 @@ const Assets: React.FC = () => {
 
   const columns: Columns<AssetsWithRisk> = [
     {
+      label: 'Priority',
+      id: 'name',
+      className: 'w-24',
+      cell: (asset: AssetsWithRisk) => {
+        const integration = isIntegration(asset);
+        const containsRisks = Object.values(asset.riskSummary || {}).length > 0;
+        const { detail } = getAssetStatusProperties(asset.status);
+        const icons: JSX.Element[] = [];
+
+        icons.push(
+          <Tooltip title={detail || 'Closed'}>
+            {getAssetStatusIcon(asset.status)}
+          </Tooltip>
+        );
+        if (containsRisks) {
+          icons.push(
+            <div>
+              <Tooltip title="Risks Discovered">
+                <RisksIcon className="size-5" />
+              </Tooltip>
+            </div>
+          );
+        }
+        if (integration) {
+          icons.push(
+            <Tooltip title="Integration">
+              <PuzzlePieceIcon className="size-5" />
+            </Tooltip>
+          );
+        }
+
+        return <div className="flex gap-2">{icons}</div>;
+      },
+    },
+    {
       label: 'Asset Name',
       id: 'name',
       className: 'w-full',
       to: item => getAssetDrawerLink(item),
       copy: true,
-      cell: (asset: Asset) => {
-        const integration = isIntegration(asset);
-        const { detail } = getAssetStatusProperties(asset.status);
-        const icon = getAssetStatusIcon(asset.status);
-        return (
-          <div className="flex gap-2">
-            <Tooltip title={detail}>
-              <span className="text-default">{icon}</span>
-            </Tooltip>
-            <span>{asset.name}</span>
-            {integration && <Chip>Integration</Chip>}
-          </div>
-        );
-      },
     },
     {
       label: 'DNS',
@@ -194,40 +209,6 @@ const Assets: React.FC = () => {
       id: 'updated',
       cell: 'date',
       className: 'hidden lg:table-cell',
-    },
-    {
-      label: 'Protected',
-      fixedWidth: 100,
-      id: '',
-      align: 'center',
-      cell: (item: AssetsWithRisk) => {
-        const riskSummary = item.riskSummary;
-
-        // On click of the X mark icon, navigate to /app/risks?hashSearch=#fqdn
-        if (riskSummary && Object.keys(riskSummary)?.length > 0) {
-          return (
-            <Link
-              className={`rounded-[2px] hover:bg-layer2`}
-              to={{
-                pathname: getRoute(['app', 'risks']),
-                search: `?${StorageKey.HASH_SEARCH}=${encodeURIComponent('#' + item.dns)}`,
-              }}
-            >
-              <XMarkIcon
-                className={`size-6 stroke-red-600 text-red-600`}
-                aria-hidden="true"
-              />
-            </Link>
-          );
-        } else {
-          return (
-            <CheckIcon
-              className={`size-6 [&>path]:stroke-emerald-500 [&>path]:stroke-[1]`}
-              aria-hidden="true"
-            />
-          );
-        }
-      },
     },
   ];
 
@@ -284,7 +265,7 @@ const Assets: React.FC = () => {
             <Dropdown
               styleType="header"
               label={getFilterLabel(
-                'Priority',
+                'Priorities',
                 priorityFilter,
                 priorityOptions
               )}

@@ -178,9 +178,11 @@ const Assets: React.FC = () => {
         const icon = getAssetStatusIcon(asset.status);
         return (
           <div className="flex gap-2">
+            <Tooltip title={detail}>
+              <span className="text-default">{icon}</span>
+            </Tooltip>
             <span>{asset.name}</span>
             {integration && <Chip>Integration</Chip>}
-            <Tooltip title={detail}>{icon}</Tooltip>
           </div>
         );
       },

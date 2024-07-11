@@ -5,14 +5,13 @@ import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
 import { Inputs } from '@/components/form/Inputs';
 import { useCreateAttribute } from '@/hooks/useAttribute';
-import { Asset } from '@/types';
 
 interface Props {
-  asset: Asset;
+  resourceKey: string;
 }
 
 export const AddAttribute = (props: Props) => {
-  const { asset } = props;
+  const { resourceKey } = props;
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -29,19 +28,6 @@ export const AddAttribute = (props: Props) => {
     setOpen(false);
   }
 
-  function handleSubmit() {
-    createAttribute(
-      {
-        key: asset.key,
-        class: formData.name,
-        name: formData.value,
-      },
-      {
-        onSuccess: reset,
-      }
-    );
-  }
-
   return (
     <Accordian
       title="Add Attribute"
@@ -53,7 +39,16 @@ export const AddAttribute = (props: Props) => {
         className="flex flex-1 flex-col gap-4"
         onSubmit={event => {
           event.preventDefault();
-          handleSubmit();
+          createAttribute(
+            {
+              key: resourceKey,
+              class: formData.name,
+              name: formData.value,
+            },
+            {
+              onSuccess: reset,
+            }
+          );
         }}
       >
         <Inputs

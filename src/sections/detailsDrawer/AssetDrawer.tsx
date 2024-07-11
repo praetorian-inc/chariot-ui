@@ -114,14 +114,18 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
       onBack={() => navigate(-1)}
       className={DRAWER_WIDTH}
       header={
-        <DetailsDrawerHeader
-          title={asset.name}
-          subtitle={assetType === 'seed' ? asset.username : asset.dns}
-          prefix={<AssetsIcon className="size-5" />}
-          tag={
-            assetType === 'integration' && <Chip>{capitalize(assetType)}</Chip>
-          }
-        />
+        isInitialLoading ? null : (
+          <DetailsDrawerHeader
+            title={asset.name}
+            subtitle={assetType === 'seed' ? asset.username : asset.dns}
+            prefix={<AssetsIcon className="size-5" />}
+            tag={
+              assetType === 'integration' && (
+                <Chip>{capitalize(assetType)}</Chip>
+              )
+            }
+          />
+        )
       }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
@@ -181,7 +185,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
               </TabPanel>
             )}
             <TabPanel className="h-full">
-              <AddAttribute asset={asset} />
+              <AddAttribute resourceKey={asset.key} />
               <div>
                 <DrawerList
                   items={attributes.map(data => ({

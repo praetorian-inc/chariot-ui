@@ -1,14 +1,14 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Transition } from '@headlessui/react';
 import { twMerge } from 'tailwind-merge';
 
 import { MODAL_WRAPPER_ID } from '@/components/Modal';
+import { Tooltip } from '@/components/Tooltip';
 import { useMutationObserver } from '@/hooks/useMutationObserver';
 import { cn } from '@/utils/classname';
 import { getTransitionSettings } from '@/utils/transition.util';
-import { Tooltip } from '@/components/Tooltip';
 
 interface Props {
   position?: 'left' | 'right';
@@ -20,6 +20,8 @@ interface Props {
   className?: string;
   footer?: ReactNode;
   footerClassname?: string;
+  header?: ReactNode;
+  minWidth?: number;
 }
 
 export function Drawer({
@@ -32,7 +34,15 @@ export function Drawer({
   className,
   footer,
   footerClassname,
+  header,
+  minWidth = 600,
 }: Props) {
+  const ref = useRef<HTMLDivElement>(null);
+  // const { size, onMouseDown } = useResize({
+  //   el: ref.current || document.createElement('div'),
+  //   minWidth,
+  //   position: 'right',
+  // });
   const [domHasModal, setDomHasModal] = useState(false);
 
   /**
@@ -107,27 +117,40 @@ export function Drawer({
             >
               <div
                 className={cn(
-                  'border-l border-l-default relative flex flex-col bg-layer0 w-96',
+                  'relative border-l border-l-default flex flex-col bg-layer0 w-96',
                   className
                 )}
                 onClick={event => event.stopPropagation()}
+                style={{
+                  width: minWidth,
+                }}
+                ref={ref}
               >
-                <div className="flex h-full flex-col overflow-y-auto px-8 py-6">
-                  <div className="mb-7 flex justify-between">
-                    <Tooltip title="Go Back">
-                      <ChevronLeftIcon
-                        className="size-5 cursor-pointer"
-                        onClick={onBack}
-                      />{' '}
-                    </Tooltip>
+                {/* <div
+                  onMouseDown={onMouseDown}
+                  className="absolute left-[-20px] top-1/2 flex size-5 h-8 -translate-y-2/4 translate-x-2/4 items-center rounded-full bg-layer1 shadow-md hover:cursor-col-resize"
+                >
+                  <EllipsisVerticalIcon className="w-6" />
+                </div> */}
+                <div className="h-full">
+                  <div className="mx-2 my-4 flex justify-between">
+                    <div className="flex">
+                      <Tooltip title="Go Back">
+                        <ChevronLeftIcon
+                          className="mr-2 mt-2 size-5 cursor-pointer"
+                          onClick={onBack}
+                        />{' '}
+                      </Tooltip>
+                      {header}
+                    </div>
                     <Tooltip title="Close">
                       <XMarkIcon
-                        className="size-5 cursor-pointer"
+                        className=" mt-2 size-5 cursor-pointer"
                         onClick={onClose}
                       />
                     </Tooltip>
                   </div>
-                  {children}
+                  <div className="h-[calc(100%-52px)]">{children}</div>
                 </div>
                 {footer && (
                   <div className={cn('w-full bg-layer1 p-3', footerClassname)}>

@@ -69,7 +69,7 @@ export const Popover = (props: PopoverProps) => {
       {open && (
         <FloatingFocusManager context={context} modal={false}>
           <div
-            className="Popover z-20 rounded-[4px] bg-layer0 p-4 shadow-md outline-none"
+            className="Popover border-1 z-20 rounded-[4px] border border-default bg-layer0 p-4 shadow-md outline-none"
             ref={refs.setFloating}
             style={floatingStyles}
             aria-labelledby={headingId}

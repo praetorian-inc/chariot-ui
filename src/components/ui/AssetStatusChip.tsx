@@ -1,7 +1,5 @@
 import { Chip, ChipProps } from '@/components/Chip';
-import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { AssetStatus, AssetStatusLabel } from '@/types';
-import { cn } from '@/utils/classname';
 
 export const getAssetStatusProperties = (status: AssetStatus) => {
   const styles: Record<AssetStatus, ChipProps['style']> = {
@@ -35,25 +33,5 @@ export const AssetStatusChip: React.FC<{
     <Chip className={className} style={style}>
       {text}
     </Chip>
-  );
-};
-
-export const AssetStatusText: React.FC<{
-  className?: string;
-  status: AssetStatus;
-  showIcon?: boolean;
-}> = ({ className, status, showIcon }) => {
-  const { text, detail } = getAssetStatusProperties(status);
-
-  return (
-    <div className={cn('flex items-center flex-row space-x-1', className)}>
-      {text}{' '}
-      {detail && (
-        <div className="ml-3 flex items-center space-x-1 rounded-sm bg-gray-50 p-2 text-xs font-medium text-gray-500">
-          {showIcon && getAssetStatusIcon(status)}
-          <p>{detail}</p>
-        </div>
-      )}
-    </div>
   );
 };

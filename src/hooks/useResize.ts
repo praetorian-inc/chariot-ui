@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 interface Props {
   el: HTMLElement;
   minWidth?: number;
+  position?: 'left' | 'right';
 }
 
 export const useResize = (props: Props) => {
-  const { minWidth = 100, el } = props;
+  const { minWidth = 100, el, position = 'left' } = props;
   const [size, setSize] = useState({
     x: 0,
     y: 0,
@@ -31,7 +32,10 @@ export const useResize = (props: Props) => {
 
     function onMouseMove(mouseMoveEvent: MouseEvent) {
       setSize(() => ({
-        x: getWidth(startSize.x - startPosition.x + mouseMoveEvent.pageX),
+        x:
+          position === 'left'
+            ? getWidth(startSize.x - startPosition.x + mouseMoveEvent.pageX)
+            : getWidth(screen.width - mouseMoveEvent.pageX),
         y: startSize.y - startPosition.y + mouseMoveEvent.pageY,
       }));
     }

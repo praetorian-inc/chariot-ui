@@ -20,6 +20,7 @@ import {
   useGetCollaboratorEmails,
   useGetDisplayName,
   useModifyAccount,
+  usePurgeAccount,
 } from '@/hooks/useAccounts';
 import { useUploadFile } from '@/hooks/useFiles';
 import { useMy } from '@/hooks/useMy';
@@ -32,9 +33,11 @@ const Account: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [displayName, setDisplayName] = useState('');
 
-  const { me, friend } = useAuth();
+  const { me, friend, isImpersonating } = useAuth();
   const { data, status } = useMy({ resource: 'account' });
   const { mutate: updateAccount } = useModifyAccount('updateSetting');
+  const { mutateAsync: purgeAccount } = usePurgeAccount();
+
   const accountDisplayName = useGetDisplayName(data);
   const isDirty = status === 'success' && accountDisplayName !== displayName;
   const header = MD5(friend.email || me).toString();
@@ -141,44 +144,49 @@ const Account: React.FC = () => {
                 Save
               </Button>
             )}
-            <Button
-              type="button"
-              className="bg-red-600 text-slate-50"
-              styleType="none"
-              onClick={() => {
-                setIsDeleteModalOpen(true);
-              }}
-              startIcon={<TrashIcon className="size-5" />}
-            >
-              Delete Org
-            </Button>
-            <Modal
-              style="dialog"
-              title={
-                <div className="flex items-center gap-1">
-                  <ExclamationTriangleIcon className="size-5 text-red-600" />
+            {!isImpersonating && (
+              <>
+                <Button
+                  type="button"
+                  className="bg-red-600 text-slate-50"
+                  styleType="none"
+                  onClick={() => {
+                    setIsDeleteModalOpen(true);
+                  }}
+                  startIcon={<TrashIcon className="size-5" />}
+                >
                   Delete Org
-                </div>
-              }
-              open={isDeleteModalOpen}
-              onClose={() => {
-                setIsDeleteModalOpen(false);
-              }}
-              footer={{
-                text: 'Delete',
-                onClick: () => {
-                  // Call api to delete account
-                  setIsDeleteModalOpen(false);
-                },
-                className: 'bg-red-600 text-slate-50',
-              }}
-            >
-              <div className="space-y-2 text-sm text-default-light">
-                Deleting your account is a permanent action that cannot be
-                reversed. This will remove all your data from Praetorian servers
-                and delete your login credentials.
-              </div>
-            </Modal>
+                </Button>
+                <Modal
+                  style="dialog"
+                  title={
+                    <div className="flex items-center gap-1">
+                      <ExclamationTriangleIcon className="size-5 text-red-600" />
+                      Delete Org
+                    </div>
+                  }
+                  open={isDeleteModalOpen}
+                  onClose={() => {
+                    setIsDeleteModalOpen(false);
+                  }}
+                  footer={{
+                    text: 'Delete',
+                    onClick: async () => {
+                      await purgeAccount();
+                      // Call api to delete account
+                      setIsDeleteModalOpen(false);
+                    },
+                    className: 'bg-red-600 text-slate-50',
+                  }}
+                >
+                  <div className="space-y-2 text-sm text-default-light">
+                    Deleting your account is a permanent action that cannot be
+                    reversed. This will remove all your data from Praetorian
+                    servers and delete your login credentials.
+                  </div>
+                </Modal>
+              </>
+            )}
           </div>
         </form>
       </Section>

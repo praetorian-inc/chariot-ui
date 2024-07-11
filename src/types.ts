@@ -427,6 +427,7 @@ export interface AuthState {
   rToken?: string;
   expiry?: Date;
   friend: { email: string; displayName: string };
+  isImpersonating: boolean;
 }
 
 export interface AuthContextType extends AuthState {

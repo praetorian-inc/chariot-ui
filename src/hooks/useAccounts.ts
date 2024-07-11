@@ -105,6 +105,37 @@ export const useModifyAccount = (
   });
 };
 
+export function usePurgeAccount() {
+  const axios = useAxios();
+  const { invalidate: invalidateAccount } = useMy(
+    {
+      resource: 'account',
+    },
+    {
+      enabled: false,
+    }
+  );
+
+  return useMutation<void, Error, LinkAccount>({
+    defaultErrorMessage: `Failed to purge account`,
+    mutationFn: async account => {
+      await axios.delete(`/account/purge`, {
+        data: {
+          key: account.key,
+        },
+      });
+      invalidateAccount();
+      Snackbar({
+        title: `Account ${account.username} purged`,
+        description: '',
+        variant: 'success',
+      });
+
+      return;
+    },
+  });
+}
+
 export function useGetDisplayName(accounts: Account[]) {
   return useMemo(() => getDisplayName(accounts), [JSON.stringify(accounts)]);
 }

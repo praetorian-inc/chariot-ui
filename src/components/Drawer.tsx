@@ -26,6 +26,7 @@ interface Props {
   footer?: ReactNode;
   footerClassname?: string;
   header?: ReactNode;
+  minWidth?: number;
 }
 
 export function Drawer({
@@ -39,11 +40,12 @@ export function Drawer({
   footer,
   footerClassname,
   header,
+  minWidth = 600,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const { size, onMouseDown } = useResize({
     el: ref.current || document.createElement('div'),
-    minWidth: 600,
+    minWidth,
     position: 'right',
   });
   const [domHasModal, setDomHasModal] = useState(false);

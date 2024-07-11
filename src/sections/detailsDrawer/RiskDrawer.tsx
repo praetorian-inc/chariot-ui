@@ -222,6 +222,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       onClose={() => removeSearchParams(StorageKey.DRAWER_COMPOSITE_KEY)}
       onBack={() => navigate(-1)}
       className={DRAWER_WIDTH}
+      minWidth={700}
       header={
         isInitialLoading ? null : (
           <DetailsDrawerHeader

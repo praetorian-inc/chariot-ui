@@ -1,11 +1,13 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import MD5 from 'crypto-js/md5';
 
 import { Button } from '@/components/Button';
 import { Dropzone, Files } from '@/components/Dropzone';
 import { Input } from '@/components/form/Input';
 import { Loader } from '@/components/Loader';
+import { Modal } from '@/components/Modal';
 import { Paper } from '@/components/Paper';
 import {
   PROFILE_PICTURE_ID,
@@ -24,6 +26,7 @@ import { Users } from '@/sections/Users';
 import { useAuth } from '@/state/auth';
 
 const Account: React.FC = () => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [displayName, setDisplayName] = useState('');
 
   const { me, friend } = useAuth();
@@ -90,7 +93,7 @@ const Account: React.FC = () => {
             </div>
             <Loader
               isLoading={profilePictureStatus === 'pending'}
-              className="h-5 m-0"
+              className="m-0 h-5"
             >
               {showDpDropzone && (
                 <Dropzone
@@ -121,19 +124,58 @@ const Account: React.FC = () => {
               )}
             </Loader>
           </>
-
-          <Button
-            style={{
-              opacity: isDirty ? '100%' : '0%',
-              visibility: isDirty ? 'visible' : 'hidden',
-              transition: 'opacity 0.1s',
-            }}
-            className="mt-2"
-            type="submit"
-            styleType="primary"
-          >
-            Save
-          </Button>
+          <div className="mt-4 flex gap-2">
+            {isDirty && (
+              <Button
+                style={{
+                  opacity: isDirty ? '100%' : '0%',
+                  visibility: isDirty ? 'visible' : 'hidden',
+                  transition: 'opacity 0.1s',
+                }}
+                type="submit"
+                styleType="primary"
+              >
+                Save
+              </Button>
+            )}
+            <Button
+              type="button"
+              className="bg-red-600 text-slate-50"
+              styleType="none"
+              onClick={() => {
+                setIsDeleteModalOpen(true);
+              }}
+            >
+              Delete Org
+            </Button>
+            <Modal
+              style="dialog"
+              title={
+                <div className="flex items-center gap-1">
+                  <ExclamationTriangleIcon className="size-5 text-red-600" />
+                  Delete Org
+                </div>
+              }
+              open={isDeleteModalOpen}
+              onClose={() => {
+                setIsDeleteModalOpen(false);
+              }}
+              footer={{
+                text: 'Delete',
+                onClick: () => {
+                  // Call api to delete account
+                  setIsDeleteModalOpen(false);
+                },
+                className: 'bg-red-600 text-slate-50',
+              }}
+            >
+              <div className="space-y-2 text-sm text-default-light">
+                Deleting your account is a permanent action that cannot be
+                reversed. This will remove all your data from Praetorian servers
+                and delete your login credentials.
+              </div>
+            </Modal>
+          </div>
         </form>
       </Section>
 

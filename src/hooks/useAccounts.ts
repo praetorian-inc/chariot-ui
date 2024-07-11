@@ -115,18 +115,15 @@ export function usePurgeAccount() {
       enabled: false,
     }
   );
+  const { me } = useAuth();
 
-  return useMutation<void, Error, LinkAccount>({
+  return useMutation<void, Error, void>({
     defaultErrorMessage: `Failed to purge account`,
-    mutationFn: async account => {
-      await axios.delete(`/account/purge`, {
-        data: {
-          key: account.key,
-        },
-      });
+    mutationFn: async () => {
+      await axios.delete(`/account/purge`);
       invalidateAccount();
       Snackbar({
-        title: `Account ${account.username} purged`,
+        title: `Account ${me} purged`,
         description: '',
         variant: 'success',
       });

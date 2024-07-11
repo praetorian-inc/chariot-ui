@@ -1,6 +1,9 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import {
+  ExclamationTriangleIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import MD5 from 'crypto-js/md5';
 
 import { Button } from '@/components/Button';
@@ -145,6 +148,7 @@ const Account: React.FC = () => {
               onClick={() => {
                 setIsDeleteModalOpen(true);
               }}
+              startIcon={<TrashIcon className="size-5" />}
             >
               Delete Org
             </Button>

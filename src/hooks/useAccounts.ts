@@ -109,7 +109,7 @@ export function usePurgeAccount() {
   const axios = useAxios();
   const { me, logout } = useAuth();
 
-  return useMutation<void, Error, void>({
+  return useMutation<null, Error, void>({
     defaultErrorMessage: `Failed to purge account`,
     mutationFn: async () => {
       try {
@@ -123,7 +123,7 @@ export function usePurgeAccount() {
       } catch {
         // ignore
       }
-      return;
+      return null;
     },
   });
 }

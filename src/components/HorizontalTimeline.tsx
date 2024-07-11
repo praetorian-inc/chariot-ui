@@ -48,7 +48,7 @@ export const HorizontalTimeline = ({ steps = [], current = 0 }: Props) => {
               />
               <span
                 className={cn(
-                  'absolute text-sm text-default',
+                  'absolute text-sm text-default font-medium',
                   index === 0 && 'left-0',
                   index > 0 && index < steps.length - 1 && 'left-[-25px]',
                   index === steps.length - 1 && 'right-0'

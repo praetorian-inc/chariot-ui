@@ -34,15 +34,15 @@ export const AddAttribute = (props: Props) => {
       type="button"
       open={open}
       setOpen={setOpen}
-      styleType="primaryLight"
-      className="m-2 ml-auto rounded"
+      styleType="none"
+      className="m-2 text-lg text-brand"
       startIcon={<PlusIcon className="size-4" />}
-      label="Attribute"
+      label="Add Attribute"
       style={{ zIndex: 1 }}
     >
       <div className="w-[300px]">
         <form
-          className="flex flex-1 flex-col gap-4"
+          className="flex flex-1 flex-col gap-4 space-y-4 p-2"
           onSubmit={event => {
             event.preventDefault();
             createAttribute(

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
-import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
 import { Inputs } from '@/components/form/Inputs';
+import { Popover } from '@/components/Popover';
 import { useCreateAttribute } from '@/hooks/useAttribute';
 
 interface Props {
@@ -29,69 +29,76 @@ export const AddAttribute = (props: Props) => {
   }
 
   return (
-    <Accordian
-      title="Add Attribute"
-      defaultOpen={false}
+    <Popover
+      onClick={() => setOpen(!open)}
+      type="button"
       open={open}
-      onOpenChange={setOpen}
+      setOpen={setOpen}
+      styleType="primaryLight"
+      className="m-2 ml-auto rounded"
+      startIcon={<PlusIcon className="size-4" />}
+      label="Attribute"
+      style={{ zIndex: 1 }}
     >
-      <form
-        className="flex flex-1 flex-col gap-4"
-        onSubmit={event => {
-          event.preventDefault();
-          createAttribute(
-            {
-              key: resourceKey,
-              class: formData.name,
-              name: formData.value,
-            },
-            {
-              onSuccess: reset,
+      <div className="w-[300px]">
+        <form
+          className="flex flex-1 flex-col gap-4"
+          onSubmit={event => {
+            event.preventDefault();
+            createAttribute(
+              {
+                key: resourceKey,
+                class: formData.name,
+                name: formData.value,
+              },
+              {
+                onSuccess: reset,
+              }
+            );
+          }}
+        >
+          <Inputs
+            inputs={[
+              {
+                label: 'Attribute Name',
+                value: formData.name,
+                placeholder: 'technology',
+                name: 'name',
+                required: true,
+              },
+              {
+                label: 'Attribute Value',
+                value: formData.value,
+                placeholder: 'Apache Web Server',
+                name: 'value',
+                required: true,
+              },
+            ]}
+            onChange={values =>
+              setFormData(formData => ({ ...formData, ...values }))
             }
-          );
-        }}
-      >
-        <Inputs
-          inputs={[
-            {
-              label: 'Attribute Name',
-              value: formData.name,
-              placeholder: 'technology',
-              name: 'name',
-              required: true,
-            },
-            {
-              label: 'Attribute Value',
-              value: formData.value,
-              placeholder: 'Apache Web Server',
-              name: 'value',
-              required: true,
-            },
-          ]}
-          onChange={values =>
-            setFormData(formData => ({ ...formData, ...values }))
-          }
-        />
-        <div className="flex gap-2">
-          <Button
-            styleType="primary"
-            type="submit"
-            className="w-fit"
-            startIcon={<PlusIcon className="size-4" />}
-            disabled={creatingAttribute === 'pending'}
-          >
-            Add Attribute
-          </Button>
-          <Button
-            styleType="textPrimary"
-            className="w-fit"
-            disabled={creatingAttribute === 'pending'}
-            onClick={reset}
-          >
-            Cancel
-          </Button>
-        </div>
-      </form>
-    </Accordian>
+          />
+          <div className="flex gap-2">
+            <Button
+              styleType="primary"
+              type="submit"
+              className="w-fit"
+              startIcon={<PlusIcon className="size-4" />}
+              disabled={creatingAttribute === 'pending'}
+            >
+              Add
+            </Button>
+            <Button
+              styleType="textPrimary"
+              className="w-fit"
+              disabled={creatingAttribute === 'pending'}
+              onClick={reset}
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </div>
+    </Popover>
   );
 };

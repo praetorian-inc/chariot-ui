@@ -28,6 +28,7 @@ import { useGetKev } from '@/hooks/kev';
 import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useReRunJob } from '@/hooks/useJobs';
 import { useReportRisk } from '@/hooks/useRisks';
+import { DRAWER_WIDTH } from '@/sections/detailsDrawer';
 import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
 import { DrawerList } from '@/sections/detailsDrawer/DrawerList';
@@ -191,7 +192,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       open={open}
       onClose={() => removeSearchParams(StorageKey.DRAWER_COMPOSITE_KEY)}
       onBack={() => navigate(-1)}
-      minWidth={700}
+      minWidth={DRAWER_WIDTH}
       header={
         isInitialLoading ? null : (
           <DetailsDrawerHeader

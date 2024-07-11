@@ -175,12 +175,20 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
             {isTypeAsset && (
               <TabPanel className="h-full">
                 <DrawerList
-                  items={[...linkedHostnames, ...linkedIps].map(data => ({
-                    label: data.dns,
-                    value: data.name,
-                    updated: data.updated,
-                    to: getAssetDrawerLink(data),
-                  }))}
+                  items={[
+                    ...linkedHostnames.map(data => ({
+                      label: data.name,
+                      value: data.dns,
+                      updated: data.updated,
+                      to: getAssetDrawerLink(data),
+                    })),
+                    ...linkedIps.map(data => ({
+                      label: data.dns,
+                      value: data.name,
+                      updated: data.updated,
+                      to: getAssetDrawerLink(data),
+                    })),
+                  ]}
                 />
               </TabPanel>
             )}

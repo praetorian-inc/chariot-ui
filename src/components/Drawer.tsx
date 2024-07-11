@@ -5,10 +5,10 @@ import { Transition } from '@headlessui/react';
 import { twMerge } from 'tailwind-merge';
 
 import { MODAL_WRAPPER_ID } from '@/components/Modal';
+import { Tooltip } from '@/components/Tooltip';
 import { useMutationObserver } from '@/hooks/useMutationObserver';
 import { cn } from '@/utils/classname';
 import { getTransitionSettings } from '@/utils/transition.util';
-import { Tooltip } from '@/components/Tooltip';
 
 interface Props {
   position?: 'left' | 'right';
@@ -20,6 +20,7 @@ interface Props {
   className?: string;
   footer?: ReactNode;
   footerClassname?: string;
+  header?: ReactNode;
 }
 
 export function Drawer({
@@ -32,6 +33,7 @@ export function Drawer({
   className,
   footer,
   footerClassname,
+  header,
 }: Props) {
   const [domHasModal, setDomHasModal] = useState(false);
 
@@ -112,22 +114,25 @@ export function Drawer({
                 )}
                 onClick={event => event.stopPropagation()}
               >
-                <div className="flex h-full flex-col overflow-y-auto px-8 py-6">
-                  <div className="mb-7 flex justify-between">
-                    <Tooltip title="Go Back">
-                      <ChevronLeftIcon
-                        className="size-5 cursor-pointer"
-                        onClick={onBack}
-                      />{' '}
-                    </Tooltip>
+                <div className="h-full">
+                  <div className="mx-2 my-4 flex justify-between">
+                    <div className="flex">
+                      <Tooltip title="Go Back">
+                        <ChevronLeftIcon
+                          className="mr-2 mt-2 size-5 cursor-pointer"
+                          onClick={onBack}
+                        />{' '}
+                      </Tooltip>
+                      {header}
+                    </div>
                     <Tooltip title="Close">
                       <XMarkIcon
-                        className="size-5 cursor-pointer"
+                        className=" mt-2 size-5 cursor-pointer"
                         onClick={onClose}
                       />
                     </Tooltip>
                   </div>
-                  {children}
+                  <div className="h-[calc(100%-52px)]">{children}</div>
                 </div>
                 {footer && (
                   <div className={cn('w-full bg-layer1 p-3', footerClassname)}>

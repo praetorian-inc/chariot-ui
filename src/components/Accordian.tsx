@@ -23,10 +23,10 @@ export function Accordian(props: AccordianProps) {
   );
 
   return (
-    <div className="pb-8">
+    <div className="bg-brand-lighter">
       <div className={cn('flex items-center gap-2', props.className)}>
         <div
-          className={cn('flex gap-2', !props.fixed && 'cursor-pointer')}
+          className={cn('flex gap-2 p-4', !props.fixed && 'cursor-pointer')}
           onClick={
             props.fixed
               ? undefined
@@ -47,9 +47,9 @@ export function Accordian(props: AccordianProps) {
         </div>
         <div className="ml-auto">{props.titlerightContainer}</div>
       </div>
-      <hr className="mt-2 border-default" />
+      <hr className="border-default" />
       {open && (
-        <div className={cn('pt-2', props.contentClassName)}>
+        <div className={cn('px-4 pb-4', props.contentClassName)}>
           {props.children}
         </div>
       )}

@@ -3,31 +3,27 @@ import { Link } from 'react-router-dom';
 import {
   ChevronDownIcon,
   DocumentTextIcon,
-  LockOpenIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline';
 import {
-  AdjustmentsHorizontalIcon,
   Bars2Icon,
   ChevronDoubleDownIcon,
   ChevronDoubleUpIcon,
   ChevronUpIcon,
-  LockClosedIcon,
 } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
 import { RisksIcon } from '@/components/icons';
 import { HorseIcon } from '@/components/icons/Horse.icon';
+import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
+import { getRiskStatusIcon } from '@/components/icons/RiskStatus.icon';
 import { SpinnerIcon } from '@/components/icons/Spinner.icon';
 import { MenuItemProps } from '@/components/Menu';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { ClosedStateModal } from '@/components/ui/ClosedStateModal';
-import {
-  RiskDropdown,
-  riskStatusFilterOptions,
-} from '@/components/ui/RiskDropdown';
+import { riskStatusFilterOptions } from '@/components/ui/RiskDropdown';
 import { useGetKev } from '@/hooks/kev';
 import { useFilter } from '@/hooks/useFilter';
 import { useMy } from '@/hooks/useMy';
@@ -87,13 +83,11 @@ const getFilteredRisks = (
   {
     statusFilter = [],
     severityFilter = [],
-    classFilter = [],
     sourceFilter = [],
     knownExploitedThreats,
   }: {
     statusFilter?: string[];
     severityFilter?: string[];
-    classFilter?: string[];
     sourceFilter?: string[];
     knownExploitedThreats?: string[];
   }
@@ -109,11 +103,7 @@ const getFilteredRisks = (
       severityFilter?.includes(risk.status[1])
     );
   }
-  if (classFilter?.filter(Boolean).length > 0) {
-    filteredRisks = filteredRisks.filter(risk =>
-      classFilter?.includes(risk.class)
-    );
-  }
+
   if (
     sourceFilter.length > 0 &&
     sourceFilter[0] === 'cisa_kev' &&
@@ -147,11 +137,7 @@ export function Risks() {
     'risk-severity',
     setSelectedRows
   );
-  const [classFilter, setClassFilter] = useFilter(
-    [''],
-    'risk-class',
-    setSelectedRows
-  );
+
   const [sourceFilter, setSourceFilter] = useFilter(
     [''],
     'risk-source',
@@ -182,7 +168,6 @@ export function Risks() {
     filteredRisks = getFilteredRisks(risks, {
       statusFilter,
       severityFilter,
-      classFilter,
       sourceFilter,
       knownExploitedThreats,
     });
@@ -198,7 +183,6 @@ export function Risks() {
   }, [
     severityFilter,
     statusFilter,
-    classFilter,
     sourceFilter,
     JSON.stringify(risks),
     JSON.stringify(knownExploitedThreats),
@@ -212,6 +196,28 @@ export function Risks() {
         to: (item: Risk) => getRiskDrawerLink(item),
         className: 'w-full',
         copy: true,
+        cell: (risk: Risk) => {
+          const riskStatusKey =
+            `${risk.status?.[0]}${risk.status?.[2] || ''}` as RiskStatus;
+          const riskSeverityKey = risk.status?.[1] as RiskSeverity;
+
+          const statusIcon = getRiskStatusIcon(riskStatusKey);
+          const severityIcon = getRiskSeverityIcon(riskSeverityKey);
+
+          return (
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-default">
+                <Tooltip title={RiskStatusLabel[riskStatusKey] || 'Cloed'}>
+                  {statusIcon}
+                </Tooltip>
+                <Tooltip title={SeverityDef[riskSeverityKey]}>
+                  {severityIcon}
+                </Tooltip>
+              </div>
+              <span>{risk.name}</span>
+            </div>
+          );
+        },
       },
       {
         label: 'Status',
@@ -219,21 +225,21 @@ export function Risks() {
         className: 'text-left',
         fixedWidth: 200,
         cell: (risk: Risk) => {
-          return (
-            <RiskDropdown type="status" risk={risk} className="w-[170px]" />
-          );
+          const riskStatusKey =
+            `${risk.status?.[0]}${risk.status?.[2] || ''}` as RiskStatus;
+          return <span>{RiskStatusLabel[riskStatusKey]}</span>;
         },
       },
-      {
-        label: 'Severity',
-        id: 'status',
-        fixedWidth: 140,
-        cell: (risk: Risk) => {
-          return (
-            <RiskDropdown type="severity" risk={risk} className="w-[120px]" />
-          );
-        },
-      },
+      // {
+      //   label: 'Severity',
+      //   id: 'status',
+      //   fixedWidth: 140,
+      //   cell: (risk: Risk) => {
+      //     return (
+      //       <RiskDropdown type="severity" risk={risk} className="w-[120px]" />
+      //     );
+      //   },
+      // },
       {
         label: 'Asset',
         id: 'dns',
@@ -311,36 +317,6 @@ export function Risks() {
     () => getFilteredRisks(risks, { severityFilter, statusFilter }),
     [risks, severityFilter, statusFilter]
   );
-
-  const classRisks = useMemo(
-    () =>
-      risksExceptSource.reduce(
-        (acc, risk) => {
-          acc[risk.class] = (acc[risk.class] || 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>
-      ),
-    [risksExceptSource]
-  );
-
-  const classOptions = [
-    {
-      label: 'Weakness',
-      value: 'weakness',
-      labelSuffix: classRisks.weakness ?? 0,
-    },
-    {
-      label: 'Exposure',
-      value: 'exposure',
-      labelSuffix: classRisks.exposure ?? 0,
-    },
-    {
-      label: 'Misconfiguration',
-      value: 'misconfiguration',
-      labelSuffix: classRisks.misconfiguration ?? 0,
-    },
-  ];
 
   function getRiskStausOptionWithCount(riskStatus: RiskStatus[]) {
     return riskStatus.map(riskStatus => {
@@ -430,28 +406,6 @@ export function Risks() {
             />
             <Dropdown
               styleType="header"
-              label={getFilterLabel('Classes', classFilter, classOptions)}
-              endIcon={DownIcon}
-              menu={{
-                items: [
-                  {
-                    label: 'All Classes',
-                    labelSuffix: risksExceptSeverity.length,
-                    value: '',
-                  },
-                  {
-                    label: 'Divider',
-                    type: 'divider',
-                  },
-                  ...classOptions,
-                ],
-                onSelect: selectedRows => setClassFilter(selectedRows),
-                value: classFilter,
-                multiSelect: true,
-              }}
-            />
-            <Dropdown
-              styleType="header"
               label={getFilterLabel('Threat Intel', sourceFilter, [
                 { label: 'CISA KEV', value: 'cisa_kev' },
               ])}
@@ -503,7 +457,7 @@ export function Risks() {
                 },
                 {
                   label: RiskStatusLabel[RiskStatus.Triaged],
-                  icon: <AdjustmentsHorizontalIcon />,
+                  icon: getRiskStatusIcon(RiskStatus.Triaged),
                   onClick: () =>
                     updateRisk({
                       selectedRows,
@@ -512,7 +466,7 @@ export function Risks() {
                 },
                 {
                   label: RiskStatusLabel[RiskStatus.Opened],
-                  icon: <LockOpenIcon />,
+                  icon: getRiskStatusIcon(RiskStatus.Opened),
                   onClick: () =>
                     updateRisk({
                       selectedRows,
@@ -521,7 +475,7 @@ export function Risks() {
                 },
                 {
                   label: 'Closed',
-                  icon: <LockClosedIcon />,
+                  icon: getRiskStatusIcon(RiskStatus.Resolved),
                   onClick: () => {
                     setIsClosedSubStateModalOpen(true);
                   },

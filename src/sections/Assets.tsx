@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/solid';
@@ -18,7 +17,6 @@ import { Tooltip } from '@/components/Tooltip';
 import { getAssetStatusProperties } from '@/components/ui/AssetStatusChip';
 import { useMy } from '@/hooks';
 import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
-import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
 import { useIntegration } from '@/hooks/useIntegration';
 import { AssetStatusWarning } from '@/sections/AssetStatusWarning';
@@ -27,7 +25,6 @@ import { getFilterLabel } from '@/sections/RisksTable';
 import { useGlobalState } from '@/state/global.state';
 import {
   Asset,
-  AssetLabels,
   AssetStatus,
   AssetStatusLabel,
   Risk,
@@ -79,11 +76,6 @@ const Assets: React.FC = () => {
     },
   } = useGlobalState();
 
-  const { data: stats = {} } = useCounts({
-    resource: 'asset',
-    filterByGlobalSearch: false,
-  });
-
   const {
     isLoading,
     status: assetsStatus,
@@ -117,8 +109,6 @@ const Assets: React.FC = () => {
   const [assetStatus, setAssetStatus] = useState<
     AssetStatus.ActiveHigh | AssetStatus.Frozen | ''
   >('');
-
-  const navigate = useNavigate();
 
   const { mutateAsync: updateAsset } = useUpdateAsset();
 
@@ -285,61 +275,12 @@ const Assets: React.FC = () => {
     });
   }
 
-  // get selected class from url param class:CLASS_NAME
-  const searchParams = new URLSearchParams(window.location.search);
-  const genericSearch = searchParams.get(StorageKey.GENERIC_SEARCH);
-  const selectedFilter = genericSearch?.replace('class:', '');
-
   return (
     <div className="flex w-full flex-col">
       <Table
         name="assets"
         filters={
           <div className="flex gap-4">
-            <Dropdown
-              styleType="header"
-              label={
-                selectedFilter && AssetLabels[selectedFilter]
-                  ? AssetLabels[selectedFilter]
-                  : 'All Assets'
-              }
-              endIcon={
-                <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
-              }
-              menu={{
-                items: [
-                  {
-                    label: 'All Assets',
-                    labelSuffix: Object.keys(stats)
-                      .reduce((acc, key) => acc + stats[key], 0)
-                      .toLocaleString(),
-                    value: '',
-                  },
-                  {
-                    label: 'Divider',
-                    type: 'divider',
-                  },
-                  ...Object.entries(AssetLabels).map(([key, label]) => {
-                    return {
-                      label,
-                      labelSuffix: stats[key]?.toLocaleString() || 0,
-                      value: key,
-                    };
-                  }),
-                ],
-                onClick: value => {
-                  const pathName = getRoute(['app', 'assets']);
-                  if (value === '') {
-                    navigate(pathName);
-                  } else {
-                    const filter = `class:${value}`;
-                    const searchQuery = `?${StorageKey.GENERIC_SEARCH}=${encodeURIComponent(filter)}`;
-                    navigate(`${pathName}${searchQuery}`);
-                  }
-                },
-                value: selectedFilter ?? undefined,
-              }}
-            />
             <Dropdown
               styleType="header"
               label={getFilterLabel(

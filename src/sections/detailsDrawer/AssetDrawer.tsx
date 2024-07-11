@@ -148,8 +148,8 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                 items={associatedRisks.map(data => {
                   const { name, dns, url } = getAttributeDetails(data);
                   return {
-                    label: name,
-                    value: dns,
+                    label: dns,
+                    value: name,
                     date: data.updated,
                     to: url,
                   };

@@ -16,7 +16,8 @@ import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
 import { DrawerList } from '@/sections/detailsDrawer/DrawerList';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
-import { Asset } from '@/types';
+import { getStatus } from '@/sections/RisksTable';
+import { Asset, RiskStatus } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { capitalize } from '@/utils/lodash.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
@@ -80,11 +81,6 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
       attribute.class === 'seed' && attribute.key.startsWith('#attribute#asset')
   );
 
-  const associatedRisks = genericAttributes.filter(
-    attribute =>
-      attribute.class === 'seed' && attribute.key.startsWith('#attribute#risk')
-  );
-
   const asset: Asset = assets[0] || {};
 
   const assetType = useGetAssetType(asset);
@@ -94,6 +90,10 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   );
   const linkedIps = rawlinkedIpsIncludingSelf.filter(
     ({ name }) => name !== asset.dns
+  );
+
+  const openRisks = risks.filter(
+    ({ status }) => getStatus(status) === RiskStatus.Opened
   );
 
   const isInitialLoading =
@@ -143,20 +143,19 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
           <TabPanels className="size-full h-[calc(100%-150px)] overflow-auto">
             <TabPanel className="h-full">
               <DrawerList
-                items={associatedRisks.map(data => {
-                  const { name, dns, url } = getAttributeDetails(data);
+                items={openRisks.map(({ dns, name, updated }) => {
                   return {
                     label: dns,
                     value: name,
-                    date: data.updated,
-                    to: url,
+                    date: updated,
+                    to: getDrawerLink().getRiskDrawerLink({ dns, name }),
                   };
                 })}
               />
             </TabPanel>
 
-            {!isTypeAsset && (
-              <TabPanel className="h-full">
+            <TabPanel className="h-full">
+              {!isTypeAsset && (
                 <DrawerList
                   items={associatedAssets.map(data => {
                     const { name, dns, url } = getAttributeDetails(data);
@@ -168,10 +167,8 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     };
                   })}
                 />
-              </TabPanel>
-            )}
-            {isTypeAsset && (
-              <TabPanel className="h-full">
+              )}
+              {isTypeAsset && (
                 <DrawerList
                   items={[
                     ...linkedHostnames.map(data => ({
@@ -188,8 +185,8 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     })),
                   ]}
                 />
-              </TabPanel>
-            )}
+              )}
+            </TabPanel>
             <TabPanel className="h-full">
               <AddAttribute resourceKey={asset.key} />
               <div>

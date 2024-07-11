@@ -26,13 +26,11 @@ import { TabWrapper } from '@/components/ui/TabWrapper';
 import { useMy } from '@/hooks';
 import { useGetKev } from '@/hooks/kev';
 import { useGetFile, useUploadFile } from '@/hooks/useFiles';
-import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useReRunJob } from '@/hooks/useJobs';
-import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
+import { useReportRisk } from '@/hooks/useRisks';
 import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
 import { DrawerList } from '@/sections/detailsDrawer/DrawerList';
-import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { JobStatus, Risk, RiskCombinedStatus, RiskHistory } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { sToMs } from '@/utils/date.util';
@@ -87,7 +85,6 @@ interface RiskDrawerProps {
 
 export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const navigate = useNavigate();
-  const { getAssetDrawerLink } = getDrawerLink();
   const { removeSearchParams } = useSearchParams();
 
   const [, dns, name] = compositeKey.split('#');
@@ -98,15 +95,10 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const [markdownValue, setMarkdownValue] = useState('');
 
   const { mutateAsync: reRunJob, status: reRunJobStatus } = useReRunJob();
-  const { mutateAsync: updateRisk } = useUpdateRisk();
   const { mutateAsync: updateFile, status: updateFileStatus } = useUploadFile();
   const { mutateAsync: reportRisk, status: reportRiskStatus } = useReportRisk();
 
-  const {
-    data: risks = [],
-    status: riskStatus,
-    isFetching: isRisksFetching,
-  } = useMy(
+  const { data: risks = [], status: riskStatus } = useMy(
     {
       resource: 'risk',
       query: compositeKey,
@@ -144,16 +136,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     },
     { enabled: open, refetchInterval: sToMs(10) }
   );
-  const { data: riskNameGenericSearch, status: riskNameGenericSearchStatus } =
-    useGenericSearch({ query: name }, { enabled: open });
   const { data: knownExploitedThreats = [] } = useGetKev({ enabled: open });
-
-  const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
-
-  const hostRef = attributes.find(ref => ref.class === 'host');
-  const [ip, port] = hostRef?.name?.split(/:(?=[^:]*$)/) ?? '';
-  const urlRefs = attributes.filter(ref => ref.class === 'url');
-  const urlsImpacted = urlRefs.map(ref => ref.name);
 
   const definitionsFileValue =
     typeof definitionsFile === 'string'
@@ -161,9 +144,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       : JSON.stringify(definitionsFile);
 
   const isInitialLoading =
-    riskStatus === 'pending' ||
-    riskNameGenericSearchStatus === 'pending' ||
-    definitionsFileStatus === 'pending';
+    riskStatus === 'pending' || definitionsFileStatus === 'pending';
   const risk: Risk = risks[0] || {};
 
   const jobForThisRisk = allAssetJobs.find(job => {
@@ -204,15 +185,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
 
     return [firstTrackedHistory, ...riskHistory];
   }, [JSON.stringify(risk.history)]);
-
-  async function handleUpdateComment(comment = '') {
-    await updateRisk({
-      comment,
-      key: risk.key,
-      name: risk.name,
-      status: risk.status,
-    });
-  }
 
   return (
     <Drawer

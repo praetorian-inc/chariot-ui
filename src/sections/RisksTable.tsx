@@ -59,7 +59,8 @@ export const getFilterLabel = (
     : labels.join(', ');
 };
 
-const getStatus = (status: string) => (status[0] || '') + (status[2] || '');
+export const getStatus = (status: string) =>
+  (status[0] || '') + (status[2] || '');
 
 const getFilteredRisksByCISA = (
   risks: Risk[],

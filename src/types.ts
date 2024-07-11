@@ -165,6 +165,7 @@ export interface LinkAccount {
 export interface AccountMetadata {
   displayName?: string;
   pin?: string;
+  [key: string]: AccountMetadata | string | undefined;
 }
 
 // TODO: Discover the unknowns

@@ -1,23 +1,46 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
+import { useMy } from '@/hooks';
+import { useModifyAccount } from '@/hooks/useAccounts';
+import { useAuth } from '@/state/auth';
 
 export const SSOSetupForm = () => {
+  const { friend, me } = useAuth();
+  const { data: accounts, refetch } = useMy({ resource: 'account' });
+  const { mutate: link, status } = useModifyAccount('link');
+  const { mutate: unlink } = useModifyAccount('unlink');
+
   const [showModal, setShowModal] = useState(false);
   const [domain, setDomain] = useState('');
   const [clientId, setClientId] = useState('');
   const [secret, setSecret] = useState('');
   const [issuerUrl, setIssuerUrl] = useState('');
 
+  const ssoAccount = useMemo(
+    () => accounts?.find(account => account.member.startsWith('sso:')),
+    [accounts]
+  );
+
+  useEffect(() => {
+    refetch();
+  }, [status]);
+
+  console.log('ssoAccount', ssoAccount);
+
   const handleFormSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log({
-      domain: `sso:${domain}`,
-      clientId,
-      secret,
-      issuerUrl,
+    link({
+      username: friend.email || me,
+      member: `sso:${domain}`,
+      value: `sso:${domain}`,
+      config: {
+        name: `sso:${domain}`,
+        clientId: clientId,
+        secret,
+        issuerUrl,
+      },
     });
     // Close the modal after submission
     setShowModal(false);
@@ -25,7 +48,11 @@ export const SSOSetupForm = () => {
 
   return (
     <>
-      <Button onClick={() => setShowModal(true)}>Setup</Button>
+      {ssoAccount ? (
+        <Button onClick={() => unlink(ssoAccount)}>Disconnect</Button>
+      ) : (
+        <Button onClick={() => setShowModal(true)}>Setup</Button>
+      )}
       <Modal
         open={showModal}
         onClose={() => setShowModal(false)}
@@ -36,6 +63,9 @@ export const SSOSetupForm = () => {
           onSubmit={handleFormSubmit}
           className="flex flex-col space-y-4 p-4"
         >
+          <p className="mb-6 text-xl font-semibold">
+            Add your Okta or Azure AD details below to get started.
+          </p>
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Domain

@@ -27,8 +27,7 @@ export const SSOSetupForm = () => {
     }
   }, [status]);
 
-  const handleFormSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
+  const handleFormSubmit = () => {
     link({
       username: `sso:${domain}`,
       value: `sso:${domain}`,
@@ -60,11 +59,12 @@ export const SSOSetupForm = () => {
         onClose={() => setShowModal(false)}
         title="Setup SSO"
         size="md"
+        footer={{
+          text: 'Save',
+          onClick: handleFormSubmit,
+        }}
       >
-        <form
-          onSubmit={handleFormSubmit}
-          className="flex flex-col space-y-4 p-4"
-        >
+        <form className="flex flex-col space-y-4 p-4">
           <p className="mb-6 text-xl font-semibold">
             Add your Okta or Azure AD details below to get started.
           </p>
@@ -115,11 +115,6 @@ export const SSOSetupForm = () => {
               className="mt-1 block w-full  border-gray-300 p-2 shadow-sm"
               required
             />
-          </div>
-          <div className="flex flex-row space-x-2">
-            <Button styleType="primary" type="submit" className="w-full">
-              Enable SSO
-            </Button>
           </div>
         </form>
       </Modal>

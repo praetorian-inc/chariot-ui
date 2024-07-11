@@ -113,7 +113,7 @@ export function usePurgeAccount() {
     defaultErrorMessage: `Failed to purge account`,
     mutationFn: async () => {
       try {
-        axios.delete(`/account/purge`);
+        await axios.delete(`/account/purge`);
         logout();
       } catch {
         // ignore

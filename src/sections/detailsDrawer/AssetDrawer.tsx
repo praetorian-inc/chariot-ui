@@ -22,8 +22,6 @@ import { capitalize } from '@/utils/lodash.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { useSearchParams } from '@/utils/url.util';
 
-import { DRAWER_WIDTH } from '.';
-
 interface Props {
   compositeKey: string;
   open: boolean;
@@ -112,7 +110,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
       open={open}
       onClose={() => removeSearchParams(StorageKey.DRAWER_COMPOSITE_KEY)}
       onBack={() => navigate(-1)}
-      className={DRAWER_WIDTH}
+      minWidth={700}
       header={
         isInitialLoading ? null : (
           <DetailsDrawerHeader

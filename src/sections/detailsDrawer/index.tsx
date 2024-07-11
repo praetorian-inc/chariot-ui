@@ -3,7 +3,7 @@ import { RiskDrawer } from '@/sections/detailsDrawer/RiskDrawer';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { useSearchParams } from '@/utils/url.util';
 
-export const DRAWER_WIDTH = 'w-[700px]';
+export const DRAWER_WIDTH = 700;
 
 export const DetailsDrawer = () => {
   const { searchParams } = useSearchParams();

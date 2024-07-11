@@ -39,8 +39,6 @@ import { sToMs } from '@/utils/date.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch, useSearchParams } from '@/utils/url.util';
 
-import { DRAWER_WIDTH } from '.';
-
 const getJobTimeline = ({
   status,
   updated = '',
@@ -221,7 +219,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       open={open}
       onClose={() => removeSearchParams(StorageKey.DRAWER_COMPOSITE_KEY)}
       onBack={() => navigate(-1)}
-      className={DRAWER_WIDTH}
       minWidth={700}
       header={
         isInitialLoading ? null : (

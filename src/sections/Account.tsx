@@ -148,8 +148,7 @@ const Account: React.FC = () => {
               <>
                 <Button
                   type="button"
-                  className="bg-red-600 text-slate-50"
-                  styleType="none"
+                  styleType="error"
                   onClick={() => {
                     setIsDeleteModalOpen(true);
                   }}
@@ -176,7 +175,7 @@ const Account: React.FC = () => {
                       // Call api to delete account
                       setIsDeleteModalOpen(false);
                     },
-                    className: 'bg-red-600 text-slate-50',
+                    styleType: 'error',
                   }}
                 >
                   <div className="space-y-2 text-sm text-default-light">

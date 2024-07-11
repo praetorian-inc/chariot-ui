@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 import { Button } from '@/components/Button';
 import { Modal } from '@/components/Modal';
@@ -33,9 +34,9 @@ export const SSOSetupForm = () => {
       value: `sso:${domain}`,
       config: {
         name: `sso:${domain}`,
-        clientId: clientId,
+        id: clientId,
         secret,
-        issuerUrl,
+        issuer: issuerUrl,
       },
     });
     // Close the modal after submission
@@ -45,12 +46,18 @@ export const SSOSetupForm = () => {
   return (
     <>
       {ssoAccount ? (
-        <Button
-          onClick={() => unlink(ssoAccount)}
-          className="border border-red-500 bg-red-50 text-red-600"
-        >
-          Disconnect
-        </Button>
+        <div className="flex flex-row space-x-6">
+          <span>{ssoAccount.member.split(':')[1]}</span>
+          <button
+            className="jusify-center flex flex-row items-center space-x-2 text-sm font-medium"
+            onClick={() =>
+              unlink({ ...ssoAccount, username: ssoAccount.member })
+            }
+          >
+            <XMarkIcon className="size-3" />
+            <span>Remove</span>
+          </button>
+        </div>
       ) : (
         <Button onClick={() => setShowModal(true)}>Setup</Button>
       )}
@@ -65,8 +72,9 @@ export const SSOSetupForm = () => {
         }}
       >
         <form className="flex flex-col space-y-4 p-4">
-          <p className="mb-6 text-xl font-semibold">
-            Add your Okta or Azure AD details below to get started.
+          <p className="mb-6 ">
+            Add a TXT record to your domain with the following value:{' '}
+            <code>chariot=&lt;email&gt;</code>
           </p>
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -78,6 +86,7 @@ export const SSOSetupForm = () => {
               onChange={e => setDomain(e.target.value)}
               className="mt-1 block w-full  border-gray-300 p-2 shadow-sm"
               required
+              placeholder="acme.com"
             />
           </div>
           <div>
@@ -90,6 +99,7 @@ export const SSOSetupForm = () => {
               onChange={e => setClientId(e.target.value)}
               className="mt-1 block w-full  border-gray-300 p-2 shadow-sm"
               required
+              placeholder="1a2b3c4d-5e6f-7g8h-9i0j"
             />
           </div>
           <div>
@@ -97,11 +107,12 @@ export const SSOSetupForm = () => {
               Secret
             </label>
             <input
-              type="text"
+              type="password"
               value={secret}
               onChange={e => setSecret(e.target.value)}
               className="mt-1 block w-full  border-gray-300 p-2 shadow-sm"
               required
+              placeholder="**********"
             />
           </div>
           <div>
@@ -114,6 +125,7 @@ export const SSOSetupForm = () => {
               onChange={e => setIssuerUrl(e.target.value)}
               className="mt-1 block w-full  border-gray-300 p-2 shadow-sm"
               required
+              placeholder="https://login.microsoftonline.com/1a2b3c4d-5e6f-7g8h-9i0j/v2.0"
             />
           </div>
         </form>

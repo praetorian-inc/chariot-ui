@@ -107,31 +107,19 @@ export const useModifyAccount = (
 
 export function usePurgeAccount() {
   const axios = useAxios();
-  const { invalidate: invalidateAccount } = useMy(
-    {
-      resource: 'account',
-    },
-    {
-      enabled: false,
-    }
-  );
   const { me, logout } = useAuth();
 
   return useMutation<void, Error, void>({
     defaultErrorMessage: `Failed to purge account`,
     mutationFn: async () => {
       await axios.delete(`/account/purge`);
-      invalidateAccount();
       Snackbar({
         title: `Account ${me} purged`,
         description: '',
         variant: 'success',
       });
-
-      return;
-    },
-    onSuccess: () => {
       logout();
+      return;
     },
   });
 }

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { IdentificationIcon } from '@heroicons/react/24/outline';
 
 import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
@@ -147,24 +146,6 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
       onClose={() => removeSearchParams(StorageKey.DRAWER_COMPOSITE_KEY)}
       onBack={() => navigate(-1)}
       className={DRAWER_WIDTH}
-      footer={
-        isTypeAsset && (
-          <Link
-            to={{
-              pathname: getRoute(['app', 'attributes']),
-              search: `?${StorageKey.HASH_SEARCH}=${encodeURIComponent(attributeFilter)}`,
-            }}
-          >
-            <Button
-              startIcon={<IdentificationIcon className="size-5" />}
-              className="ml-auto hover:bg-layer0"
-              styleType="secondary"
-            >
-              Asset Attributes
-            </Button>
-          </Link>
-        )
-      }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
         <div className="flex h-[calc(100%-24px)] flex-col gap-8">

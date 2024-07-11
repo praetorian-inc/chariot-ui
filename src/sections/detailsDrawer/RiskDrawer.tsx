@@ -1,11 +1,7 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
-import {
-  ArrowPathIcon,
-  DocumentTextIcon,
-  IdentificationIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowPathIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
 import { Accordian } from '@/components/Accordian';
@@ -225,19 +221,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       className={DRAWER_WIDTH}
       footer={
         <div className="flex gap-2">
-          <Button
-            startIcon={<IdentificationIcon className="size-5" />}
-            onClick={() => {
-              navigate({
-                pathname: getRoute(['app', 'attributes']),
-                search: `?${StorageKey.HASH_SEARCH}=${encodeURIComponent(referenceFilter)}`,
-              });
-            }}
-            styleType="secondary"
-            className="ml-auto"
-          >
-            Risk Attributes
-          </Button>
           <Button
             startIcon={<DocumentTextIcon className="size-5" />}
             onClick={() => {

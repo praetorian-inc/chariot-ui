@@ -5,7 +5,6 @@ import { RenderRoutes } from '@/components/route/RenderRoutes';
 import { Body } from '@/components/ui/Body';
 import Account from '@/sections/Account';
 import Assets from '@/sections/Assets';
-import { Attributes } from '@/sections/Attributes';
 import { AuthenticatedApp } from '@/sections/AuthenticatedApp';
 import Files from '@/sections/Files';
 import Hello from '@/sections/Hello';
@@ -80,10 +79,6 @@ const appRoutes = {
         </Body>
       ),
       title: 'Organization Settings',
-    },
-    attributes: {
-      element: <Attributes />,
-      title: 'Attributes',
     },
     files: {
       element: <Files />,

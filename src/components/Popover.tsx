@@ -3,6 +3,7 @@ import {
   autoUpdate,
   flip,
   FloatingFocusManager,
+  FloatingPortal,
   offset,
   Placement,
   shift,
@@ -67,17 +68,19 @@ export const Popover = (props: PopoverProps) => {
     <>
       <Button ref={refs.setReference} {...getReferenceProps()} {...rest} />
       {open && (
-        <FloatingFocusManager context={context} modal={false}>
-          <div
-            className="Popover border-1 z-20 rounded-[4px] border border-default bg-layer0 p-4 shadow-md outline-none"
-            ref={refs.setFloating}
-            style={floatingStyles}
-            aria-labelledby={headingId}
-            {...getFloatingProps()}
-          >
-            {children || props.label}
-          </div>
-        </FloatingFocusManager>
+        <FloatingPortal>
+          <FloatingFocusManager context={context} modal={false}>
+            <div
+              className="Popover border-1 z-20 rounded-[4px] border border-default bg-layer0 p-4 shadow-md outline-none"
+              ref={refs.setFloating}
+              style={floatingStyles}
+              aria-labelledby={headingId}
+              {...getFloatingProps()}
+            >
+              {children || props.label}
+            </div>
+          </FloatingFocusManager>
+        </FloatingPortal>
       )}
     </>
   );

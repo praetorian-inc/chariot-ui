@@ -12,6 +12,7 @@ import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { getAssetStatusProperties } from '@/components/ui/AssetStatusChip';
+import { AttributeFilter } from '@/components/ui/AttributeFilter';
 import { useMy } from '@/hooks';
 import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
 import { useFilter } from '@/hooks/useFilter';
@@ -262,6 +263,7 @@ const Assets: React.FC = () => {
         name="assets"
         filters={
           <div className="flex gap-4">
+            <AttributeFilter />
             <Dropdown
               styleType="header"
               label={getFilterLabel(

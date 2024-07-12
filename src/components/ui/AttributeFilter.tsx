@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 
@@ -70,7 +70,7 @@ export const AttributeFilter = (props: Props) => {
           {showTags && (
             <div className="space-y-2">
               {Object.entries(attributes).map(([key, values]) => (
-                <>
+                <Fragment key={key}>
                   {values.map(current => (
                     <div
                       key={current}
@@ -96,7 +96,7 @@ export const AttributeFilter = (props: Props) => {
                       </button>
                     </div>
                   ))}
-                </>
+                </Fragment>
               ))}
             </div>
           )}

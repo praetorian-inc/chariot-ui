@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/AttributeFilter';
 import { useMy } from '@/hooks';
 import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
+import { useCommonAssetsWithAttributes } from '@/hooks/useAttribute';
 import { useFilter } from '@/hooks/useFilter';
 import { useIntegration } from '@/hooks/useIntegration';
 import { AssetStatusWarning } from '@/sections/AssetStatusWarning';
@@ -64,6 +65,10 @@ interface AssetsWithRisk extends Asset {
 }
 
 const Assets: React.FC = () => {
+  const [attributes, setAttributes] = useState<AttributeFilterType>({
+    port: [],
+    protocol: [],
+  });
   const {
     modal: {
       risk: {
@@ -74,6 +79,11 @@ const Assets: React.FC = () => {
       asset: { onOpenChange: setShowAddAsset },
     },
   } = useGlobalState();
+
+  const {
+    data: assetsWithAttributesFilter,
+    status: assetsWithAttributesFilterStatus,
+  } = useCommonAssetsWithAttributes(attributes);
 
   const {
     isLoading,
@@ -95,12 +105,12 @@ const Assets: React.FC = () => {
     'asset-priority',
     setSelectedRows
   );
-  const [attributes, setAttributes] = useState<AttributeFilterType>({
-    port: [],
-    protocol: [],
-  });
 
-  const status = useMergeStatus(riskStatus, assetsStatus);
+  const status = useMergeStatus(
+    riskStatus,
+    assetsStatus,
+    assetsWithAttributesFilterStatus
+  );
   const { getAssetDrawerLink } = getDrawerLink();
   const openRiskDataset = useMemo(
     () => buildOpenRiskDataset(risks as Risk[]),
@@ -130,16 +140,27 @@ const Assets: React.FC = () => {
     // Todo filtering
   }, [JSON.stringify(attributes)]);
 
+  // Filter assets list with the selected attributes
+  const assetsObjectWithAttributesFilter: Asset[] = useMemo(() => {
+    return Object.values(attributes).flat().length > 0
+      ? (assetsWithAttributesFilter
+          .map(key => assets.find(asset => asset.key === key))
+          .filter(Boolean) as Asset[])
+      : assets;
+  }, [assets, assetsWithAttributesFilter, attributes]);
+
   // merge risk data with asset data
-  const assetsWithRisk: AssetsWithRisk[] = assets.map(asset => {
-    const riskSummary = openRiskDataset[asset.dns];
+  const assetsWithRisk: AssetsWithRisk[] = assetsObjectWithAttributesFilter.map(
+    asset => {
+      const riskSummary = openRiskDataset[asset.dns];
 
-    if (riskSummary) {
-      return { ...asset, riskSummary };
+      if (riskSummary) {
+        return { ...asset, riskSummary };
+      }
+
+      return asset;
     }
-
-    return asset;
-  });
+  );
 
   const filteredAssets = useMemo(() => {
     let filteredAssets = assetsWithRisk;

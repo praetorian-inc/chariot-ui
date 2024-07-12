@@ -6,8 +6,7 @@ import { FormGroup } from '@/components/form/FormGroup';
 import { InputText } from '@/components/form/InputText';
 import { Popover } from '@/components/Popover';
 
-type AttributesFilterKeys = 'port' | 'protocol';
-export type AttributeFilterType = Record<AttributesFilterKeys, string[]>;
+export type AttributeFilterType = Record<string, string[]>;
 
 export const getSelectedAttributes = (attribues: AttributeFilterType) => {
   return Object.fromEntries(
@@ -86,9 +85,7 @@ export const AttributeFilter = (props: Props) => {
                         onClick={() => {
                           setAttributes(attributes => ({
                             ...attributes,
-                            [key]: attributes[
-                              key as AttributesFilterKeys
-                            ].filter(v => v !== current),
+                            [key]: attributes[key].filter(v => v !== current),
                           }));
                         }}
                       >
@@ -105,7 +102,7 @@ export const AttributeFilter = (props: Props) => {
             <AttributeInput
               label={label}
               name={name}
-              value={attributes[name as AttributesFilterKeys] as string[]}
+              value={attributes[name] as string[]}
               onChange={values => {
                 setAttributes(attributes => ({
                   ...attributes,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { PlusIcon, PuzzlePieceIcon } from '@heroicons/react/24/outline';
 
@@ -12,7 +12,10 @@ import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { getAssetStatusProperties } from '@/components/ui/AssetStatusChip';
-import { AttributeFilter } from '@/components/ui/AttributeFilter';
+import {
+  AttributeFilter,
+  AttributeFilterType,
+} from '@/components/ui/AttributeFilter';
 import { useMy } from '@/hooks';
 import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
 import { useFilter } from '@/hooks/useFilter';
@@ -92,6 +95,10 @@ const Assets: React.FC = () => {
     'asset-priority',
     setSelectedRows
   );
+  const [attributes, setAttributes] = useState<AttributeFilterType>({
+    port: [],
+    protocol: [],
+  });
 
   const status = useMergeStatus(riskStatus, assetsStatus);
   const { getAssetDrawerLink } = getDrawerLink();
@@ -118,6 +125,10 @@ const Assets: React.FC = () => {
       };
     }
   }, []);
+
+  useEffect(() => {
+    // Todo filtering
+  }, [JSON.stringify(attributes)]);
 
   // merge risk data with asset data
   const assetsWithRisk: AssetsWithRisk[] = assets.map(asset => {
@@ -263,7 +274,10 @@ const Assets: React.FC = () => {
         name="assets"
         filters={
           <div className="flex gap-4">
-            <AttributeFilter />
+            <AttributeFilter
+              attributes={attributes}
+              setAttributes={setAttributes}
+            />
             <Dropdown
               styleType="header"
               label={getFilterLabel(

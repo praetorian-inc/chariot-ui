@@ -244,10 +244,11 @@ export interface Seed {
 export interface Attribute {
   key: string;
   name: string;
-  class: string;
+  source: string;
   ttl: number;
   updated: string;
   username: string;
+  value: string;
 }
 
 export interface Reference {

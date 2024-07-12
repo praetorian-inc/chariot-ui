@@ -19,7 +19,11 @@ export const useCreateAttribute = () => {
   return useMutation<void, Error, CreateAttribute>({
     defaultErrorMessage: `Failed to add attribute`,
     mutationFn: async attribute => {
-      const { data } = await axios.post(`/attribute`, attribute);
+      const { data } = await axios.post(`/attribute`, {
+        key: attribute.key,
+        name: attribute.class,
+        value: attribute.name,
+      });
 
       Snackbar({
         title: `Attribute added`,

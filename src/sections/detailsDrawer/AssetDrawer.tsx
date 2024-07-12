@@ -62,7 +62,6 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const { data: attributes = [], status: attributesStatus } = useMy(
     {
       resource: 'attribute',
-      query: attributeFilter,
     },
     { enabled: open }
   );
@@ -91,6 +90,11 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const openRiskDataset = useMemo(
     () => buildOpenRiskDataset(risks as Risk[]),
     [risks]
+  );
+
+  const filteredAttributes = useMemo(
+    () => attributes.filter(({ source }) => source === attributeFilter),
+    [attributes]
   );
 
   const asset: Asset = assets[0] || {};
@@ -251,9 +255,9 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
               <div>
                 <DrawerList
                   allowEmpty={true}
-                  items={attributes.map(data => ({
-                    label: data.class,
-                    value: data.name,
+                  items={filteredAttributes.map(data => ({
+                    label: data.name,
+                    value: data.value,
                     updated: data.updated,
                   }))}
                 />

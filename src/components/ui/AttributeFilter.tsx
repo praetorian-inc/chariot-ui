@@ -6,18 +6,28 @@ import { FormGroup } from '@/components/form/FormGroup';
 import { InputText } from '@/components/form/InputText';
 import { Popover } from '@/components/Popover';
 
-type FormDataKeys = 'port' | 'protocol';
+type AttributesFilterKeys = 'port' | 'protocol';
+export type AttributeFilterType = Record<AttributesFilterKeys, string[]>;
 
-export const AttributeFilter = () => {
+export const getSelectedAttributes = (attribues: AttributeFilterType) => {
+  return Object.fromEntries(
+    Object.entries(attribues).filter(([, value]) => value.length > 0)
+  );
+};
+
+interface Props {
+  attributes: AttributeFilterType;
+  setAttributes: React.Dispatch<React.SetStateAction<AttributeFilterType>>;
+}
+
+export const AttributeFilter = (props: Props) => {
+  const { attributes, setAttributes } = props;
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState<Record<FormDataKeys, string[]>>({
-    port: [],
-    protocol: [],
-  });
+
   const inputs = [
     {
       label: 'Port',
-      value: formData.port,
+      value: attributes.port,
       placeholder: '21',
       name: 'port',
       required: true,
@@ -25,7 +35,7 @@ export const AttributeFilter = () => {
     },
     {
       label: 'Protocol',
-      value: formData.protocol,
+      value: attributes.protocol,
       placeholder: 'http',
       name: 'protocol',
       required: true,
@@ -33,17 +43,12 @@ export const AttributeFilter = () => {
     },
   ];
 
-  const showTags = Object.values(formData).flat().length > 0;
+  const showTags = Object.values(attributes).flat().length > 0;
   const label = showTags
-    ? Object.entries(formData)
-        .filter(([_, value]) => value.length > 0)
+    ? Object.entries(getSelectedAttributes(attributes))
         .map(([key, value]) => `${getInputLabel(key)}: ${value.join(',')}`)
         .join(', ')
     : 'Attribute';
-
-  useEffect(() => {
-    // TODO: Add api call
-  }, [JSON.stringify(formData)]);
 
   function getInputLabel(key: string) {
     return inputs.find(({ name }) => name === key)?.label;
@@ -64,7 +69,7 @@ export const AttributeFilter = () => {
         <form className="flex flex-1 flex-col gap-4 p-2" onSubmit={() => null}>
           {showTags && (
             <div className="space-y-2">
-              {Object.entries(formData).map(([key, values]) => (
+              {Object.entries(attributes).map(([key, values]) => (
                 <>
                   {values.map(current => (
                     <div
@@ -79,11 +84,11 @@ export const AttributeFilter = () => {
                         type="button"
                         className="ml-auto"
                         onClick={() => {
-                          setFormData(formData => ({
-                            ...formData,
-                            [key]: formData[key as FormDataKeys].filter(
-                              v => v !== current
-                            ),
+                          setAttributes(attributes => ({
+                            ...attributes,
+                            [key]: attributes[
+                              key as AttributesFilterKeys
+                            ].filter(v => v !== current),
                           }));
                         }}
                       >
@@ -100,10 +105,10 @@ export const AttributeFilter = () => {
             <AttributeInput
               label={label}
               name={name}
-              value={formData[name as FormDataKeys] as string[]}
+              value={attributes[name as AttributesFilterKeys] as string[]}
               onChange={values => {
-                setFormData(formData => ({
-                  ...formData,
+                setAttributes(attributes => ({
+                  ...attributes,
                   [name]: values,
                 }));
               }}

@@ -39,7 +39,7 @@ export function Attributes() {
     },
     {
       label: 'Class',
-      id: 'class',
+      id: 'name',
       fixedWidth: 220,
       copy: true,
     },
@@ -50,7 +50,7 @@ export function Attributes() {
       copy: true,
       cell: item => {
         // if item is a date
-        if (item.class === 'expiration') {
+        if (item.name === 'expiration') {
           return (
             <Tooltip title={item.name}>
               {new Date(item.name).toLocaleDateString()}
@@ -104,7 +104,7 @@ export function getAttributeDetails(attribute: Attribute) {
     dns,
     name,
     parsedName: `${dns} (${name})`,
-    class: attribute.class,
+    class: attribute.name,
     url: url,
   };
 }

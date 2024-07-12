@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { PropsOf } from '@headlessui/react/dist/types';
 import ReactMarkdownPreview from '@uiw/react-markdown-preview';
+import DOMPurify from 'dompurify';
 
 import { Loader } from '@/components/Loader';
 import { useGetFile } from '@/hooks/useFiles';
@@ -9,9 +10,14 @@ import { useGetFile } from '@/hooks/useFiles';
 export const AppMediaStoragePrefix = '#file/';
 
 export function MarkdownPreview(props: PropsOf<typeof ReactMarkdownPreview>) {
+  const { source = '', ...restProps } = props;
+
+  const sanitizedValue = useMemo(() => DOMPurify.sanitize(source), [source]);
+
   return (
     <ReactMarkdownPreview
-      {...props}
+      {...restProps}
+      source={sanitizedValue}
       components={{
         img: s => {
           const imgSrc = s.src || '';

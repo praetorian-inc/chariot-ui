@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { PhotoIcon } from '@heroicons/react/24/solid';
 import { PropsOf } from '@headlessui/react/dist/types';
 import MDEditor, { getCommands } from '@uiw/react-md-editor';
+import DOMPurify from 'dompurify';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -25,7 +26,10 @@ export function MarkdownEditor(
   const { mutateAsync: updateFile } = useUploadFile();
 
   const [markdown, setMarkdown] = useStorage(
-    { parentState: props.value, onParentStateChange: props.onChange },
+    {
+      parentState: props.value ? DOMPurify.sanitize(props.value) : undefined,
+      onParentStateChange: props.onChange,
+    },
     ''
   );
 
@@ -144,7 +148,7 @@ export function MarkdownEditor(
       ref={textareaRef}
       value={markdown}
       onChange={value => {
-        setMarkdown(value || '');
+        setMarkdown(DOMPurify.sanitize(value || ''));
       }}
       className={cn('markdownSelection', props.className)}
       components={{

@@ -275,7 +275,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 ({ status }) => status === jobForThisRisk?.status
               )}
             />
-            <div className="flex justify-between">
+            <div className="mt-16 flex justify-between">
               <RiskDropdown type="status" risk={risk} />
               <RiskDropdown type="severity" risk={risk} />
               <Button
@@ -331,7 +331,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 <TabWrapper key={tab}>{tab}</TabWrapper>
               ))}
             </TabList>
-            <TabPanels className="size-full h-[calc(100%)] overflow-auto">
+            <TabPanels className="size-full h-[calc(100%-250px)] overflow-auto">
               <TabPanel className="h-full p-6">
                 <Loader
                   isLoading={

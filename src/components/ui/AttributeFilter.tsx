@@ -14,8 +14,6 @@ export const AttributeFilter = () => {
     port: [],
     protocol: [],
   });
-  const showTags = Object.values(formData).flat().length > 0;
-
   const inputs = [
     {
       label: 'Port',
@@ -35,9 +33,23 @@ export const AttributeFilter = () => {
     },
   ];
 
+  const showTags = Object.values(formData).flat().length > 0;
+  const label = showTags
+    ? Object.entries(formData)
+        .filter(([_, value]) => value.length > 0)
+        .map(([key, value]) => `${getInputLabel(key)}: ${value.join(',')}`)
+        .join(', ')
+    : 'Attribute';
+
   useEffect(() => {
     // TODO: Add api call
   }, [JSON.stringify(formData)]);
+
+  function getInputLabel(key: string) {
+    return inputs.find(({ name }) => name === key)?.label;
+  }
+
+  console.log(formData);
 
   return (
     <Popover
@@ -47,7 +59,7 @@ export const AttributeFilter = () => {
       setOpen={setOpen}
       styleType="header"
       endIcon={<ChevronDownIcon className="size-3" />}
-      label="Attribute"
+      label={label}
       style={{ zIndex: 2 }}
     >
       <div className="w-[300px]" style={{ zIndex: 100 }}>
@@ -62,7 +74,7 @@ export const AttributeFilter = () => {
                       className="mt-0 flex items-center gap-2 bg-layer1 p-2 text-sm"
                     >
                       <span className="basis-1/3 font-medium">
-                        {inputs.find(({ name }) => name === key)?.label}
+                        {getInputLabel(key)}
                       </span>
                       <span>{current}</span>
                       <button
@@ -118,16 +130,9 @@ interface AttributeInputProps {
 }
 
 export const AttributeInput = (props: AttributeInputProps) => {
-  const {
-    label,
-    name,
-    value: defaultValue = [],
-    onChange,
-    placeholder,
-    required,
-  } = props;
+  const { label, name, value = [], onChange, placeholder, required } = props;
 
-  const [value, setValue] = useState<string[]>(defaultValue);
+  //   const [value, setValue] = useState<string[]>(defaultValue);
   const [localValue, setLocalValue] = useState<string>('');
 
   useEffect(() => {
@@ -155,7 +160,7 @@ export const AttributeInput = (props: AttributeInputProps) => {
           }}
           onKeyDown={event => {
             if (event.key === 'Enter') {
-              setValue(value => [...new Set([...value, localValue])]);
+              onChange([...new Set([...value, localValue])]);
               setLocalValue('');
             }
           }}

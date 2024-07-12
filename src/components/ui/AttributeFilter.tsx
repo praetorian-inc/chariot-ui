@@ -1,7 +1,8 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 
+import { Chip } from '@/components/Chip';
 import { FormGroup } from '@/components/form/FormGroup';
 import { InputText } from '@/components/form/InputText';
 import { Popover } from '@/components/Popover';
@@ -66,38 +67,6 @@ export const AttributeFilter = (props: Props) => {
     >
       <div className="w-[300px]" style={{ zIndex: 100 }}>
         <form className="flex flex-1 flex-col gap-4 p-2" onSubmit={() => null}>
-          {showTags && (
-            <div className="space-y-2">
-              {Object.entries(attributes).map(([key, values]) => (
-                <Fragment key={key}>
-                  {values.map(current => (
-                    <div
-                      key={current}
-                      className="mt-0 flex items-center gap-2 bg-layer1 p-2 text-sm"
-                    >
-                      <span className="basis-1/3 font-medium">
-                        {getInputLabel(key)}
-                      </span>
-                      <span>{current}</span>
-                      <button
-                        type="button"
-                        className="ml-auto"
-                        onClick={() => {
-                          setAttributes(attributes => ({
-                            ...attributes,
-                            [key]: attributes[key].filter(v => v !== current),
-                          }));
-                        }}
-                      >
-                        <XMarkIcon className="size-5" />
-                      </button>
-                    </div>
-                  ))}
-                </Fragment>
-              ))}
-            </div>
-          )}
-
           {inputs.map(({ label, name, placeholder, required }) => (
             <AttributeInput
               label={label}
@@ -132,7 +101,6 @@ interface AttributeInputProps {
 export const AttributeInput = (props: AttributeInputProps) => {
   const { label, name, value = [], onChange, placeholder, required } = props;
 
-  //   const [value, setValue] = useState<string[]>(defaultValue);
   const [localValue, setLocalValue] = useState<string>('');
 
   useEffect(() => {
@@ -141,11 +109,11 @@ export const AttributeInput = (props: AttributeInputProps) => {
 
   return (
     <FormGroup
-      formClassName="flex justify-between gap-1"
+      formClassName="flex justify-between gap-1 items-start"
       label={label}
       name={name}
     >
-      <div className="relative">
+      <div className="relative w-[200px]">
         <input
           name={name}
           value={Array.isArray(value) ? value.join(',') : value}
@@ -167,6 +135,21 @@ export const AttributeInput = (props: AttributeInputProps) => {
           required={required}
           placeholder={placeholder}
         />
+        <div className="mt-2 flex flex-wrap gap-2">
+          {value.map((current, index) => (
+            <Chip
+              key={index}
+              onClick={() => {
+                onChange(value.filter(v => v !== current));
+              }}
+            >
+              <div className="flex gap-2">
+                <span>{current}</span>
+                <XMarkIcon className="size-4" />
+              </div>
+            </Chip>
+          ))}
+        </div>
       </div>
     </FormGroup>
   );

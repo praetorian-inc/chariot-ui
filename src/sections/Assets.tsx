@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { PlusIcon, PuzzlePieceIcon } from '@heroicons/react/24/outline';
 
@@ -135,10 +135,6 @@ const Assets: React.FC = () => {
       };
     }
   }, []);
-
-  useEffect(() => {
-    // Todo filtering
-  }, [JSON.stringify(attributes)]);
 
   // Filter assets list with the selected attributes
   const assetsObjectWithAttributesFilter: Asset[] = useMemo(() => {

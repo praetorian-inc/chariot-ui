@@ -9,7 +9,7 @@ import { Popover } from '@/components/Popover';
 type FormDataKeys = 'port' | 'protocol';
 
 export const AttributeFilter = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<Record<FormDataKeys, string[]>>({
     port: [],
     protocol: [],
@@ -48,8 +48,6 @@ export const AttributeFilter = () => {
   function getInputLabel(key: string) {
     return inputs.find(({ name }) => name === key)?.label;
   }
-
-  console.log(formData);
 
   return (
     <Popover

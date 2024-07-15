@@ -46,8 +46,8 @@ export const AttributeFilter = (props: Props) => {
   const showTags = Object.values(attributes).flat().length > 0;
   const label = showTags
     ? Object.entries(getSelectedAttributes(attributes))
-        .map(([key, value]) => `${getInputLabel(key)}: ${value.join(',')}`)
-        .join(', ')
+        .map(([key, value]) => `${getInputLabel(key)}=( ${value.join(', ')} )`)
+        .join(' AND ')
     : 'Attribute';
 
   function getInputLabel(key: string) {

@@ -83,6 +83,11 @@ export function mapAssetStataus(asset: Asset) {
   if ([AssetStatus.ActiveHigh, AssetStatus.ActiveLow].includes(asset.status)) {
     return asset.status;
   }
+
+  if ((asset.status as string) === 'AS') {
+    return AssetStatus.Active;
+  }
+
   return (
     asset.status.length === 1 ? asset.status : asset.status[1]
   ) as AssetStatus;

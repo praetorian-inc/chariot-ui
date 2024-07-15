@@ -17,7 +17,8 @@ export interface ButtonProps extends BaseButtonProps {
     | 'secondary'
     | 'textPrimary'
     | 'header'
-    | 'primaryLight';
+    | 'primaryLight'
+    | 'error';
   endIcon?: React.ReactNode;
   label?: string;
   className?: string;
@@ -56,6 +57,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           return 'bg-brand/10 shadow-sm hover:bg-brand/20 text-brand';
         case 'none':
           return '';
+        case 'error': {
+          return 'bg-red-100 hover:bg-red-200 border border-red-500 text-red-800';
+        }
         default:
           return 'bg-default-light text-default';
       }

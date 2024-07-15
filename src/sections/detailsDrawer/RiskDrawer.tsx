@@ -7,9 +7,7 @@ import {
   EyeIcon,
   PencilSquareIcon,
 } from '@heroicons/react/24/outline';
-import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
-import DOMPurify from 'dompurify';
 
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
@@ -257,7 +255,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
             }
             tag={
               <div className="flex items-center text-sm text-gray-400">
-                <EyeIcon className="mr-2 size-4" />
+                <EyeIcon className="mr-2 size-5" />
                 {formatDate(risk.updated)}
               </div>
             }
@@ -266,36 +264,51 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
-        <div className="flex h-full flex-col gap-10">
-          <div className="px-8">
-            <HorizontalTimeline
-              steps={jobTimeline}
-              current={jobTimeline.findIndex(
-                ({ status }) => status === jobForThisRisk?.status
-              )}
-            />
-            <div className="flex justify-between">
-              <RiskDropdown type="status" risk={risk} />
-              <RiskDropdown type="severity" risk={risk} />
-              <Button
-                className="border-1 h-8 border border-default"
-                startIcon={<DocumentTextIcon className="size-5" />}
-                onClick={() => {
-                  navigate(
-                    generatePathWithSearch({
-                      appendSearch: [[StorageKey.POE, `${dns}/${name}`]],
-                    })
-                  );
-                }}
-              >
-                Proof of Exploit
-              </Button>
+        <div className="flex h-full flex-col gap-2">
+          <div>
+            <div className="px-8">
+              <HorizontalTimeline
+                steps={jobTimeline}
+                current={jobTimeline.findIndex(
+                  ({ status }) => status === jobForThisRisk?.status
+                )}
+              />
+            </div>
+            <div className="flex justify-between border border-gray-100 bg-gray-50 px-8 py-3">
+              <Tooltip placement="top" title="Change risk status">
+                <div>
+                  <RiskDropdown type="status" risk={risk} />
+                </div>
+              </Tooltip>
+              <Tooltip placement="top" title="Change risk severity">
+                <div>
+                  <RiskDropdown type="severity" risk={risk} />
+                </div>
+              </Tooltip>
+              <Tooltip placement="top" title="View proof of exploit">
+                <div>
+                  <Button
+                    className="border-1 h-8 border border-default"
+                    startIcon={<DocumentTextIcon className="size-5" />}
+                    onClick={() => {
+                      navigate(
+                        generatePathWithSearch({
+                          appendSearch: [[StorageKey.POE, `${dns}/${name}`]],
+                        })
+                      );
+                    }}
+                  >
+                    Proof of Exploit
+                  </Button>
+                </div>
+              </Tooltip>
               <Tooltip
+                placement="top"
                 title={
                   risk.source
                     ? isJobRunningForThisRisk
                       ? 'Scanning in progress'
-                      : ''
+                      : 'Revalidate the risk'
                     : 'On-Demand Scanning is only available for Automated Risks.'
                 }
               >
@@ -330,7 +343,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 <TabWrapper key={tab}>{tab}</TabWrapper>
               ))}
             </TabList>
-            <TabPanels className="size-full h-[calc(100%)] overflow-auto">
+            <TabPanels className="size-full h-[calc(100%-250px)] overflow-auto">
               <TabPanel className="h-full p-6">
                 <Loader
                   isLoading={
@@ -358,18 +371,20 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       },
                     }}
                   >
-                    <MarkdownEditor
-                      value={DOMPurify.sanitize(markdownValue)}
-                      onChange={value => {
-                        setMarkdownValue(value || '');
-                      }}
-                      filePathPrefix="definitions/files"
-                    />
+                    <div className="h-[60vh]">
+                      <MarkdownEditor
+                        value={markdownValue}
+                        onChange={value => {
+                          setMarkdownValue(value || '');
+                        }}
+                        filePathPrefix="definitions/files"
+                      />
+                    </div>
                   </Modal>
                   <>
                     {definitionsFile && (
                       <MarkdownPreview
-                        source={DOMPurify.sanitize(definitionsFileValue)}
+                        source={definitionsFileValue}
                         style={{
                           wordBreak: 'break-word',
                           minHeight: '20px',
@@ -403,9 +418,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                     )}
                   </>
                   <Button
-                    styleType="text"
-                    className="mt-4 p-2 font-bold"
-                    endIcon={<PencilSquareIcon className="size-4" />}
+                    styleType="none"
+                    className="mt-4 pl-0 font-bold"
+                    endIcon={<PencilSquareIcon className="size-5" />}
                     onClick={event => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -423,17 +438,28 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       `${data.status?.[0]}${data.status?.[2] || ''}` as RiskStatus;
                     const riskSeverityKey = data.status?.[1] as RiskSeverity;
 
-                    const statusIcon = getRiskStatusIcon(riskStatusKey);
-                    const severityIcon = getRiskSeverityIcon(riskSeverityKey);
+                    const statusIcon = getRiskStatusIcon(
+                      riskStatusKey,
+                      'size-5'
+                    );
+                    const severityIcon = getRiskSeverityIcon(
+                      riskSeverityKey,
+                      'size-5'
+                    );
 
                     const icons = (
-                      <div className="flex items-center gap-2 text-default">
+                      <div className="flex items-center gap-1 text-black">
                         <Tooltip
-                          title={RiskStatusLabel[riskStatusKey] || 'Cloed'}
+                          title={
+                            (RiskStatusLabel[riskStatusKey] || 'Closed') +
+                            ' Status'
+                          }
                         >
                           {statusIcon}
                         </Tooltip>
-                        <Tooltip title={SeverityDef[riskSeverityKey]}>
+                        <Tooltip
+                          title={SeverityDef[riskSeverityKey] + ' Severity'}
+                        >
                           {severityIcon}
                         </Tooltip>
                       </div>
@@ -449,7 +475,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 />
               </TabPanel>
               <TabPanel className="h-full">
-                <AddAttribute resourceKey={risk.key} />
+                <div className="ml-4">
+                  <AddAttribute resourceKey={risk.key} />
+                </div>
                 <div>
                   <DrawerList
                     allowEmpty={true}
@@ -483,7 +511,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                           title,
                           description: updated,
                           icon:
-                            itemIndex === 0 ? <CheckCircleIcon /> : undefined,
+                            itemIndex === 0 ? (
+                              <RisksIcon className="stroke-1" />
+                            ) : undefined,
                         };
                       })
                       .reverse() || []),
@@ -538,7 +568,16 @@ function getHistoryDiff(
   const severity = (
     <>
       <p className="inline">
-        {by ? `${by} changed the Severity from` : `Severity changed from`}
+        {by ? (
+          <span>
+            {by} changed the <span className="font-semibold">Severity</span>{' '}
+            from
+          </span>
+        ) : (
+          <span>
+            <span className="font-semibold">Severity</span> changed from
+          </span>
+        )}
         {EmptySpace}
       </p>
       <RiskDropdown
@@ -570,11 +609,21 @@ function getHistoryDiff(
       <p className="inline">
         {isBothChanged ? (
           <>
-            {EmptySpace}, and Status from{EmptySpace}
+            {EmptySpace}, and <span className="font-semibold">Status</span> from
+            {EmptySpace}
           </>
         ) : (
           <>
-            {by ? `${by} changed the Status from` : 'Status changed from'}
+            {by ? (
+              <span>
+                {by} changed the <span className="font-semibold">Status</span>{' '}
+                from
+              </span>
+            ) : (
+              <span>
+                <span className="font-semibold">Status</span> changed from
+              </span>
+            )}
             {EmptySpace}
           </>
         )}

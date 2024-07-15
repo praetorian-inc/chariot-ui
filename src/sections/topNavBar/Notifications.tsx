@@ -3,10 +3,10 @@ import React, { useEffect } from 'react';
 import { Dropdown } from '@/components/Dropdown';
 import { useMy } from '@/hooks/useMy';
 import { JobStatus } from '@/types';
+import { cn } from '@/utils/classname';
 import { sToMs } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
-import { cn } from '@/utils/classname';
 
 interface Props {
   onNotify?: (showNotification: boolean) => void;
@@ -83,6 +83,18 @@ export const Notifications: React.FC<Props> = ({ onNotify, onClick }) => {
             type: 'divider',
           },
           {
+            label: 'Running',
+            labelSuffix: runningJobs?.toLocaleString(),
+            className: 'flex items-center',
+            to: `/app/jobs?status=${JobStatus.Running}`,
+          },
+          {
+            className: 'flex items-center',
+            label: 'Queued',
+            labelSuffix: queuedJobs?.toLocaleString(),
+            to: `/app/jobs?status=${JobStatus.Queued}`,
+          },
+          {
             label: 'Failed',
             labelSuffix: failedJobs?.toLocaleString(),
             className: 'flex items-center',
@@ -93,18 +105,6 @@ export const Notifications: React.FC<Props> = ({ onNotify, onClick }) => {
             label: 'Completed',
             labelSuffix: completedJobs?.toLocaleString(),
             to: `/app/jobs?status=${JobStatus.Pass}`,
-          },
-          {
-            className: 'flex items-center',
-            label: 'Queued',
-            labelSuffix: queuedJobs?.toLocaleString(),
-            to: `/app/jobs?status=${JobStatus.Queued}`,
-          },
-          {
-            label: 'Running',
-            labelSuffix: runningJobs?.toLocaleString(),
-            className: 'flex items-center',
-            to: `/app/jobs?status=${JobStatus.Running}`,
           },
         ],
       }}

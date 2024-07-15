@@ -1,6 +1,5 @@
 /* eslint-disable complexity */
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   ChevronRightIcon,
   ExclamationTriangleIcon,
@@ -14,7 +13,6 @@ import { useModifyAccount } from '@/hooks';
 import { Account, AccountMetadata, LinkAccount } from '@/types';
 import { IntegrationMeta } from '@/utils/availableIntegrations';
 import { cn } from '@/utils/classname';
-import { getRoute } from '@/utils/route.util';
 
 interface Props {
   form?: IntegrationMeta & { connectedAccounts?: Account[] };
@@ -30,7 +28,6 @@ export const IntegrationModal = (props: Props) => {
   const hasDescription = form?.description || form?.message || form?.logo;
   const showInputs =
     form?.inputs?.some(input => !input.hidden) && formValues.length > 0;
-  const navigate = useNavigate();
 
   useEffect(() => {
     const formValues =
@@ -74,19 +71,6 @@ export const IntegrationModal = (props: Props) => {
       onClose={handleClose}
       className="max-h-[70vh] overflow-y-auto"
       footer={{
-        left:
-          connectedAccounts?.length > 0 && form && form.name !== 'hook' ? (
-            <Button
-              onClick={() => {
-                navigate({
-                  pathname: getRoute(['app', 'jobs']),
-                  search: `?hashSearch=${encodeURIComponent(`#${form.name}`)}`,
-                });
-              }}
-            >
-              Recent Activity
-            </Button>
-          ) : undefined,
         text: updateForm ? 'Update' : 'Connect',
         form: 'integration-modal',
       }}

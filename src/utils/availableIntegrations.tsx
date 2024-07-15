@@ -88,7 +88,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       <p>
         Receive Slack notifications when new risks are discovered.{' '}
         <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815125222171-Workplace-Messaging#h_01HY2VVHFNVYRZAKA2AAHMYVY6"
+          href="https://docs.praetorian.com/hc/en-us/articles/25815125222171-Workplace-Messaging#slack"
           target="_blank"
           rel="noreferrer"
           className="block underline"
@@ -143,7 +143,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       <p>
         Track and manage risks directly within your Jira project.{' '}
         <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815095834267-Ticketing-Systems#h_01HY2VTWKZNT9W3D1X3YBM9FFY"
+          href="https://docs.praetorian.com/hc/en-us/articles/25815095834267-Ticketing-Systems#jira"
           target="_blank"
           rel="noreferrer"
           className="block underline"
@@ -234,10 +234,9 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     displayName: 'GitHub',
     description: (
       <p>
-        Discover your GitHub organization&apos;s repositories and identify
-        risks.{' '}
+        Discover your GitHub organization&apos;s repositories and risks.{' '}
         <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#h_01HY2TH58M604R2DYKQZVZPZJ9"
+          href="https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#github"
           target="_blank"
           rel="noreferrer"
           className="block underline"
@@ -342,7 +341,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       <p>
         Discover and scan assets managed within your NS1 tenant
         <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#h_01HY2SP0QYEABRM5ETQTTZ2AXW"
+          href="https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#ns1"
           target="_blank"
           rel="noreferrer"
           className="block underline"
@@ -387,7 +386,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       <p>
         Discover and scan assets hosted within your GCP organization.{' '}
         <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#h_01HY2S6JDF5CXNS4JDKECZG5QF"
+          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#gcp"
           target="_blank"
           rel="noreferrer"
           className="block underline"
@@ -443,7 +442,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       <p>
         Discover and scan assets hosted within your Azure organization{' '}
         <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#01HY2S6ZZQW348CCNMB34VS4NE"
+          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#azure"
           target="_blank"
           rel="noreferrer"
           className="block underline"
@@ -495,7 +494,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       <p>
         Import your assets from CrowdStrike and identify policy risks{' '}
         <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#h_01HY2SMRHSD606FF1FE165ZCR7"
+          href="https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#crowdstrike"
           target="_blank"
           rel="noreferrer"
           className="block underline"
@@ -544,9 +543,9 @@ export const IntegrationsMeta: IntegrationMeta[] = [
 
     description: (
       <p>
-        Discover your GitLab organization&apos;s repositories and identify risks{' '}
+        Discover your GitLab organization&apos;s repositories and risks{' '}
         <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#h_01J0VK2SY0FMRJK8WTN3S6Q4RG"
+          href="https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#gitlab"
           target="_blank"
           rel="noreferrer"
           className="block underline"

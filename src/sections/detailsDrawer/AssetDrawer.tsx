@@ -141,8 +141,12 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
       }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
-        <div className="flex justify-between px-8 pb-4 ">
-          <AssetStatusDropdown asset={asset} />
+        <div className="mb-2 flex justify-between border border-gray-100 bg-gray-50 px-8 py-3">
+          <Tooltip placement="top" title="Change scan priority">
+            <div>
+              <AssetStatusDropdown asset={asset} />
+            </div>
+          </Tooltip>
         </div>
         <TabGroup className="h-full">
           <TabList className="flex overflow-x-auto">
@@ -158,17 +162,25 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     `${status?.[0]}${status?.[2] || ''}` as RiskStatus;
                   const riskSeverityKey = status?.[1] as RiskSeverity;
 
-                  const statusIcon = getRiskStatusIcon(riskStatusKey);
-                  const severityIcon = getRiskSeverityIcon(riskSeverityKey);
+                  const statusIcon = getRiskStatusIcon(riskStatusKey, 'size-5');
+                  const severityIcon = getRiskSeverityIcon(
+                    riskSeverityKey,
+                    'size-5'
+                  );
 
                   const icons = (
-                    <div className="flex items-center gap-2 text-default">
+                    <div className="flex items-center gap-2 text-black">
                       <Tooltip
-                        title={RiskStatusLabel[riskStatusKey] || 'Closed'}
+                        title={
+                          (RiskStatusLabel[riskStatusKey] || 'Closed') +
+                          ' Status'
+                        }
                       >
                         {statusIcon}
                       </Tooltip>
-                      <Tooltip title={SeverityDef[riskSeverityKey]}>
+                      <Tooltip
+                        title={SeverityDef[riskSeverityKey] + ' Severity'}
+                      >
                         {severityIcon}
                       </Tooltip>
                     </div>
@@ -194,14 +206,16 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
 
                     const icons = [
                       <Tooltip key="status" title={detail}>
-                        {getAssetStatusIcon(data.status)}
+                        {getAssetStatusIcon(data.status, 'size-5')}
                       </Tooltip>,
                     ];
 
                     if (containsRisks) {
                       icons.push(
-                        <Tooltip key="risks" title="Contains Open Risks">
-                          <RisksIcon className="size-5" />
+                        <Tooltip key="risks" title="Contains open risks">
+                          <div>
+                            <RisksIcon className="size-5" />
+                          </div>
                         </Tooltip>
                       );
                     }
@@ -221,21 +235,25 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
                     const containsRisks = openRiskDataset[data.dns];
 
                     const icons = [
-                      <Tooltip key="status" title={detail}>
-                        {getAssetStatusIcon(data.status)}
+                      <Tooltip key="status" title={detail + ' Status'}>
+                        {getAssetStatusIcon(data.status, 'size-5')}
                       </Tooltip>,
                     ];
 
                     if (containsRisks) {
                       icons.push(
                         <Tooltip key="risks" title="Contains Open Risks">
-                          <RisksIcon className="size-5" />
+                          <div>
+                            <RisksIcon className="size-5" />
+                          </div>
                         </Tooltip>
                       );
                     }
                     return {
                       prefix: (
-                        <div className="flex flex-row space-x-2">{icons}</div>
+                        <div className="flex flex-row items-center gap-1">
+                          {icons}
+                        </div>
                       ),
                       label: data.dns,
                       value: data.name,
@@ -247,7 +265,9 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
               />
             </TabPanel>
             <TabPanel className="h-full">
-              <AddAttribute resourceKey={asset.key} />
+              <div className="ml-4">
+                <AddAttribute resourceKey={asset.key} />
+              </div>
               <div>
                 <DrawerList
                   allowEmpty={true}

@@ -1,5 +1,5 @@
 import { ReactNode, useRef } from 'react';
-import { UserCircleIcon } from '@heroicons/react/24/solid';
+import { UserCircleIcon } from '@heroicons/react/24/outline';
 
 interface TimelineProps {
   items: { title: ReactNode; description?: ReactNode; icon?: ReactNode }[];
@@ -23,11 +23,11 @@ export function Timeline(props: TimelineProps) {
             key={index}
             className="flex gap-3"
           >
-            <div className="z-10 flex items-center justify-center rounded-full [&>*]:size-10 [&>*]:bg-layer0 [&>*]:text-gray-300">
-              {item.icon || <UserCircleIcon />}
+            <div className="z-10 flex items-center justify-center rounded-full [&>*]:size-10 [&>*]:bg-layer0 [&>*]:text-gray-600">
+              {item.icon || <UserCircleIcon className="stroke-1" />}
             </div>
             <div className="flex flex-col gap-1">
-              <div>{item.title}</div>
+              <p className="text-sm">{item.title}</p>
               <div className="text-xs text-default-light">
                 {item.description}
               </div>

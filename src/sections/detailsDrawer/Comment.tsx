@@ -40,9 +40,13 @@ export const Comment: React.FC<Props> = ({ comment, onSave }: Props) => {
           {comment ? (
             <p className="whitespace-pre-wrap break-words">{comment}</p>
           ) : (
-            <span className="text-gray-500">No comment available</span>
+            <span className="italic text-gray-400">No comment provided.</span>
           )}
-          <Button styleType="none" onClick={() => setIsEditing(true)}>
+          <Button
+            className="mt-2 pl-0 font-bold"
+            styleType="none"
+            onClick={() => setIsEditing(true)}
+          >
             Edit <PencilSquareIcon className="size-5" />
           </Button>
         </>
@@ -54,7 +58,7 @@ export const Comment: React.FC<Props> = ({ comment, onSave }: Props) => {
             rows={6}
             value={value}
             onChange={e => setValue(e.target.value)}
-            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+            className="block w-full rounded-sm border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 "
             placeholder="Write your thoughts here..."
           />
           <div className="mt-2 flex justify-end space-x-2">

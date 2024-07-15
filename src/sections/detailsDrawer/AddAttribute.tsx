@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 import { Button } from '@/components/Button';
 import { Inputs } from '@/components/form/Inputs';
@@ -35,8 +35,8 @@ export const AddAttribute = (props: Props) => {
       open={open}
       setOpen={setOpen}
       styleType="none"
-      className="m-2 text-lg text-brand"
-      startIcon={<PlusIcon className="size-4" />}
+      className="m-2 rounded-sm border border-gray-200 px-6 text-sm hover:bg-gray-100"
+      endIcon={<ChevronDownIcon className="size-4" />}
       label="Add Attribute"
       style={{ zIndex: 1 }}
     >
@@ -60,14 +60,14 @@ export const AddAttribute = (props: Props) => {
           <Inputs
             inputs={[
               {
-                label: 'Attribute Name',
+                label: 'Name',
                 value: formData.name,
                 placeholder: 'technology',
                 name: 'name',
                 required: true,
               },
               {
-                label: 'Attribute Value',
+                label: 'Value',
                 value: formData.value,
                 placeholder: 'Apache Web Server',
                 name: 'value',

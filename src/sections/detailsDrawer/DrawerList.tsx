@@ -55,16 +55,12 @@ export const DrawerList = (props: Props) => {
           return (
             <li
               key={virtualItem.key}
-              className="absolute left-0 top-0 w-full border-b border-default px-4 py-2 first:border-t odd:bg-gray-50"
+              className="absolute left-0 top-0 w-full border-b border-default px-6 py-2  odd:bg-gray-50"
               style={{
                 height: `${virtualItem.size}px`,
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <div className="flex justify-between text-xs text-default-light ">
-                <CopyToClipboard>{label}</CopyToClipboard>
-                {updated && <span>{formatDate(updated)}</span>}
-              </div>
               <CopyToClipboard>
                 <ConditionalRender
                   condition={Boolean(to)}
@@ -90,6 +86,13 @@ export const DrawerList = (props: Props) => {
                   </Tooltip>
                 </ConditionalRender>
               </CopyToClipboard>
+              <div className="flex justify-between text-xs text-default-light">
+                <div className="flex flex-row items-center">
+                  <CopyToClipboard textToCopy={label}>
+                    {label} {updated && ' added ' + formatDate(updated)}
+                  </CopyToClipboard>{' '}
+                </div>
+              </div>
             </li>
           );
         })}

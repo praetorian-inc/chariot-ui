@@ -157,13 +157,11 @@ const Account: React.FC = () => {
 
       <Section
         title="Authorized Users"
-        description="These individuals are allowed to see the data in your Praetorian
-            account."
+        description="These individuals are allowed to see the data in your Praetorian account."
       >
         <Users />
       </Section>
-      {/* Regarding `friend.length === 0`: This is a hack to avoid nested impersonation */}
-      {/* It's a temporary solution until a better approach is implemented */}
+
       {collaborators &&
         collaborators.length > 0 &&
         friend.email.length === 0 && (
@@ -179,6 +177,7 @@ const Account: React.FC = () => {
             <CollaboratingWith />
           </Section>
         )}
+
       <Section
         title="Whitelisting Details"
         description="We have different methods of whitelisting our service so we can scan your network without being blocked by your security measures."
@@ -192,6 +191,7 @@ const Account: React.FC = () => {
           </div>
         </div>
       </Section>
+
       {!isImpersonating && (
         <Section
           title="Delete Account"

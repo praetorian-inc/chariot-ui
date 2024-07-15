@@ -72,7 +72,7 @@ const getMenuItems = (stats: Record<string, number>): MenuProps['items'] => {
         ...acc,
         [name]: {
           ...acc[name],
-          [value]: acc[name]?.[value] ? acc[name][value] + count : count,
+          [value]: count,
         },
       };
     },

@@ -160,7 +160,7 @@ export const AddRisks = () => {
     <>
       <Modal
         className="h-[72vh]"
-        title="Configure Risks"
+        title="Risk Management"
         icon={<RisksIcon className="size-6 text-default-light" />}
         open={isOpen}
         onClose={onClose}
@@ -171,8 +171,7 @@ export const AddRisks = () => {
             selectedIndex === 0 ? () => null : handleConfigureIntegration,
           text: selectedIndex === 0 ? 'Add' : 'Configure',
           form: selectedIndex === 0 ? 'addRisk' : undefined,
-
-          secondary: selectedIntegration.length
+          disconnect: selectedIntegration.length
             ? {
                 text: 'Disconnect',
                 onClick: handleDisconnect,
@@ -274,13 +273,13 @@ export const AddRisks = () => {
                             <div className="flex justify-around">
                               <Button
                                 startIcon={<PlusIcon className="size-5" />}
-                                styleType="textPrimary"
+                                styleType="secondary"
                                 label="Proof of Exploit"
                                 onClick={() => setIsPOEOpen(true)}
                               />
                               <Button
                                 startIcon={<PlusIcon className="size-5" />}
-                                styleType="textPrimary"
+                                styleType="secondary"
                                 label="Description & Remediation"
                                 onClick={() => setIsDefinitionOpen(true)}
                               />
@@ -310,6 +309,7 @@ export const AddRisks = () => {
                   key={tab.id}
                   onChange={setIntegrationFormData}
                   tab={tab}
+                  onCancel={onClose}
                 />
               );
             })}
@@ -367,14 +367,15 @@ function AddDefinition(props: AddDefinitionProps) {
         },
       }}
     >
-      <MarkdownEditor
-        height={'60vh'}
-        value={definition}
-        onChange={value => {
-          setDefinition(value || '');
-        }}
-        filePathPrefix="definitions/files"
-      />
+      <div className="h-[60vh]">
+        <MarkdownEditor
+          value={definition}
+          onChange={value => {
+            setDefinition(value || '');
+          }}
+          filePathPrefix="definitions/files"
+        />
+      </div>
     </Modal>
   );
 }
@@ -414,14 +415,15 @@ function AddProofOfExploit(props: AddProofOfExploitProps) {
         },
       }}
     >
-      <MarkdownEditor
-        height={'60vh'}
-        value={poe}
-        onChange={value => {
-          setPoe(value || '');
-        }}
-        filePathPrefix="proof-of-exploit/files"
-      />
+      <div className="h-[60vh]">
+        <MarkdownEditor
+          value={poe}
+          onChange={value => {
+            setPoe(value || '');
+          }}
+          filePathPrefix="proof-of-exploit/files"
+        />
+      </div>
     </Modal>
   );
 }

@@ -165,6 +165,7 @@ export interface LinkAccount {
 export interface AccountMetadata {
   displayName?: string;
   pin?: string;
+  [key: string]: AccountMetadata | string | undefined;
 }
 
 // TODO: Discover the unknowns
@@ -244,10 +245,11 @@ export interface Seed {
 export interface Attribute {
   key: string;
   name: string;
-  class: string;
+  source: string;
   ttl: number;
   updated: string;
   username: string;
+  value: string;
 }
 
 export interface Reference {
@@ -427,6 +429,7 @@ export interface AuthState {
   rToken?: string;
   expiry?: Date;
   friend: { email: string; displayName: string };
+  isImpersonating: boolean;
 }
 
 export interface AuthContextType extends AuthState {

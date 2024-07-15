@@ -12,7 +12,6 @@ import { AddAsset } from '@/sections/add/AddAsset';
 import { AddAttribute } from '@/sections/add/AddAttribute';
 import { AddFile } from '@/sections/add/AddFile';
 import { AddRisks } from '@/sections/add/AddRisks';
-import { AddSeeds } from '@/sections/add/AddSeeds';
 import { DetailsDrawer } from '@/sections/detailsDrawer';
 import { NewUserSeedModal } from '@/sections/NewUserSeedModal';
 import { ProofOfExploit } from '@/sections/ProofOfExploit';
@@ -116,7 +115,6 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
       <ImpersonationBanner />
       <NewUserSeedModal />
       <ProofOfExploit />
-      <AddSeeds />
       <AddRisks />
       <AddAsset />
       <AddFile />

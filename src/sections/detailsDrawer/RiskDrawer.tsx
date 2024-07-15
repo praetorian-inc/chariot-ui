@@ -7,13 +7,14 @@ import {
   EyeIcon,
   PencilSquareIcon,
 } from '@heroicons/react/24/outline';
-import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
 import { HorizontalTimeline } from '@/components/HorizontalTimeline';
 import { RisksIcon } from '@/components/icons';
+import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
+import { getRiskStatusIcon } from '@/components/icons/RiskStatus.icon';
 import { UnionIcon } from '@/components/icons/Union.icon';
 import { Loader } from '@/components/Loader';
 import { MarkdownEditor } from '@/components/markdown/MarkdownEditor';
@@ -26,13 +27,25 @@ import { TabWrapper } from '@/components/ui/TabWrapper';
 import { useMy } from '@/hooks';
 import { useGetKev } from '@/hooks/kev';
 import { useGetFile, useUploadFile } from '@/hooks/useFiles';
+import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useReRunJob } from '@/hooks/useJobs';
-import { useReportRisk } from '@/hooks/useRisks';
+import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
 import { DRAWER_WIDTH } from '@/sections/detailsDrawer';
 import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
+import { Comment } from '@/sections/detailsDrawer/Comment';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
 import { DrawerList } from '@/sections/detailsDrawer/DrawerList';
-import { JobStatus, Risk, RiskCombinedStatus, RiskHistory } from '@/types';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
+import {
+  JobStatus,
+  Risk,
+  RiskCombinedStatus,
+  RiskHistory,
+  RiskSeverity,
+  RiskStatus,
+  RiskStatusLabel,
+  SeverityDef,
+} from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { sToMs } from '@/utils/date.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
@@ -87,15 +100,18 @@ interface RiskDrawerProps {
 export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const navigate = useNavigate();
   const { removeSearchParams } = useSearchParams();
+  const { getRiskDrawerLink } = getDrawerLink();
 
   const [, dns, name] = compositeKey.split('#');
 
-  const referenceFilter = `#risk#${dns}#${name}`;
+  const attributesFilter = `source:#risk#${dns}#${name}`;
 
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [markdownValue, setMarkdownValue] = useState('');
 
   const { mutateAsync: reRunJob, status: reRunJobStatus } = useReRunJob();
+  const { mutateAsync: updateRisk, isPending: isRiskFetching } =
+    useUpdateRisk();
   const { mutateAsync: updateFile, status: updateFileStatus } = useUploadFile();
   const { mutateAsync: reportRisk, status: reportRiskStatus } = useReportRisk();
 
@@ -117,10 +133,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     },
     { enabled: open }
   );
-  const { data: attributes } = useMy(
+  const { data: attributesGenericSearch } = useGenericSearch(
     {
-      resource: 'attribute',
-      query: referenceFilter,
+      query: attributesFilter,
     },
     {
       enabled: open,
@@ -138,6 +153,11 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     { enabled: open, refetchInterval: sToMs(10) }
   );
   const { data: knownExploitedThreats = [] } = useGetKev({ enabled: open });
+  const { data: riskNameGenericSearch } = useGenericSearch(
+    { query: name },
+    { enabled: open }
+  );
+  const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
 
   const definitionsFileValue =
     typeof definitionsFile === 'string'
@@ -187,6 +207,15 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     return [firstTrackedHistory, ...riskHistory];
   }, [JSON.stringify(risk.history)]);
 
+  async function handleUpdateComment(comment = '') {
+    await updateRisk({
+      comment,
+      key: risk.key,
+      name: risk.name,
+      status: risk.status,
+    });
+  }
+
   return (
     <Drawer
       open={open}
@@ -225,7 +254,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
               </div>
             }
             tag={
-              <div className="flex text-default-light">
+              <div className="flex items-center text-sm text-gray-400">
                 <EyeIcon className="mr-2 size-5" />
                 {formatDate(risk.updated)}
               </div>
@@ -235,36 +264,51 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
-        <div className="flex h-full flex-col gap-10">
-          <div className="px-8">
-            <HorizontalTimeline
-              steps={jobTimeline}
-              current={jobTimeline.findIndex(
-                ({ status }) => status === jobForThisRisk?.status
-              )}
-            />
-            <div className="flex justify-between">
-              <RiskDropdown type="status" risk={risk} />
-              <RiskDropdown type="severity" risk={risk} />
-              <Button
-                className="border-1 h-8 border border-default"
-                startIcon={<DocumentTextIcon className="size-5" />}
-                onClick={() => {
-                  navigate(
-                    generatePathWithSearch({
-                      appendSearch: [[StorageKey.POE, `${dns}/${name}`]],
-                    })
-                  );
-                }}
-              >
-                Proof of Exploit
-              </Button>
+        <div className="flex h-full flex-col gap-2">
+          <div>
+            <div className="px-8">
+              <HorizontalTimeline
+                steps={jobTimeline}
+                current={jobTimeline.findIndex(
+                  ({ status }) => status === jobForThisRisk?.status
+                )}
+              />
+            </div>
+            <div className="flex justify-between border border-gray-100 bg-gray-50 px-8 py-3">
+              <Tooltip placement="top" title="Change risk status">
+                <div>
+                  <RiskDropdown type="status" risk={risk} />
+                </div>
+              </Tooltip>
+              <Tooltip placement="top" title="Change risk severity">
+                <div>
+                  <RiskDropdown type="severity" risk={risk} />
+                </div>
+              </Tooltip>
+              <Tooltip placement="top" title="View proof of exploit">
+                <div>
+                  <Button
+                    className="border-1 h-8 border border-default"
+                    startIcon={<DocumentTextIcon className="size-5" />}
+                    onClick={() => {
+                      navigate(
+                        generatePathWithSearch({
+                          appendSearch: [[StorageKey.POE, `${dns}/${name}`]],
+                        })
+                      );
+                    }}
+                  >
+                    Proof of Exploit
+                  </Button>
+                </div>
+              </Tooltip>
               <Tooltip
+                placement="top"
                 title={
                   risk.source
                     ? isJobRunningForThisRisk
                       ? 'Scanning in progress'
-                      : ''
+                      : 'Revalidate the risk'
                     : 'On-Demand Scanning is only available for Automated Risks.'
                 }
               >
@@ -289,11 +333,17 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
 
           <TabGroup className="h-full">
             <TabList className="flex overflow-x-auto">
-              {['Description', 'Attributes', 'History'].map(tab => (
+              {[
+                'Description',
+                'Occurrences',
+                'Attributes',
+                'Comment',
+                'History',
+              ].map(tab => (
                 <TabWrapper key={tab}>{tab}</TabWrapper>
               ))}
             </TabList>
-            <TabPanels className="size-full h-[calc(100%-220px)] overflow-auto">
+            <TabPanels className="size-full h-[calc(100%-250px)] overflow-auto">
               <TabPanel className="h-full p-6">
                 <Loader
                   isLoading={
@@ -321,14 +371,15 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       },
                     }}
                   >
-                    <MarkdownEditor
-                      height={'60vh'}
-                      value={markdownValue}
-                      onChange={value => {
-                        setMarkdownValue(value || '');
-                      }}
-                      filePathPrefix="definitions/files"
-                    />
+                    <div className="h-[60vh]">
+                      <MarkdownEditor
+                        value={markdownValue}
+                        onChange={value => {
+                          setMarkdownValue(value || '');
+                        }}
+                        filePathPrefix="definitions/files"
+                      />
+                    </div>
                   </Modal>
                   <>
                     {definitionsFile && (
@@ -367,9 +418,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                     )}
                   </>
                   <Button
-                    styleType="text"
-                    className="mt-4 p-2 font-bold"
-                    endIcon={<PencilSquareIcon className="size-4" />}
+                    styleType="none"
+                    className="mt-4 pl-0 font-bold"
+                    endIcon={<PencilSquareIcon className="size-5" />}
                     onClick={event => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -381,17 +432,71 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 </Loader>
               </TabPanel>
               <TabPanel className="h-full">
-                <AddAttribute resourceKey={risk.key} />
+                <DrawerList
+                  items={riskOccurrence.map(data => {
+                    const riskStatusKey =
+                      `${data.status?.[0]}${data.status?.[2] || ''}` as RiskStatus;
+                    const riskSeverityKey = data.status?.[1] as RiskSeverity;
+
+                    const statusIcon = getRiskStatusIcon(
+                      riskStatusKey,
+                      'size-5'
+                    );
+                    const severityIcon = getRiskSeverityIcon(
+                      riskSeverityKey,
+                      'size-5'
+                    );
+
+                    const icons = (
+                      <div className="flex items-center gap-1 text-black">
+                        <Tooltip
+                          title={
+                            (RiskStatusLabel[riskStatusKey] || 'Closed') +
+                            ' Status'
+                          }
+                        >
+                          {statusIcon}
+                        </Tooltip>
+                        <Tooltip
+                          title={SeverityDef[riskSeverityKey] + ' Severity'}
+                        >
+                          {severityIcon}
+                        </Tooltip>
+                      </div>
+                    );
+                    return {
+                      prefix: icons,
+                      label: data.name,
+                      value: data.dns,
+                      updated: data.updated,
+                      to: getRiskDrawerLink(data),
+                    };
+                  })}
+                />
+              </TabPanel>
+              <TabPanel className="h-full">
+                <div className="ml-4">
+                  <AddAttribute resourceKey={risk.key} />
+                </div>
                 <div>
                   <DrawerList
                     allowEmpty={true}
-                    items={attributes.map(data => ({
-                      label: data.class,
-                      value: data.name,
-                      updated: data.updated,
-                    }))}
+                    items={(attributesGenericSearch?.attributes || [])?.map(
+                      data => ({
+                        label: data.name,
+                        value: data.value,
+                        updated: data.updated,
+                      })
+                    )}
                   />
                 </div>
+              </TabPanel>
+              <TabPanel className="h-full p-6">
+                <Comment
+                  comment={risk.comment}
+                  isLoading={isRiskFetching}
+                  onSave={handleUpdateComment}
+                />
               </TabPanel>
               <TabPanel className="h-full px-6">
                 <Timeline
@@ -406,7 +511,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                           title,
                           description: updated,
                           icon:
-                            itemIndex === 0 ? <CheckCircleIcon /> : undefined,
+                            itemIndex === 0 ? (
+                              <RisksIcon className="stroke-1" />
+                            ) : undefined,
                         };
                       })
                       .reverse() || []),
@@ -461,7 +568,16 @@ function getHistoryDiff(
   const severity = (
     <>
       <p className="inline">
-        {by ? `${by} changed the Severity from` : `Severity changed from`}
+        {by ? (
+          <span>
+            {by} changed the <span className="font-semibold">Severity</span>{' '}
+            from
+          </span>
+        ) : (
+          <span>
+            <span className="font-semibold">Severity</span> changed from
+          </span>
+        )}
         {EmptySpace}
       </p>
       <RiskDropdown
@@ -493,11 +609,21 @@ function getHistoryDiff(
       <p className="inline">
         {isBothChanged ? (
           <>
-            {EmptySpace}, and Status from{EmptySpace}
+            {EmptySpace}, and <span className="font-semibold">Status</span> from
+            {EmptySpace}
           </>
         ) : (
           <>
-            {by ? `${by} changed the Status from` : 'Status changed from'}
+            {by ? (
+              <span>
+                {by} changed the <span className="font-semibold">Status</span>{' '}
+                from
+              </span>
+            ) : (
+              <span>
+                <span className="font-semibold">Status</span> changed from
+              </span>
+            )}
             {EmptySpace}
           </>
         )}

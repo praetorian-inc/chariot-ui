@@ -1,10 +1,10 @@
 import React from 'react';
+import { DocumentIcon } from '@heroicons/react/24/outline';
 
 import { Dropzone, Files } from '@/components/Dropzone';
 import { Modal } from '@/components/Modal';
 import { useUploadFile } from '@/hooks';
 import { useGlobalState } from '@/state/global.state';
-import { DocumentIcon } from '@heroicons/react/24/outline';
 
 export const AddFile = () => {
   const {
@@ -41,7 +41,6 @@ export const AddFile = () => {
         onFilesDrop={handleFilesDrop}
         title="Click or drag and drop documents here."
         subTitle="Documents will be stored on S3."
-        maxFileSizeInMb={6}
       />
     </Modal>
   );

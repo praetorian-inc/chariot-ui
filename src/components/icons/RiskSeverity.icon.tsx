@@ -8,40 +8,24 @@ import {
 
 import { RiskSeverity } from '@/types';
 import { cn } from '@/utils/classname';
-import { getLighterSeverityClass } from '@/utils/getSeverityClass.util';
 
-export const getRiskSeverityIcon = (severity: RiskSeverity) => {
+export const getRiskSeverityIcon = (
+  severity: RiskSeverity,
+  className = 'size-5'
+) => {
   switch (severity) {
     case RiskSeverity.Critical:
-      return (
-        <ChevronDoubleUpIcon
-          className={cn('size-5', getLighterSeverityClass(severity))}
-        />
-      );
+      return <ChevronDoubleUpIcon className={cn('text-red-800', className)} />;
     case RiskSeverity.High:
-      return (
-        <ChevronUpIcon
-          className={cn('size-5', getLighterSeverityClass(severity))}
-        />
-      );
+      return <ChevronUpIcon className={cn('text-pink-800', className)} />;
     case RiskSeverity.Medium:
-      return (
-        <Bars2Icon
-          className={cn('size-5', getLighterSeverityClass(severity))}
-        />
-      );
+      return <Bars2Icon className={cn('text-amber-800', className)} />;
     case RiskSeverity.Low:
-      return (
-        <ChevronDownIcon
-          className={cn('size-5', getLighterSeverityClass(severity))}
-        />
-      );
+      return <ChevronDownIcon className={cn('text-indigo-800', className)} />;
     case RiskSeverity.Info:
     default:
       return (
-        <ChevronDoubleDownIcon
-          className={cn('size-5', getLighterSeverityClass(severity))}
-        />
+        <ChevronDoubleDownIcon className={cn('border-gray-200', className)} />
       );
   }
 };

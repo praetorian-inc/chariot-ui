@@ -21,6 +21,7 @@
     "config-ini-parser": "^1.6.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^3.3.1",
+    "dompurify": "^3.1.6",
     "js-yaml": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
@@ -69,6 +70,7 @@
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
     "@types/crypto-js": "^4.2.2",
+    "@types/dompurify": "^3.0.5",
     "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.5",
     "@types/node": "^20.14.10",

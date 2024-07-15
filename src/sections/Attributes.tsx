@@ -14,7 +14,7 @@ export function getAttributeDetails(attribute: Attribute) {
     dns,
     name,
     parsedName: `${dns} (${name})`,
-    class: attribute.class,
+    class: attribute.name,
     url: url,
   };
 }

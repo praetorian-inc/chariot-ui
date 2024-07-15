@@ -105,6 +105,24 @@ export const useModifyAccount = (
   });
 };
 
+export function usePurgeAccount() {
+  const axios = useAxios();
+  const { logout } = useAuth();
+
+  return useMutation<null, Error, void>({
+    defaultErrorMessage: `Failed to purge account`,
+    mutationFn: async () => {
+      try {
+        await axios.delete(`/account/purge`);
+        logout();
+      } catch {
+        // ignore
+      }
+      return null;
+    },
+  });
+}
+
 export function useGetDisplayName(accounts: Account[]) {
   return useMemo(() => getDisplayName(accounts), [JSON.stringify(accounts)]);
 }

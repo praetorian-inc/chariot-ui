@@ -145,7 +145,7 @@ export function AddAttribute() {
             inputs={[
               {
                 label: 'Class',
-                value: formData.class,
+                value: formData.name,
                 placeholder: 'Business Unit',
                 name: 'class',
                 required: true,

@@ -7,7 +7,7 @@ import React, {
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 
-import { Button } from '@/components/Button';
+import { Button, ButtonProps } from '@/components/Button';
 import { cn } from '@/utils/classname';
 import { getTransitionSettings } from '@/utils/transition.util';
 
@@ -15,6 +15,7 @@ type Size = 'sm' | 'md' | 'lg' | 'xl';
 interface Props extends PropsWithChildren {
   className?: string;
   footer?: {
+    styleType?: ButtonProps['styleType'];
     text?: string;
     onClick?: () => void;
     left?: JSX.Element;
@@ -23,7 +24,7 @@ interface Props extends PropsWithChildren {
     isLoading?: boolean;
     startIcon?: React.ReactNode;
     disabled?: boolean;
-    secondary?: {
+    disconnect?: {
       text?: string;
       onClick?: () => void;
       disabled?: boolean;
@@ -134,7 +135,23 @@ export const Modal: React.FC<Props> = props => {
             isDialog && 'pt-6'
           )}
         >
-          <div>{footer?.left}</div>
+          <div>
+            {footer?.left}
+            {footer?.disconnect && (
+              <Button
+                onClick={footer?.disconnect?.onClick}
+                styleType="secondary"
+                className={cn(
+                  ' text-red-700 hover:bg-layer0',
+                  footer?.className
+                )}
+                isLoading={footer?.disconnect?.isLoading}
+                disabled={footer?.disconnect?.disabled}
+              >
+                {footer?.disconnect?.text}
+              </Button>
+            )}
+          </div>
           <div className="flex gap-2">
             <Button
               onClick={onClose}
@@ -143,22 +160,12 @@ export const Modal: React.FC<Props> = props => {
             >
               Cancel
             </Button>
-            {footer?.secondary && (
-              <Button
-                onClick={footer?.secondary?.onClick}
-                styleType="primaryLight"
-                className={cn('ml-2 w-24', footer?.className)}
-                isLoading={footer?.secondary?.isLoading}
-                disabled={footer?.secondary?.disabled}
-              >
-                {footer?.secondary?.text}
-              </Button>
-            )}
+
             {footer?.text && (
               <Button
                 onClick={footer?.onClick}
                 startIcon={footer?.startIcon}
-                styleType="primary"
+                styleType={footer.styleType || 'primary'}
                 className={cn('ml-2 w-24', footer?.className)}
                 form={footer?.form}
                 type={footer?.form ? 'submit' : undefined}

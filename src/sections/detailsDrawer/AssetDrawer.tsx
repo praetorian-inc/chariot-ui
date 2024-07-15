@@ -1,24 +1,37 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
 import { Chip } from '@/components/Chip';
 import { Drawer } from '@/components/Drawer';
-import { AssetsIcon } from '@/components/icons';
+import { AssetsIcon, RisksIcon } from '@/components/icons';
+import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
+import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
+import { getRiskStatusIcon } from '@/components/icons/RiskStatus.icon';
 import { Loader } from '@/components/Loader';
+import { Tooltip } from '@/components/Tooltip';
 import { AssetStatusDropdown } from '@/components/ui/AssetPriorityDropdown';
+import { getAssetStatusProperties } from '@/components/ui/AssetStatusChip';
 import { TabWrapper } from '@/components/ui/TabWrapper';
 import { useMy } from '@/hooks';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useIntegration } from '@/hooks/useIntegration';
-import { getAttributeDetails } from '@/sections/Attributes';
+import { buildOpenRiskDataset } from '@/sections/Assets';
 import { DRAWER_WIDTH } from '@/sections/detailsDrawer';
 import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
 import { DrawerList } from '@/sections/detailsDrawer/DrawerList';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { getStatus } from '@/sections/RisksTable';
-import { Asset, RiskStatus } from '@/types';
+import {
+  Asset,
+  Risk,
+  RiskSeverity,
+  RiskStatus,
+  RiskStatusLabel,
+  SeverityDef,
+} from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { capitalize } from '@/utils/lodash.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
@@ -33,7 +46,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const [, dns, name] = compositeKey.split('#');
   const riskFilter = `#${dns}`;
   const linkedIpsFilter = `#${dns}#`;
-  const attributeFilter = `#asset#${dns}#${name}`;
+  const attributeFilter = `source:#asset${compositeKey}`;
 
   const { getAssetDrawerLink } = getDrawerLink();
   const { removeSearchParams } = useSearchParams();
@@ -46,13 +59,13 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
     },
     { enabled: open }
   );
-  const { data: attributes = [], status: attributesStatus } = useMy(
-    {
-      resource: 'attribute',
-      query: attributeFilter,
-    },
-    { enabled: open }
-  );
+  const { data: attributesGenericSearch, status: attributesStatus } =
+    useGenericSearch(
+      {
+        query: attributeFilter,
+      },
+      { enabled: open }
+    );
 
   const { data: risks = [], status: risksStatus } = useMy(
     {
@@ -72,14 +85,12 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const { data: assetNameGenericSearch, status: assetNameGenericSearchStatus } =
     useGenericSearch({ query: name }, { enabled: open });
 
-  const {
-    assets: rawLinkedHostnamesIncludingSelf = [],
-    attributes: genericAttributes = [],
-  } = assetNameGenericSearch || {};
+  const { assets: rawLinkedHostnamesIncludingSelf = [] } =
+    assetNameGenericSearch || {};
 
-  const associatedAssets = genericAttributes.filter(
-    attribute =>
-      attribute.class === 'seed' && attribute.key.startsWith('#attribute#asset')
+  const openRiskDataset = useMemo(
+    () => buildOpenRiskDataset(risks as Risk[]),
+    [risks]
   );
 
   const asset: Asset = assets[0] || {};
@@ -104,8 +115,6 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
     attributesStatus === 'pending' ||
     assetNameGenericSearchStatus === 'pending';
 
-  const isTypeAsset = assetType === 'asset';
-
   return (
     <Drawer
       open={open}
@@ -119,21 +128,25 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
             subtitle={assetType === 'seed' ? asset.username : asset.dns}
             prefix={<AssetsIcon className="size-5" />}
             tag={
-              assetType === 'integration' && (
-                <Chip>{capitalize(assetType)}</Chip>
-              )
+              <div className="flex justify-center text-sm text-gray-400">
+                {assetType === 'integration' && (
+                  <Chip>{capitalize(assetType)}</Chip>
+                )}
+                <EyeIcon className="mr-2 size-5" />
+                {formatDate(asset.updated)}
+              </div>
             }
           />
         )
       }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
-        <div className="flex justify-between px-8 pb-4 ">
-          <AssetStatusDropdown asset={asset} />
-          <div className="flex text-default-light">
-            <EyeIcon className="mr-2 size-5" />
-            {formatDate(asset.updated)}
-          </div>
+        <div className="mb-2 flex justify-between border border-gray-100 bg-gray-50 px-8 py-3">
+          <Tooltip placement="top" title="Change scan priority">
+            <div>
+              <AssetStatusDropdown asset={asset} />
+            </div>
+          </Tooltip>
         </div>
         <TabGroup className="h-full">
           <TabList className="flex overflow-x-auto">
@@ -144,8 +157,37 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
           <TabPanels className="size-full h-[calc(100%-150px)] overflow-auto">
             <TabPanel className="h-full">
               <DrawerList
-                items={openRisks.map(({ dns, name, updated }) => {
+                items={openRisks.map(({ dns, name, status, updated }) => {
+                  const riskStatusKey =
+                    `${status?.[0]}${status?.[2] || ''}` as RiskStatus;
+                  const riskSeverityKey = status?.[1] as RiskSeverity;
+
+                  const statusIcon = getRiskStatusIcon(riskStatusKey, 'size-5');
+                  const severityIcon = getRiskSeverityIcon(
+                    riskSeverityKey,
+                    'size-5'
+                  );
+
+                  const icons = (
+                    <div className="flex items-center gap-2 text-black">
+                      <Tooltip
+                        title={
+                          (RiskStatusLabel[riskStatusKey] || 'Closed') +
+                          ' Status'
+                        }
+                      >
+                        {statusIcon}
+                      </Tooltip>
+                      <Tooltip
+                        title={SeverityDef[riskSeverityKey] + ' Severity'}
+                      >
+                        {severityIcon}
+                      </Tooltip>
+                    </div>
+                  );
+
                   return {
+                    prefix: icons,
                     label: dns,
                     value: name,
                     date: updated,
@@ -156,48 +198,86 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
             </TabPanel>
 
             <TabPanel className="h-full">
-              {!isTypeAsset && (
-                <DrawerList
-                  items={associatedAssets.map(data => {
-                    const { name, dns, url } = getAttributeDetails(data);
+              <DrawerList
+                items={[
+                  ...linkedHostnames.map(data => {
+                    const { detail } = getAssetStatusProperties(data.status);
+                    const containsRisks = openRiskDataset[data.dns];
+
+                    const icons = [
+                      <Tooltip key="status" title={detail}>
+                        {getAssetStatusIcon(data.status, 'size-5')}
+                      </Tooltip>,
+                    ];
+
+                    if (containsRisks) {
+                      icons.push(
+                        <Tooltip key="risks" title="Contains open risks">
+                          <div>
+                            <RisksIcon className="size-5" />
+                          </div>
+                        </Tooltip>
+                      );
+                    }
+
                     return {
-                      label: name,
-                      value: dns,
-                      date: data.updated,
-                      to: url,
-                    };
-                  })}
-                />
-              )}
-              {isTypeAsset && (
-                <DrawerList
-                  items={[
-                    ...linkedHostnames.map(data => ({
+                      prefix: (
+                        <div className="flex flex-row space-x-2">{icons}</div>
+                      ),
                       label: data.name,
                       value: data.dns,
                       updated: data.updated,
                       to: getAssetDrawerLink(data),
-                    })),
-                    ...linkedIps.map(data => ({
+                    };
+                  }),
+                  ...linkedIps.map(data => {
+                    const { detail } = getAssetStatusProperties(data.status);
+                    const containsRisks = openRiskDataset[data.dns];
+
+                    const icons = [
+                      <Tooltip key="status" title={detail + ' Status'}>
+                        {getAssetStatusIcon(data.status, 'size-5')}
+                      </Tooltip>,
+                    ];
+
+                    if (containsRisks) {
+                      icons.push(
+                        <Tooltip key="risks" title="Contains Open Risks">
+                          <div>
+                            <RisksIcon className="size-5" />
+                          </div>
+                        </Tooltip>
+                      );
+                    }
+                    return {
+                      prefix: (
+                        <div className="flex flex-row items-center gap-1">
+                          {icons}
+                        </div>
+                      ),
                       label: data.dns,
                       value: data.name,
                       updated: data.updated,
                       to: getAssetDrawerLink(data),
-                    })),
-                  ]}
-                />
-              )}
+                    };
+                  }),
+                ]}
+              />
             </TabPanel>
             <TabPanel className="h-full">
-              <AddAttribute resourceKey={asset.key} />
+              <div className="ml-4">
+                <AddAttribute resourceKey={asset.key} />
+              </div>
               <div>
                 <DrawerList
                   allowEmpty={true}
-                  items={attributes.map(data => ({
-                    label: data.class,
-                    value: data.name,
-                    updated: data.updated,
-                  }))}
+                  items={(attributesGenericSearch?.attributes || [])?.map(
+                    data => ({
+                      label: data.name,
+                      value: data.value,
+                      updated: data.updated,
+                    })
+                  )}
                 />
               </div>
             </TabPanel>

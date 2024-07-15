@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Input } from '@/components/form/Input';
 import { InputsT } from '@/components/form/Inputs';
-import AWSExample from '@/components/ui/AWSExample';
 import WebhookExample from '@/components/ui/WebhookExample';
 import { IntegrationType } from '@/types';
 import { getChariotWebhookURL } from '@/utils/integration.util';
@@ -11,7 +10,7 @@ export interface IntegrationMeta {
   id: number;
   name: string;
   displayName: string;
-  description?: string;
+  description?: JSX.Element | string;
   logo?: string;
   connected: boolean;
   types?: IntegrationType[];
@@ -47,7 +46,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 12,
     name: 'hook',
     displayName: 'Chariot Webhook',
-    description: 'Push assets and risks to Chariot',
+    description: 'Push assets and risks to Chariot.',
     logo: '/icons/PraetorianWebhook.svg',
     connected: true,
     types: [IntegrationType.Workflow],
@@ -85,7 +84,19 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 9,
     name: 'slack',
     displayName: 'Slack',
-    description: 'Receive Slack notifications when new risks are discovered',
+    description: (
+      <p>
+        Receive Slack notifications when new risks are discovered.{' '}
+        <a
+          href="https://docs.praetorian.com/hc/en-us/articles/25815125222171-Workplace-Messaging#slack"
+          target="_blank"
+          rel="noreferrer"
+          className="block underline"
+        >
+          Learn more
+        </a>
+      </p>
+    ),
     logo: '/icons/Slack.svg',
     connected: true,
     types: [IntegrationType.Workflow],
@@ -127,8 +138,20 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 10,
     name: 'jira',
     displayName: 'Atlassian Jira',
-    description:
-      'Track and manage risks directly within your connected Jira project',
+
+    description: (
+      <p>
+        Track and manage risks directly within your Jira project.{' '}
+        <a
+          href="https://docs.praetorian.com/hc/en-us/articles/25815095834267-Ticketing-Systems#jira"
+          target="_blank"
+          rel="noreferrer"
+          className="block underline"
+        >
+          Learn more
+        </a>
+      </p>
+    ),
     logo: '/icons/Jira.svg',
     connected: true,
     types: [IntegrationType.Workflow],
@@ -209,8 +232,19 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 7,
     name: 'github',
     displayName: 'GitHub',
-    description:
-      "Discover your GitHub organization's repositories and identify risks",
+    description: (
+      <p>
+        Discover your GitHub organization&apos;s repositories and risks.{' '}
+        <a
+          href="https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#github"
+          target="_blank"
+          rel="noreferrer"
+          className="block underline"
+        >
+          Learn more
+        </a>
+      </p>
+    ),
     logo: '/icons/GitHub.svg',
     connected: true,
     multiple: true,
@@ -251,7 +285,19 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 4,
     name: 'amazon',
     displayName: 'Amazon Web Services',
-    description: 'Discover and scan assets hosted within your AWS organization',
+    description: (
+      <p>
+        Discover and scan assets hosted within your AWS organization.{' '}
+        <a
+          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#amazon"
+          target="_blank"
+          rel="noreferrer"
+          className="block underline"
+        >
+          Learn more
+        </a>
+      </p>
+    ),
     logo: '/icons/AWS.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
@@ -270,13 +316,40 @@ export const IntegrationsMeta: IntegrationMeta[] = [
         required: true,
       },
     ],
-    message: <AWSExample />,
+    message: (
+      <div>
+        <label className="mt-4 block text-sm font-medium leading-6 text-gray-900">
+          CloudFormation Template
+        </label>
+        <div className="mt-1">
+          <a
+            className="text-brand"
+            href="/templates/aws-permissions-template.yaml"
+            download
+          >
+            aws-permission-template.yaml
+          </a>
+        </div>
+      </div>
+    ),
   },
   {
     id: 8,
     name: 'ns1',
     displayName: 'NS1',
-    description: 'Discover and scan assets managed within your NS1 tenant',
+    description: (
+      <p>
+        Discover and scan assets managed within your NS1 tenant
+        <a
+          href="https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#ns1"
+          target="_blank"
+          rel="noreferrer"
+          className="block underline"
+        >
+          Learn more
+        </a>
+      </p>
+    ),
     logo: '/icons/NS1.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
@@ -309,7 +382,19 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 5,
     name: 'gcp',
     displayName: 'Google Cloud',
-    description: 'Discover and scan assets hosted within your GCP organization',
+    description: (
+      <p>
+        Discover and scan assets hosted within your GCP organization.{' '}
+        <a
+          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#gcp"
+          target="_blank"
+          rel="noreferrer"
+          className="block underline"
+        >
+          Learn more
+        </a>
+      </p>
+    ),
     logo: '/icons/GoogleCloud.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
@@ -353,8 +438,19 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 6,
     name: 'azure',
     displayName: 'Azure',
-    description:
-      'Discover and scan assets hosted within your Azure organization',
+    description: (
+      <p>
+        Discover and scan assets hosted within your Azure organization{' '}
+        <a
+          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#azure"
+          target="_blank"
+          rel="noreferrer"
+          className="block underline"
+        >
+          Learn more
+        </a>
+      </p>
+    ),
     logo: '/icons/Azure.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
@@ -393,8 +489,20 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 16,
     name: 'crowdstrike',
     displayName: 'CrowdStrike',
-    description:
-      'Import your assets from CrowdStrike and identify policy risks',
+
+    description: (
+      <p>
+        Import your assets from CrowdStrike and identify policy risks{' '}
+        <a
+          href="https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#crowdstrike"
+          target="_blank"
+          rel="noreferrer"
+          className="block underline"
+        >
+          Learn more
+        </a>
+      </p>
+    ),
     logo: '/icons/Crowdstrike.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery, IntegrationType.RiskIdentification],
@@ -432,8 +540,20 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 14,
     name: 'gitlab',
     displayName: 'GitLab',
-    description:
-      "Discover your GitLab organization's repositories and identify risks",
+
+    description: (
+      <p>
+        Discover your GitLab organization&apos;s repositories and risks{' '}
+        <a
+          href="https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#gitlab"
+          target="_blank"
+          rel="noreferrer"
+          className="block underline"
+        >
+          Learn more
+        </a>
+      </p>
+    ),
     logo: '/icons/GitLab.svg',
     connected: true,
     multiple: true,
@@ -494,7 +614,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 17,
     name: 'zulip',
     displayName: 'Zulip',
-    description: 'Receive Zulip notifications when new risks are discovered',
+    description: 'Receive Zulip notifications when new risks are discovered.',
     logo: '/icons/Zulip.svg',
     connected: true,
     types: [IntegrationType.Workflow],

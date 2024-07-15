@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CheckCircleIcon,
@@ -20,6 +20,7 @@ import { useIntegration } from '@/hooks/useIntegration';
 import { useGlobalState } from '@/state/global.state';
 import {
   Account,
+  AccountMetadata,
   Asset,
   AssetStatus,
   AssetStatusLabel,
@@ -132,10 +133,23 @@ export function AddAsset() {
   const { mutateAsync: createAsset, status: creatingAsset } = useCreateAsset();
   const { mutate: link } = useModifyAccount('link');
   const { mutate: unlink, status: unlinkStatus } = useModifyAccount('unlink');
-  const navigate = useNavigate();
 
-  const selectedIntegration =
-    selectedIndex > 0 ? getConnectedIntegration(Tabs[selectedIndex].name) : [];
+  // Modify selectedIntegration.config object values if they are empty to a series of asterisks
+  const selectedIntegration = useMemo(() => {
+    if (selectedIndex === 0) return [];
+
+    const integrations = getConnectedIntegration(Tabs[selectedIndex].name);
+    return integrations.map(integration => {
+      if (integration.config) {
+        Object.keys(integration.config).forEach((key: string) => {
+          if (integration.config[key as keyof AccountMetadata] === '') {
+            integration.config[key as keyof AccountMetadata] = '********';
+          }
+        });
+      }
+      return integration;
+    });
+  }, [selectedIndex]);
 
   function onClose() {
     onOpenChange(false);
@@ -179,24 +193,10 @@ export function AddAsset() {
       open={open}
       onClose={onClose}
       footer={{
-        left:
-          selectedIntegration.length > 0 ? (
-            <Button
-              onClick={() => {
-                onClose();
-                navigate({
-                  pathname: getRoute(['app', 'jobs']),
-                  search: `?hashSearch=${encodeURIComponent(`#${selectedIntegration[0].member}`)}`,
-                });
-              }}
-            >
-              Recent Activity
-            </Button>
-          ) : undefined,
         isLoading: creatingAsset === 'pending',
         text: selectedIntegration.length ? 'Update' : 'Add',
         onClick: handleAddAsset,
-        secondary: selectedIntegration.length
+        disconnect: selectedIntegration.length
           ? {
               text: 'Disconnect',
               onClick: handleDisconnect,
@@ -245,6 +245,7 @@ export function AddAsset() {
                 key={tab.id}
                 onChange={setFormData}
                 tab={tab}
+                onCancel={onClose}
               />
             );
           })}
@@ -258,10 +259,11 @@ interface TabPanelContentProps {
   onChange: Dispatch<SetStateAction<Values[]>>;
   tab: IntegrationMeta;
   connectedIntegration: Account[];
+  onCancel: () => void;
 }
 
 export const TabPanelContent = (props: TabPanelContentProps) => {
-  const { tab, onChange, connectedIntegration } = props;
+  const { tab, onChange, connectedIntegration, onCancel } = props;
   const {
     description = '',
     markup = '',
@@ -277,6 +279,7 @@ export const TabPanelContent = (props: TabPanelContentProps) => {
   const isConnected = connectedIntegration.length > 0;
   const [count, setCount] = useState<number>(connectedIntegration.length || 1);
   const [formData, setFormData] = useState<Values[]>([]);
+  const navigate = useNavigate();
 
   const showInputs = inputs?.some(input => !input.hidden);
 
@@ -289,14 +292,31 @@ export const TabPanelContent = (props: TabPanelContentProps) => {
   }, [connectedIntegration.length]);
 
   return (
-    <TabPanel className="mt-4">
+    <TabPanel className="mt-4 px-4">
       <div className="flex items-center gap-2">
         {logo && (
           <h3 className="text-xl font-medium text-gray-700">{displayName}</h3>
         )}
         {isConnected && <CheckCircleIcon className="size-6 text-green-500" />}
+        {isConnected ? (
+          <Button
+            styleType="text"
+            className="ml-auto underline"
+            onClick={() => {
+              navigate({
+                pathname: getRoute(['app', 'jobs']),
+                search: `?hashSearch=${encodeURIComponent(`#${connectedIntegration[0].member}`)}`,
+              });
+              onCancel();
+            }}
+          >
+            Recent Activity
+          </Button>
+        ) : undefined}
       </div>
-      {description && <p className="text-md text-gray-500">{description}</p>}
+      {description && (
+        <p className="text-md mb-8 text-gray-500">{description}</p>
+      )}
       {message && <div className=" text-gray-500">{message}</div>}
       <div className="mt-4 flex">
         <form id="new-asset" className="w-full">

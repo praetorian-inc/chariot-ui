@@ -90,7 +90,6 @@ const Account: React.FC = () => {
                   onFilesDrop={handleFileDrop}
                   title="Click or drag and drop your logo image here."
                   subTitle=""
-                  maxFileSizeInMb={6}
                   className="mt-1"
                 />
               )}

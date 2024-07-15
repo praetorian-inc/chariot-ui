@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { Dropdown } from '@/components/Dropdown';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
+import { Tooltip } from '@/components/Tooltip';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
@@ -104,11 +105,13 @@ const Jobs: React.FC = () => {
       id: 'status',
       cell: (job: Job) => {
         return (
-          <div
-            className={`flex w-[100px] justify-center rounded-l-[2px] px-4 py-1.5 ${getStatusColor(job.status)}`}
-          >
-            {getStatusText(job.status)}
-          </div>
+          <Tooltip title={job.comment}>
+            <div
+              className={`flex w-[100px] justify-center rounded-l-[2px] px-4 py-1.5 ${getStatusColor(job.status)}`}
+            >
+              {getStatusText(job.status)}
+            </div>
+          </Tooltip>
         );
       },
       fixedWidth: 120,

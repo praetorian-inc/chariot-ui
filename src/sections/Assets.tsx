@@ -32,7 +32,7 @@ import { useMergeStatus } from '@/utils/api';
 type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
 type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
 
-function buildOpenRiskDataset(
+export function buildOpenRiskDataset(
   risks: Risk[]
 ): Record<string, SeverityOpenCounts> {
   return risks.reduce(
@@ -150,7 +150,7 @@ const Assets: React.FC = () => {
     {
       label: 'Priority',
       id: 'name',
-      className: 'w-24',
+      fixedWidth: 100,
       cell: (asset: AssetsWithRisk) => {
         const integration = isIntegration(asset);
         const containsRisks = Object.values(asset.riskSummary || {}).length > 0;
@@ -165,8 +165,10 @@ const Assets: React.FC = () => {
         if (containsRisks) {
           icons.push(
             <div>
-              <Tooltip title="Risks Discovered">
-                <RisksIcon className="size-5" />
+              <Tooltip title="Contains open risks">
+                <div>
+                  <RisksIcon className="size-5" />
+                </div>
               </Tooltip>
             </div>
           );
@@ -183,11 +185,19 @@ const Assets: React.FC = () => {
       },
     },
     {
-      label: 'Asset Name',
-      id: 'name',
+      label: 'Asset',
       className: 'w-full',
+      id: 'name',
       to: item => getAssetDrawerLink(item),
       copy: true,
+    },
+    {
+      label: 'Status',
+      id: 'status',
+      fixedWidth: 200,
+      cell: (asset: Asset) => {
+        return AssetStatusLabel[asset.status];
+      },
     },
     {
       label: 'DNS',
@@ -265,7 +275,7 @@ const Assets: React.FC = () => {
             <Dropdown
               styleType="header"
               label={getFilterLabel(
-                'Priorities',
+                'Statuses',
                 priorityFilter,
                 priorityOptions
               )}
@@ -275,7 +285,7 @@ const Assets: React.FC = () => {
               menu={{
                 items: [
                   {
-                    label: 'All Priorities',
+                    label: 'All Statuses',
                     labelSuffix: assets.length.toLocaleString(),
                     value: '',
                   },
@@ -296,7 +306,7 @@ const Assets: React.FC = () => {
         selection={{ value: selectedRows, onChange: setSelectedRows }}
         primaryAction={() => {
           return {
-            label: 'Configure',
+            label: 'Asset Discovery',
             icon: <AssetsIcon className="size-5" />,
             startIcon: <PlusIcon className="size-5" />,
             onClick: () => {
@@ -317,6 +327,10 @@ const Assets: React.FC = () => {
                   },
                 },
                 { type: 'divider', label: 'Divider' },
+                {
+                  label: 'Change Priority',
+                  type: 'label',
+                },
                 {
                   label: AssetStatusLabel[AssetStatus.ActiveHigh],
                   icon: getAssetStatusIcon(AssetStatus.ActiveHigh),

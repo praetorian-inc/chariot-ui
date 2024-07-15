@@ -1,6 +1,6 @@
 import { To } from 'react-router-dom';
 
-import { Asset, Risk, Seed } from '@/types';
+import { Asset, Risk } from '@/types';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch } from '@/utils/url.util';
 
@@ -26,13 +26,6 @@ export function getDrawerLink() {
     getProofOfExploitLink: (risk: Pick<Risk, 'dns' | 'name'>): To => {
       return generatePathWithSearch({
         appendSearch: [[StorageKey.POE, `${risk.dns}/${risk.name}`]],
-      });
-    },
-    getSeedDrawerLink: (seed: Pick<Seed, 'name'>): To => {
-      return generatePathWithSearch({
-        appendSearch: [
-          [StorageKey.DRAWER_COMPOSITE_KEY, `#seed#${seed.name}#${seed.name}`],
-        ],
       });
     },
   };

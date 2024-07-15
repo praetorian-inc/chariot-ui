@@ -1,11 +1,9 @@
-import React, { PropsWithChildren, ReactNode } from 'react';
+import { PropsWithChildren } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { PlusCircleIcon } from '@heroicons/react/24/solid';
-import { ExclamationCircleIcon } from '@heroicons/react/24/solid';
 
 import { Snackbar } from '@/components/Snackbar';
 import { cn } from '@/utils/classname';
-import { mbToBytes } from '@/utils/file.util';
 
 type FileReadType = 'string' | 'arrayBuffer';
 
@@ -23,9 +21,6 @@ interface Props<T extends FileReadType> extends PropsWithChildren {
   validate?: (content: FileResult<T>, file: File) => boolean;
   title?: string;
   subTitle?: string;
-  maxFileSizeInMb?: number;
-  maxFileSizeMessage?: ReactNode;
-  maxFileSizeErrorMessage?: ReactNode;
   className?: string;
   type: T;
 }
@@ -37,32 +32,11 @@ export function Dropzone<T extends FileReadType>(props: Props<T>) {
     title = 'Drop files here',
     subTitle = 'Suggest file types: TXT, CSV, JSON, or XML',
     children,
-    maxFileSizeInMb,
-    maxFileSizeMessage,
-    maxFileSizeErrorMessage,
     className,
   } = props;
-  interface Error {
-    title: string;
-    message: React.ReactNode;
-  }
-  const [error, setError] = React.useState<Error | false>(false);
 
   const handleDrop = (files: File[]): void => {
     const fileValue: Files<T> = [];
-
-    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-
-    if (maxFileSizeInMb && totalSize > mbToBytes(maxFileSizeInMb)) {
-      setError({
-        title: 'Limit Exceeded',
-        message:
-          maxFileSizeErrorMessage ||
-          `Uploads cannot exceed ${maxFileSizeInMb}MB in file size.`,
-      });
-
-      return;
-    }
 
     files.forEach((file, index) => {
       const reader = new FileReader();
@@ -117,26 +91,13 @@ export function Dropzone<T extends FileReadType>(props: Props<T>) {
         {!children && (
           <>
             <div>
-              {error ? (
-                <ExclamationCircleIcon className="size-20 text-disabled" />
-              ) : (
-                <PlusCircleIcon className="size-20 text-disabled" />
-              )}
+              <PlusCircleIcon className="size-20 text-disabled" />
             </div>
-            <h3 className="my-2 font-semibold">
-              {error ? error.title : title}
-            </h3>
-            <p className="text-center">{error ? error.message : subTitle}</p>
+            <h3 className="my-2 font-semibold">{title}</h3>
+            <p className="text-center">{subTitle}</p>
           </>
         )}
       </div>
-
-      {maxFileSizeInMb && (
-        <div className="mb-2 mt-4 text-center text-sm text-default-light">
-          {maxFileSizeMessage ||
-            `Upload cannot exceed ${maxFileSizeInMb}MB in file size`}
-        </div>
-      )}
     </>
   );
 }

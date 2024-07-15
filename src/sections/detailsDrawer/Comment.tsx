@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
-import { ChevronRightIcon } from '@heroicons/react/24/solid';
-import { Editor } from '@monaco-editor/react';
+import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
-import { Accordian } from '@/components/Accordian';
 import { Button } from '@/components/Button';
-import { Loader } from '@/components/Loader';
-import { Modal } from '@/components/Modal';
-import { NoData } from '@/components/ui/NoData';
 
 interface Props {
   comment: string;
@@ -15,82 +10,67 @@ interface Props {
   title?: string;
 }
 
-export const Comment: React.FC<Props> = ({
-  isLoading,
-  comment,
-  onSave,
-  title = 'Comment',
-}: Props) => {
+export const Comment: React.FC<Props> = ({ comment, onSave }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [value, setValue] = useState(comment);
   const [isSaving, setIsSaving] = useState(false);
 
-  const [value, setValue] = useState('');
-
   useEffect(() => {
-    setValue(isEditing ? comment : '');
-  }, [isEditing]);
+    if (!isEditing) {
+      setValue(comment);
+    }
+  }, [isEditing, comment]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      onSave && (await onSave(value));
+      setIsEditing(false);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
-    <Accordian
-      title={title}
-      titlerightContainer={
-        onSave && (
+    <>
+      {!isEditing && (
+        <>
+          {comment ? (
+            <p className="whitespace-pre-wrap break-words">{comment}</p>
+          ) : (
+            <span className="italic text-gray-400">No comment provided.</span>
+          )}
           <Button
-            styleType="textPrimary"
-            className="p-0 text-xs font-bold"
-            endIcon={<ChevronRightIcon className="ml-1 size-3" />}
-            onClick={event => {
-              event.preventDefault();
-              event.stopPropagation();
-              setIsEditing(true);
-            }}
+            className="mt-2 pl-0 font-bold"
+            styleType="none"
+            onClick={() => setIsEditing(true)}
           >
-            Edit
+            Edit <PencilSquareIcon className="size-5" />
           </Button>
-        )
-      }
-    >
-      <Loader className="h-32" isLoading={isLoading}>
-        {comment && (
-          <p className="whitespace-pre-wrap break-words">{comment}</p>
-        )}
-        {!comment && <NoData title="No Comment"></NoData>}
-      </Loader>
-      <Modal
-        size="xl"
-        title="Edit Comment"
-        open={isEditing}
-        onClose={() => {
-          setIsEditing(false);
-        }}
-        footer={{
-          text: 'Save',
-          onClick: async () => {
-            try {
-              setIsSaving(true);
-              onSave && (await onSave(value));
-              setIsEditing(false);
-            } catch (e) {
-              console.error(e);
-            } finally {
-              setIsSaving(false);
-            }
-          },
-          isLoading: isSaving,
-        }}
-      >
-        <Editor
-          height="60vh"
-          language="yaml"
-          value={value}
-          onChange={value => {
-            setValue(value || '');
-          }}
-          options={{
-            scrollBeyondLastLine: false,
-          }}
-        />
-      </Modal>
-    </Accordian>
+        </>
+      )}
+      {isEditing && (
+        <>
+          <textarea
+            id="message"
+            rows={6}
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            className="block w-full rounded-sm border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 "
+            placeholder="Write your thoughts here..."
+          />
+          <div className="mt-2 flex justify-end space-x-2">
+            <Button onClick={() => setIsEditing(false)} disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
+        </>
+      )}
+    </>
   );
 };

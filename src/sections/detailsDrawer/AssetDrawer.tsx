@@ -1,40 +1,46 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { IdentificationIcon } from '@heroicons/react/24/outline';
+import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { EyeIcon } from '@heroicons/react/24/outline';
+import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
-import { Accordian } from '@/components/Accordian';
-import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Drawer } from '@/components/Drawer';
-import { HorizontalSplit } from '@/components/HorizontalSplit';
-import { AssetsIcon } from '@/components/icons';
+import { AssetsIcon, RisksIcon } from '@/components/icons';
+import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
+import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
+import { getRiskStatusIcon } from '@/components/icons/RiskStatus.icon';
 import { Loader } from '@/components/Loader';
-import { Table } from '@/components/table/Table';
-import { AssetStatusText } from '@/components/ui/AssetStatusChip';
-import { DetailsListContainer } from '@/components/ui/DetailsListContainer';
+import { Tooltip } from '@/components/Tooltip';
+import { AssetStatusDropdown } from '@/components/ui/AssetPriorityDropdown';
+import { getAssetStatusProperties } from '@/components/ui/AssetStatusChip';
+import { TabWrapper } from '@/components/ui/TabWrapper';
 import { useMy } from '@/hooks';
-import { useUpdateAsset } from '@/hooks/useAssets';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useIntegration } from '@/hooks/useIntegration';
-import { getAttributeDetails } from '@/sections/Attributes';
-import { Comment } from '@/sections/detailsDrawer/Comment';
+import { buildOpenRiskDataset } from '@/sections/Assets';
+import { DRAWER_WIDTH } from '@/sections/detailsDrawer';
+import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
+import { DrawerList } from '@/sections/detailsDrawer/DrawerList';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
-import { Asset } from '@/types';
+import { getStatus } from '@/sections/RisksTable';
+import {
+  Asset,
+  Risk,
+  RiskSeverity,
+  RiskStatus,
+  RiskStatusLabel,
+  SeverityDef,
+} from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { capitalize } from '@/utils/lodash.util';
-import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { useSearchParams } from '@/utils/url.util';
-
-import { DRAWER_WIDTH } from '.';
 
 interface Props {
   compositeKey: string;
   open: boolean;
 }
-
-const TABLE_LIMIT = 10;
 
 export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const [, dns, name] = compositeKey.split('#');
@@ -42,14 +48,9 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const linkedIpsFilter = `#${dns}#`;
   const attributeFilter = `#asset#${dns}#${name}`;
 
-  const [assetsLimit, setAssetsLimit] = useState(TABLE_LIMIT);
-  const [riskLimit, setRiskLimit] = useState(TABLE_LIMIT);
-
   const { getAssetDrawerLink } = getDrawerLink();
   const { removeSearchParams } = useSearchParams();
   const navigate = useNavigate();
-
-  const { mutateAsync: updateAsset } = useUpdateAsset();
 
   const { data: assets = [], status: assestsStatus } = useMy(
     {
@@ -65,6 +66,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
     },
     { enabled: open }
   );
+
   const { data: risks = [], status: risksStatus } = useMy(
     {
       resource: 'risk',
@@ -83,54 +85,28 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const { data: assetNameGenericSearch, status: assetNameGenericSearchStatus } =
     useGenericSearch({ query: name }, { enabled: open });
 
-  const {
-    assets: rawLinkedHostnamesIncludingSelf = [],
-    attributes: genericAttributes = [],
-  } = assetNameGenericSearch || {};
+  const { assets: rawLinkedHostnamesIncludingSelf = [] } =
+    assetNameGenericSearch || {};
 
-  const associatedAssets = genericAttributes.filter(
-    attribute =>
-      attribute.class === 'seed' && attribute.key.startsWith('#attribute#asset')
+  const openRiskDataset = useMemo(
+    () => buildOpenRiskDataset(risks as Risk[]),
+    [risks]
   );
 
-  const associatedRisks = genericAttributes.filter(
-    attribute =>
-      attribute.class === 'seed' && attribute.key.startsWith('#attribute#risk')
-  );
-
-  const showMoreAssets = associatedAssets.length > TABLE_LIMIT;
-  const showMoreRisks = associatedRisks.length > TABLE_LIMIT;
-
-  const seed = attributes.find(attribute => attribute.class === 'seed');
   const asset: Asset = assets[0] || {};
 
   const assetType = useGetAssetType(asset);
 
-  const rawLinkedHostnames = rawLinkedHostnamesIncludingSelf.filter(
+  const linkedHostnames = rawLinkedHostnamesIncludingSelf.filter(
     ({ dns }) => dns !== asset.dns
   );
-  const rawlinkedIps = rawlinkedIpsIncludingSelf.filter(
+  const linkedIps = rawlinkedIpsIncludingSelf.filter(
     ({ name }) => name !== asset.dns
   );
 
-  const linkedHostnames = rawLinkedHostnames.slice(0, 10);
-  const linkedIps = rawlinkedIps.slice(0, 10);
-
-  const rawLinkedHostnamesLength = rawLinkedHostnames.length;
-  const rawlinkedIpsLength = rawlinkedIps.length;
-
-  const hasMorelinkedHostnames =
-    rawLinkedHostnamesLength > 10 ? rawLinkedHostnamesLength - 10 : 0;
-  const hasMoreLinkedIps =
-    rawlinkedIpsLength > 10 ? rawlinkedIpsLength - 10 : 0;
-
-  async function handleUpdateDescription(description = '') {
-    await updateAsset({
-      key: asset.key,
-      comment: description,
-      name: asset.name,
-    });
-  }
+  const openRisks = risks.filter(
+    ({ status }) => getStatus(status) === RiskStatus.Opened
+  );
 
   const isInitialLoading =
     assestsStatus === 'pending' ||
@@ -139,298 +115,172 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
     attributesStatus === 'pending' ||
     assetNameGenericSearchStatus === 'pending';
 
-  const isTypeAsset = assetType === 'asset';
-
   return (
     <Drawer
       open={open}
       onClose={() => removeSearchParams(StorageKey.DRAWER_COMPOSITE_KEY)}
       onBack={() => navigate(-1)}
-      className={DRAWER_WIDTH}
-      footer={
-        isTypeAsset && (
-          <Link
-            to={{
-              pathname: getRoute(['app', 'attributes']),
-              search: `?${StorageKey.HASH_SEARCH}=${encodeURIComponent(attributeFilter)}`,
-            }}
-          >
-            <Button
-              startIcon={<IdentificationIcon className="size-5" />}
-              className="ml-auto hover:bg-layer0"
-              styleType="secondary"
-            >
-              Asset Attributes
-            </Button>
-          </Link>
+      minWidth={DRAWER_WIDTH}
+      header={
+        isInitialLoading ? null : (
+          <DetailsDrawerHeader
+            title={asset.name}
+            subtitle={assetType === 'seed' ? asset.username : asset.dns}
+            prefix={<AssetsIcon className="size-5" />}
+            tag={
+              <div className="flex justify-center text-sm text-gray-400">
+                {assetType === 'integration' && (
+                  <Chip>{capitalize(assetType)}</Chip>
+                )}
+                <EyeIcon className="mr-2 size-5" />
+                {formatDate(asset.updated)}
+              </div>
+            }
+          />
         )
       }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
-        <div className="flex h-[calc(100%-24px)] flex-col gap-8">
-          <DetailsDrawerHeader
-            title={asset.name}
-            subtitle={
-              assetType === 'seed'
-                ? `${associatedRisks?.length} Risks Found`
-                : asset.dns
-            }
-            prefix={<AssetsIcon className="size-5" />}
-            tag={
-              assetType === 'integration' && (
-                <Chip>{capitalize(assetType)}</Chip>
-              )
-            }
-          />
-          <HorizontalSplit
-            leftContainer={
-              <>
-                {!isTypeAsset && (
-                  <Accordian title="Discovered Assets" contentClassName="pt-0">
-                    <Table
-                      tableClassName="border-none p-0 shadow-none [&_.th-top-border]:hidden"
-                      name="Discovered Assets"
-                      status="success"
-                      className="max-h-[550px]"
-                      data={associatedAssets.slice(0, assetsLimit)}
-                      columns={[
-                        {
-                          label: 'Name',
-                          id: 'name',
-                          className: 'w-full cursor-pointer pl-0',
-                          cell: item => {
-                            return getAttributeDetails(item).parsedName;
-                          },
-                          copy: true,
-                          to: item => {
-                            return getAttributeDetails(item).url;
-                          },
-                        },
-                        {
-                          label: 'Last Seen',
-                          id: 'updated',
-                          cell: 'date',
-                        },
-                      ]}
-                      error={null}
-                      isTableView={false}
-                    />
-                    {showMoreAssets && (
-                      <div className="flex w-full">
-                        <Button
-                          className="ml-auto"
-                          styleType="textPrimary"
-                          onClick={() =>
-                            setAssetsLimit(limit =>
-                              limit === associatedAssets.length
-                                ? TABLE_LIMIT
-                                : associatedAssets.length
-                            )
-                          }
-                        >
-                          {assetsLimit === associatedAssets.length
-                            ? 'View Less'
-                            : `and ${associatedAssets.length - assetsLimit} more`}
-                        </Button>
-                      </div>
-                    )}
-                  </Accordian>
-                )}
-                {!isTypeAsset && (
-                  <Accordian title="Discovered Risks" contentClassName="pt-0">
-                    <Table
-                      tableClassName="border-none p-0 shadow-none [&_.th-top-border]:hidden"
-                      name="Discovered Risks"
-                      status="success"
-                      data={associatedRisks.slice(0, riskLimit)}
-                      columns={[
-                        {
-                          label: 'Name',
-                          id: 'name',
-                          className: 'w-full cursor-pointer pl-0',
-                          cell: item => {
-                            return getAttributeDetails(item).parsedName;
-                          },
-                          copy: true,
-                          to: item => {
-                            return getAttributeDetails(item).url;
-                          },
-                        },
-                        {
-                          label: 'Last Seen',
-                          id: 'updated',
-                          cell: 'date',
-                        },
-                      ]}
-                      error={null}
-                      isTableView={false}
-                    />
-                    {showMoreRisks && (
-                      <div className="flex w-full">
-                        <Button
-                          className="ml-auto"
-                          styleType="textPrimary"
-                          onClick={() =>
-                            setRiskLimit(limit =>
-                              limit === associatedRisks.length
-                                ? TABLE_LIMIT
-                                : associatedRisks.length
-                            )
-                          }
-                        >
-                          {riskLimit === associatedRisks.length
-                            ? 'View Less'
-                            : `and ${associatedRisks.length - riskLimit} more`}
-                        </Button>
-                      </div>
-                    )}
-                  </Accordian>
-                )}
-                {isTypeAsset && (
-                  <Accordian
-                    title="Associated Hostnames"
-                    contentClassName="pt-0"
-                  >
-                    <Table
-                      tableClassName="border-none p-0 shadow-none [&_.th-top-border]:hidden"
-                      name="Associated Hostnames"
-                      status="success"
-                      data={linkedHostnames}
-                      columns={[
-                        {
-                          label: 'DNS',
-                          id: 'dns',
-                          className: 'w-full cursor-pointer pl-0',
-                          copy: true,
-                          to: item => getAssetDrawerLink(item),
-                        },
-                        {
-                          label: 'Last Seen',
-                          id: 'updated',
-                          cell: 'date',
-                        },
-                      ]}
-                      error={null}
-                      isTableView={false}
-                    />
-                    {hasMorelinkedHostnames > 0 && (
-                      <div className="flex w-full">
-                        <Link
-                          className="ml-auto"
-                          to={{
-                            pathname: getRoute(['app', 'assets']),
-                            search: `?${StorageKey.GENERIC_SEARCH}=${encodeURIComponent(name)}`,
-                          }}
-                        >
-                          <Button styleType="textPrimary">
-                            and {hasMorelinkedHostnames} more
-                          </Button>
-                        </Link>
-                      </div>
-                    )}
-                  </Accordian>
-                )}
-                {isTypeAsset && (
-                  <Accordian
-                    title="Associated IP Addresses"
-                    contentClassName="pt-0"
-                  >
-                    <Table
-                      tableClassName="border-none p-0 shadow-none [&_.th-top-border]:hidden"
-                      name="Associated IP Addresses"
-                      status="success"
-                      data={linkedIps}
-                      columns={[
-                        {
-                          label: 'IP Address',
-                          id: 'name',
-                          className: 'w-full cursor-pointer pl-0',
-                          to: item => getAssetDrawerLink(item),
-                        },
-                        {
-                          label: 'Last Seen',
-                          id: 'updated',
-                          cell: 'date',
-                        },
-                      ]}
-                      error={null}
-                      isTableView={false}
-                    />
-                    {hasMoreLinkedIps > 0 && (
-                      <div className="flex w-full">
-                        <Link
-                          className="ml-auto"
-                          to={{
-                            pathname: getRoute(['app', 'assets']),
-                            search: `?${StorageKey.HASH_SEARCH}=${encodeURIComponent(linkedIpsFilter)}`,
-                          }}
-                        >
-                          and {hasMoreLinkedIps} more
-                        </Link>
-                      </div>
-                    )}
-                  </Accordian>
-                )}
-              </>
-            }
-            rightContainer={
-              <>
-                <DetailsListContainer
-                  title="Asset Details"
-                  list={[
-                    {
-                      label: 'Status',
-                      value: (
-                        <AssetStatusText
-                          status={asset.status}
-                          showIcon={true}
-                        />
-                      ),
-                    },
-                    {
-                      label: 'First Seen',
-                      value: formatDate(asset.created),
-                      tooltip: asset.created,
-                    },
-                    {
-                      label: 'Last Seen',
-                      value: formatDate(asset.updated),
-                      tooltip: asset.updated,
-                    },
-                    {
-                      label: 'Discovered From',
-                      value: seed?.name,
-                      to: {
-                        pathname: window.location.pathname,
-                        search: `?${StorageKey.DRAWER_COMPOSITE_KEY}=${encodeURIComponent(`#asset#${seed?.name}#${seed?.name}`)}`,
-                      },
-                    },
-                    ...(isTypeAsset
-                      ? [
-                          {
-                            label: 'Found Risks',
-                            value: risks.length.toString(),
-                            to:
-                              risks.length > 0
-                                ? {
-                                    pathname: getRoute(['app', 'risks']),
-                                    search: `?${StorageKey.HASH_SEARCH}=${encodeURIComponent(riskFilter)}`,
-                                  }
-                                : undefined,
-                          },
-                        ]
-                      : []),
-                  ]}
-                />
-                <Comment
-                  comment={asset.comment}
-                  isLoading={false}
-                  onSave={handleUpdateDescription}
-                />
-              </>
-            }
-          />
+        <div className="mb-2 flex justify-between border border-gray-100 bg-gray-50 px-8 py-3">
+          <Tooltip placement="top" title="Change scan priority">
+            <div>
+              <AssetStatusDropdown asset={asset} />
+            </div>
+          </Tooltip>
         </div>
+        <TabGroup className="h-full">
+          <TabList className="flex overflow-x-auto">
+            {['Risks', 'Assets', 'Attributes'].map(tab => (
+              <TabWrapper key={tab}>{tab}</TabWrapper>
+            ))}
+          </TabList>
+          <TabPanels className="size-full h-[calc(100%-150px)] overflow-auto">
+            <TabPanel className="h-full">
+              <DrawerList
+                items={openRisks.map(({ dns, name, status, updated }) => {
+                  const riskStatusKey =
+                    `${status?.[0]}${status?.[2] || ''}` as RiskStatus;
+                  const riskSeverityKey = status?.[1] as RiskSeverity;
+
+                  const statusIcon = getRiskStatusIcon(riskStatusKey, 'size-5');
+                  const severityIcon = getRiskSeverityIcon(
+                    riskSeverityKey,
+                    'size-5'
+                  );
+
+                  const icons = (
+                    <div className="flex items-center gap-2 text-black">
+                      <Tooltip
+                        title={
+                          (RiskStatusLabel[riskStatusKey] || 'Closed') +
+                          ' Status'
+                        }
+                      >
+                        {statusIcon}
+                      </Tooltip>
+                      <Tooltip
+                        title={SeverityDef[riskSeverityKey] + ' Severity'}
+                      >
+                        {severityIcon}
+                      </Tooltip>
+                    </div>
+                  );
+
+                  return {
+                    prefix: icons,
+                    label: dns,
+                    value: name,
+                    date: updated,
+                    to: getDrawerLink().getRiskDrawerLink({ dns, name }),
+                  };
+                })}
+              />
+            </TabPanel>
+
+            <TabPanel className="h-full">
+              <DrawerList
+                items={[
+                  ...linkedHostnames.map(data => {
+                    const { detail } = getAssetStatusProperties(data.status);
+                    const containsRisks = openRiskDataset[data.dns];
+
+                    const icons = [
+                      <Tooltip key="status" title={detail}>
+                        {getAssetStatusIcon(data.status, 'size-5')}
+                      </Tooltip>,
+                    ];
+
+                    if (containsRisks) {
+                      icons.push(
+                        <Tooltip key="risks" title="Contains open risks">
+                          <div>
+                            <RisksIcon className="size-5" />
+                          </div>
+                        </Tooltip>
+                      );
+                    }
+
+                    return {
+                      prefix: (
+                        <div className="flex flex-row space-x-2">{icons}</div>
+                      ),
+                      label: data.name,
+                      value: data.dns,
+                      updated: data.updated,
+                      to: getAssetDrawerLink(data),
+                    };
+                  }),
+                  ...linkedIps.map(data => {
+                    const { detail } = getAssetStatusProperties(data.status);
+                    const containsRisks = openRiskDataset[data.dns];
+
+                    const icons = [
+                      <Tooltip key="status" title={detail + ' Status'}>
+                        {getAssetStatusIcon(data.status, 'size-5')}
+                      </Tooltip>,
+                    ];
+
+                    if (containsRisks) {
+                      icons.push(
+                        <Tooltip key="risks" title="Contains Open Risks">
+                          <div>
+                            <RisksIcon className="size-5" />
+                          </div>
+                        </Tooltip>
+                      );
+                    }
+                    return {
+                      prefix: (
+                        <div className="flex flex-row items-center gap-1">
+                          {icons}
+                        </div>
+                      ),
+                      label: data.dns,
+                      value: data.name,
+                      updated: data.updated,
+                      to: getAssetDrawerLink(data),
+                    };
+                  }),
+                ]}
+              />
+            </TabPanel>
+            <TabPanel className="h-full">
+              <div className="ml-4">
+                <AddAttribute resourceKey={asset.key} />
+              </div>
+              <div>
+                <DrawerList
+                  allowEmpty={true}
+                  items={attributes.map(data => ({
+                    label: data.class,
+                    value: data.name,
+                    updated: data.updated,
+                  }))}
+                />
+              </div>
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
       </Loader>
     </Drawer>
   );

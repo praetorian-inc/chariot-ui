@@ -8,6 +8,7 @@ import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { SpinnerIcon } from '@/components/icons/Spinner.icon';
 import { OverflowText } from '@/components/OverflowText';
 import { showBulkSnackbar, Snackbar } from '@/components/Snackbar';
+import SourceDropdown from '@/components/SourceDropdown';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
@@ -91,6 +92,11 @@ const Assets: React.FC = () => {
     'asset-priority',
     setSelectedRows
   );
+  const [sourceFilter, setSourceFilter] = useFilter(
+    [''],
+    'asset-source-filter',
+    setSelectedRows
+  );
 
   const status = useMergeStatus(riskStatus, assetsStatus);
   const { getAssetDrawerLink } = getDrawerLink();
@@ -134,6 +140,11 @@ const Assets: React.FC = () => {
     if (priorityFilter?.filter(Boolean).length > 0) {
       filteredAssets = filteredAssets.filter(({ status }) =>
         priorityFilter.includes(status)
+      );
+    }
+    if (sourceFilter?.filter(Boolean).length > 0) {
+      filteredAssets = filteredAssets.filter(({ source }) =>
+        sourceFilter.includes(source)
       );
     }
     const sortOrder = Object.keys(AssetStatusLabel);
@@ -299,6 +310,12 @@ const Assets: React.FC = () => {
                 value: priorityFilter,
                 multiSelect: true,
               }}
+            />
+            <SourceDropdown
+              data={filteredAssets}
+              type="asset"
+              onSelect={selected => setSourceFilter(selected)}
+              seeds={['google.com', 'msn.com']}
             />
           </div>
         }

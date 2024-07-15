@@ -4,6 +4,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { format } from 'date-fns';
 
 import { Dropdown } from '@/components/Dropdown';
+import SourceDropdown from '@/components/SourceDropdown';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
@@ -66,15 +67,22 @@ const Jobs: React.FC = () => {
   });
 
   const [filter, setFilter] = useFilter('', 'job-status');
+  const [sources, setSources] = useFilter([''], 'job-sources');
   const [searchParams, setSearchParams] = useSearchParams();
 
   const filteredJobs: Job[] = useMemo(() => {
+    let filteredJobs = jobs;
+
     if (filter?.length > 0) {
-      const filtered = jobs.filter(job => job.status === filter);
-      return filtered?.length > 0 ? filtered : [];
+      filteredJobs = jobs.filter(job => job.status === filter);
     }
-    return jobs;
-  }, [filter, JSON.stringify(jobs)]);
+
+    if (sources.length > 0) {
+      filteredJobs = jobs.filter(job => sources.includes(job.source));
+    }
+
+    return filteredJobs;
+  }, [filter, sources, JSON.stringify(jobs)]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -165,43 +173,50 @@ const Jobs: React.FC = () => {
       <Table
         resize={true}
         filters={
-          <Dropdown
-            styleType="header"
-            label={filter ? `${JobLabels[filter]} Jobs` : 'All Jobs'}
-            endIcon={
-              <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
-            }
-            menu={{
-              items: [
-                {
-                  label: 'All Jobs',
-                  labelSuffix: jobs.length?.toLocaleString(),
-                  value: '',
+          <div className="flex gap-4">
+            <Dropdown
+              styleType="header"
+              label={filter ? `${JobLabels[filter]} Jobs` : 'All Jobs'}
+              endIcon={
+                <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+              }
+              menu={{
+                items: [
+                  {
+                    label: 'All Jobs',
+                    labelSuffix: jobs.length?.toLocaleString(),
+                    value: '',
+                  },
+                  {
+                    label: 'Divider',
+                    type: 'divider',
+                  },
+                  ...Object.entries(JobLabels).map(([key, label]) => {
+                    return {
+                      label,
+                      labelSuffix: stats[key]?.toLocaleString() || 0,
+                      value: key,
+                    };
+                  }),
+                ],
+                onClick: value => {
+                  if (value === '' || !value) {
+                    searchParams.delete('status');
+                  } else {
+                    searchParams.set('status', value ?? '');
+                  }
+                  setSearchParams(searchParams);
+                  setFilter(value || '');
                 },
-                {
-                  label: 'Divider',
-                  type: 'divider',
-                },
-                ...Object.entries(JobLabels).map(([key, label]) => {
-                  return {
-                    label,
-                    labelSuffix: stats[key]?.toLocaleString() || 0,
-                    value: key,
-                  };
-                }),
-              ],
-              onClick: value => {
-                if (value === '' || !value) {
-                  searchParams.delete('status');
-                } else {
-                  searchParams.set('status', value ?? '');
-                }
-                setSearchParams(searchParams);
-                setFilter(value || '');
-              },
-              value: filter,
-            }}
-          />
+                value: filter,
+              }}
+            />
+            <SourceDropdown
+              data={jobs}
+              type="job"
+              onSelect={selectedRows => setSources(selectedRows)}
+            />
+          </div>
         }
         columns={columns}
         data={filteredJobs}

@@ -62,7 +62,7 @@ const Hello: React.FC = () => {
         throw new Error('No id_token in response');
       }
 
-      navigate('/');
+      navigate(getRoute(['app']));
     } catch (err) {
       console.error('Failed to exchange code for tokens.', err);
     }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
 import { LockClosedIcon } from '@heroicons/react/24/solid';
@@ -9,6 +9,7 @@ import BackendSelector from '@/components/ui/BackendSelector';
 import { useBackends } from '@/hooks';
 import { useAuth } from '@/state/auth';
 import { BackendType } from '@/types';
+import { getRoute } from '@/utils/route.util';
 
 function Login() {
   const navigate = useNavigate();
@@ -17,9 +18,9 @@ function Login() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const configIniParser = new ConfigIniParser();
 
-  useEffect(() => {
+  useMemo(() => {
     if (token) {
-      return navigate('/');
+      return navigate(getRoute(['app']));
     }
   }, [token]);
 

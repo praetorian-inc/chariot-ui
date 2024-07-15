@@ -7,7 +7,6 @@ import { queryStorge } from '@/utils/storage/queryStorage.util';
 
 export enum StorageKey {
   AUTH = 'chariot.auth',
-  IMPERSONATED_UER_ID = 'chariot.impersonatedUserId',
   SHOW_NEW_USER_SEED_MODAL = 'chariot.showNewUserSeedModal',
   DRAWER_COMPOSITE_KEY = 'drawerCompositeKey',
   HASH_SEARCH = 'hashSearch',

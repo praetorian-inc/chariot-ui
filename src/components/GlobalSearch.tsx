@@ -38,7 +38,7 @@ import {
 } from '@/types';
 import { cn } from '@/utils/classname';
 import { getSeverityClass } from '@/utils/getSeverityClass.util';
-import { getAppRoute } from '@/utils/route.util';
+import { getRoute } from '@/utils/route.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { useSearchParams } from '@/utils/url.util';
 
@@ -68,7 +68,7 @@ const GlobalSearch = () => {
   const handleSelectChange = (resource: keyof MyResource | 'user') => {
     if (resource === 'user') {
       navigate({
-        pathname: getAppRoute(['account']),
+        pathname: getRoute(['app', 'account']),
         search: `?${StorageKey.GENERIC_SEARCH}=${encodeURIComponent(search)}`,
       });
     } else {

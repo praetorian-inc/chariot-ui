@@ -31,7 +31,7 @@ import {
   IntegrationMeta,
   IntegrationsMeta,
 } from '@/utils/availableIntegrations';
-import { getAppRoute } from '@/utils/route.util';
+import { getRoute } from '@/utils/route.util';
 
 const PUBLIC_ASSET = 'publicAsset';
 
@@ -304,7 +304,7 @@ export const TabPanelContent = (props: TabPanelContentProps) => {
             className="ml-auto underline"
             onClick={() => {
               navigate({
-                pathname: getAppRoute(['jobs']),
+                pathname: getRoute(['app', 'jobs']),
                 search: `?hashSearch=${encodeURIComponent(`#${connectedIntegration[0].member}`)}`,
               });
               onCancel();

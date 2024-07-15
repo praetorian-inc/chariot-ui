@@ -16,7 +16,8 @@ import Logout from '@/sections/Logout';
 import { Overview } from '@/sections/Overview';
 import { Risks } from '@/sections/RisksTable';
 import { useAuth } from '@/state/auth';
-import { getAppRoute, getRoute } from '@/utils/route.util';
+import { validateRoutes } from '@/utils/route.util';
+import { getRoute } from '@/utils/route.util';
 
 function CheckAuth(props: { children: ReactNode }) {
   const { token } = useAuth();
@@ -40,7 +41,7 @@ const appRoutes = {
     element: <Hello />,
     title: 'Hello',
   },
-  'app/:userId': {
+  app: {
     element: (
       <CheckAuth>
         <AuthenticatedApp>
@@ -96,23 +97,16 @@ const appRoutes = {
       ),
       title: 'Overview',
     },
-    '*': <Navigate to={getAppRoute(['risks'])} replace />,
+    '*': <Navigate to="/app/risks" replace />,
   },
-  '*': <AppFallback />,
+  '*': <Navigate to="/app/risks" replace />,
 } as const;
-
-function AppFallback() {
-  const { token, getDefaultRoute } = useAuth();
-
-  if (token) {
-    return <Navigate to={getDefaultRoute()} replace />;
-  } else {
-    return <Navigate to={getRoute(['login'])} replace />;
-  }
-}
 
 export function AppRoutes() {
   return <RenderRoutes appRoutes={appRoutes} conditions={{}} />;
 }
 
 export type TAppRoutes = typeof appRoutes;
+
+// Note: This is just to make sure that the routes are valid
+validateRoutes(appRoutes);

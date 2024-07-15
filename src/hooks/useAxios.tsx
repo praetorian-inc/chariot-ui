@@ -14,7 +14,7 @@ export const useAxios = () => {
 };
 
 export function useInitAxiosInterceptors() {
-  const { api, token, impersonatingEmail } = useAuth();
+  const { api, token, friend } = useAuth();
 
   useMemo(() => {
     axiosInstance.defaults.baseURL = api ?? '';
@@ -22,6 +22,6 @@ export function useInitAxiosInterceptors() {
       ? `Bearer ${token}`
       : '';
     axiosInstance.defaults.headers.common['account'] =
-      impersonatingEmail !== '' ? impersonatingEmail : undefined;
-  }, [api, token, impersonatingEmail]);
+      friend.email && friend.email !== '' ? friend.email : undefined;
+  }, [api, token, friend]);
 }

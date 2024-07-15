@@ -96,7 +96,8 @@ export const CollaboratingWith = () => {
       label: 'User',
       id: 'displayName',
       cell: 'highlight',
-      onClick: (row: TableData) => startImpersonation(row.email),
+      onClick: (row: TableData) =>
+        startImpersonation(row.email, row.displayName ?? ''),
     },
     {
       label: 'Total',

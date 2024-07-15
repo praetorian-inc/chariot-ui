@@ -5,7 +5,7 @@ import { useMy } from '@/hooks/useMy';
 import { JobStatus } from '@/types';
 import { cn } from '@/utils/classname';
 import { sToMs } from '@/utils/date.util';
-import { getAppRoute } from '@/utils/route.util';
+import { getRoute } from '@/utils/route.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
 interface Props {
@@ -76,7 +76,7 @@ export const Notifications: React.FC<Props> = ({ onNotify, onClick }) => {
             ),
             labelSuffix: jobs.length.toLocaleString(),
             className: 'flex items-center',
-            to: getAppRoute(['jobs']),
+            to: getRoute(['app', 'jobs']),
           },
           {
             label: 'Divider',
@@ -86,37 +86,25 @@ export const Notifications: React.FC<Props> = ({ onNotify, onClick }) => {
             label: 'Running',
             labelSuffix: runningJobs?.toLocaleString(),
             className: 'flex items-center',
-            to: {
-              pathname: getAppRoute(['jobs']),
-              search: `?status=${JobStatus.Running}`,
-            },
+            to: `/app/jobs?status=${JobStatus.Running}`,
           },
           {
             className: 'flex items-center',
             label: 'Queued',
             labelSuffix: queuedJobs?.toLocaleString(),
-            to: {
-              pathname: getAppRoute(['jobs']),
-              search: `?status=${JobStatus.Queued}`,
-            },
+            to: `/app/jobs?status=${JobStatus.Queued}`,
           },
           {
             label: 'Failed',
             labelSuffix: failedJobs?.toLocaleString(),
             className: 'flex items-center',
-            to: {
-              pathname: getAppRoute(['jobs']),
-              search: `?status=${JobStatus.Fail}`,
-            },
+            to: `/app/jobs?status=${JobStatus.Fail}`,
           },
           {
             className: 'flex items-center',
             label: 'Completed',
             labelSuffix: completedJobs?.toLocaleString(),
-            to: {
-              pathname: getAppRoute(['jobs']),
-              search: `?status=${JobStatus.Pass}`,
-            },
+            to: `/app/jobs?status=${JobStatus.Pass}`,
           },
         ],
       }}

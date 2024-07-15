@@ -33,6 +33,7 @@ const emptyAuth: AuthState = {
   clientId: '',
   me: '',
   friend: { email: '', displayName: '' },
+  isImpersonating: false,
 };
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -157,6 +158,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       ...auth,
       login,
       logout,
+      isImpersonating: auth.friend.email !== '',
       setCognitoAuthStates,
       startImpersonation,
       stopImpersonation,

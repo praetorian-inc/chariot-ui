@@ -1,11 +1,16 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import {
+  ExclamationTriangleIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import MD5 from 'crypto-js/md5';
 
 import { Button } from '@/components/Button';
 import { Dropzone, Files } from '@/components/Dropzone';
 import { Input } from '@/components/form/Input';
 import { Loader } from '@/components/Loader';
+import { Modal } from '@/components/Modal';
 import { Paper } from '@/components/Paper';
 import {
   PROFILE_PICTURE_ID,
@@ -15,6 +20,7 @@ import {
   useGetCollaboratorEmails,
   useGetDisplayName,
   useModifyAccount,
+  usePurgeAccount,
 } from '@/hooks/useAccounts';
 import { useUploadFile } from '@/hooks/useFiles';
 import { useMy } from '@/hooks/useMy';
@@ -25,11 +31,14 @@ import { Users } from '@/sections/Users';
 import { useAuth } from '@/state/auth';
 
 const Account: React.FC = () => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [displayName, setDisplayName] = useState('');
 
-  const { me, friend } = useAuth();
+  const { me, friend, isImpersonating } = useAuth();
   const { data, status } = useMy({ resource: 'account' });
   const { mutate: updateAccount } = useModifyAccount('updateSetting');
+  const { mutateAsync: purgeAccount } = usePurgeAccount();
+
   const accountDisplayName = useGetDisplayName(data);
   const isDirty = status === 'success' && accountDisplayName !== displayName;
   const header = MD5(friend.email || me).toString();
@@ -183,6 +192,53 @@ const Account: React.FC = () => {
           </div>
         </div>
       </Section>
+      {!isImpersonating && (
+        <Section
+          title="Delete Account"
+          description="Deleting your account is a permanent action that cannot be reversed."
+        >
+          <>
+            <Button
+              type="button"
+              styleType="error"
+              onClick={() => {
+                setIsDeleteModalOpen(true);
+              }}
+              startIcon={<TrashIcon className="size-5" />}
+            >
+              Delete Account
+            </Button>
+            <Modal
+              style="dialog"
+              title={
+                <div className="flex items-center gap-1">
+                  <ExclamationTriangleIcon className="size-5 text-red-600" />
+                  Delete Account
+                </div>
+              }
+              open={isDeleteModalOpen}
+              onClose={() => {
+                setIsDeleteModalOpen(false);
+              }}
+              footer={{
+                text: 'Delete',
+                onClick: async () => {
+                  await purgeAccount();
+                  // Call api to delete account
+                  setIsDeleteModalOpen(false);
+                },
+                styleType: 'error',
+              }}
+            >
+              <div className="space-y-2 text-sm text-default-light">
+                Deleting your account is a permanent action that cannot be
+                reversed. This will remove all your data from Praetorian servers
+                and delete your login credentials.
+              </div>
+            </Modal>
+          </>
+        </Section>
+      )}
     </div>
   );
 };

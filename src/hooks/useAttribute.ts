@@ -3,7 +3,8 @@ import { useQueries } from '@tanstack/react-query';
 
 import { Snackbar } from '@/components/Snackbar';
 import { useAxios } from '@/hooks/useAxios';
-import { useMy } from '@/hooks/useMy';
+import { useCounts } from '@/hooks/useCounts';
+import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { getQueryKey } from '@/hooks/useQueryKeys';
 import { Attribute } from '@/types';
 import { mergeStatus, useMutation } from '@/utils/api';
@@ -14,11 +15,19 @@ interface CreateAttribute {
   name: string;
 }
 
-export const useCreateAttribute = () => {
+export const useCreateAttribute = (resourceKey = '') => {
   const axios = useAxios();
-  const { invalidate: invalidateReference } = useMy(
+  const { invalidate: invalidateAttributeCounts } = useCounts(
     { resource: 'attribute' },
     { enabled: false }
+  );
+  const { invalidate: invalidateAttributesGenericSearch } = useGenericSearch(
+    {
+      query: `source:${resourceKey}`,
+    },
+    {
+      enabled: false,
+    }
   );
 
   return useMutation<void, Error, CreateAttribute>({
@@ -36,7 +45,8 @@ export const useCreateAttribute = () => {
         variant: 'success',
       });
 
-      invalidateReference();
+      invalidateAttributeCounts();
+      invalidateAttributesGenericSearch();
 
       return data;
     },

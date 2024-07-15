@@ -106,7 +106,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
 
   const [, dns, name] = compositeKey.split('#');
 
-  const referenceFilter = `#risk#${dns}#${name}`;
+  const attributesFilter = `source:#risk#${dns}#${name}`;
 
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [markdownValue, setMarkdownValue] = useState('');
@@ -135,10 +135,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     },
     { enabled: open }
   );
-  const { data: attributes } = useMy(
+  const { data: attributesGenericSearch } = useGenericSearch(
     {
-      resource: 'attribute',
-      query: referenceFilter,
+      query: attributesFilter,
     },
     {
       enabled: open,
@@ -454,11 +453,13 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 <div>
                   <DrawerList
                     allowEmpty={true}
-                    items={attributes.map(data => ({
-                      label: data.name,
-                      value: data.value,
-                      updated: data.updated,
-                    }))}
+                    items={(attributesGenericSearch?.attributes || [])?.map(
+                      data => ({
+                        label: data.name,
+                        value: data.value,
+                        updated: data.updated,
+                      })
+                    )}
                   />
                 </div>
               </TabPanel>

@@ -46,7 +46,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const [, dns, name] = compositeKey.split('#');
   const riskFilter = `#${dns}`;
   const linkedIpsFilter = `#${dns}#`;
-  const attributeFilter = `#asset#${dns}#${name}`;
+  const attributeFilter = `source:#asset${compositeKey}`;
 
   const { getAssetDrawerLink } = getDrawerLink();
   const { removeSearchParams } = useSearchParams();
@@ -59,12 +59,13 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
     },
     { enabled: open }
   );
-  const { data: attributes = [], status: attributesStatus } = useMy(
-    {
-      resource: 'attribute',
-    },
-    { enabled: open }
-  );
+  const { data: attributesGenericSearch, status: attributesStatus } =
+    useGenericSearch(
+      {
+        query: attributeFilter,
+      },
+      { enabled: open }
+    );
 
   const { data: risks = [], status: risksStatus } = useMy(
     {
@@ -90,11 +91,6 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
   const openRiskDataset = useMemo(
     () => buildOpenRiskDataset(risks as Risk[]),
     [risks]
-  );
-
-  const filteredAttributes = useMemo(
-    () => attributes.filter(({ source }) => source === attributeFilter),
-    [attributes]
   );
 
   const asset: Asset = assets[0] || {};
@@ -255,11 +251,13 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
               <div>
                 <DrawerList
                   allowEmpty={true}
-                  items={filteredAttributes.map(data => ({
-                    label: data.name,
-                    value: data.value,
-                    updated: data.updated,
-                  }))}
+                  items={(attributesGenericSearch?.attributes || [])?.map(
+                    data => ({
+                      label: data.name,
+                      value: data.value,
+                      updated: data.updated,
+                    })
+                  )}
                 />
               </div>
             </TabPanel>

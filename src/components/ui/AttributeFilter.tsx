@@ -80,6 +80,11 @@ const getMenuItems = (stats: Record<string, number>): MenuProps['items'] => {
   );
   const menuItems = Object.entries(statsObject).reduce<MenuProps['items']>(
     (acc, [name, values]) => {
+      // Skip source attribute, as it has a separate filter
+      if (name === 'source') {
+        return acc;
+      }
+
       return [
         ...acc,
         {

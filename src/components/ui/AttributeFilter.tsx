@@ -3,7 +3,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 import { Dropdown } from '@/components/Dropdown';
 import { MenuProps } from '@/components/Menu';
-import { useCommonAssetsWithAttributes } from '@/hooks/useAttribute';
+import { useAssetsWithAttributes } from '@/hooks/useAttribute';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
 
@@ -16,21 +16,29 @@ export const getSelectedAttributes = (attribues: AttributeFilterType) => {
 };
 
 interface Props {
+  resource?: string;
   onAssetsChange: (assets: string[]) => void;
 }
 
+/**
+ * This component is used to filter assets by their attributes
+ * This is primarily used in the AssetDrawer component
+ * If we need it for other resources, we'll have to make modifications to the useAssetsWithAttributes hook
+ */
 export const AttributeFilter = (props: Props) => {
+  const { resource = 'asset' } = props;
   const [attributesFilter, setAttributesFilter] = useFilter<string[]>(
     [],
-    'asset-attributes'
+    `${resource}-attributes`
   );
   const { data: stats = {}, status: statusCounts } = useCounts({
     resource: 'attribute',
   });
 
-  const menuItems = statusCounts === 'pending' ? [] : getMenuItems(stats);
+  const menuItems =
+    statusCounts === 'pending' ? [] : getMenuItems(resource, stats);
 
-  const { data, status } = useCommonAssetsWithAttributes(attributesFilter);
+  const { data, status } = useAssetsWithAttributes(attributesFilter);
 
   useEffect(() => {
     if (status === 'success' && data) {
@@ -64,20 +72,25 @@ export const AttributeFilter = (props: Props) => {
   );
 };
 
-const getMenuItems = (stats: Record<string, number>): MenuProps['items'] => {
-  const statsObject = Object.entries(stats).reduce(
-    (acc, [label, count]) => {
-      const [, name, value] = label.split('#');
-      return {
-        ...acc,
-        [name]: {
-          ...acc[name],
-          [value]: count,
-        },
-      };
-    },
-    {} as Record<string, Record<string, number>>
-  );
+const getMenuItems = (
+  resource: string,
+  stats: Record<string, number>
+): MenuProps['items'] => {
+  const statsObject = Object.entries(stats)
+    .filter(([key]) => key.endsWith(`#${resource}`))
+    .reduce(
+      (acc, [label, count]) => {
+        const [, name, value] = label.split('#');
+        return {
+          ...acc,
+          [name]: {
+            ...acc[name],
+            [value]: count,
+          },
+        };
+      },
+      {} as Record<string, Record<string, number>>
+    );
   const menuItems = Object.entries(statsObject).reduce<MenuProps['items']>(
     (acc, [name, values]) => {
       // Skip source attribute, as it has a separate filter

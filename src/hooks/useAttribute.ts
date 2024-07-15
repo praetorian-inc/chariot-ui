@@ -53,7 +53,7 @@ export const useCreateAttribute = (resourceKey = '') => {
   });
 };
 
-export const useCommonAssetsWithAttributes = (attributes: string[]) => {
+export const useAssetsWithAttributes = (attributes: string[]) => {
   const axios = useAxios();
   return useQueries({
     queries: attributes

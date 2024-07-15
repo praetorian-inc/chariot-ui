@@ -54,7 +54,7 @@ export const AttributeFilter = (props: Props) => {
           ? attributesFilter
               .map(attributes => attributes.split('#')[1])
               .join(', ')
-          : 'Attribute'
+          : 'Attributes'
       }
       endIcon={
         <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />

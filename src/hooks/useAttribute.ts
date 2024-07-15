@@ -2,7 +2,6 @@
 import { useQueries } from '@tanstack/react-query';
 
 import { Snackbar } from '@/components/Snackbar';
-import { AttributeFilterType } from '@/components/ui/AttributeFilter';
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
 import { getQueryKey } from '@/hooks/useQueryKeys';
@@ -44,38 +43,25 @@ export const useCreateAttribute = () => {
   });
 };
 
-export const useCommonAssetsWithAttributes = (
-  attributes: AttributeFilterType
-) => {
+export const useCommonAssetsWithAttributes = (attributes: string[]) => {
   const axios = useAxios();
   return useQueries({
-    queries: Object.entries(attributes).reduce(
-      (
-        acc: { queryKey: string[]; queryFn: () => Promise<Attribute[]> }[],
-        [key, values]
-      ) => {
-        if (values.length === 0) {
-          return acc;
-        }
-        return acc.concat(
-          values.map(value => {
-            return {
-              queryKey: getQueryKey.getMy('attribute', `#${key}#${value}`),
-              queryFn: async () => {
-                const res = await axios.get(`/my`, {
-                  params: {
-                    key: `#attribute#${key}#${value}`,
-                  },
-                });
-
-                return res.data['attributes'] as Attribute[];
+    queries: attributes
+      .filter(x => Boolean(x))
+      .map(attribute => {
+        return {
+          queryKey: getQueryKey.getMy('attribute', `#${attribute}`),
+          queryFn: async () => {
+            const res = await axios.get(`/my`, {
+              params: {
+                key: `#attribute#${attribute}`,
               },
-            };
-          })
-        );
-      },
-      []
-    ),
+            });
+
+            return res.data['attributes'] as Attribute[];
+          },
+        };
+      }),
     combine: results => {
       return {
         data: results
@@ -86,7 +72,7 @@ export const useCommonAssetsWithAttributes = (
             );
             return acc.length === 0
               ? currentSources
-              : acc.filter((source: string) => currentSources.includes(source));
+              : [...new Set([...acc, ...currentSources])];
           }, [] as string[]),
         status: mergeStatus(...results.map(result => result.status)),
       };

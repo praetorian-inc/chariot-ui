@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { XMarkIcon } from '@heroicons/react/24/solid';
 
-import { Chip } from '@/components/Chip';
-import { FormGroup } from '@/components/form/FormGroup';
-import { InputText } from '@/components/form/InputText';
-import { Popover } from '@/components/Popover';
+import { Dropdown } from '@/components/Dropdown';
+import { MenuProps } from '@/components/Menu';
+import { useCommonAssetsWithAttributes } from '@/hooks/useAttribute';
+import { useCounts } from '@/hooks/useCounts';
+import { useFilter } from '@/hooks/useFilter';
 
 export type AttributeFilterType = Record<string, string[]>;
 
@@ -16,141 +16,84 @@ export const getSelectedAttributes = (attribues: AttributeFilterType) => {
 };
 
 interface Props {
-  attributes: AttributeFilterType;
-  setAttributes: React.Dispatch<React.SetStateAction<AttributeFilterType>>;
+  onAssetsChange: (assets: string[]) => void;
 }
 
 export const AttributeFilter = (props: Props) => {
-  const { attributes, setAttributes } = props;
-  const [open, setOpen] = useState(false);
+  const [attributesFilter, setAttributesFilter] = useFilter<string[]>(
+    [],
+    'asset-attributes'
+  );
+  const { data: stats = {}, status: statusCounts } = useCounts({
+    resource: 'attribute',
+  });
 
-  const inputs = [
-    {
-      label: 'Port',
-      value: attributes.port,
-      placeholder: '21',
-      name: 'port',
-      required: true,
-      type: 'multi_select',
-    },
-    {
-      label: 'Protocol',
-      value: attributes.protocol,
-      placeholder: 'http',
-      name: 'protocol',
-      required: true,
-      type: 'multi_select',
-    },
-  ];
+  const menuItems = statusCounts === 'pending' ? [] : getMenuItems(stats);
 
-  const showTags = Object.values(attributes).flat().length > 0;
-  const label = showTags
-    ? Object.entries(getSelectedAttributes(attributes))
-        .map(([key, value]) => `${getInputLabel(key)}=( ${value.join(', ')} )`)
-        .join(' AND ')
-    : 'Attribute';
+  const { data, status } = useCommonAssetsWithAttributes(attributesFilter);
 
-  function getInputLabel(key: string) {
-    return inputs.find(({ name }) => name === key)?.label;
-  }
+  useEffect(() => {
+    if (status === 'success' && data) {
+      props.onAssetsChange(data);
+    }
+  }, [status, data]);
 
   return (
-    <Popover
-      onClick={() => setOpen(!open)}
-      type="button"
-      open={open}
-      setOpen={setOpen}
+    <Dropdown
       styleType="header"
-      endIcon={<ChevronDownIcon className="size-3" />}
-      label={label}
-      style={{ zIndex: 2 }}
-    >
-      <div className="w-[300px]" style={{ zIndex: 100 }}>
-        <form className="flex flex-1 flex-col gap-4 p-2" onSubmit={() => null}>
-          {inputs.map(({ label, name, placeholder, required }) => (
-            <AttributeInput
-              label={label}
-              name={name}
-              value={attributes[name] as string[]}
-              onChange={values => {
-                setAttributes(attributes => ({
-                  ...attributes,
-                  [name]: values,
-                }));
-              }}
-              placeholder={placeholder}
-              required={required}
-              key={name}
-            />
-          ))}
-        </form>
-      </div>
-    </Popover>
+      label={
+        attributesFilter.length > 0 && attributesFilter[0] !== ''
+          ? attributesFilter
+              .map(attributes => attributes.split('#')[1])
+              .join(', ')
+          : 'Attribute'
+      }
+      endIcon={
+        <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
+      }
+      menu={{
+        className: 'h-[400px]',
+        items: menuItems,
+        onSelect: attributesFilter => {
+          setAttributesFilter(attributesFilter);
+        },
+        value: attributesFilter,
+        multiSelect: true,
+      }}
+    />
   );
 };
 
-interface AttributeInputProps {
-  label: string;
-  name: string;
-  value?: string[];
-  placeholder: string;
-  required: boolean;
-  onChange: (values: string[]) => void;
-}
-
-export const AttributeInput = (props: AttributeInputProps) => {
-  const { label, name, value = [], onChange, placeholder, required } = props;
-
-  const [localValue, setLocalValue] = useState<string>('');
-
-  useEffect(() => {
-    onChange(value);
-  }, [value]);
-
-  return (
-    <FormGroup
-      formClassName="flex justify-between gap-1 items-start"
-      label={label}
-      name={name}
-    >
-      <div className="relative w-[200px]">
-        <input
-          name={name}
-          value={Array.isArray(value) ? value.join(',') : value}
-          className="absolute bottom-0 h-px w-full"
-          style={{ opacity: '0' }}
-        />
-        <InputText
-          name=""
-          value={localValue}
-          onChange={event => {
-            setLocalValue(event.target.value);
-          }}
-          onKeyDown={event => {
-            if (event.key === 'Enter') {
-              onChange([...new Set([...value, localValue])]);
-              setLocalValue('');
-            }
-          }}
-          required={required}
-          placeholder={placeholder}
-        />
-        <div className="mt-2 flex flex-wrap gap-2">
-          {value.map((current, index) => (
-            <Chip
-              key={index}
-              onClick={() => {
-                onChange(value.filter(v => v !== current));
-              }}
-            >
-              <div className="flex gap-2">
-                <span>{current}</span>
-                <XMarkIcon className="size-4" />
-              </div>
-            </Chip>
-          ))}
-        </div>
-      </div>
-    </FormGroup>
+const getMenuItems = (stats: Record<string, number>): MenuProps['items'] => {
+  const statsObject = Object.entries(stats).reduce(
+    (acc, [label, count]) => {
+      const [, name, value] = label.split('#');
+      return {
+        ...acc,
+        [name]: {
+          ...acc[name],
+          [value]: acc[name]?.[value] ? acc[name][value] + count : count,
+        },
+      };
+    },
+    {} as Record<string, Record<string, number>>
   );
+  const menuItems = Object.entries(statsObject).reduce<MenuProps['items']>(
+    (acc, [name, values]) => {
+      return [
+        ...acc,
+        {
+          label: name,
+          type: 'label' as const,
+        },
+        ...Object.entries(values).map(([value, count]) => ({
+          label: value,
+          labelSuffix: count.toLocaleString(),
+          value: `${name}#${value}`,
+        })),
+      ];
+    },
+    []
+  );
+  return menuItems;
 };

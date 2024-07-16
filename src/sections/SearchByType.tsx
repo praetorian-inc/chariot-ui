@@ -61,6 +61,8 @@ export function SearchByType(props: SearchTypeProps) {
             };
           });
 
+        if (typeOptions.length === 0) return [];
+
         return [
           { label: capitalize(genericSearchKey), type: 'label' },
           ...uniqByKeepLast(typeOptions, option => option.value || ''),

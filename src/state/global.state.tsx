@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import { Asset, Risk } from '@/types';
+import { Asset } from '@/types';
 
 interface UseModalState {
   open: boolean;
@@ -12,17 +12,11 @@ interface SelectedAssets {
   onSelectedAssetsChange: React.Dispatch<React.SetStateAction<Asset[]>>;
 }
 
-interface SelectedRisks {
-  selectedRisks: Risk[];
-  onSelectedRisksChange: React.Dispatch<React.SetStateAction<Risk[]>>;
-}
-
 interface GlobalState {
   modal: {
     seed: UseModalState;
     risk: UseModalState & SelectedAssets;
     asset: UseModalState;
-    attribute: UseModalState & SelectedAssets & SelectedRisks;
     file: UseModalState;
   };
 }
@@ -43,11 +37,9 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [seedOpen, setSeedOpen] = useState(false);
   const [riskOpen, setRiskOpen] = useState(false);
   const [assetOpen, setAssetOpen] = useState(false);
-  const [attributeOpen, setAttributeOpen] = useState(false);
   const [fileOpen, setFileOpen] = useState(false);
 
   const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
-  const [selectedRisks, setSelectedRisks] = useState<Risk[]>([]);
 
   return (
     <GlobalStateContext.Provider
@@ -61,14 +53,6 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
             onSelectedAssetsChange: setSelectedAssets,
           },
           asset: { open: assetOpen, onOpenChange: setAssetOpen },
-          attribute: {
-            open: attributeOpen,
-            onOpenChange: setAttributeOpen,
-            selectedAssets,
-            onSelectedAssetsChange: setSelectedAssets,
-            selectedRisks,
-            onSelectedRisksChange: setSelectedRisks,
-          },
           file: { open: fileOpen, onOpenChange: setFileOpen },
         },
       }}

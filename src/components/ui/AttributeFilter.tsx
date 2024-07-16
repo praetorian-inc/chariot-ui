@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import React, { useEffect, useMemo } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/24/solid';
 
-import { Dropdown } from '@/components/Dropdown';
-import { MenuProps } from '@/components/Menu';
+import { Popover } from '@/components/Popover';
 import { useAssetsWithAttributes } from '@/hooks/useAttribute';
-import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
+import { parseKeys, TypeSearch } from '@/sections/SearchByType';
 
 export type AttributeFilterType = Record<string, string[]>;
 
@@ -27,107 +26,46 @@ interface Props {
  */
 export const AttributeFilter = (props: Props) => {
   const { resource = 'asset' } = props;
+
   const [attributesFilter, setAttributesFilter] = useFilter<string[]>(
     [],
     `${resource}-attributes`
   );
-  const { data: stats = {}, status: statusCounts } = useCounts({
-    resource: 'attribute',
-  });
 
-  const menuItems =
-    statusCounts === 'pending' ? [] : getMenuItems(resource, stats);
+  const attFilterKeys = useMemo(() => {
+    return attributesFilter.map(att => {
+      const attribute = parseKeys.attributeKey(att);
+      return `${attribute.name}#${attribute.value}`;
+    });
+  }, [JSON.stringify(attributesFilter)]);
 
-  const { data, status } = useAssetsWithAttributes(attributesFilter);
+  const { data, status } = useAssetsWithAttributes(attFilterKeys);
 
   useEffect(() => {
     if (status === 'success' && data) {
       props.onAssetsChange(data);
     }
-  }, [status, data]);
+  }, [status, JSON.stringify(data)]);
 
   return (
-    <Dropdown
+    <Popover
+      label="Attribute Filter"
       styleType="header"
-      label={
-        attributesFilter.length > 0 && attributesFilter[0] !== ''
-          ? attributesFilter
-              .map(attributes => attributes.split('#')[1])
-              .join(', ')
-          : 'All Attributes'
-      }
       endIcon={
         <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
       }
-      menu={{
-        className: 'max-h-[400px] min-w-[200px]',
-        items: menuItems,
-        onSelect: attributesFilter => {
-          setAttributesFilter(attributesFilter);
-        },
-        value: attributesFilter,
-        multiSelect: true,
-        emptyState: {
-          label: 'No attributes found',
-        },
-      }}
-    />
+    >
+      <TypeSearch
+        queryPrefix="#attribute#"
+        onChange={({ attributes }) => {
+          setAttributesFilter(attributes || []);
+        }}
+        types={['attributes']}
+        value={{ attributes: attributesFilter }}
+        filterOption={attribute => {
+          return (attribute as { source: string }).source.startsWith('#asset');
+        }}
+      />
+    </Popover>
   );
-};
-
-const getMenuItems = (
-  resource: string,
-  stats: Record<string, number>
-): MenuProps['items'] => {
-  const statsObject = Object.entries(stats)
-    .filter(([key]) => key.endsWith(`#${resource}`))
-    .reduce(
-      (acc, [label, count]) => {
-        const [, name, value] = label.split('#');
-        return {
-          ...acc,
-          [name]: {
-            ...acc[name],
-            [value]: count,
-          },
-        };
-      },
-      {} as Record<string, Record<string, number>>
-    );
-
-  const menuItems = Object.entries(statsObject).reduce<MenuProps['items']>(
-    (acc, [name, values]) => {
-      // Skip source attribute, as it has a separate filter
-      if (name === 'source') {
-        return acc;
-      }
-
-      return [
-        ...acc,
-        {
-          label: name,
-          type: 'label' as const,
-        },
-        ...Object.entries(values).map(([value, count]) => ({
-          label: value,
-          labelSuffix: count.toLocaleString(),
-          value: `${name}#${value}`,
-        })),
-      ];
-    },
-    []
-  );
-
-  return [
-    {
-      label: 'All Attributes',
-      labelSuffix: menuItems.length.toLocaleString(),
-      value: '',
-    },
-    {
-      label: 'Divider',
-      type: 'divider',
-    },
-    ...menuItems,
-  ];
 };

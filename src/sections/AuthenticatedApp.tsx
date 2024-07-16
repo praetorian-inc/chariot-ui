@@ -9,7 +9,6 @@ import { ShortcutsHelper } from '@/components/ui/Shortcuts';
 import { useMy } from '@/hooks';
 import { useGetDisplayName } from '@/hooks/useAccounts';
 import { AddAsset } from '@/sections/add/AddAsset';
-import { AddAttribute } from '@/sections/add/AddAttribute';
 import { AddFile } from '@/sections/add/AddFile';
 import { AddRisks } from '@/sections/add/AddRisks';
 import { DetailsDrawer } from '@/sections/detailsDrawer';
@@ -118,7 +117,6 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
       <AddRisks />
       <AddAsset />
       <AddFile />
-      <AddAttribute />
       {accountsStatus === 'success' && showUpgrade && <Upgrade />}
     </div>
   );

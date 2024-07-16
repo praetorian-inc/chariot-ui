@@ -9,7 +9,8 @@ import { InputText } from '@/components/form/InputText';
 import { SeverityBadge, StatusBadge } from '@/components/GlobalSearch';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
-import { Asset, GenericResource, Risk, RiskSeverity } from '@/types';
+import { Asset, Attribute, GenericResource, Risk, RiskSeverity } from '@/types';
+import { uniqByKeepLast } from '@/utils/array.util';
 import { capitalize } from '@/utils/lodash.util';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
@@ -18,43 +19,54 @@ export interface SearchTypeProps {
   label?: string;
   onClick?: (
     type: keyof GenericResource,
-    value: GenericResource[keyof GenericResource][number]
+    option: GenericResource[keyof GenericResource][number],
+    value: string
   ) => void;
   multiSelect?: boolean;
   value?: string[];
   placeholder?: string;
   required?: boolean;
+  queryPrefix?: string;
+  filterOption?: (
+    option: GenericResource[keyof GenericResource][number]
+  ) => boolean;
 }
 
 export function SearchByType(props: SearchTypeProps) {
   const [search, setSearch] = useState('');
 
   const { data: genericSearch, status: genericSearchStatus } = useGenericSearch(
-    { query: search },
+    { query: `${props.queryPrefix || ''}${search}` },
     { enabled: Boolean(search) }
   );
 
-  const genericSearchOptions = genericSearch
+  const genericSearchOptions: DropdownMenu['items'] = genericSearch
     ? Object.keys(genericSearch).flatMap(key => {
         const genericSearchKey = key as keyof GenericResource;
 
         if (!props.types.includes(genericSearchKey)) return [];
 
-        const typeOptions = genericSearch?.[genericSearchKey].map(result => ({
-          ...getTypeOption(genericSearchKey, result),
-          onClick: () => {
-            props?.onClick?.(genericSearchKey, result);
-          },
-        }));
+        const typeOptions = genericSearch?.[genericSearchKey]
+          .slice(0, 50)
+          .filter(option => {
+            return props?.filterOption ? props.filterOption(option) : true;
+          })
+          .map(result => {
+            const option = getTypeOption(genericSearchKey, result);
+            return {
+              ...option,
+              onClick: () => {
+                props?.onClick?.(genericSearchKey, result, option.value || '');
+              },
+            };
+          });
 
         return [
           { label: capitalize(genericSearchKey), type: 'label' },
-          ...typeOptions,
+          ...uniqByKeepLast(typeOptions, option => option.value || ''),
         ] as DropdownMenu['items'];
       })
     : [];
-
-  const options: DropdownMenu['items'] = genericSearchOptions;
 
   return (
     <Select
@@ -62,7 +74,7 @@ export function SearchByType(props: SearchTypeProps) {
       value={props.value}
       search={search}
       onSearchChange={setSearch}
-      options={options}
+      options={genericSearchOptions}
       label={props.label}
       required={props.required}
       emptyState={{
@@ -79,6 +91,8 @@ export function SearchByType(props: SearchTypeProps) {
 }
 
 export interface SearchAndSelectTypes {
+  filterOption?: SearchTypeProps['filterOption'];
+  queryPrefix?: string;
   placeholder?: string;
   types: SearchTypeProps['types'];
   label?: string;
@@ -100,7 +114,10 @@ export function SearchAndSelectTypes(props: SearchAndSelectTypes) {
 
           return selectedOptions?.map((option, index) => {
             return (
-              <Button key={index} className="flex w-full justify-between">
+              <Button
+                key={index}
+                className="flex w-full cursor-auto justify-between"
+              >
                 {getTypeOption(genericType, option).label}
                 <Button
                   aria-label="CloseIcon"
@@ -125,6 +142,7 @@ export function SearchAndSelectTypes(props: SearchAndSelectTypes) {
         })}
       </div>
       <SearchByType
+        filterOption={props.filterOption}
         required
         types={props.types}
         multiSelect
@@ -150,6 +168,7 @@ export function SearchAndSelectTypes(props: SearchAndSelectTypes) {
             }
           });
         }}
+        queryPrefix={props.queryPrefix}
       />
     </div>
   );
@@ -213,6 +232,7 @@ function Select<IsMultiSelect extends boolean>(
             setValue(value[0] as Value<IsMultiSelect>);
           }
         },
+        className: 'max-h-[300px]',
         emptyState: props.emptyState,
       }}
       asChild
@@ -282,11 +302,153 @@ function getTypeOption<T extends keyof GenericResource>(
       };
     }
 
+    case 'attributes': {
+      const attribute = result as Attribute;
+
+      return {
+        label: (
+          <div className="flex w-full items-center gap-2 overflow-hidden">
+            <span className="text-nowrap">{attribute.name}</span> {`->`}
+            <span className="text-nowrap">{attribute.value}</span>
+          </div>
+        ),
+        value: `#attribute#${attribute.name}#${attribute.value}`,
+      };
+    }
+
     default: {
       return {
         label: 'Unknown type',
+        value: '',
         disabled: true,
       };
     }
   }
 }
+
+export interface TypeSearchProps {
+  filterOption?: SearchTypeProps['filterOption'];
+  queryPrefix?: string;
+  placeholder?: string;
+  types: SearchTypeProps['types'];
+  label?: string;
+  value: Partial<Record<keyof GenericResource, string[]>>;
+  onChange: (updatedValue: TypeSearchProps['value']) => void;
+}
+
+export function TypeSearch(props: TypeSearchProps) {
+  const [selectedTypes, setSelectedTypes] = useStorage<
+    TypeSearchProps['value']
+  >({ parentState: props.value, onParentStateChange: props.onChange }, {});
+
+  return (
+    <div>
+      <SearchByType
+        filterOption={props.filterOption}
+        required
+        types={props.types}
+        multiSelect
+        placeholder={props.placeholder}
+        label={props.label}
+        value={Object.values(selectedTypes).flatMap(typeOption => {
+          return typeOption.map(option => option);
+        })}
+        onClick={(genericType, _, value) => {
+          setSelectedTypes(prevOption => {
+            if (selectedTypes?.[genericType]?.find(o => o === value)) {
+              return {
+                ...prevOption,
+                [genericType]: prevOption?.[genericType]?.filter(o => {
+                  return o !== value;
+                }),
+              };
+            } else {
+              return {
+                ...prevOption,
+                [genericType]: [...(prevOption?.[genericType] || []), value],
+              };
+            }
+          });
+        }}
+        queryPrefix={props.queryPrefix}
+      />
+      <div className="flex flex-col gap-2 [&:has(*)]:pt-2">
+        {Object.keys(selectedTypes).map(type => {
+          const genericType = type as keyof GenericResource;
+          const selectedValues = selectedTypes[genericType];
+
+          return selectedValues?.map((value, index) => {
+            return (
+              <Button
+                key={index}
+                className="flex w-full cursor-auto justify-between"
+              >
+                {getTypeOptionFromKey(genericType, value).label}
+                <Button
+                  aria-label="CloseIcon"
+                  onClick={() => {
+                    setSelectedTypes(prevOption => {
+                      return {
+                        ...prevOption,
+                        [genericType]: prevOption?.[genericType]?.filter(v => {
+                          return v !== value;
+                        }),
+                      };
+                    });
+                  }}
+                  className="p-0"
+                  styleType="none"
+                >
+                  <XMarkIcon className="size-5" />
+                </Button>
+              </Button>
+            );
+          });
+        })}
+      </div>
+    </div>
+  );
+}
+
+function getTypeOptionFromKey<T extends keyof GenericResource>(
+  type: T,
+  key: string
+): DropdownMenu['items'][number] {
+  switch (type) {
+    case 'attributes': {
+      const attribute = parseKeys.attributeKey(key);
+
+      return {
+        label: (
+          <div className="flex w-full items-center gap-2 overflow-hidden">
+            <span className="text-nowrap">{attribute.name}</span> {`->`}
+            <span className="text-nowrap">{attribute.value}</span>
+          </div>
+        ),
+        value: `#attribute#${attribute.name}#${attribute.value}`,
+      };
+    }
+
+    default: {
+      return {
+        label: 'Unknown type',
+        value: '',
+        disabled: true,
+      };
+    }
+  }
+}
+
+type AttributeType = 'asset' | 'risk';
+
+export const parseKeys = {
+  attributeKey(key: string): {
+    name: string;
+    value: string;
+    attributeType: AttributeType;
+  } {
+    const [, , name, value, attributeType] = key.split('#');
+
+    return { name, value, attributeType: attributeType as AttributeType };
+  },
+};

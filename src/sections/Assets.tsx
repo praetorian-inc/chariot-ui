@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { PlusIcon, PuzzlePieceIcon } from '@heroicons/react/24/outline';
 
@@ -79,6 +79,8 @@ const Assets: React.FC = () => {
     error,
     isFetchingNextPage,
     fetchNextPage,
+    isFetching,
+    isError,
   } = useMy({
     resource: 'asset',
     filterByGlobalSearch: true,
@@ -281,6 +283,22 @@ const Assets: React.FC = () => {
       );
     });
   }
+
+  useEffect(() => {
+    if (
+      !isError &&
+      !isFetching &&
+      assets.length > 0 &&
+      filteredAssets.length === 0
+    ) {
+      fetchNextPage();
+    }
+  }, [
+    isError,
+    isFetching,
+    JSON.stringify(assets),
+    JSON.stringify(filteredAssets),
+  ]);
 
   return (
     <div className="flex w-full flex-col">

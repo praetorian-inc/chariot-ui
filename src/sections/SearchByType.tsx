@@ -47,10 +47,10 @@ export function SearchByType(props: SearchTypeProps) {
         if (!props.types.includes(genericSearchKey)) return [];
 
         const typeOptions = genericSearch?.[genericSearchKey]
-          .slice(0, 50)
           .filter(option => {
             return props?.filterOption ? props.filterOption(option) : true;
           })
+          .slice(0, 50)
           .map(result => {
             const option = getTypeOption(genericSearchKey, result);
             return {

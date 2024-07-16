@@ -1,15 +1,13 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import { Asset } from '@/types';
-
 interface UseModalState {
   open: boolean;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface SelectedAssets {
-  selectedAssets: Asset[];
-  onSelectedAssetsChange: React.Dispatch<React.SetStateAction<Asset[]>>;
+  selectedAssets: string[];
+  onSelectedAssetsChange: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 interface GlobalState {
@@ -39,7 +37,7 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [assetOpen, setAssetOpen] = useState(false);
   const [fileOpen, setFileOpen] = useState(false);
 
-  const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
 
   return (
     <GlobalStateContext.Provider

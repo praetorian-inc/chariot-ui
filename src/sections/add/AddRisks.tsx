@@ -15,7 +15,7 @@ import { useModifyAccount, useUploadFile } from '@/hooks';
 import { useIntegration } from '@/hooks/useIntegration';
 import { useCreateRisk } from '@/hooks/useRisks';
 import { TabPanelContent } from '@/sections/add/AddAsset';
-import { SearchAndSelectTypes } from '@/sections/SearchByType';
+import { parseKeys, TypeSearch } from '@/sections/SearchByType';
 import { useGlobalState } from '@/state/global.state';
 import {
   Account,
@@ -75,12 +75,12 @@ export const AddRisks = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allPromise: Promise<any>[] = selectedAssets?.flatMap(asset => {
+    const allPromise: Promise<any>[] = selectedAssets?.flatMap(assetKey => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const api: Promise<any>[] = [
         addRisk({
           ...formData,
-          key: asset.key,
+          key: assetKey,
           status:
             `${formData.status}${formData.severity}` as RiskCombinedStatus,
         }),
@@ -90,7 +90,7 @@ export const AddRisks = () => {
         api.push(
           uploadFile({
             ignoreSnackbar: true,
-            name: `${asset.dns}/${formData.name}`,
+            name: `${parseKeys.assetKey(assetKey).dns}/${formData.name}`,
             content: poe,
           })
         );
@@ -234,7 +234,7 @@ export const AddRisks = () => {
                     onSubmit={handleSubmit}
                     className="space-y-4"
                   >
-                    <SearchAndSelectTypes
+                    <TypeSearch
                       label="Select Assets"
                       types={['assets']}
                       value={{ assets: selectedAssets }}

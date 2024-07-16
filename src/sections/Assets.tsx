@@ -20,6 +20,7 @@ import { useIntegration } from '@/hooks/useIntegration';
 import { AssetStatusWarning } from '@/sections/AssetStatusWarning';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { getFilterLabel } from '@/sections/RisksTable';
+import { parseKeys } from '@/sections/SearchByType';
 import { useGlobalState } from '@/state/global.state';
 import {
   Asset,
@@ -251,16 +252,16 @@ const Assets: React.FC = () => {
     [assetsWithRisk]
   );
 
-  function updateStatus(assets: Asset[], status: AssetStatus) {
+  function updateStatus(assets: string[], status: AssetStatus) {
     const showBulk = showBulkSnackbar(assets.length);
     setShowAssetStatusWarning(false);
     setAssetStatus('');
 
-    assets.forEach(asset => {
+    assets.forEach(assetKey => {
       updateAsset(
         {
-          key: asset.key,
-          name: asset.name,
+          key: assetKey,
+          name: parseKeys.assetKey(assetKey).name,
           status,
           showSnackbar: !showBulk,
         },
@@ -359,7 +360,7 @@ const Assets: React.FC = () => {
                   label: 'Add Risk',
                   icon: <RisksIcon />,
                   onClick: () => {
-                    setSelectedAssets(assets);
+                    setSelectedAssets(assets.map(asset => asset.key));
                     setShowAddRisk(true);
                   },
                 },
@@ -375,7 +376,7 @@ const Assets: React.FC = () => {
                     asset => asset.status === AssetStatus.ActiveHigh
                   ),
                   onClick: () => {
-                    setSelectedAssets(assets);
+                    setSelectedAssets(assets.map(asset => asset.key));
                     setShowAssetStatusWarning(true);
                     setAssetStatus(AssetStatus.ActiveHigh);
                   },
@@ -386,7 +387,11 @@ const Assets: React.FC = () => {
                   disabled: assets.every(
                     asset => asset.status === AssetStatus.Active
                   ),
-                  onClick: () => updateStatus(assets, AssetStatus.Active),
+                  onClick: () =>
+                    updateStatus(
+                      assets.map(asset => asset.key),
+                      AssetStatus.Active
+                    ),
                 },
                 {
                   label: AssetStatusLabel[AssetStatus.ActiveLow],
@@ -394,13 +399,17 @@ const Assets: React.FC = () => {
                   disabled: assets.every(
                     asset => asset.status === AssetStatus.ActiveLow
                   ),
-                  onClick: () => updateStatus(assets, AssetStatus.ActiveLow),
+                  onClick: () =>
+                    updateStatus(
+                      assets.map(asset => asset.key),
+                      AssetStatus.ActiveLow
+                    ),
                 },
                 {
                   label: AssetStatusLabel[AssetStatus.Frozen],
                   icon: getAssetStatusIcon(AssetStatus.Frozen),
                   onClick: () => {
-                    setSelectedAssets(assets);
+                    setSelectedAssets(assets.map(asset => asset.key));
                     setShowAssetStatusWarning(true);
                     setAssetStatus(AssetStatus.Frozen);
                   },

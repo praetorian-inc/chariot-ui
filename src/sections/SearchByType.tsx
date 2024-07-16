@@ -6,10 +6,9 @@ import { Button } from '@/components/Button';
 import { Dropdown, DropdownMenu, DropdownProps } from '@/components/Dropdown';
 import { FormGroup } from '@/components/form/FormGroup';
 import { InputText } from '@/components/form/InputText';
-import { SeverityBadge, StatusBadge } from '@/components/GlobalSearch';
-import { AssetsIcon, RisksIcon } from '@/components/icons';
+import { AssetsIcon } from '@/components/icons';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
-import { Asset, Attribute, GenericResource, Risk, RiskSeverity } from '@/types';
+import { GenericResource } from '@/types';
 import { uniqByKeepLast } from '@/utils/array.util';
 import { capitalize } from '@/utils/lodash.util';
 import { useStorage } from '@/utils/storage/useStorage.util';
@@ -19,8 +18,8 @@ export interface SearchTypeProps {
   label?: string;
   onClick?: (
     type: keyof GenericResource,
-    option: GenericResource[keyof GenericResource][number],
-    value: string
+    value: string,
+    option: GenericResource[keyof GenericResource][number]
   ) => void;
   multiSelect?: boolean;
   value?: string[];
@@ -52,11 +51,12 @@ export function SearchByType(props: SearchTypeProps) {
           })
           .slice(0, 50)
           .map(result => {
-            const option = getTypeOption(genericSearchKey, result);
+            const option = getTypeOptionFromKey(genericSearchKey, result.key);
+
             return {
               ...option,
               onClick: () => {
-                props?.onClick?.(genericSearchKey, result, option.value || '');
+                props?.onClick?.(genericSearchKey, option.value || '', result);
               },
             };
           });
@@ -89,90 +89,6 @@ export function SearchByType(props: SearchTypeProps) {
       }}
       placeholder={props.placeholder}
     />
-  );
-}
-
-export interface SearchAndSelectTypes {
-  filterOption?: SearchTypeProps['filterOption'];
-  queryPrefix?: string;
-  placeholder?: string;
-  types: SearchTypeProps['types'];
-  label?: string;
-  value: Partial<GenericResource>;
-  onChange: (updatedValue: Partial<GenericResource>) => void;
-}
-
-export function SearchAndSelectTypes(props: SearchAndSelectTypes) {
-  const [selectedTypes, setSelectedTypes] = useStorage<
-    SearchAndSelectTypes['value']
-  >({ parentState: props.value, onParentStateChange: props.onChange }, {});
-
-  return (
-    <div>
-      <div className="flex flex-col gap-2 [&:has(*)]:pb-2">
-        {Object.keys(selectedTypes).map(type => {
-          const genericType = type as keyof GenericResource;
-          const selectedOptions = selectedTypes[genericType];
-
-          return selectedOptions?.map((option, index) => {
-            return (
-              <Button
-                key={index}
-                className="flex w-full cursor-auto justify-between"
-              >
-                {getTypeOption(genericType, option).label}
-                <Button
-                  aria-label="CloseIcon"
-                  onClick={() => {
-                    setSelectedTypes(prevOption => {
-                      return {
-                        ...prevOption,
-                        [genericType]: prevOption?.[genericType]?.filter(o => {
-                          return o.key !== option.key;
-                        }),
-                      };
-                    });
-                  }}
-                  className="p-0"
-                  styleType="none"
-                >
-                  <XMarkIcon className="size-5" />
-                </Button>
-              </Button>
-            );
-          });
-        })}
-      </div>
-      <SearchByType
-        filterOption={props.filterOption}
-        required
-        types={props.types}
-        multiSelect
-        placeholder={props.placeholder}
-        label={props.label}
-        value={Object.values(selectedTypes).flatMap(typeOption => {
-          return typeOption.map(option => option.key);
-        })}
-        onClick={(genericType, option) => {
-          setSelectedTypes(prevOption => {
-            if (selectedTypes?.[genericType]?.find(o => o.key === option.key)) {
-              return {
-                ...prevOption,
-                [genericType]: prevOption?.[genericType]?.filter(o => {
-                  return o.key !== option.key;
-                }),
-              };
-            } else {
-              return {
-                ...prevOption,
-                [genericType]: [...(prevOption?.[genericType] || []), option],
-              };
-            }
-          });
-        }}
-        queryPrefix={props.queryPrefix}
-      />
-    </div>
   );
 }
 
@@ -264,77 +180,12 @@ function Select<IsMultiSelect extends boolean>(
   );
 }
 
-function getTypeOption<T extends keyof GenericResource>(
-  type: T,
-  result: GenericResource[T][number]
-): DropdownMenu['items'][number] {
-  switch (type) {
-    case 'assets': {
-      const asset = result as Asset;
-
-      return {
-        label: (
-          <div className="flex items-center gap-2 overflow-hidden">
-            <AssetsIcon className="size-4 flex-none text-gray-400" />
-            <span className="text-nowrap">{asset.name}</span>
-            <ChevronRightIcon className="size-2 flex-none shrink-0" />
-            <span className="truncate text-nowrap">{asset.dns}</span>
-          </div>
-        ),
-        value: asset.key,
-      };
-    }
-
-    case 'risks': {
-      const risk = result as Risk;
-
-      const severity = risk.status?.[1] as RiskSeverity;
-
-      return {
-        label: (
-          <div className="flex w-full items-center gap-2 overflow-hidden">
-            <RisksIcon className="size-4  flex-none text-gray-400" />
-            <span className="text-nowrap">{risk.name}</span>
-            <ChevronRightIcon className="size-2 flex-none" />
-            <StatusBadge status={risk.status} />
-            <SeverityBadge severity={severity} />
-          </div>
-        ),
-        value: risk.key,
-      };
-    }
-
-    case 'attributes': {
-      const attribute = result as Attribute;
-
-      return {
-        label: (
-          <div className="flex w-full items-center gap-2 overflow-hidden">
-            <span className="text-nowrap">{attribute.name}</span> {`->`}
-            <span className="text-nowrap">{attribute.value}</span>
-          </div>
-        ),
-        value: `#attribute#${attribute.name}#${attribute.value}`,
-      };
-    }
-
-    default: {
-      return {
-        label: 'Unknown type',
-        value: '',
-        disabled: true,
-      };
-    }
-  }
-}
-
-export interface TypeSearchProps {
-  filterOption?: SearchTypeProps['filterOption'];
-  queryPrefix?: string;
-  placeholder?: string;
-  types: SearchTypeProps['types'];
-  label?: string;
-  value: Partial<Record<keyof GenericResource, string[]>>;
+export interface TypeSearchProps
+  extends Pick<
+    SearchTypeProps,
+    'filterOption' | 'queryPrefix' | 'placeholder' | 'types' | 'label'
+  > {
+  value: Partial<Record<keyof GenericResource, SearchTypeProps['value']>>;
   onChange: (updatedValue: TypeSearchProps['value']) => void;
 }
 
@@ -355,7 +206,7 @@ export function TypeSearch(props: TypeSearchProps) {
         value={Object.values(selectedTypes).flatMap(typeOption => {
           return typeOption.map(option => option);
         })}
-        onClick={(genericType, _, value) => {
+        onClick={(genericType, value) => {
           setSelectedTypes(prevOption => {
             if (selectedTypes?.[genericType]?.find(o => o === value)) {
               return {
@@ -417,6 +268,22 @@ function getTypeOptionFromKey<T extends keyof GenericResource>(
   key: string
 ): DropdownMenu['items'][number] {
   switch (type) {
+    case 'assets': {
+      const asset = parseKeys.assetKey(key);
+
+      return {
+        label: (
+          <div className="flex items-center gap-2 overflow-hidden">
+            <AssetsIcon className="size-4 flex-none text-gray-400" />
+            <span className="text-nowrap">{asset.name}</span>
+            <ChevronRightIcon className="size-2 flex-none shrink-0" />
+            <span className="truncate text-nowrap">{asset.dns}</span>
+          </div>
+        ),
+        value: key,
+      };
+    }
+
     case 'attributes': {
       const attribute = parseKeys.attributeKey(key);
 
@@ -452,5 +319,13 @@ export const parseKeys = {
     const [, , name, value, attributeType] = key.split('#');
 
     return { name, value, attributeType: attributeType as AttributeType };
+  },
+  assetKey(key: string): {
+    dns: string;
+    name: string;
+  } {
+    const [, , dns, name] = key.split('#');
+
+    return { dns, name };
   },
 };

@@ -93,6 +93,7 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
   useBreadCrumb({
     label: displayName || friend.displayName || friend.email || me,
     order: 1,
+    className: 'max-w-60 whitespace-nowrap inline',
   });
 
   return (

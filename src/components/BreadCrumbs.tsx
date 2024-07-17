@@ -1,7 +1,11 @@
 import React from 'react';
 
+import { OverflowText } from '@/components/OverflowText';
+import { cn } from '@/utils/classname';
+
 export interface Breadcrumb {
   label: string;
+  className?: string;
   order: number;
   to?: string;
 }
@@ -34,11 +38,16 @@ export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
                   /
                 </li>
               )}
-              <li
-                className={`text-2xl font-bold ${idx === 0 && 'hidden sm:inline'}`}
-              >
-                {breadcrumb.label}
-              </li>
+
+              <OverflowText
+                className={cn(
+                  `line-clamp-2 break-words text-2xl font-bold`,
+                  idx === 0 && 'max-sm:hidden',
+                  breadcrumb.className
+                )}
+                placement="left"
+                text={breadcrumb.label}
+              />
             </React.Fragment>
           );
         })}

@@ -28,7 +28,7 @@ const pageTitles = {
 export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
   const currentPage = breadcrumbs[breadcrumbs.length - 1].label;
   return (
-    <div className="flex flex-col pb-5 pt-9">
+    <div className="flex flex-col overflow-hidden pb-5 pt-9">
       <ul className="flex items-center">
         {breadcrumbs.map((breadcrumb, idx) => {
           return (
@@ -38,14 +38,13 @@ export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
                   /
                 </li>
               )}
-
               <OverflowText
                 className={cn(
-                  `line-clamp-2 break-words text-2xl font-bold`,
+                  `whitespace-nowrap text-2xl font-bold`,
                   idx === 0 && 'max-sm:hidden',
                   breadcrumb.className
                 )}
-                placement="left"
+                placement="bottom"
                 text={breadcrumb.label}
               />
             </React.Fragment>

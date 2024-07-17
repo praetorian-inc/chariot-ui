@@ -93,7 +93,6 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
   useBreadCrumb({
     label: displayName || friend.displayName || friend.email || me,
     order: 1,
-    className: 'max-w-60 whitespace-nowrap inline',
   });
 
   return (
@@ -148,7 +147,7 @@ export function Header() {
         <div className="w-full max-w-screen-xl">
           <TopNavBar />
           <hr className="h-px bg-layer0 opacity-15" />
-          <div className={cn('flex items-center justify-between gap-2')}>
+          <div className={cn('flex items-center justify-between gap-10')}>
             <Loader
               styleType="header"
               className="my-9 h-11 w-1/2"
@@ -156,7 +155,7 @@ export function Header() {
             >
               <BreadCrumbs breadcrumbs={breadcrumbs} />
             </Loader>
-            <div id={HeaderPortalSections.BREADCRUMBS} />
+            <div id={HeaderPortalSections.BREADCRUMBS} className="shrink-0" />
           </div>
         </div>
       </div>

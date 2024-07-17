@@ -95,9 +95,13 @@ export const CollaboratingWith = () => {
     {
       label: 'User',
       id: 'displayName',
-      cell: 'highlight',
       onClick: (row: TableData) =>
         startImpersonation(row.email, row.displayName ?? ''),
+      cell: row => (
+        <span className="text-brand">
+          {row.displayName || row.email || '-'}
+        </span>
+      ),
     },
     {
       label: 'Total',
@@ -162,7 +166,7 @@ export const CollaboratingWith = () => {
         open={showModal}
         onClose={() => setShowModal(false)}
         title={
-          <div>{collaborator?.displayName || collaborator?.email}'s Export</div>
+          <div>{`${collaborator?.displayName || collaborator?.email}'s Export`}</div>
         }
         icon={<ArrowDownCircleIcon className="size-5" />}
         size="md"

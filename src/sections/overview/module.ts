@@ -26,7 +26,7 @@ export function useGetModules(): Record<
     },
     BAS: {
       Icon: HomeIcon,
-      label: 'Breach and Attack Simulation',
+      label: 'Breach & Attack Simulation',
       name: 'BAS',
       description: `Breach and Attack Simulation (BAS) uses automated tools to continuously simulate real-world cyber attacks, helping organizations identify vulnerabilities, improve threat detection, and enhance their overall security posture.`,
       assets: 0,

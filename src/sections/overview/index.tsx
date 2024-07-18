@@ -54,24 +54,8 @@ export function Overview() {
           return (
             <div key={index} className="relative w-full">
               <div className="flex flex-col gap-2 overflow-hidden rounded-md border-2 border-default bg-layer2 p-4">
-                <div className="text-xs font-medium text-default-light">
+                <div className="text-2xl font-bold text-default">
                   {module.label}
-                </div>
-                <div className="my-4 flex items-center gap-4">
-                  {module.Icon && (
-                    <span className="rounded-full bg-brand-light p-2">
-                      <module.Icon className="size-4 text-layer0" />
-                    </span>
-                  )}
-                  <div className="rounded-sm text-xl font-bold text-default">
-                    {module.name}
-                  </div>
-                  {module.assets !== undefined && (
-                    <span className="ml-auto text-end text-xs text-brand-light">
-                      <p>{module.assets || getRandom()}</p>
-                      <p>Assets</p>
-                    </span>
-                  )}
                 </div>
                 <div className="line-clamp-3 min-h-12 text-xs text-default-light">
                   {module.description}
@@ -81,10 +65,12 @@ export function Overview() {
                   <div className="my-8 flex">
                     {module.risks !== undefined && (
                       <div className="w-full p-2 text-center">
-                        <p className="mb-4 text-4xl text-brand">
+                        <p className="mb-4 text-6xl text-default">
                           {module.risks || getRandom()}
                         </p>
-                        <p className="text-xs text-brand-light">Risks</p>
+                        <p className="text-sm font-medium text-default">
+                          Risks
+                        </p>
                       </div>
                     )}
                   </div>

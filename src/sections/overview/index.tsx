@@ -24,6 +24,10 @@ import { useGlobalState } from '@/state/global.state';
 import { Account, AccountMetadata, LinkAccount, Modules } from '@/types';
 import { getRoute } from '@/utils/route.util';
 
+// TODO: Remove this before PROD
+const getRandom = (min = 0, max = 100) =>
+  Math.floor(Math.random() * (max - min) + min);
+
 export function Overview() {
   const {
     modal: { integration },
@@ -32,42 +36,55 @@ export function Overview() {
   const modules = useGetModules();
 
   return (
-    <div className="flex gap-5">
+    <div className="flex flex-wrap justify-center gap-5">
       {Object.entries(modules).map(([moduleKey, module], index) => {
         return (
           <div
             key={index}
-            className="flex h-80 w-full flex-col gap-2 overflow-hidden rounded-md border-2 border-default bg-layer2 p-2"
+            className="flex w-full basis-1/4 flex-col gap-2 overflow-hidden rounded-md border-2 border-default bg-layer2 p-4"
           >
-            <div className="font-semibold text-default-light">
-              {module.label}
+            <div className="text-xs text-default-light">{module.label}</div>
+            <div className="flex items-center gap-4">
+              {module.Icon && (
+                <span className="rounded-full bg-brand-light p-2">
+                  <module.Icon className="size-4 text-layer0" />
+                </span>
+              )}
+              <div className="rounded-sm text-xl font-bold text-default">
+                {module.name}
+              </div>
             </div>
-            <div className="font-bold text-default-dark">{module.name}</div>
-            <div className="pb-8 font-medium text-default-light">
+            <div className="mt-4 line-clamp-3 min-h-12 text-xs text-default-light">
               {module.description}
             </div>
             {(module.assets !== undefined || module.risks !== undefined) && (
-              <div className="flex ">
+              <div className="my-8 flex">
                 {module.assets !== undefined && (
                   <div className="w-full p-2 text-center">
-                    <p className="text-default-light">{module.assets}</p>
-                    <p>Assets</p>
+                    <p className="mb-4 text-4xl text-brand">
+                      {module.assets || getRandom()}
+                    </p>
+                    <p className="text-xs text-brand-light">Assets</p>
                   </div>
                 )}
                 {module.assets !== undefined && module.risks !== undefined && (
-                  <div className="h-full w-px border-l-2 border-current text-default-light"></div>
+                  <div className="my-4">
+                    <div className="h-full w-px border-l-2 border-default"></div>
+                  </div>
                 )}
                 {module.risks !== undefined && (
                   <div className="w-full p-2 text-center">
-                    <p className="text-default-light">{module.risks}</p>
-                    <p>Risks</p>
+                    <p className="mb-4 text-4xl text-brand">
+                      {module.risks || getRandom()}
+                    </p>
+                    <p className="text-xs text-brand-light">Risks</p>
                   </div>
                 )}
               </div>
             )}
 
             <Button
-              className="m-auto"
+              className="m-auto w-full"
               onClick={() => {
                 integration.onValueChange({
                   module: moduleKey as Modules,

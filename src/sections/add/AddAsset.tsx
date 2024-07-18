@@ -82,10 +82,10 @@ export function AddAsset() {
             className: 'h-11 m-5',
           },
           {
-            label: 'Priority',
+            label: 'Status',
             value: AssetStatus.Active,
             type: Input.Type.SELECT,
-            placeholder: 'Select Priority',
+            placeholder: 'Select Status',
             name: 'status',
             options: [
               {
@@ -99,6 +99,10 @@ export function AddAsset() {
               {
                 label: AssetStatusLabel[AssetStatus.ActiveLow],
                 value: AssetStatus.ActiveLow,
+              },
+              {
+                label: AssetStatusLabel[AssetStatus.Frozen],
+                value: AssetStatus.Frozen,
               },
             ],
             required: true,

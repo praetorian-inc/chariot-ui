@@ -7,7 +7,7 @@ export const useFilter = <T>(
   key: string,
   setSelectedRows?: (value: string[]) => void
 ): [T, (filter: T) => void] => {
-  const [filter, setFilter] = useStorage({ key }, defaultValue);
+  const [filter, setFilter] = useStorage({ queryKey: key }, defaultValue);
 
   useEffect(() => {
     const el = document.getElementById('body');

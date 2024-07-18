@@ -5,14 +5,11 @@ import { Button } from '@/components/Button';
 import { OverflowText } from '@/components/OverflowText';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
-import { IntegrationModal } from '@/components/ui/IntegrationModal';
+import { InviteUser } from '@/components/ui/InviteUser';
 import { useModifyAccount, useMy } from '@/hooks';
+import { AvailableIntegrations } from '@/sections/overview/Integration';
 import { useAuth } from '@/state/auth';
 import { Account } from '@/types';
-import {
-  AccountMeta,
-  AvailableIntegrations,
-} from '@/utils/availableIntegrations';
 
 const isAccount = (account: Account): boolean => {
   return account?.key === 'self';
@@ -122,8 +119,8 @@ export const Users: React.FC = () => {
       >
         Invite Collaborator
       </Button>
-      <IntegrationModal
-        form={showInviteModal ? AccountMeta : undefined}
+      <InviteUser
+        open={showInviteModal}
         onClose={() => setShowInviteModal(false)}
       />
     </div>

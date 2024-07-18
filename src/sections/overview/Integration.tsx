@@ -3,17 +3,22 @@ import { v4 as uuidv4 } from 'uuid';
 import { Input } from '@/components/form/Input';
 import { InputsT } from '@/components/form/Inputs';
 import WebhookExample from '@/components/ui/WebhookExample';
-import { IntegrationType } from '@/types';
+import { useGetModules } from '@/sections/overview/module';
+import { Modules } from '@/types';
 import { getChariotWebhookURL } from '@/utils/integration.util';
 
+const defaultPin = (
+  Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000
+).toString();
+const uuid = uuidv4();
+
 export interface IntegrationMeta {
-  id: number;
+  id?: number;
   name: string;
   displayName: string;
   description?: JSX.Element | string;
   logo?: string;
-  connected: boolean;
-  types?: IntegrationType[];
+  connected?: boolean;
   issue?: number;
   inputs?: InputsT;
   warning?: string;
@@ -40,20 +45,13 @@ export interface IntegrationMeta {
   };
 }
 
-const uuid = uuidv4();
-
-const defaultPin = (
-  Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000
-).toString();
-export const IntegrationsMeta: IntegrationMeta[] = [
-  {
-    id: 12,
+export const Integrations = {
+  hook: {
     name: 'hook',
     displayName: 'Chariot Webhook',
     description: 'Push assets and risks to Chariot.',
     logo: '/icons/PraetorianWebhook.svg',
     connected: true,
-    types: [IntegrationType.Workflow],
     copy: {
       value: ({
         api,
@@ -84,8 +82,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     ],
     markup: <WebhookExample defaultPin={defaultPin} />,
   },
-  {
-    id: 9,
+  slack: {
     name: 'slack',
     displayName: 'Slack',
     help: {
@@ -95,7 +92,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     description: 'Receive Slack notifications when new risks are discovered.',
     logo: '/icons/Slack.svg',
     connected: true,
-    types: [IntegrationType.Workflow],
     inputs: [
       {
         name: 'username',
@@ -130,8 +126,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
     ],
   },
-  {
-    id: 10,
+  jira: {
     name: 'jira',
     displayName: 'Atlassian Jira',
     help: {
@@ -141,7 +136,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     description: 'Track and manage risks directly within your Jira project.',
     logo: '/icons/Jira.svg',
     connected: true,
-    types: [IntegrationType.Workflow],
     inputs: [
       {
         name: 'username',
@@ -215,8 +209,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
     ],
   },
-  {
-    id: 7,
+  github: {
     name: 'github',
     displayName: 'GitHub',
     help: {
@@ -227,7 +220,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     logo: '/icons/GitHub.svg',
     connected: true,
     multiple: true,
-    types: [IntegrationType.AssetDiscovery, IntegrationType.RiskIdentification],
     inputs: [
       {
         name: 'username',
@@ -260,8 +252,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
     ],
   },
-  {
-    id: 4,
+  amazon: {
     name: 'amazon',
     displayName: 'Amazon Web Services',
     help: {
@@ -272,7 +263,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       'Discover and scan assets hosted within your AWS organization.',
     logo: '/icons/AWS.svg',
     connected: true,
-    types: [IntegrationType.AssetDiscovery],
     multiple: true,
     inputs: [
       {
@@ -305,8 +295,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       </div>
     ),
   },
-  {
-    id: 8,
+  ns1: {
     name: 'ns1',
     displayName: 'NS1',
     help: {
@@ -316,7 +305,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     description: 'Discover and scan assets managed within your NS1 tenant',
     logo: '/icons/NS1.svg',
     connected: true,
-    types: [IntegrationType.AssetDiscovery],
     inputs: [
       {
         name: 'username',
@@ -342,8 +330,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
     ],
   },
-  {
-    id: 5,
+  gcp: {
     name: 'gcp',
     displayName: 'Google Cloud',
     help: {
@@ -354,7 +341,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       'Discover and scan assets hosted within your GCP organization.',
     logo: '/icons/GoogleCloud.svg',
     connected: true,
-    types: [IntegrationType.AssetDiscovery],
     multiple: true,
     inputs: [
       {
@@ -391,8 +377,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
     ],
   },
-  {
-    id: 6,
+  azure: {
     name: 'azure',
     displayName: 'Azure',
     help: {
@@ -403,7 +388,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       'Discover and scan assets hosted within your Azure organization',
     logo: '/icons/Azure.svg',
     connected: true,
-    types: [IntegrationType.AssetDiscovery],
     multiple: true,
     inputs: [
       {
@@ -435,8 +419,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
     ],
   },
-  {
-    id: 16,
+  crowdstrike: {
     name: 'crowdstrike',
     displayName: 'CrowdStrike',
     help: {
@@ -447,7 +430,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       'Import your assets from CrowdStrike and identify policy risks',
     logo: '/icons/Crowdstrike.svg',
     connected: true,
-    types: [IntegrationType.AssetDiscovery, IntegrationType.RiskIdentification],
     inputs: [
       {
         name: 'username',
@@ -478,8 +460,7 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
     ],
   },
-  {
-    id: 14,
+  gitlab: {
     name: 'gitlab',
     displayName: 'GitLab',
     help: {
@@ -490,7 +471,6 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     logo: '/icons/GitLab.svg',
     connected: true,
     multiple: true,
-    types: [IntegrationType.AssetDiscovery, IntegrationType.RiskIdentification],
     inputs: [
       {
         name: 'username',
@@ -523,34 +503,28 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
     ],
   },
-  {
-    id: 13,
+  nessus: {
     name: 'nessus',
     displayName: 'Nessus Tenable',
     description:
       'Industry-standard vulnerability scanner for comprehensive security assessments.',
     logo: '/icons/Nessus.svg',
     connected: false,
-    types: [IntegrationType.RiskIdentification],
   },
-  {
-    id: 15,
+  qualys: {
     name: 'qualys',
     displayName: 'Qualys',
     description:
       'Offers cloud-based solutions for security and compliance across networks.',
     logo: '/icons/Qualys.svg',
     connected: false,
-    types: [IntegrationType.RiskIdentification],
   },
-  {
-    id: 17,
+  zulip: {
     name: 'zulip',
     displayName: 'Zulip',
     description: 'Receive Zulip notifications when new risks are discovered.',
     logo: '/icons/Zulip.svg',
     connected: true,
-    types: [IntegrationType.Workflow],
     inputs: [
       {
         name: 'username',
@@ -586,34 +560,64 @@ export const IntegrationsMeta: IntegrationMeta[] = [
       },
     ],
   },
-];
-
-export const AccountMeta: IntegrationMeta = {
-  id: 0,
-  name: 'account',
-  displayName: 'Link Account',
-  connected: true,
-  warning: 'This will grant them full access to your account.',
-  inputs: [
-    {
-      label: 'Email Address',
-      value: '',
-      placeholder: 'email@domain.com',
-      name: 'username',
-      required: true,
-      hidden: false,
-    },
-  ],
 };
 
-export const AvailableIntegrations = IntegrationsMeta.filter(
-  integration => integration.connected
-).map(integration => integration.name);
+export function useGetIntegrationsByCategory(): Record<
+  Modules,
+  IntegrationMeta[]
+> {
+  const modules = useGetModules();
 
-export const isComingSoonIntegration = (name: string) =>
-  !AvailableIntegrations.includes(name);
+  return {
+    ASM: [
+      {
+        name: '',
+        displayName: '',
+        description: <div>{modules.ASM.description}</div>,
+      },
+      Integrations.github,
+      Integrations.amazon,
+      Integrations.ns1,
+      Integrations.gcp,
+      Integrations.azure,
+      Integrations.gitlab,
+    ],
+    BAS: [
+      {
+        name: '',
+        displayName: '',
+        description: <div>{modules.BAS.description}</div>,
+      },
+    ],
+    CIS: [
+      {
+        name: '',
+        displayName: '',
+        description: <div>{modules.CIS.description}</div>,
+      },
+      Integrations.crowdstrike,
+    ],
+    CTI: [
+      {
+        name: '',
+        displayName: '',
+        description: <div>{modules.CTI.description}</div>,
+      },
+    ],
+    MSP: [
+      {
+        name: '',
+        displayName: '',
+        description: <div>{modules.MSP.description}</div>,
+      },
+      Integrations.hook,
+      Integrations.slack,
+      Integrations.jira,
+      Integrations.zulip,
+    ],
+  };
+}
 
-export const getIntegrationMeta = (name?: string) =>
-  name
-    ? IntegrationsMeta.find(integration => integration.name === name)
-    : undefined;
+export const AvailableIntegrations = Object.values(Integrations)
+  .filter(integration => integration.connected)
+  .map(integration => integration.name);

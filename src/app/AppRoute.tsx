@@ -12,7 +12,8 @@ import Intelligence from '@/sections/Intelligence';
 import Jobs from '@/sections/Jobs';
 import Login from '@/sections/Login';
 import Logout from '@/sections/Logout';
-import { Overview } from '@/sections/Overview';
+import { Overview } from '@/sections/overview';
+import { Report } from '@/sections/Report';
 import { Risks } from '@/sections/RisksTable';
 import { useAuth } from '@/state/auth';
 import { validateRoutes } from '@/utils/route.util';
@@ -88,6 +89,14 @@ const appRoutes = {
       element: (
         <Body>
           <Overview />
+        </Body>
+      ),
+      title: 'Overview',
+    },
+    report: {
+      element: (
+        <Body>
+          <Report />
         </Body>
       ),
       title: 'Overview',

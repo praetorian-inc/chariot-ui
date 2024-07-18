@@ -15,7 +15,7 @@ import { getReportSections } from '@/sections/overview/constants';
 import { useAuth } from '@/state/auth';
 import { cn } from '@/utils/classname';
 
-export const Overview = () => {
+export const Report = () => {
   const { me, friend } = useAuth();
   const { data: accounts } = useMy({
     resource: 'account',

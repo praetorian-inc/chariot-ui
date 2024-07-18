@@ -77,9 +77,6 @@ export function TopNavBar() {
             className="ml-2 flex flex-row space-x-1 text-sm font-normal"
           >
             <p className="mr-1">Overview</p>
-            <p className="rounded-[4px] border border-header px-1 text-xs font-medium capitalize text-[#5a5a7a]">
-              Beta
-            </p>
           </button>
           <div className="ml-auto flex items-center md:order-last md:ml-0">
             <div className="ml-4">

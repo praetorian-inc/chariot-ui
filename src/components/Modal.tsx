@@ -120,7 +120,7 @@ export const Modal: React.FC<Props> = props => {
         </Dialog.Title>
         <div
           className={cn(
-            'py-5 px-6',
+            'py-5 px-6 overflow-auto',
             isDialog && 'px-10 py-2',
             isDialog && !icon && 'px-0',
             className

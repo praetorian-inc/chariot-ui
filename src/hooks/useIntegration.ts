@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 
 import { useMy } from '@/hooks/useMy';
+import { AvailableIntegrations } from '@/sections/overview/Integration';
 import { Asset } from '@/types';
-import { AvailableIntegrations } from '@/utils/availableIntegrations';
 
 export const useIntegration = () => {
   const { data: accounts, status: accountStatus } = useMy({
@@ -43,5 +43,6 @@ export const useIntegration = () => {
     isIntegration,
     isIntegrationConnected,
     getConnectedIntegration,
+    accountStatus,
   };
 };

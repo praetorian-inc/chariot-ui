@@ -1,7 +1,8 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 
 import { Input, InputEvent, InputProps } from '@/components/form/Input';
 import { Option } from '@/components/form/Select';
+import { useStorage } from '@/utils/storage/useStorage.util';
 
 export type Values = Record<string, InputProps['value']>;
 type InputType = Omit<InputProps, 'onChange'>;
@@ -11,6 +12,7 @@ interface Props {
   className?: string;
   inputs: InputsT;
   onChange: (values: Values) => void;
+  values?: Values;
 }
 
 export const getFormValues = (inputs: InputsT) => {
@@ -26,12 +28,15 @@ export const getFormValues = (inputs: InputsT) => {
 };
 
 export const Inputs: React.FC<Props> = (props: Props) => {
-  const { className, inputs, onChange } = props;
+  const { className, inputs } = props;
 
-  const [values, setValues] = useState(getFormValues(inputs));
+  const [values, setValues] = useStorage(
+    { parentState: props.values, onParentStateChange: props.onChange },
+    getFormValues(inputs)
+  );
 
   useEffect(() => {
-    onChange(values);
+    props.onChange(values);
   }, []);
 
   function handleChange(input: InputType) {
@@ -45,7 +50,6 @@ export const Inputs: React.FC<Props> = (props: Props) => {
           ...values,
           [name]: number ? parseInt(value, 10) : value,
         };
-        onChange(newValues);
         return newValues;
       });
     };

@@ -21,8 +21,7 @@ const pageTitles = {
   'Organization Settings': 'Adjust settings specific to your organization.',
   Attributes: 'Manage additional metadata associated with assets and risks.',
   Jobs: 'Track the status and results of recent security scans from the past 24 hours.',
-  Overview:
-    'Monitor your attack surface and review daily reports with critical findings and recommendations.',
+  Overview: 'Managed offensive security.',
 };
 
 export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {

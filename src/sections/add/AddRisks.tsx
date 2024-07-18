@@ -1,32 +1,18 @@
 import React, { FormEvent, useEffect, useState } from 'react';
-import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { ChevronRightIcon, PlusIcon } from '@heroicons/react/24/solid';
-import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import { PlusIcon } from '@heroicons/react/24/solid';
 
 import { Button } from '@/components/Button';
 import { Input } from '@/components/form/Input';
-import { Inputs, Values } from '@/components/form/Inputs';
+import { Inputs } from '@/components/form/Inputs';
 import { RisksIcon } from '@/components/icons';
 import { MarkdownEditor } from '@/components/markdown/MarkdownEditor';
 import { Modal } from '@/components/Modal';
 import { riskSeverityOptions } from '@/components/ui/RiskDropdown';
-import { TabWrapper } from '@/components/ui/TabWrapper';
-import { useModifyAccount, useUploadFile } from '@/hooks';
-import { useIntegration } from '@/hooks/useIntegration';
+import { useUploadFile } from '@/hooks';
 import { useCreateRisk } from '@/hooks/useRisks';
-import { TabPanelContent } from '@/sections/add/AddAsset';
 import { parseKeys, TypeSearch } from '@/sections/SearchByType';
 import { useGlobalState } from '@/state/global.state';
-import {
-  Account,
-  IntegrationType,
-  LinkAccount,
-  RiskCombinedStatus,
-} from '@/types';
-import {
-  IntegrationMeta,
-  IntegrationsMeta,
-} from '@/utils/availableIntegrations';
+import { RiskCombinedStatus } from '@/types';
 
 const DEFAULT_FORM_VALUE = {
   key: '',
@@ -35,9 +21,6 @@ const DEFAULT_FORM_VALUE = {
   severity: 'I',
   comment: '',
 };
-const Tabs: IntegrationMeta[] = IntegrationsMeta.filter(({ types }) =>
-  types?.includes(IntegrationType.Workflow)
-);
 
 export const AddRisks = () => {
   const {
@@ -50,7 +33,6 @@ export const AddRisks = () => {
       },
     },
   } = useGlobalState();
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   const [isDefinitionOpen, setIsDefinitionOpen] = useState(false);
   const [definition, setDefinition] = useState('');
@@ -59,18 +41,9 @@ export const AddRisks = () => {
   const [poe, setPOE] = useState('');
 
   const [formData, setFormData] = useState(DEFAULT_FORM_VALUE);
-  const [integrationFormData, setIntegrationFormData] = useState<Values[]>([]);
-  const { mutate: link } = useModifyAccount('link');
-  const { mutate: unlink, status: unlinkStatus } = useModifyAccount('unlink');
 
   const { mutateAsync: addRisk } = useCreateRisk();
   const { mutateAsync: uploadFile } = useUploadFile();
-  const { isIntegrationConnected, getConnectedIntegration } = useIntegration();
-
-  const selectedIntegration =
-    selectedIndex > 0
-      ? getConnectedIntegration(Tabs[selectedIndex - 1].name)
-      : [];
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -116,7 +89,6 @@ export const AddRisks = () => {
 
   function onClose() {
     onOpenChange(false);
-    setSelectedIndex(0);
   }
 
   function cleanUp() {
@@ -136,40 +108,6 @@ export const AddRisks = () => {
     }
   }, [isOpen]);
 
-  // Set the form data for the hook integration
-  useEffect(() => {
-    if (IntegrationsMeta[selectedIndex - 1]?.name === 'hook') {
-      const payload: Values = {};
-      const formValues = IntegrationsMeta[selectedIndex - 1].inputs;
-      formValues?.forEach(input => {
-        payload[input.name] = input.value;
-      });
-      setIntegrationFormData([payload]);
-    } else {
-      setIntegrationFormData([]);
-    }
-  }, [selectedIndex]);
-
-  async function handleConfigureIntegration() {
-    integrationFormData.map(data => link(data as unknown as LinkAccount));
-    onClose();
-  }
-
-  async function handleDisconnect() {
-    if (selectedIntegration.length > 0) {
-      selectedIntegration.forEach(account =>
-        unlink({
-          username: account.member,
-          member: account.member,
-          config: account.config,
-          value: account.value,
-          key: account.key,
-        })
-      );
-      onClose();
-    }
-  }
-
   return (
     <>
       <Modal
@@ -181,154 +119,88 @@ export const AddRisks = () => {
         size="lg"
         closeOnOutsideClick={false}
         footer={{
-          onClick:
-            selectedIndex === 0 ? () => null : handleConfigureIntegration,
-          text: selectedIndex === 0 ? 'Add' : 'Configure',
-          form: selectedIndex === 0 ? 'addRisk' : undefined,
-          disconnect: selectedIntegration.length
-            ? {
-                text: 'Disconnect',
-                onClick: handleDisconnect,
-                isLoading: unlinkStatus === 'pending',
-              }
-            : undefined,
+          text: 'Add',
+          form: 'addRisk',
         }}
       >
-        <TabGroup className="flex h-full gap-6" onChange={setSelectedIndex}>
-          <TabList className="border-1 w-44 shrink-0 overflow-auto border border-y-0 border-l-0 border-layer1 p-1 pr-4">
-            <TabWrapper vertical={true}>
-              <div className="relative flex items-center justify-center">
-                Add Risk
-                {selectedIndex === 0 && (
-                  <ChevronRightIcon className="absolute right-0 size-4" />
-                )}
-              </div>
-            </TabWrapper>
-            {Tabs.map(({ id, displayName, logo, connected, name }, index) => {
-              const isConnected = connected && isIntegrationConnected(name);
-              return (
-                <TabWrapper key={'tab-' + id} vertical={true}>
-                  <div className="relative flex items-center justify-center">
-                    {isConnected && (
-                      <CheckCircleIcon className="absolute left-0 size-5 text-green-500" />
-                    )}
-                    {logo && (
-                      <img
-                        className="h-4"
-                        src={logo || ''}
-                        alt={displayName || ''}
-                      />
-                    )}
-                    {!logo && displayName && <span>{displayName}</span>}
-                    {selectedIndex === index + 1 && (
-                      <ChevronRightIcon className="absolute right-0 size-4" />
-                    )}
-                  </div>
-                </TabWrapper>
-              );
-            })}
-          </TabList>
-          <TabPanels className="size-full overflow-auto pr-6">
-            <TabPanel>
-              <div>
-                <div className="flex flex-1 flex-col space-y-4">
-                  <div>
-                    <h3 className="mt-4 text-xl font-medium text-gray-700">
-                      What is a Risk?
-                    </h3>
-                    <p className="text-md text-gray-500">
-                      Any exploitable threat or vulnerability in your IT
-                      infrastructure.
-                    </p>
-                  </div>
-                </div>
-                <div className="border-1 mt-4 flex flex-1 flex-col justify-center rounded-sm border border-gray-200 p-4">
-                  <form
-                    id="addRisk"
-                    onSubmit={handleSubmit}
-                    className="space-y-4"
-                  >
-                    <TypeSearch
-                      label="Select Assets"
-                      types={['assets']}
-                      value={{ assets: selectedAssets }}
-                      onChange={updatedValue => {
-                        onSelectedAssetsChange(updatedValue.assets || []);
-                      }}
-                      placeholder="8.8.8.8"
-                    />
-                    <Inputs
-                      inputs={[
-                        {
-                          label: 'Risk Name',
-                          value: '',
-                          placeholder: 'CVE-2021-1234',
-                          name: 'name',
-                          required: true,
-                        },
-                        {
-                          label: 'Severity',
-                          name: 'severity',
-                          value: 'I',
-                          options: riskSeverityOptions,
-                          type: Input.Type.SELECT,
-                        },
-                        {
-                          label: 'Comment',
-                          name: 'comment',
-                          value: '',
-                          placeholder: 'Add some optional comments',
-                          type: Input.Type.TEXT_AREA,
-                        },
-                        {
-                          name: '',
-                          value: '',
-                          children: (
-                            <div className="flex justify-around">
-                              <Button
-                                startIcon={<PlusIcon className="size-5" />}
-                                styleType="secondary"
-                                label="Proof of Exploit"
-                                onClick={() => setIsPOEOpen(true)}
-                              />
-                              <Button
-                                startIcon={<PlusIcon className="size-5" />}
-                                styleType="secondary"
-                                label="Description & Remediation"
-                                onClick={() => setIsDefinitionOpen(true)}
-                              />
-                            </div>
-                          ),
-                        },
-                      ]}
-                      onChange={values =>
-                        setFormData(formData => ({ ...formData, ...values }))
-                      }
-                    />
-                  </form>
-                </div>
-                <p className="mt-3 text-center text-xs text-gray-500">
-                  Manually entered risks will be tracked but not automatically
-                  monitored.
-                </p>
-              </div>
-            </TabPanel>
-            {Tabs.map(tab => {
-              const connectedIntegration: Account[] = getConnectedIntegration(
-                tab.name
-              );
-              return (
-                <TabPanelContent
-                  connectedIntegration={connectedIntegration}
-                  key={tab.id}
-                  onChange={setIntegrationFormData}
-                  tab={tab}
-                  onCancel={onClose}
-                />
-              );
-            })}
-          </TabPanels>
-        </TabGroup>
+        <div>
+          <div className="flex flex-1 flex-col space-y-4">
+            <div>
+              <h3 className="mt-4 text-xl font-medium text-gray-700">
+                What is a Risk?
+              </h3>
+              <p className="text-md text-gray-500">
+                Any exploitable threat or vulnerability in your IT
+                infrastructure.
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-1 flex-col justify-center">
+            <form id="addRisk" onSubmit={handleSubmit} className="space-y-4">
+              <TypeSearch
+                label="Select Assets"
+                types={['assets']}
+                value={{ assets: selectedAssets }}
+                onChange={updatedValue => {
+                  onSelectedAssetsChange(updatedValue.assets || []);
+                }}
+                placeholder="8.8.8.8"
+              />
+              <Inputs
+                inputs={[
+                  {
+                    label: 'Risk Name',
+                    value: '',
+                    placeholder: 'CVE-2021-1234',
+                    name: 'name',
+                    required: true,
+                  },
+                  {
+                    label: 'Severity',
+                    name: 'severity',
+                    value: 'I',
+                    options: riskSeverityOptions,
+                    type: Input.Type.SELECT,
+                  },
+                  {
+                    label: 'Comment',
+                    name: 'comment',
+                    value: '',
+                    placeholder: 'Add some optional comments',
+                    type: Input.Type.TEXT_AREA,
+                  },
+                  {
+                    name: '',
+                    value: '',
+                    children: (
+                      <div className="flex justify-around">
+                        <Button
+                          startIcon={<PlusIcon className="size-5" />}
+                          styleType="secondary"
+                          label="Proof of Exploit"
+                          onClick={() => setIsPOEOpen(true)}
+                        />
+                        <Button
+                          startIcon={<PlusIcon className="size-5" />}
+                          styleType="secondary"
+                          label="Description & Remediation"
+                          onClick={() => setIsDefinitionOpen(true)}
+                        />
+                      </div>
+                    ),
+                  },
+                ]}
+                onChange={values =>
+                  setFormData(formData => ({ ...formData, ...values }))
+                }
+              />
+              <p className="mt-3 text-center text-xs text-gray-500">
+                Manually entered risks will be tracked but not automatically
+                monitored.
+              </p>
+            </form>
+          </div>
+        </div>
         <AddDefinition
           open={isDefinitionOpen}
           onOpenChange={setIsDefinitionOpen}

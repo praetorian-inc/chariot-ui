@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import { Snackbar } from '@/components/Snackbar';
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
+import { AvailableIntegrations } from '@/sections/overview/Integration';
 import { useAuth } from '@/state/auth';
 import { Account, LinkAccount } from '@/types';
 import { useMutation } from '@/utils/api';
-import { AvailableIntegrations } from '@/utils/availableIntegrations';
 import { getChariotWebhookURL } from '@/utils/integration.util';
 import { capitalize } from '@/utils/lodash.util';
 

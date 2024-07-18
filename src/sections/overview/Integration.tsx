@@ -518,7 +518,7 @@ export const IntegrationsByCategory: Record<Module, IntegrationMeta[]> = {
     {
       id: '',
       name: '',
-      description: <div>{Modules.ASM.description}</div>,
+      description: <div>{Modules.ASM.categoryDescription}</div>,
     },
     Integrations.github,
     Integrations.amazon,
@@ -531,14 +531,14 @@ export const IntegrationsByCategory: Record<Module, IntegrationMeta[]> = {
     {
       id: '',
       name: '',
-      description: <div>{Modules.BAS.description}</div>,
+      description: <div>{Modules.BAS.categoryDescription}</div>,
     },
   ],
   CIS: [
     {
       id: '',
       name: '',
-      description: <div>{Modules.CIS.description}</div>,
+      description: <div>{Modules.CIS.categoryDescription}</div>,
     },
     Integrations.crowdstrike,
   ],
@@ -546,14 +546,14 @@ export const IntegrationsByCategory: Record<Module, IntegrationMeta[]> = {
     {
       id: '',
       name: '',
-      description: <div>{Modules.CTI.description}</div>,
+      description: <div>{Modules.CTI.categoryDescription}</div>,
     },
   ],
   MSP: [
     {
       id: '',
       name: '',
-      description: <div>{Modules.MSP.description}</div>,
+      description: <div>{Modules.MSP.categoryDescription}</div>,
     },
     Integrations.hook,
     Integrations.slack,

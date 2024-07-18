@@ -7,7 +7,7 @@ import { AssetsIcon } from '@/components/icons';
 import { Modal } from '@/components/Modal';
 import { useCreateAsset } from '@/hooks/useAssets';
 import { useGlobalState } from '@/state/global.state';
-import { Asset, AssetStatus, AssetStatusLabel, PUBLIC_ASSET } from '@/types';
+import { Asset, AssetStatus, AssetStatusLabel } from '@/types';
 
 const AddAssetMessage = () => (
   <div>
@@ -85,11 +85,6 @@ export function AddAsset() {
         values={formData}
         onChange={setFormData}
         inputs={[
-          {
-            name: 'username',
-            value: PUBLIC_ASSET,
-            hidden: true,
-          },
           {
             label: 'Asset',
             value: '',

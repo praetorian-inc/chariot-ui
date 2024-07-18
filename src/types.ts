@@ -1,3 +1,7 @@
+import { ReactNode } from 'react';
+
+import { InputsT } from '@/components/form/Inputs';
+
 export enum RiskScanMessage {
   Stop = 'Risk scanning will stop.',
   Start = 'Risk scanning will start automatically.',
@@ -470,4 +474,35 @@ export enum Modules {
   MSP = 'MSP',
 }
 
-export const PUBLIC_ASSET = 'publicAsset';
+export enum Integration {
+  hook = 'hook',
+  slack = 'slack',
+  jira = 'jira',
+  github = 'github',
+  amazon = 'amazon',
+  ns1 = 'ns1',
+  gcp = 'gcp',
+  azure = 'azure',
+  crowdstrike = 'crowdstrike',
+  gitlab = 'gitlab',
+  nessus = 'nessus',
+  qualys = 'qualys',
+  zulip = 'zulip',
+}
+
+export interface IntegrationMeta {
+  id: string;
+  name: string;
+  description?: ReactNode;
+  logo?: string;
+  connected?: boolean;
+  inputs?: InputsT;
+  warning?: string;
+  message?: JSX.Element;
+  markup?: JSX.Element;
+  multiple?: boolean;
+  help?: {
+    href: string;
+    label: string;
+  };
+}

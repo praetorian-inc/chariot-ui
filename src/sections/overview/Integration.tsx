@@ -1,70 +1,22 @@
-import { ReactNode } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Input } from '@/components/form/Input';
-import { InputsT } from '@/components/form/Inputs';
 import WebhookExample from '@/components/ui/WebhookExample';
 import { useGetModules } from '@/sections/overview/module';
-import { Modules } from '@/types';
-import { getChariotWebhookURL } from '@/utils/integration.util';
+import { Integration, IntegrationMeta, Modules } from '@/types';
 
 const defaultPin = (
   Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000
 ).toString();
 const uuid = uuidv4();
 
-export interface IntegrationMeta {
-  name: string;
-  displayName: string;
-  description?: ReactNode;
-  logo?: string;
-  connected?: boolean;
-  inputs?: InputsT;
-  warning?: string;
-  message?: JSX.Element;
-  markup?: JSX.Element;
-  multiple?: boolean;
-  help?: {
-    href: string;
-    label: string;
-  };
-  copy?: {
-    value: ({
-      api,
-      me,
-      config,
-    }: {
-      api: string;
-      me: string;
-      config: {
-        pin: string;
-      };
-    }) => string;
-    tooltip?: string;
-  };
-}
-
-export const Integrations = {
+export const Integrations: Record<Integration, IntegrationMeta> = {
   hook: {
-    name: 'hook',
-    displayName: 'Chariot Webhook',
+    id: 'hook',
+    name: 'Chariot Webhook',
     description: 'Push assets and risks to Chariot.',
     logo: '/icons/PraetorianWebhook.svg',
     connected: true,
-    copy: {
-      value: ({
-        api,
-        me,
-        config,
-      }: {
-        api: string;
-        me: string;
-        config: { pin: string };
-      }) => {
-        return getChariotWebhookURL({ api, me, pin: config.pin });
-      },
-      tooltip: 'Copy webhook URL',
-    },
     inputs: [
       {
         name: 'username',
@@ -82,8 +34,8 @@ export const Integrations = {
     markup: <WebhookExample defaultPin={defaultPin} />,
   },
   slack: {
-    name: 'slack',
-    displayName: 'Slack',
+    id: 'slack',
+    name: 'Slack',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815125222171-Workplace-Messaging#slack',
       label: 'How to: Workplace Messaging - Slack',
@@ -126,8 +78,8 @@ export const Integrations = {
     ],
   },
   jira: {
-    name: 'jira',
-    displayName: 'Atlassian Jira',
+    id: 'jira',
+    name: 'Atlassian Jira',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815095834267-Ticketing-Systems#jira',
       label: 'How to: Ticketing Systems - Jira',
@@ -209,8 +161,8 @@ export const Integrations = {
     ],
   },
   github: {
-    name: 'github',
-    displayName: 'GitHub',
+    id: 'github',
+    name: 'GitHub',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#github',
       label: 'How to: Source Code Managers - GitHub',
@@ -252,8 +204,8 @@ export const Integrations = {
     ],
   },
   amazon: {
-    name: 'amazon',
-    displayName: 'Amazon Web Services',
+    id: 'amazon',
+    name: 'Amazon Web Services',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#amazon',
       label: 'How to: Cloud Providers - Amazon',
@@ -295,8 +247,8 @@ export const Integrations = {
     ),
   },
   ns1: {
-    name: 'ns1',
-    displayName: 'NS1',
+    id: 'ns1',
+    name: 'NS1',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#ns1',
       label: 'How to: Asset Ingestion - NS1',
@@ -330,8 +282,8 @@ export const Integrations = {
     ],
   },
   gcp: {
-    name: 'gcp',
-    displayName: 'Google Cloud',
+    id: 'gcp',
+    name: 'Google Cloud',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#gcp',
       label: 'How to: Cloud Providers - Google Cloud',
@@ -377,8 +329,8 @@ export const Integrations = {
     ],
   },
   azure: {
-    name: 'azure',
-    displayName: 'Azure',
+    id: 'azure',
+    name: 'Azure',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#azure',
       label: 'How to: Cloud Providers - Azure',
@@ -419,8 +371,8 @@ export const Integrations = {
     ],
   },
   crowdstrike: {
-    name: 'crowdstrike',
-    displayName: 'CrowdStrike',
+    id: 'crowdstrike',
+    name: 'CrowdStrike',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#crowdstrike',
       label: 'How to: Asset Ingestion - CrowdStrike',
@@ -460,8 +412,8 @@ export const Integrations = {
     ],
   },
   gitlab: {
-    name: 'gitlab',
-    displayName: 'GitLab',
+    id: 'gitlab',
+    name: 'GitLab',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#gitlab',
       label: 'How to: Source Code Managers - GitLab',
@@ -503,24 +455,24 @@ export const Integrations = {
     ],
   },
   nessus: {
-    name: 'nessus',
-    displayName: 'Nessus Tenable',
+    id: 'nessus',
+    name: 'Nessus Tenable',
     description:
       'Industry-standard vulnerability scanner for comprehensive security assessments.',
     logo: '/icons/Nessus.svg',
     connected: false,
   },
   qualys: {
-    name: 'qualys',
-    displayName: 'Qualys',
+    id: 'qualys',
+    name: 'Qualys',
     description:
       'Offers cloud-based solutions for security and compliance across networks.',
     logo: '/icons/Qualys.svg',
     connected: false,
   },
   zulip: {
-    name: 'zulip',
-    displayName: 'Zulip',
+    id: 'zulip',
+    name: 'Zulip',
     description: 'Receive Zulip notifications when new risks are discovered.',
     logo: '/icons/Zulip.svg',
     connected: true,
@@ -570,8 +522,8 @@ export function useGetIntegrationsByCategory(): Record<
   return {
     ASM: [
       {
+        id: '',
         name: '',
-        displayName: '',
         description: <div>{modules.ASM.description}</div>,
       },
       Integrations.github,
@@ -583,30 +535,30 @@ export function useGetIntegrationsByCategory(): Record<
     ],
     BAS: [
       {
+        id: '',
         name: '',
-        displayName: '',
         description: <div>{modules.BAS.description}</div>,
       },
     ],
     CIS: [
       {
+        id: '',
         name: '',
-        displayName: '',
         description: <div>{modules.CIS.description}</div>,
       },
       Integrations.crowdstrike,
     ],
     CTI: [
       {
+        id: '',
         name: '',
-        displayName: '',
         description: <div>{modules.CTI.description}</div>,
       },
     ],
     MSP: [
       {
+        id: '',
         name: '',
-        displayName: '',
         description: <div>{modules.MSP.description}</div>,
       },
       Integrations.hook,
@@ -619,4 +571,4 @@ export function useGetIntegrationsByCategory(): Record<
 
 export const AvailableIntegrations = Object.values(Integrations)
   .filter(integration => integration.connected)
-  .map(integration => integration.name);
+  .map(integration => integration.id);

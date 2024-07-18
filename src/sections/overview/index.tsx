@@ -13,12 +13,12 @@ import {
 
 import { Button } from '@/components/Button';
 import { Inputs, Values } from '@/components/form/Inputs';
+import { Link } from '@/components/Link';
 import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
 import { useModifyAccount } from '@/hooks/useAccounts';
 import { useIntegration } from '@/hooks/useIntegration';
 import {
-  IntegrationMeta,
   Integrations,
   useGetIntegrationsByCategory,
 } from '@/sections/overview/Integration';
@@ -28,9 +28,9 @@ import { useGlobalState } from '@/state/global.state';
 import {
   Account,
   AccountMetadata,
+  IntegrationMeta,
   LinkAccount,
   Modules,
-  PUBLIC_ASSET,
 } from '@/types';
 import { getRoute } from '@/utils/route.util';
 
@@ -135,7 +135,7 @@ export function IntegrationsByModuleCategoryModal() {
           integration.value.integration as keyof typeof Integrations
         ];
 
-      const integrations = getConnectedIntegration(integrationMeta.name);
+      const integrations = getConnectedIntegration(integrationMeta.id);
 
       return integrations.map(integration => {
         if (integration.config) {
@@ -246,14 +246,14 @@ function IntegrationTabs(props: {
     <Tabs
       tabs={integrations.map(integration => {
         const connectedIntegration: Account[] = getConnectedIntegration(
-          integration.name
+          integration.id
         );
         const isConnected = connectedIntegration.length > 0;
 
         return {
-          id: integration.name,
+          id: integration.id,
           tabClassName: 'relative',
-          label: integration.name ? (
+          label: integration.id ? (
             <div className="flex min-h-[20px] items-center justify-center pl-4 pr-2">
               {isConnected && (
                 <CheckCircleIcon className="absolute left-2 size-5 text-green-500" />
@@ -262,11 +262,11 @@ function IntegrationTabs(props: {
                 <img
                   className="h-4"
                   src={integration.logo || ''}
-                  alt={integration.displayName || ''}
+                  alt={integration.name || ''}
                 />
               )}
-              {!integration.logo && integration.displayName && (
-                <span>{integration.displayName}</span>
+              {!integration.logo && integration.name && (
+                <span>{integration.name}</span>
               )}
             </div>
           ) : (
@@ -313,9 +313,7 @@ const IntegrationTab = (props: IntegrationContentProps) => {
     description = '',
     markup = '',
     inputs = [],
-    logo = '',
     name = '',
-    displayName = '',
     multiple = false,
     message = '',
     warning = false,
@@ -336,9 +334,7 @@ const IntegrationTab = (props: IntegrationContentProps) => {
   return (
     <div className="mt-4 px-4">
       <div className="flex items-center gap-2">
-        {logo && (
-          <h3 className="text-xl font-medium text-gray-700">{displayName}</h3>
-        )}
+        {name && <h3 className="text-xl font-medium text-gray-700">{name}</h3>}
         {isConnected && <CheckCircleIcon className="size-6 text-green-500" />}
         {isConnected ? (
           <Button
@@ -363,114 +359,105 @@ const IntegrationTab = (props: IntegrationContentProps) => {
         <div className="mb-2 rounded-lg bg-gray-100 p-4">
           <p className="mb-2 text-sm font-bold">Need help?</p>
           <div className="flex flex-col space-y-2">
-            <a
-              href={help.href}
+            <Link
+              styleType="textPrimary"
+              to={help.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center space-x-2 text-blue-600 hover:underline"
+              buttonClass="p-0 hover:underline"
             >
               <InformationCircleIcon className="size-5" />
               <span>{help.label}</span>
-            </a>
+            </Link>
           </div>
         </div>
       )}
-      <div className="mt-4 flex">
-        <form
-          id="new-asset"
-          className="border-1 w-full rounded-sm border border-gray-200 p-4"
-        >
-          {message && <div className="mb-4 text-gray-500">{message}</div>}
-          <div>
-            {markup && <div className="relative">{markup}</div>}
-            {showInputs &&
-              [...Array(count).keys()].map(index => (
-                <div key={index} className="relative space-y-4">
-                  {index > 0 && (
-                    <Button
-                      aria-label="CloseIcon"
-                      className="absolute right-0 top-0"
-                      onClick={() => {
-                        setCount(count => count - 1);
-                        setFormData(values =>
-                          values.filter((_, i) => {
-                            return i !== index;
-                          })
-                        );
-                      }}
-                      styleType="none"
-                    >
-                      <XMarkIcon className="size-4" />
-                    </Button>
-                  )}
-                  <Inputs
-                    inputs={(inputs || []).map(input => ({
-                      ...input,
-                      value: String(
-                        input.value ||
-                          (
-                            connectedIntegration[index]?.config as Record<
-                              string,
-                              string
-                            >
-                          )?.[input.name] ||
-                          connectedIntegration[index]?.[
-                            input.name as keyof LinkAccount
-                          ] ||
-                          ''
-                      ),
-                    }))}
-                    onChange={newValues =>
-                      setFormData(values => {
-                        if (!values) {
-                          return [newValues];
-                        }
-                        if (values.length < index || !values[index]) {
-                          return [...values, newValues];
-                        }
-
-                        return values?.map((value, i) =>
-                          i === index ? newValues : value
-                        );
-                      })
-                    }
-                  />
-                </div>
-              ))}
-          </div>
-          {multiple && (
-            <Button
-              styleType="textPrimary"
-              className="!mt-0"
-              endIcon={<ChevronRightIcon className="size-5" />}
-              onClick={() => {
-                setCount(count => count + 1);
-              }}
-            >
-              Add Another
-            </Button>
-          )}
-          {warning && (
-            <p className="mt-5 rounded bg-yellow-100 p-2 text-sm text-yellow-600">
-              <ExclamationTriangleIcon className="inline size-5 text-yellow-700" />
-              {warning}
-            </p>
-          )}
-        </form>
-      </div>
-      {name === PUBLIC_ASSET && (
-        <p className="mt-4 rounded bg-yellow-100 p-2 text-sm text-yellow-600">
-          <ExclamationTriangleIcon className="mr-2 inline size-5 text-yellow-700" />
-          <a
-            href="https://github.com/praetorian-inc/praetorian-cli"
-            target={'_blank'}
-            rel={'noreferrer'}
-            className="inline p-0 text-yellow-900 no-underline"
+      {(showInputs || message || markup || warning) && (
+        <div className="mt-4 flex">
+          <form
+            id="new-asset"
+            className="border-1 w-full rounded-sm border border-gray-200 p-4"
           >
-            Praetorian CLI
-          </a>{' '}
-          is available for bulk asset addition.
-        </p>
+            {message && <div className="mb-4 text-gray-500">{message}</div>}
+            {(showInputs || markup) && (
+              <div>
+                {markup && <div className="relative">{markup}</div>}
+                {showInputs &&
+                  [...Array(count).keys()].map(index => (
+                    <div key={index} className="relative space-y-4">
+                      {index > 0 && (
+                        <Button
+                          aria-label="CloseIcon"
+                          className="absolute right-0 top-0"
+                          onClick={() => {
+                            setCount(count => count - 1);
+                            setFormData(values =>
+                              values.filter((_, i) => {
+                                return i !== index;
+                              })
+                            );
+                          }}
+                          styleType="none"
+                        >
+                          <XMarkIcon className="size-4" />
+                        </Button>
+                      )}
+                      <Inputs
+                        inputs={(inputs || []).map(input => ({
+                          ...input,
+                          value: String(
+                            input.value ||
+                              (
+                                connectedIntegration[index]?.config as Record<
+                                  string,
+                                  string
+                                >
+                              )?.[input.name] ||
+                              connectedIntegration[index]?.[
+                                input.name as keyof LinkAccount
+                              ] ||
+                              ''
+                          ),
+                        }))}
+                        onChange={newValues =>
+                          setFormData(values => {
+                            if (!values) {
+                              return [newValues];
+                            }
+                            if (values.length < index || !values[index]) {
+                              return [...values, newValues];
+                            }
+
+                            return values?.map((value, i) =>
+                              i === index ? newValues : value
+                            );
+                          })
+                        }
+                      />
+                    </div>
+                  ))}
+              </div>
+            )}
+            {multiple && (
+              <Button
+                styleType="textPrimary"
+                className="!mt-0"
+                endIcon={<ChevronRightIcon className="size-5" />}
+                onClick={() => {
+                  setCount(count => count + 1);
+                }}
+              >
+                Add Another
+              </Button>
+            )}
+            {warning && (
+              <p className="mt-5 rounded bg-yellow-100 p-2 text-sm text-yellow-600">
+                <ExclamationTriangleIcon className="inline size-5 text-yellow-700" />
+                {warning}
+              </p>
+            )}
+          </form>
+        </div>
       )}
     </div>
   );

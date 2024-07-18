@@ -9,34 +9,22 @@ import { useCreateAsset } from '@/hooks/useAssets';
 import { useGlobalState } from '@/state/global.state';
 import { Asset, AssetStatus, AssetStatusLabel } from '@/types';
 
-const AddAssetMessage = () => (
-  <div>
-    <div>
-      <h3 className="m-0 text-xl font-medium text-gray-700">
-        What is an Asset?
-      </h3>
-      <p className="text-md mb-2 text-gray-500">
-        Any component of your IT infrastructure at risk of cyberattacks.
-      </p>
-      <p className="mt-0 rounded-sm bg-layer1 p-4 text-sm text-gray-500">
-        For example, at Acme Corporation, an asset could be:
-        <ul className="my-0 list-disc pl-5 text-sm marker:text-gray-300 ">
-          <li>
-            Domains: <span className="font-semibold">acme.com</span>
-          </li>
-          <li>
-            IP Addresses: <span className="font-semibold">8.8.8.8</span>
-          </li>
-          <li>
-            CIDR Ranges: <span className="font-semibold">8.8.8.0/24</span>
-          </li>
-          <li>
-            GitHub Organizations:{' '}
-            <span className="font-semibold">https://github.com/acme-corp</span>
-          </li>
-        </ul>
-      </p>
-    </div>
+const AddAssetExamples = () => (
+  <div className="text-md mt-4 rounded-md bg-gray-100 p-4 text-gray-700">
+    <p className="mb-3 font-medium text-gray-800">Example asset:</p>
+    <p>
+      <span className="font-semibold">acme.com</span>: Domain name
+    </p>
+    <p>
+      <span className="font-semibold">8.8.8.8</span>: IP Addresses
+    </p>
+    <p>
+      <span className="font-semibold">8.8.8.0/24</span>: CIDR Ranges
+    </p>
+    <p>
+      <span className="font-semibold">https://github.com/acme-corp</span>:
+      GitHub Org
+    </p>
   </div>
 );
 
@@ -67,8 +55,8 @@ export function AddAsset() {
 
   return (
     <Modal
-      title="Configure Asset Discovery"
-      className="h-[60vh] px-0 pl-6"
+      title="Add Asset"
+      className="px-10 py-6"
       open={open}
       onClose={onClose}
       footer={{
@@ -76,14 +64,14 @@ export function AddAsset() {
         text: 'Add',
         onClick: handleAddAsset,
       }}
-      size="lg"
+      size="md"
       closeOnOutsideClick={false}
       icon={<AssetsIcon className="size-6 text-default-light" />}
     >
-      <AddAssetMessage />
       <Inputs
         values={formData}
         onChange={setFormData}
+        className="mb-4"
         inputs={[
           {
             label: 'Asset',
@@ -91,7 +79,7 @@ export function AddAsset() {
             placeholder: 'acme.com',
             name: 'asset',
             required: true,
-            className: 'h-11',
+            className: 'h-11 m-5',
           },
           {
             label: 'Priority',
@@ -114,10 +102,11 @@ export function AddAsset() {
               },
             ],
             required: true,
-            className: 'h-11',
+            className: 'h-11 m-5',
           },
         ]}
       />
+      <AddAssetExamples />
       <p className="mt-4 rounded bg-yellow-100 p-2 text-sm text-yellow-600">
         <ExclamationTriangleIcon className="mr-2 inline size-5 text-yellow-700" />
         <a

@@ -34,10 +34,6 @@ import {
 } from '@/types';
 import { getRoute } from '@/utils/route.util';
 
-// TODO: Remove this before PROD
-const getRandom = (min = 0, max = 100) =>
-  Math.floor(Math.random() * (max - min) + min);
-
 export function Overview() {
   const {
     modal: { integration },
@@ -71,9 +67,14 @@ export function Overview() {
                 </div>
                 {module.risks !== undefined && (
                   <div className="my-8 w-full p-2 text-center">
-                    <p className="mb-4 text-6xl text-default">
-                      {module.risks || getRandom()}
-                    </p>
+                    <Loader
+                      className="mb-4 h-[60px]"
+                      isLoading={module.status === 'pending'}
+                    >
+                      <p className="mb-4 text-6xl text-default">
+                        {module.risks}
+                      </p>
+                    </Loader>
                     <p className="text-sm font-medium text-default-light">
                       Open Risks
                     </p>

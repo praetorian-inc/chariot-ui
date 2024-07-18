@@ -478,8 +478,9 @@ export interface ModuleMeta {
   label: string;
   name: string;
   description: string;
-  risks?: number;
-  Icon?: React.ElementType;
+  risks: number;
+  status: string;
+  Icon: React.ElementType;
 }
 
 export enum Integration {

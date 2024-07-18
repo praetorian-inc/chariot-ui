@@ -2,7 +2,7 @@ import { BeakerIcon, HomeIcon, TrophyIcon } from '@heroicons/react/24/solid';
 
 import { Module, ModuleMeta } from '@/types';
 
-export const Modules: Record<Module, Omit<ModuleMeta, 'assets' | 'risks'>> = {
+export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
   ASM: {
     banner: 'Banner text',
     Icon: BeakerIcon,
@@ -45,22 +45,27 @@ export function useGetModules(): Record<Module, ModuleMeta> {
     ASM: {
       ...Modules.ASM,
       risks: 0,
+      status: 'pending',
     },
     BAS: {
       ...Modules.BAS,
       risks: 0,
+      status: 'pending',
     },
     CIS: {
       ...Modules.CIS,
       risks: 0,
+      status: 'pending',
     },
     CTI: {
       ...Modules.CTI,
       risks: 0,
+      status: 'pending',
     },
     MSP: {
       ...Modules.MSP,
       risks: 0,
+      status: 'pending',
     },
   };
 }

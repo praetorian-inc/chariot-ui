@@ -16,7 +16,8 @@ import { Inputs, Values } from '@/components/form/Inputs';
 import { Link } from '@/components/Link';
 import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
-import { useModifyAccount } from '@/hooks/useAccounts';
+import { useMy } from '@/hooks';
+import { useGetDisplayName, useModifyAccount } from '@/hooks/useAccounts';
 import { useIntegration } from '@/hooks/useIntegration';
 import {
   Integrations,
@@ -40,12 +41,18 @@ export function Overview() {
   } = useGlobalState();
 
   const modules = useGetModules();
+  const { data: accounts, status: accountsStatus } = useMy({
+    resource: 'account',
+  });
+
+  const displayName = useGetDisplayName(accounts);
 
   return (
     <div>
       <div className="text-header-light">
         <h6 className="m-10 text-center text-7xl font-bold">
-          We Prevent Breaches by Emulating Attackers
+          {displayName}
+          <span className="text-default-light">'s Chariot</span>
         </h6>
         <p className="m-auto mb-10 w-2/3 text-center">
           Proactively identify and address exploitable vulnerabilities in your

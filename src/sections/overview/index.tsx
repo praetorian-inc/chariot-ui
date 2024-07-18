@@ -107,6 +107,7 @@ export function IntegrationsByModuleCategoryModal() {
     modal: { integration },
   } = useGlobalState();
   const [formData, setFormData] = useState<Values[]>([]);
+  const allModules = useGetModules();
 
   const { mutateAsync: unlink, status: unlinkStatus } =
     useModifyAccount('unlink');
@@ -195,7 +196,7 @@ export function IntegrationsByModuleCategoryModal() {
         tabs={Object.values(Modules).map(module => {
           return {
             id: module,
-            label: module,
+            label: allModules[module].label,
             content: (
               <IntegrationTabs
                 module={module}

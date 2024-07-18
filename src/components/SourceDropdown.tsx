@@ -27,12 +27,35 @@ const SourceDropdown: React.FC<SourceDropdownProps> = ({ type, onSelect }) => {
     onSelect(selectedRows);
   };
 
+  let name = 'Sources';
+
+  if (type === 'asset') {
+    name = 'Origins';
+  } else if (type === 'risk' || type === 'job') {
+    name = 'Capabilities';
+  }
+
+  function override(item: string) {
+    switch (item?.toLowerCase()) {
+      case 'azuread-discovery':
+        return 'Azure AD Discovery';
+      case 'github':
+        return 'GitHub';
+      case 'github-discovery':
+        return 'GitHub Discovery';
+      case 'ssh':
+        return 'SSH';
+      default:
+        return <span className="capitalize">{item}</span>;
+    }
+  }
+
   return (
     <Dropdown
       styleType="header"
       label={
         sourcesFilter.filter(Boolean).length === 0
-          ? 'All Sources'
+          ? `All ${name}`
           : sourcesFilter.join(', ')
       }
       className="capitalize"
@@ -40,7 +63,7 @@ const SourceDropdown: React.FC<SourceDropdownProps> = ({ type, onSelect }) => {
       menu={{
         items: [
           {
-            label: 'All Sources',
+            label: `All ${name}`,
             labelSuffix: Object.values(sourceData)
               ?.reduce((a, b) => a + b, 0)
               ?.toLocaleString(),
@@ -51,10 +74,9 @@ const SourceDropdown: React.FC<SourceDropdownProps> = ({ type, onSelect }) => {
             type: 'divider',
           },
           ...Object.keys(sourceData).map(item => ({
-            label: item,
+            label: override(item),
             labelSuffix: sourceData[item].toLocaleString(),
             value: item,
-            className: 'capitalize',
           })),
         ],
         onSelect: handleSelect,

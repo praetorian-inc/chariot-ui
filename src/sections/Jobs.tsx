@@ -77,7 +77,7 @@ const Jobs: React.FC = () => {
       filteredJobs = jobs.filter(job => job.status === filter);
     }
 
-    if (sources.length > 0) {
+    if (sources.filter(Boolean).length > 0) {
       filteredJobs = jobs.filter(job => sources.includes(job.source));
     }
 
@@ -179,7 +179,7 @@ const Jobs: React.FC = () => {
                   ...Object.entries(JobLabels).map(([key, label]) => {
                     return {
                       label,
-                      labelSuffix: stats[key]?.toLocaleString() || 0,
+                      labelSuffix: stats.status?.[key]?.toLocaleString() || 0,
                       value: key,
                     };
                   }),
@@ -197,7 +197,6 @@ const Jobs: React.FC = () => {
               }}
             />
             <SourceDropdown
-              data={jobs}
               type="job"
               onSelect={selectedRows => setSources(selectedRows)}
             />

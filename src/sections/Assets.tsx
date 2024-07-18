@@ -151,11 +151,13 @@ const Assets: React.FC = () => {
 
   const filteredAssets = useMemo(() => {
     let filteredAssets = assetsWithRisk;
+
     if (priorityFilter?.filter(Boolean).length > 0) {
       filteredAssets = filteredAssets.filter(({ status }) =>
         priorityFilter.includes(status)
       );
     }
+
     if (sourceFilter?.filter(Boolean).length > 0) {
       filteredAssets = filteredAssets.filter(({ source }) =>
         sourceFilter.includes(source)
@@ -342,10 +344,9 @@ const Assets: React.FC = () => {
               }}
             />
             <SourceDropdown
-              data={filteredAssets}
               type="asset"
               onSelect={selected => setSourceFilter(selected)}
-              seeds={['google.com', 'msn.com']}
+              types={['Provided', 'Discovered']}
             />
           </div>
         }

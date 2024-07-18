@@ -1,22 +1,17 @@
-import { useCounts } from '@/hooks/useCounts';
-import { JobStatus } from '@/types';
 import { useMemo } from 'react';
+
+import { useCounts } from '@/hooks/useCounts';
+import { JobStatus, Statistics } from '@/types';
 
 export const useAggregateCounts = (): {
   isPending: boolean;
   counts: {
-    seeds: number;
     assets: number;
     risks: number;
     jobs: number;
     jobsRunning: number;
   };
 } => {
-  const { data: seedStats = {}, status: seedStatus } = useCounts({
-    resource: 'seed',
-    filterByGlobalSearch: true,
-  });
-
   const { data: assetStats = {}, status: assetStatus } = useCounts({
     resource: 'asset',
     filterByGlobalSearch: true,
@@ -32,16 +27,21 @@ export const useAggregateCounts = (): {
     filterByGlobalSearch: true,
   });
 
-  const isPending = [seedStatus, assetStatus, riskStatus, jobStatus].some(
+  const isPending = [assetStatus, riskStatus, jobStatus].some(
     status => status === 'pending'
   );
 
-  const getTotal = (stats: Record<string, number>) =>
-    Object.values(stats).reduce((acc, val) => acc + val, 0);
+  const getTotal = (stats: Statistics): number =>
+    Object.values(stats || {}).reduce(
+      (acc, val) => (acc + (typeof val === 'number' ? val : 0)) as number,
+      0
+    );
 
   // Only count open risks
   const openRiskStats = useMemo(() => {
-    const allStats = { ...riskStats };
+    const allStats: { [key: string]: number } = {
+      ...(riskStats?.status || {}),
+    };
     for (const key in allStats) {
       if (!key.startsWith('O')) {
         delete allStats[key];
@@ -51,11 +51,10 @@ export const useAggregateCounts = (): {
   }, [riskStats]);
 
   const counts = {
-    seeds: getTotal(seedStats),
-    assets: getTotal(assetStats),
+    assets: getTotal(assetStats?.['status'] as Statistics),
     risks: getTotal(openRiskStats),
-    jobs: getTotal(jobStats),
-    jobsRunning: jobStats[JobStatus.Running] || 0,
+    jobs: getTotal(jobStats?.['status'] as Statistics),
+    jobsRunning: jobStats?.['status']?.[JobStatus.Running] || 0,
   };
 
   return {

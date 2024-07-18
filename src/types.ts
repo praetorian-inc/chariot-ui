@@ -285,7 +285,9 @@ export interface MyFile {
 }
 
 export interface Statistics {
-  [key: string]: number;
+  status?: { [key: string]: number };
+  source?: { [key: string]: number };
+  attributes?: { [key: string]: number };
 }
 
 export type Secret = {

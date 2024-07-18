@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { AssetsIcon, RisksIcon, SeedsIcon } from '@/components/icons';
+import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { AnimatedArrowIcon } from '@/components/icons/AnimatedArrow.icon';
 import { Loader } from '@/components/Loader';
-import { OverviewLabels, Statistics } from '@/types';
+import { OverviewLabels } from '@/types';
 import { QueryStatus } from '@/utils/api';
 
 const countsLabel = OverviewLabels;
@@ -16,6 +16,10 @@ const countsDefinition: Record<string, React.ReactNode> = {
 interface CountsProps {
   stats: Statistics;
   status?: QueryStatus;
+}
+
+interface Statistics {
+  [key: string]: number;
 }
 
 const icons: Record<string, React.ReactNode> = {

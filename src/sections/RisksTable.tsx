@@ -119,7 +119,7 @@ const getFilteredRisks = (
     );
   }
 
-  if (sourcesFilter.length > 0) {
+  if (sourcesFilter?.filter(Boolean).length > 0) {
     filteredRisks = filteredRisks.filter(risk =>
       sourcesFilter.includes(risk.source)
     );
@@ -465,7 +465,6 @@ export function Risks() {
               }}
             />
             <SourceDropdown
-              data={risks}
               type="risk"
               onSelect={selectedRows => {
                 setSourcesFilter(selectedRows);

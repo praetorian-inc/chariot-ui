@@ -1,14 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
-import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  DocumentArrowDownIcon,
-} from '@heroicons/react/24/outline';
+import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
 import CircularProgressBar from '@/components/CircularProgressBar';
-import { Input } from '@/components/form/Input';
 import { Tooltip } from '@/components/Tooltip';
 import Counts from '@/components/ui/Counts';
 import { TabWrapper } from '@/components/ui/TabWrapper';
@@ -19,11 +14,6 @@ import { useMy } from '@/hooks/useMy';
 import { getReportSections } from '@/sections/overview/constants';
 import { useAuth } from '@/state/auth';
 import { cn } from '@/utils/classname';
-import { addDays, subtractDays } from '@/utils/date.util';
-
-const formatDate = (date: Date): string => date.toISOString().split('T')[0];
-
-const TODAY = formatDate(new Date());
 
 export const Overview = () => {
   const { me, friend } = useAuth();
@@ -215,52 +205,6 @@ export const Overview = () => {
           </div>
         )}
       </div>
-    </div>
-  );
-};
-
-const DateComp = ({
-  className,
-  date,
-  setDate,
-}: {
-  className?: string;
-  date: string;
-  setDate: React.Dispatch<React.SetStateAction<string>>;
-}) => {
-  const iconClassName =
-    'size-6 cursor-pointer rounded-full p-1 hover:bg-default-light';
-  return (
-    <div className={cn('ml-auto flex items-center gap-2', className)}>
-      <ChevronDoubleLeftIcon
-        className={iconClassName}
-        onMouseDown={e => e.preventDefault()}
-        onClick={() =>
-          setDate((date: string) => formatDate(subtractDays(new Date(date), 1)))
-        }
-      />
-      <Input
-        type={Input.Type.DATE}
-        max={TODAY}
-        onChange={e => setDate(e.target.value)}
-        value={date}
-        name="date"
-      />
-
-      <ChevronDoubleRightIcon
-        className={cn(
-          iconClassName,
-          date === TODAY && 'cursor-not-allowed opacity-50'
-        )}
-        onMouseDown={e => e.preventDefault()}
-        onClick={() =>
-          date === TODAY
-            ? {}
-            : setDate(date => {
-                return formatDate(addDays(new Date(date), 1));
-              })
-        }
-      />
     </div>
   );
 };

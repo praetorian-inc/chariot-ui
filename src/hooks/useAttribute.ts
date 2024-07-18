@@ -5,14 +5,15 @@ import { Snackbar } from '@/components/Snackbar';
 import { useAxios } from '@/hooks/useAxios';
 import { useCounts } from '@/hooks/useCounts';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
+import { useMy } from '@/hooks/useMy';
 import { getQueryKey } from '@/hooks/useQueryKeys';
 import { Attribute } from '@/types';
 import { mergeStatus, useMutation } from '@/utils/api';
 
 interface CreateAttribute {
   key: string;
-  class: string;
   name: string;
+  value: string;
 }
 
 export const useCreateAttribute = (resourceKey = '') => {
@@ -30,13 +31,13 @@ export const useCreateAttribute = (resourceKey = '') => {
     }
   );
 
-  return useMutation<void, Error, CreateAttribute>({
+  return useMutation({
     defaultErrorMessage: `Failed to add attribute`,
-    mutationFn: async attribute => {
+    mutationFn: async (attribute: CreateAttribute) => {
       const { data } = await axios.post(`/attribute`, {
         key: attribute.key,
-        name: attribute.class,
-        value: attribute.name,
+        name: attribute.name,
+        value: attribute.value,
       });
 
       Snackbar({
@@ -49,6 +50,54 @@ export const useCreateAttribute = (resourceKey = '') => {
       invalidateAttributesGenericSearch();
 
       return data;
+    },
+  });
+};
+
+export const useBulkAddAttributes = () => {
+  const axios = useAxios();
+  const { invalidate: invalidateAttributeCounts } = useCounts(
+    { resource: 'attribute' },
+    { enabled: false }
+  );
+  const { invalidate: invalidateAttribute } = useMy(
+    { resource: 'attribute' },
+    { enabled: false }
+  );
+
+  return useMutation({
+    defaultErrorMessage: 'Failed to bulk add attributes',
+
+    mutationFn: async (attributes: CreateAttribute[]) => {
+      const response = await Promise.all<Attribute>(
+        attributes
+          .map(attribute => {
+            return axios.post(`/attribute`, {
+              key: attribute.key,
+              name: attribute.name,
+              value: attribute.value,
+            });
+          })
+          // Note: Catch error so we can continue adding assets even if some fail
+          .map(p => p.catch(e => e))
+      );
+
+      const validResults = response.filter(
+        result => !(result instanceof Error)
+      );
+
+      if (validResults.length > 0) {
+        Snackbar({
+          title: `Added ${validResults.length} Attributes`,
+          description: '',
+          variant: 'success',
+        });
+
+        invalidateAttributeCounts();
+        invalidateAttribute();
+      }
+
+      return response;
     },
   });
 };

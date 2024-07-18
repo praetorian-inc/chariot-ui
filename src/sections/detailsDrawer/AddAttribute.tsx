@@ -48,8 +48,8 @@ export const AddAttribute = (props: Props) => {
             createAttribute(
               {
                 key: resourceKey,
-                class: formData.name,
-                name: formData.value,
+                name: formData.name,
+                value: formData.value,
               },
               {
                 onSuccess: reset,

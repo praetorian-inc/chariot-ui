@@ -8,7 +8,8 @@ import { useStorage } from '@/utils/storage/useStorage.util';
 interface Tab<ID = string> {
   id: ID;
   label: ReactNode;
-  content: ReactNode;
+  Content: React.ElementType;
+  contentProps?: object;
   tabClassName?: string;
   contentClassName?: string;
 }
@@ -35,6 +36,7 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
   );
 
   const tabLabels = props.tabs.filter(tab => tab.label);
+  const selectedTab = props.tabs.find(tab => tab.id === selectedTabId);
 
   if (props.tabs.length === 0) return null;
 
@@ -78,22 +80,7 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
           props?.contentWrapperClassName
         )}
       >
-        {props.tabs.map((tab, tabIndex) => {
-          const isSelected = tab.id === selectedTabId;
-
-          return (
-            <div
-              key={tabIndex}
-              className={cn(
-                'h-full w-full',
-                !isSelected && 'hidden',
-                tab?.contentClassName
-              )}
-            >
-              {tab.content}
-            </div>
-          );
-        })}
+        {selectedTab && <selectedTab.Content {...selectedTab.contentProps} />}
       </div>
     </div>
   );

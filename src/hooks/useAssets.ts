@@ -149,19 +149,24 @@ export const useBulkAddAsset = () => {
     { enabled: false }
   );
 
-  return useMutation<void, Error, string[]>({
+  return useMutation({
     defaultErrorMessage: 'Failed to bulk add assets',
     errorByStatusCode: {
       402: 'License is required to add more assets',
     },
-    mutationFn: async (assets: string[]) => {
-      const response = await Promise.all(
+    mutationFn: async (
+      assets: (Partial<Pick<Asset, 'status'>> & Pick<Asset, 'name'>)[]
+    ) => {
+      const response = await Promise.all<Asset>(
         assets
           .map(async asset => {
-            await axios.post(`/asset`, {
-              dns: asset,
-              status: AssetStatus.Active,
+            const { data } = await axios.post<Asset[]>(`/asset`, {
+              dns: asset.name,
+              name: asset.name,
+              status: asset.status || AssetStatus.Active,
             });
+
+            return data[0];
           })
           // Note: Catch error so we can continue adding assets even if some fail
           .map(p => p.catch(e => e))
@@ -182,14 +187,8 @@ export const useBulkAddAsset = () => {
         invalidateAsset();
       }
 
-      if (validResults.length !== assets.length) {
-        const firstError = response.find(result => result instanceof Error);
-        // Note: Some assets failed to add, so throwing the first error, and useMutation will handle the error toast
-
-        throw firstError;
-      }
-
-      return;
+      console.log('response', response);
+      return response;
     },
   });
 };

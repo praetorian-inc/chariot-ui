@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ExclamationCircleIcon,
@@ -17,29 +24,22 @@ import { Link } from '@/components/Link';
 import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
 import { useModifyAccount } from '@/hooks/useAccounts';
+import { useBulkAddAsset } from '@/hooks/useAssets';
+import { useBulkAddAttributes } from '@/hooks/useAttribute';
 import { useIntegration } from '@/hooks/useIntegration';
-import {
-  Integrations,
-  IntegrationsByCategory,
-} from '@/sections/overview/Integration';
-import { Modules, useGetModules } from '@/sections/overview/Module';
+import { Modules, useGetModuleData } from '@/sections/overview/Module';
 import { Tabs } from '@/sections/overview/Tab';
 import { useGlobalState } from '@/state/global.state';
-import {
-  Account,
-  AccountMetadata,
-  IntegrationMeta,
-  LinkAccount,
-  Module,
-} from '@/types';
+import { AccountMetadata, IntegrationMeta, LinkAccount, Module } from '@/types';
 import { getRoute } from '@/utils/route.util';
+import { generateUuid } from '@/utils/uuid.util';
 
 export function Overview() {
   const {
     modal: { integration },
   } = useGlobalState();
 
-  const modules = useGetModules();
+  const { data: modulesData } = useGetModuleData();
 
   const size = 150;
 
@@ -74,31 +74,46 @@ export function Overview() {
         </p>
       </div>
       <div className="mb-10 flex justify-center gap-5">
-        {Object.entries(modules).map(([moduleKey, module], index) => {
+        {Object.values(Module).map((moduleKey, index) => {
+          const module = Modules[moduleKey];
+          const moduleData = modulesData[moduleKey];
+
           return (
             <div key={index} className="relative w-full">
               <div className="flex flex-col gap-2 overflow-hidden rounded-md border-2 border-default bg-layer2 p-4">
                 <div className="text-2xl font-bold text-default">
                   {module.label}
                 </div>
+                {`Enabled:${moduleData.enabled}`}
                 <div className="line-clamp-3 min-h-12 text-xs text-default-light">
                   {module.description}
                 </div>
-                {module.risks !== undefined && (
-                  <div className="my-8 w-full p-2 text-center">
-                    <Loader
-                      className="mb-4 h-[60px]"
-                      isLoading={module.status === 'pending'}
-                    >
-                      <p className="mb-4 text-6xl text-default">
-                        {module.risks}
-                      </p>
-                    </Loader>
-                    <p className="text-sm font-medium text-default-light">
-                      Material Risks
+                <div className="my-8 w-full p-2 text-center">
+                  <Loader
+                    className="mb-4 h-[60px]"
+                    isLoading={moduleData.isLoading}
+                  >
+                    <p className="mb-4 text-6xl text-default">
+                      {moduleData.noOfAsset}
                     </p>
-                  </div>
-                )}
+                  </Loader>
+                  <p className="text-sm font-medium text-default-light">
+                    Assets
+                  </p>
+                </div>
+                <div className="my-8 w-full p-2 text-center">
+                  <Loader
+                    className="mb-4 h-[60px]"
+                    isLoading={moduleData.isLoading}
+                  >
+                    <p className="mb-4 text-6xl text-default">
+                      {moduleData.noOfRisk}
+                    </p>
+                  </Loader>
+                  <p className="text-sm font-medium text-default-light">
+                    Material Risks
+                  </p>
+                </div>
                 <Button
                   className="m-auto w-full bg-header-light text-white"
                   onClick={() => {
@@ -134,7 +149,12 @@ export function IntegrationsByModuleCategoryModal() {
   const { mutateAsync: unlink, status: unlinkStatus } =
     useModifyAccount('unlink');
   const { mutateAsync: link, status: linkStatus } = useModifyAccount('link');
-
+  const { mutateAsync: createBulkAsset, status: createBulkAssetStatus } =
+    useBulkAddAsset();
+  const {
+    mutateAsync: createBulkAttribute,
+    status: createBulkAttributeStatus,
+  } = useBulkAddAttributes();
   const { getConnectedIntegration } = useIntegration();
 
   function handleClose() {
@@ -143,12 +163,9 @@ export function IntegrationsByModuleCategoryModal() {
 
   const selectedIntegration = useMemo(() => {
     if (integration.value?.integration) {
-      const integrationMeta =
-        Integrations[
-          integration.value.integration as keyof typeof Integrations
-        ];
-
-      const integrations = getConnectedIntegration(integrationMeta.id);
+      const integrations = getConnectedIntegration(
+        integration.value.integration
+      );
 
       return integrations.map(integration => {
         if (integration.config) {
@@ -182,11 +199,48 @@ export function IntegrationsByModuleCategoryModal() {
     }
   }
 
-  async function handleAddAsset() {
-    const promises = formData.map(data => link(data as unknown as LinkAccount));
-    await Promise.all(promises);
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    const formElement = event.target as HTMLFormElement;
+    const form = new FormData(formElement);
 
-    handleClose();
+    console.log('form', form);
+    if (integration.value?.module === Module.BAS) {
+      const basAgentValue = form.get('bas-agents') as string;
+      const basAgents = Number(basAgentValue);
+
+      if (isNaN(basAgents)) {
+        return console.error('Invalid number of BAS agents');
+      }
+
+      const assets = Array(basAgents)
+        .fill(0)
+        .map(() => {
+          return {
+            name: generateUuid(),
+          };
+        });
+
+      const basAssets = await createBulkAsset(assets);
+
+      console.log('basAssets', basAssets);
+      const attributes = basAssets.map(({ key }) => {
+        return { key, name: 'source', value: 'bas' };
+      });
+      console.log('attributes', attributes);
+
+      await createBulkAttribute(attributes);
+      console.log('basAgents', basAgents);
+
+      //
+    } else {
+      const promises = formData.map(data =>
+        link(data as unknown as LinkAccount)
+      );
+      await Promise.all(promises);
+    }
+
+    // handleClose();
   }
 
   if (!integration.value?.module) return null;
@@ -203,40 +257,44 @@ export function IntegrationsByModuleCategoryModal() {
       closeOnOutsideClick={false}
       footer={{
         text: selectedIntegration.length ? 'Update' : 'Add',
-        onClick: handleAddAsset,
-        isLoading: linkStatus === 'pending',
+        isLoading:
+          linkStatus === 'pending' ||
+          createBulkAssetStatus === 'pending' ||
+          createBulkAttributeStatus === 'pending',
+        form: 'overviewForm',
         disconnect: selectedIntegration.length
           ? {
-              text: 'Disconnect',
+              text: 'Disconnect All',
               onClick: handleDisconnect,
               isLoading: unlinkStatus === 'pending',
             }
           : undefined,
       }}
     >
-      <Tabs
-        tabs={Object.values(Module).map(module => {
-          return {
-            id: module,
-            label: Modules[module].label,
-            content: (
-              <IntegrationTabs
-                module={module}
-                onClose={handleClose}
-                onChange={setFormData}
-              />
-            ),
-          };
-        })}
-        contentWrapperClassName="p-0 m-0"
-        value={integration.value.module}
-        onChange={value => {
-          integration.onValueChange({
-            module: value,
-            integration: '',
-          });
-        }}
-      />
+      <form id="overviewForm" className="h-full" onSubmit={handleSubmit}>
+        <Tabs
+          tabs={Object.values(Module).map(module => {
+            return {
+              id: module,
+              label: Modules[module].label,
+              Content: IntegrationTabs,
+              contentProps: {
+                module: module,
+                onClose: handleClose,
+                onChange: setFormData,
+              },
+            };
+          })}
+          contentWrapperClassName="p-0 m-0"
+          value={integration.value.module}
+          onChange={value => {
+            integration.onValueChange({
+              module: value,
+              integration: '',
+            });
+          }}
+        />
+      </form>
     </Modal>
   );
 }
@@ -251,16 +309,13 @@ function IntegrationTabs(props: {
   const {
     modal: { integration },
   } = useGlobalState();
-  const { getConnectedIntegration, accountStatus } = useIntegration();
-  const integrations = IntegrationsByCategory[module];
+  const { isIntegrationConnected } = useIntegration();
+  const integrations = Modules[module].integrations;
 
   return (
     <Tabs
       tabs={integrations.map(integration => {
-        const connectedIntegration: Account[] = getConnectedIntegration(
-          integration.id
-        );
-        const isConnected = connectedIntegration.length > 0;
+        const isConnected = isIntegrationConnected(integration.id);
 
         return {
           id: integration.id,
@@ -284,16 +339,12 @@ function IntegrationTabs(props: {
           ) : (
             ''
           ),
-          content: (
-            <Loader type="spinner" isLoading={accountStatus === 'pending'}>
-              <IntegrationTab
-                connectedIntegration={connectedIntegration}
-                onChange={onChange}
-                integration={integration}
-                onClose={onClose}
-              />
-            </Loader>
-          ),
+          Content: IntegrationTab,
+          contentProps: {
+            onChange,
+            integration,
+            onClose,
+          },
         };
       })}
       value={integration.value?.integration}
@@ -310,17 +361,11 @@ function IntegrationTabs(props: {
 interface IntegrationContentProps {
   integration: IntegrationMeta;
   onChange: Dispatch<SetStateAction<Values[]>>;
-  connectedIntegration: Account[];
   onClose: () => void;
 }
 
 const IntegrationTab = (props: IntegrationContentProps) => {
-  const {
-    integration,
-    onChange: setFormData,
-    connectedIntegration,
-    onClose,
-  } = props;
+  const { integration, onChange: setFormData, onClose } = props;
   const {
     description = '',
     markup = '',
@@ -331,6 +376,10 @@ const IntegrationTab = (props: IntegrationContentProps) => {
     warning = false,
     help,
   } = integration;
+
+  const { getConnectedIntegration } = useIntegration();
+
+  const connectedIntegration = getConnectedIntegration(integration.id);
 
   const isConnected = connectedIntegration.length > 0;
   const [count, setCount] = useState<number>(connectedIntegration.length || 1);
@@ -386,10 +435,7 @@ const IntegrationTab = (props: IntegrationContentProps) => {
       )}
       {(showInputs || message || markup || warning) && (
         <div className="mt-4 flex">
-          <form
-            id="new-asset"
-            className="border-1 w-full rounded-sm border border-gray-200 p-4"
-          >
+          <div className="border-1 w-full rounded-sm border border-gray-200 p-4">
             {message && <div className="mb-4 text-gray-500">{message}</div>}
             {(showInputs || markup) && (
               <div>
@@ -468,7 +514,7 @@ const IntegrationTab = (props: IntegrationContentProps) => {
                 {warning}
               </p>
             )}
-          </form>
+          </div>
         </div>
       )}
     </div>

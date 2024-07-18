@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import { Module } from '@/types';
+import { Integration, Module } from '@/types';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
 interface UseModalState {
@@ -22,7 +22,7 @@ interface GlobalState {
     integration: {
       value?: {
         module: Module;
-        integration: string;
+        integration: Integration | '';
       };
       onValueChange: React.Dispatch<
         React.SetStateAction<GlobalState['modal']['integration']['value']>
@@ -49,11 +49,7 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [assetOpen, setAssetOpen] = useState(false);
   const [fileOpen, setFileOpen] = useState(false);
   const [integrationModal, setIntegrationModalOpen] = useStorage<
-    | {
-        module: Module;
-        integration: string;
-      }
-    | undefined
+    GlobalState['modal']['integration']['value'] | undefined
   >({ queryKey: 'integrationModal' });
 
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);

@@ -478,10 +478,11 @@ export interface ModuleMeta {
   label: string;
   name: string;
   description: string;
-  categoryDescription: JSX.Element;
+  defaultTab?: JSX.Element;
   risks: number;
   status: string;
   Icon: React.ElementType;
+  integrations: IntegrationMeta[];
 }
 
 export enum Integration {
@@ -501,7 +502,7 @@ export enum Integration {
 }
 
 export interface IntegrationMeta {
-  id: string;
+  id: Integration;
   name: string;
   description?: ReactNode;
   logo?: string;

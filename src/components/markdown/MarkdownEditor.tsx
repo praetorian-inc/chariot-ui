@@ -4,7 +4,6 @@ import { PhotoIcon } from '@heroicons/react/24/solid';
 import { PropsOf } from '@headlessui/react/dist/types';
 import MDEditor, { getCommands } from '@uiw/react-md-editor';
 import DOMPurify from 'dompurify';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   AppMediaStoragePrefix,
@@ -13,6 +12,7 @@ import {
 import { useUploadFile } from '@/hooks/useFiles';
 import { cn } from '@/utils/classname';
 import { useStorage } from '@/utils/storage/useStorage.util';
+import { generateUuid } from '@/utils/uuid.util';
 
 export function MarkdownEditor(
   props: Omit<PropsOf<typeof MDEditor>, 'components' | 'onDrop'> & {
@@ -70,7 +70,7 @@ export function MarkdownEditor(
       .map((file): UploadingImage | undefined => {
         if (file) {
           if (/image\/.*/.test(file.type)) {
-            const id = uuidv4();
+            const id = generateUuid();
             const src = `${filePathPrefix}/${id}`;
 
             return {
@@ -94,7 +94,7 @@ export function MarkdownEditor(
         .map(i => i.markdownText)
         .join('\n');
 
-      const uploadingId = uuidv4();
+      const uploadingId = generateUuid();
       const uploadingText = `Uploading ${uploadingId}`;
 
       const textarea = (

@@ -1,18 +1,16 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import { Input } from '@/components/form/Input';
 import WebhookExample from '@/components/ui/WebhookExample';
-import { Modules } from '@/sections/overview/Module';
-import { Integration, IntegrationMeta, Module } from '@/types';
+import { Integration, IntegrationMeta } from '@/types';
+import { generateUuid } from '@/utils/uuid.util';
 
 const defaultPin = (
   Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000
 ).toString();
-const uuid = uuidv4();
+const uuid = generateUuid();
 
 export const Integrations: Record<Integration, IntegrationMeta> = {
   hook: {
-    id: 'hook',
+    id: Integration.hook,
     name: 'Chariot Webhook',
     description: 'Push assets and risks to Chariot.',
     logo: '/icons/PraetorianWebhook.svg',
@@ -34,7 +32,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     markup: <WebhookExample defaultPin={defaultPin} />,
   },
   slack: {
-    id: 'slack',
+    id: Integration.slack,
     name: 'Slack',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815125222171-Workplace-Messaging#slack',
@@ -78,7 +76,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     ],
   },
   jira: {
-    id: 'jira',
+    id: Integration.jira,
     name: 'Atlassian Jira',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815095834267-Ticketing-Systems#jira',
@@ -161,7 +159,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     ],
   },
   github: {
-    id: 'github',
+    id: Integration.github,
     name: 'GitHub',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#github',
@@ -204,7 +202,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     ],
   },
   amazon: {
-    id: 'amazon',
+    id: Integration.amazon,
     name: 'Amazon Web Services',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#amazon',
@@ -247,7 +245,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     ),
   },
   ns1: {
-    id: 'ns1',
+    id: Integration.ns1,
     name: 'NS1',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#ns1',
@@ -282,7 +280,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     ],
   },
   gcp: {
-    id: 'gcp',
+    id: Integration.gcp,
     name: 'Google Cloud',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#gcp',
@@ -329,7 +327,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     ],
   },
   azure: {
-    id: 'azure',
+    id: Integration.azure,
     name: 'Azure',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#azure',
@@ -371,7 +369,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     ],
   },
   crowdstrike: {
-    id: 'crowdstrike',
+    id: Integration.crowdstrike,
     name: 'CrowdStrike',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#crowdstrike',
@@ -412,7 +410,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     ],
   },
   gitlab: {
-    id: 'gitlab',
+    id: Integration.gitlab,
     name: 'GitLab',
     help: {
       href: 'https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#gitlab',
@@ -455,7 +453,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     ],
   },
   nessus: {
-    id: 'nessus',
+    id: Integration.nessus,
     name: 'Nessus Tenable',
     description:
       'Industry-standard vulnerability scanner for comprehensive security assessments.',
@@ -463,7 +461,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     connected: false,
   },
   qualys: {
-    id: 'qualys',
+    id: Integration.qualys,
     name: 'Qualys',
     description:
       'Offers cloud-based solutions for security and compliance across networks.',
@@ -471,7 +469,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     connected: false,
   },
   zulip: {
-    id: 'zulip',
+    id: Integration.zulip,
     name: 'Zulip',
     description: 'Receive Zulip notifications when new risks are discovered.',
     logo: '/icons/Zulip.svg',
@@ -513,55 +511,6 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
   },
 };
 
-export const IntegrationsByCategory: Record<Module, IntegrationMeta[]> = {
-  ASM: [
-    {
-      id: '',
-      name: '',
-      description: <div>{Modules.ASM.categoryDescription}</div>,
-    },
-    Integrations.github,
-    Integrations.amazon,
-    Integrations.ns1,
-    Integrations.gcp,
-    Integrations.azure,
-    Integrations.gitlab,
-  ],
-  BAS: [
-    {
-      id: '',
-      name: '',
-      description: <div>{Modules.BAS.categoryDescription}</div>,
-    },
-  ],
-  CIS: [
-    {
-      id: '',
-      name: '',
-      description: <div>{Modules.CIS.categoryDescription}</div>,
-    },
-    Integrations.crowdstrike,
-  ],
-  CTI: [
-    {
-      id: '',
-      name: '',
-      description: <div>{Modules.CTI.categoryDescription}</div>,
-    },
-  ],
-  MSP: [
-    {
-      id: '',
-      name: '',
-      description: <div>{Modules.MSP.categoryDescription}</div>,
-    },
-    Integrations.hook,
-    Integrations.slack,
-    Integrations.jira,
-    Integrations.zulip,
-  ],
-};
-
 export const AvailableIntegrations = Object.values(Integrations)
-  .filter(integration => integration.connected)
-  .map(integration => integration.id);
+  .filter(integration => integration.id && integration.connected)
+  .map(integration => integration.id) as string[];

@@ -63,7 +63,7 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
                 )}
                 isSelected={isSelected}
                 onClick={() => {
-                  setSelectedTabId(isSelected ? defaultTab : tab.id);
+                  setSelectedTabId(tab.id);
                 }}
               >
                 {tab.label}

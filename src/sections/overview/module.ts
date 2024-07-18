@@ -20,7 +20,7 @@ export function useGetModules(): Record<
       Icon: BeakerIcon,
       label: 'Attack surface management',
       name: 'ASM',
-      description: `ASM (Address Space Manipulation) attack exploits vulnerabilities in memory address space handling, aiming to gain unauthorized access or execute malicious code within a program's memory.`,
+      description: `Attack surface management (ASM) refers to the proactive approach of identifying, analyzing, and managing potential points of attack on an organization's IT infrastructure, applications, and networks. The goal of ASM is to minimize the attack surface, which is the sum of all possible entry points that an attacker can exploit to gain unauthorized access or cause damage.`,
       assets: 0,
       risks: 0,
     },

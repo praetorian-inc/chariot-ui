@@ -54,8 +54,10 @@ export function Overview() {
           return (
             <div key={index} className="relative w-full">
               <div className="flex flex-col gap-2 overflow-hidden rounded-md border-2 border-default bg-layer2 p-4">
-                <div className="text-xs text-default-light">{module.label}</div>
-                <div className="flex items-center gap-4">
+                <div className="text-xs font-medium text-default-light">
+                  {module.label}
+                </div>
+                <div className="my-4 flex items-center gap-4">
                   {module.Icon && (
                     <span className="rounded-full bg-brand-light p-2">
                       <module.Icon className="size-4 text-layer0" />
@@ -71,7 +73,7 @@ export function Overview() {
                     </span>
                   )}
                 </div>
-                <div className="mt-4 line-clamp-3 min-h-12 text-xs text-default-light">
+                <div className="line-clamp-3 min-h-12 text-xs text-default-light">
                   {module.description}
                 </div>
                 {(module.assets !== undefined ||
@@ -101,7 +103,7 @@ export function Overview() {
                 </Button>
               </div>
               {module.banner && (
-                <p className="items-center space-x-1 p-2 text-center text-xs text-red-500">
+                <p className="items-center space-x-1 p-2 text-center text-xs text-yellow-500">
                   <ExclamationCircleIcon className="inline size-4 " />
                   <span>{module.banner}</span>
                 </p>

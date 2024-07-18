@@ -1,5 +1,5 @@
 import { ReactNode, useRef } from 'react';
-import { To } from 'react-router-dom';
+import { To, useNavigate } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { ConditionalRender } from '@/components/ConditionalRender';
@@ -7,6 +7,7 @@ import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { Link } from '@/components/Link';
 import { Tooltip } from '@/components/Tooltip';
 import { NoData } from '@/components/ui/NoData';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { formatDate } from '@/utils/date.util';
 
 interface Props {
@@ -15,17 +16,25 @@ interface Props {
     value: string | ReactNode;
     updated?: string;
     to?: To;
-    prefix?: JSX.Element;
+    prefix?: JSX.Element | string;
   }[];
   allowEmpty?: boolean;
+  noDataMessage?: JSX.Element;
+  dns: string;
 }
 
 export const DrawerList = (props: Props) => {
+  const { getAssetDrawerLink } = getDrawerLink();
+  const navigate = useNavigate();
   const { items, allowEmpty } = props;
   const parentRef = useRef<HTMLDivElement>(null);
 
   if (items.length === 0 && !allowEmpty) {
-    return <NoData title={'No data found'} />;
+    return props.noDataMessage ? (
+      props.noDataMessage
+    ) : (
+      <NoData title={'No data found'} />
+    );
   }
 
   if (items.length === 0 && allowEmpty) {
@@ -41,6 +50,50 @@ export const DrawerList = (props: Props) => {
 
   const virtualItems = virtualizer.getVirtualItems();
 
+  const createLabel = (label: string, value: ReactNode) => {
+    if (label?.toLowerCase() === 'url') {
+      return (
+        <a href={value as string} target="_blank" rel="noreferrer">
+          {value}
+        </a>
+      );
+    } else if (label?.toLowerCase() === 'host') {
+      const domain = props.dns;
+      const ip = value?.toString().split(':')[0] ?? '';
+      return (
+        <button
+          onClick={() => {
+            navigate(
+              getAssetDrawerLink({
+                dns: domain,
+                name: ip,
+              })
+            );
+          }}
+        >
+          {value}
+        </button>
+      );
+    } else if (label?.toLowerCase() === 'seed') {
+      return (
+        <button
+          onClick={() => {
+            navigate(
+              getAssetDrawerLink({
+                dns: value?.toString() ?? '',
+                name: value?.toString() ?? '',
+              })
+            );
+          }}
+        >
+          {value}
+        </button>
+      );
+    } else {
+      return value;
+    }
+  };
+
   return (
     <div className="size-full overflow-auto" ref={parentRef}>
       <ul
@@ -52,6 +105,7 @@ export const DrawerList = (props: Props) => {
         {virtualItems.map(virtualItem => {
           const { prefix, label, updated, value, to } =
             items[virtualItem.index];
+
           return (
             <li
               key={virtualItem.key}
@@ -81,7 +135,7 @@ export const DrawerList = (props: Props) => {
                 >
                   <Tooltip title={value}>
                     <div className="w-full truncate text-lg font-medium">
-                      {value}
+                      {createLabel(label, value)}
                     </div>
                   </Tooltip>
                 </ConditionalRender>
@@ -89,7 +143,7 @@ export const DrawerList = (props: Props) => {
               <div className="flex justify-between text-xs text-default-light">
                 <div className="flex flex-row items-center">
                   <CopyToClipboard textToCopy={label}>
-                    {label} {updated && ' added ' + formatDate(updated)}
+                    {label} {updated && ' updated ' + formatDate(updated)}
                   </CopyToClipboard>{' '}
                 </div>
               </div>

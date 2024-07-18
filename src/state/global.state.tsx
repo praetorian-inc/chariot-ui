@@ -1,20 +1,13 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import { Asset, Risk } from '@/types';
-
 interface UseModalState {
   open: boolean;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface SelectedAssets {
-  selectedAssets: Asset[];
-  onSelectedAssetsChange: React.Dispatch<React.SetStateAction<Asset[]>>;
-}
-
-interface SelectedRisks {
-  selectedRisks: Risk[];
-  onSelectedRisksChange: React.Dispatch<React.SetStateAction<Risk[]>>;
+  selectedAssets: string[];
+  onSelectedAssetsChange: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 interface GlobalState {
@@ -22,7 +15,6 @@ interface GlobalState {
     seed: UseModalState;
     risk: UseModalState & SelectedAssets;
     asset: UseModalState;
-    attribute: UseModalState & SelectedAssets & SelectedRisks;
     file: UseModalState;
   };
 }
@@ -43,11 +35,9 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [seedOpen, setSeedOpen] = useState(false);
   const [riskOpen, setRiskOpen] = useState(false);
   const [assetOpen, setAssetOpen] = useState(false);
-  const [attributeOpen, setAttributeOpen] = useState(false);
   const [fileOpen, setFileOpen] = useState(false);
 
-  const [selectedAssets, setSelectedAssets] = useState<Asset[]>([]);
-  const [selectedRisks, setSelectedRisks] = useState<Risk[]>([]);
+  const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
 
   return (
     <GlobalStateContext.Provider
@@ -61,14 +51,6 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
             onSelectedAssetsChange: setSelectedAssets,
           },
           asset: { open: assetOpen, onOpenChange: setAssetOpen },
-          attribute: {
-            open: attributeOpen,
-            onOpenChange: setAttributeOpen,
-            selectedAssets,
-            onSelectedAssetsChange: setSelectedAssets,
-            selectedRisks,
-            onSelectedRisksChange: setSelectedRisks,
-          },
           file: { open: fileOpen, onOpenChange: setFileOpen },
         },
       }}

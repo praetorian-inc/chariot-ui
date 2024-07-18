@@ -1,4 +1,8 @@
-import { BoltIcon, PauseCircleIcon } from '@heroicons/react/24/solid';
+import {
+  ArchiveBoxIcon,
+  BoltIcon,
+  PauseCircleIcon,
+} from '@heroicons/react/24/solid';
 
 import { Modal } from '@/components/Modal';
 import { AssetStatus, AssetStatusLabel } from '@/types';
@@ -6,7 +10,7 @@ import { AssetStatus, AssetStatusLabel } from '@/types';
 interface Props {
   open: boolean;
   onClose: () => void;
-  status: AssetStatus.ActiveHigh | AssetStatus.Frozen | '';
+  status: AssetStatus | '';
   onConfirm: () => void;
 }
 
@@ -45,12 +49,10 @@ export function AssetStatusWarning({
         </div>
       </Modal>
     );
-  }
-
-  if (AssetStatus.Frozen) {
+  } else if (status === AssetStatus.Frozen) {
     return (
       <Modal
-        title="Change Status to Freeze"
+        title="Change Status to Excluded"
         open={open}
         onClose={onClose}
         style="dialog"
@@ -63,7 +65,34 @@ export function AssetStatusWarning({
         }}
       >
         <div className="text-sm text-default-light">
-          <p>Assets in this status will be ignored and no longer tested</p>
+          <p>
+            Assets in this status will be paused or excluded from scanning but
+            remain in the system for future reference.
+          </p>
+        </div>
+      </Modal>
+    );
+  } else if (status === AssetStatus.Deleted) {
+    return (
+      <Modal
+        title="Change Status to Deleted"
+        open={open}
+        onClose={onClose}
+        style="dialog"
+        icon={<ArchiveBoxIcon className="size-5" />}
+        footer={{
+          text: 'Change Status',
+          className: 'w-fit',
+          startIcon: <ArchiveBoxIcon className="size-4" />,
+          onClick: onConfirm,
+        }}
+      >
+        <div className="text-sm text-default-light">
+          <p>
+            Assets in this status will be excluded from future scans and
+            retained in the system for historical records.
+          </p>
+          <p className="mt-2 italic">No data will be permanently removed.</p>
         </div>
       </Modal>
     );

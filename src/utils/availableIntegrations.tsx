@@ -20,6 +20,10 @@ export interface IntegrationMeta {
   message?: JSX.Element;
   markup?: JSX.Element;
   multiple?: boolean;
+  help?: {
+    href: string;
+    label: string;
+  };
   copy?: {
     value: ({
       api,
@@ -84,19 +88,11 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 9,
     name: 'slack',
     displayName: 'Slack',
-    description: (
-      <p>
-        Receive Slack notifications when new risks are discovered.{' '}
-        <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815125222171-Workplace-Messaging#slack"
-          target="_blank"
-          rel="noreferrer"
-          className="block underline"
-        >
-          Learn more
-        </a>
-      </p>
-    ),
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815125222171-Workplace-Messaging#slack',
+      label: 'How to: Workplace Messaging - Slack',
+    },
+    description: 'Receive Slack notifications when new risks are discovered.',
     logo: '/icons/Slack.svg',
     connected: true,
     types: [IntegrationType.Workflow],
@@ -138,20 +134,11 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 10,
     name: 'jira',
     displayName: 'Atlassian Jira',
-
-    description: (
-      <p>
-        Track and manage risks directly within your Jira project.{' '}
-        <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815095834267-Ticketing-Systems#jira"
-          target="_blank"
-          rel="noreferrer"
-          className="block underline"
-        >
-          Learn more
-        </a>
-      </p>
-    ),
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815095834267-Ticketing-Systems#jira',
+      label: 'How to: Ticketing Systems - Jira',
+    },
+    description: 'Track and manage risks directly within your Jira project.',
     logo: '/icons/Jira.svg',
     connected: true,
     types: [IntegrationType.Workflow],
@@ -232,19 +219,11 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 7,
     name: 'github',
     displayName: 'GitHub',
-    description: (
-      <p>
-        Discover your GitHub organization&apos;s repositories and risks.{' '}
-        <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#github"
-          target="_blank"
-          rel="noreferrer"
-          className="block underline"
-        >
-          Learn more
-        </a>
-      </p>
-    ),
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#github',
+      label: 'How to: Source Code Managers - GitHub',
+    },
+    description: "Discover your GitHub organization's repositories and risks.",
     logo: '/icons/GitHub.svg',
     connected: true,
     multiple: true,
@@ -285,19 +264,12 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 4,
     name: 'amazon',
     displayName: 'Amazon Web Services',
-    description: (
-      <p>
-        Discover and scan assets hosted within your AWS organization.{' '}
-        <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#amazon"
-          target="_blank"
-          rel="noreferrer"
-          className="block underline"
-        >
-          Learn more
-        </a>
-      </p>
-    ),
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#amazon',
+      label: 'How to: Cloud Providers - Amazon',
+    },
+    description:
+      'Discover and scan assets hosted within your AWS organization.',
     logo: '/icons/AWS.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
@@ -318,8 +290,8 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     ],
     message: (
       <div>
-        <label className="mt-4 block text-sm font-medium leading-6 text-gray-900">
-          CloudFormation Template
+        <label className="block text-sm font-medium leading-6 text-gray-900">
+          CloudFormation Template Download
         </label>
         <div className="mt-1">
           <a
@@ -337,19 +309,11 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 8,
     name: 'ns1',
     displayName: 'NS1',
-    description: (
-      <p>
-        Discover and scan assets managed within your NS1 tenant
-        <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#ns1"
-          target="_blank"
-          rel="noreferrer"
-          className="block underline"
-        >
-          Learn more
-        </a>
-      </p>
-    ),
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#ns1',
+      label: 'How to: Asset Ingestion - NS1',
+    },
+    description: 'Discover and scan assets managed within your NS1 tenant',
     logo: '/icons/NS1.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
@@ -382,19 +346,12 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 5,
     name: 'gcp',
     displayName: 'Google Cloud',
-    description: (
-      <p>
-        Discover and scan assets hosted within your GCP organization.{' '}
-        <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#gcp"
-          target="_blank"
-          rel="noreferrer"
-          className="block underline"
-        >
-          Learn more
-        </a>
-      </p>
-    ),
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#gcp',
+      label: 'How to: Cloud Providers - Google Cloud',
+    },
+    description:
+      'Discover and scan assets hosted within your GCP organization.',
     logo: '/icons/GoogleCloud.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
@@ -438,19 +395,12 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 6,
     name: 'azure',
     displayName: 'Azure',
-    description: (
-      <p>
-        Discover and scan assets hosted within your Azure organization{' '}
-        <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#azure"
-          target="_blank"
-          rel="noreferrer"
-          className="block underline"
-        >
-          Learn more
-        </a>
-      </p>
-    ),
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815119222811-Cloud-Providers#azure',
+      label: 'How to: Cloud Providers - Azure',
+    },
+    description:
+      'Discover and scan assets hosted within your Azure organization',
     logo: '/icons/Azure.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
@@ -489,20 +439,12 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 16,
     name: 'crowdstrike',
     displayName: 'CrowdStrike',
-
-    description: (
-      <p>
-        Import your assets from CrowdStrike and identify policy risks{' '}
-        <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#crowdstrike"
-          target="_blank"
-          rel="noreferrer"
-          className="block underline"
-        >
-          Learn more
-        </a>
-      </p>
-    ),
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815092236443-Asset-Ingestion-Nessus-NS1-and-CrowdStrike#crowdstrike',
+      label: 'How to: Asset Ingestion - CrowdStrike',
+    },
+    description:
+      'Import your assets from CrowdStrike and identify policy risks',
     logo: '/icons/Crowdstrike.svg',
     connected: true,
     types: [IntegrationType.AssetDiscovery, IntegrationType.RiskIdentification],
@@ -540,20 +482,11 @@ export const IntegrationsMeta: IntegrationMeta[] = [
     id: 14,
     name: 'gitlab',
     displayName: 'GitLab',
-
-    description: (
-      <p>
-        Discover your GitLab organization&apos;s repositories and risks{' '}
-        <a
-          href="https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#gitlab"
-          target="_blank"
-          rel="noreferrer"
-          className="block underline"
-        >
-          Learn more
-        </a>
-      </p>
-    ),
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815083333787-Source-Code-Managers#gitlab',
+      label: 'How to: Source Code Managers - GitLab',
+    },
+    description: "Discover your GitLab organization's repositories and risks",
     logo: '/icons/GitLab.svg',
     connected: true,
     multiple: true,

@@ -1,9 +1,5 @@
 .background-customizable {
   background-color: #fff;
-  border: 1px solid #e7e7e9;
-  box-shadow:
-    0 2px 20px rgba(0, 0, 0, 0%),
-    0 0 0 10000px #f9fafb;
 }
 .banner-customizable {
   background-color: #fff;

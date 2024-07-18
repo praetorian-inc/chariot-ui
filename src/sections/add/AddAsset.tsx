@@ -4,6 +4,7 @@ import {
   CheckCircleIcon,
   ChevronRightIcon,
   ExclamationTriangleIcon,
+  InformationCircleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
@@ -71,7 +72,7 @@ const Tabs: IntegrationMeta[] = [
     id: 0,
     name: PUBLIC_ASSET,
     displayName: 'Add Asset',
-    description: '',
+    description: <AddAssetMessage />,
     logo: '',
     connected: true,
     types: [IntegrationType.AssetDiscovery],
@@ -113,7 +114,6 @@ const Tabs: IntegrationMeta[] = [
         className: 'h-11',
       },
     ],
-    message: <AddAssetMessage />,
   },
   ...IntegrationsMeta.filter(({ types }) =>
     types?.includes(IntegrationType.AssetDiscovery)
@@ -315,11 +315,30 @@ export const TabPanelContent = (props: TabPanelContentProps) => {
         ) : undefined}
       </div>
       {description && (
-        <p className="text-md mb-8 text-gray-500">{description}</p>
+        <p className="text-md mb-2 text-gray-500">{description}</p>
       )}
-      {message && <div className=" text-gray-500">{message}</div>}
+      {tab.help && (
+        <div className="mb-2 rounded-lg bg-gray-100 p-4">
+          <p className="mb-2 text-sm font-bold">Need help?</p>
+          <div className="flex flex-col space-y-2">
+            <a
+              href={tab.help.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 text-blue-600 hover:underline"
+            >
+              <InformationCircleIcon className="size-5" />
+              <span>{tab.help.label}</span>
+            </a>
+          </div>
+        </div>
+      )}
       <div className="mt-4 flex">
-        <form id="new-asset" className="w-full">
+        <form
+          id="new-asset"
+          className="border-1 w-full rounded-sm border border-gray-200 p-4"
+        >
+          {message && <div className="mb-4 text-gray-500">{message}</div>}
           <div>
             {markup && <div className="relative">{markup}</div>}
             {showInputs &&

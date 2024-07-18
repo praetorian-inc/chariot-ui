@@ -17,7 +17,6 @@ import { RisksIcon } from '@/components/icons';
 import { HorseIcon } from '@/components/icons/Horse.icon';
 import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
 import { getRiskStatusIcon } from '@/components/icons/RiskStatus.icon';
-import { SpinnerIcon } from '@/components/icons/Spinner.icon';
 import { MenuItemProps } from '@/components/Menu';
 import SourceDropdown from '@/components/SourceDropdown';
 import { Table } from '@/components/table/Table';
@@ -243,34 +242,22 @@ export function Risks() {
         label: 'Risk',
         id: 'name',
         to: (item: Risk) => getRiskDrawerLink(item),
-        className: 'w-full',
         copy: true,
       },
       {
         label: 'Status',
         id: 'status',
         className: 'text-left',
-        fixedWidth: 200,
         cell: (risk: Risk) => {
           const riskStatusKey =
             `${risk.status?.[0]}${risk.status?.[2] || ''}` as RiskStatus;
           return <span>{RiskStatusLabel[riskStatusKey]}</span>;
         },
       },
-      // {
-      //   label: 'Severity',
-      //   id: 'status',
-      //   fixedWidth: 140,
-      //   cell: (risk: Risk) => {
-      //     return (
-      //       <RiskDropdown type="severity" risk={risk} className="w-[120px]" />
-      //     );
-      //   },
-      // },
       {
-        label: 'Asset',
+        label: 'DNS',
         id: 'dns',
-        className: 'w-full hidden md:table-cell',
+        className: 'hidden md:table-cell',
         copy: true,
       },
       {
@@ -588,17 +575,12 @@ export function Risks() {
         error={error}
         selection={{ value: selectedRows, onChange: setSelectedRows }}
         noData={{
-          title: risks?.length > 0 ? 'Scanning for Risks' : 'No Risks Found',
+          title: risks.length === 0 ? 'No Risks Found' : 'No Matching Risks',
           description:
-            risks.length > 0
-              ? `No risks have been found, but we're actively scanning for them.\nWe'll alert you if we find any.`
-              : `Congratulations! Your Assets look safe, secure, and properly configured.\nWe'll continue to watch them to ensure nothing changes.`,
-          icon:
-            risks.length > 0 ? (
-              <SpinnerIcon className="size-[100px]" />
-            ) : (
-              <HorseIcon />
-            ),
+            risks.length === 0
+              ? "Congratulations! Your Assets look safe, secure, and properly configured.\nWe'll continue to watch it to ensure nothing changes."
+              : 'Try adjusting your filters or add new risks to see results.',
+          icon: <HorseIcon />,
         }}
         isFetchingNextPage={isFetchingNextPage}
         fetchNextPage={fetchNextPage}

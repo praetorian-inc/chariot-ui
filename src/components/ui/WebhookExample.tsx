@@ -1,4 +1,3 @@
-import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { Input } from '@/components/form/Input';
 import { useMy } from '@/hooks';
 import { useAuth } from '@/state/auth';
@@ -54,10 +53,10 @@ const WebhookExample: React.FC<Props> = ({ defaultPin }) => {
       />
       {samples.map(sample => (
         <div key={sample.id} className="mt-4 ">
-          <p className="text-sm font-medium pb-1">
+          <p className="pb-1 text-sm font-medium">
             {sample.id} Payload Example
           </p>
-          <code className="p-2 block prose overflow-x-auto whitespace-pre-wrap rounded bg-gray-100 text-xs text-default">
+          <code className="prose block overflow-x-auto whitespace-pre-wrap rounded bg-gray-100 p-4 text-xs text-default">
             {sample.payload}
           </code>
         </div>

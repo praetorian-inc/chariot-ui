@@ -1,7 +1,6 @@
 import { Snackbar } from '@/components/Snackbar';
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
-import { startMessage } from '@/hooks/useSeeds';
 import { Asset, AssetStatus, AssetStatusLabel, RiskScanMessage } from '@/types';
 import { useMutation } from '@/utils/api';
 
@@ -16,8 +15,25 @@ interface UpdateAssetProps {
 export const AssetsSnackbarTitle = {
   [AssetStatus.Active]: `will be marked as ${AssetStatusLabel[AssetStatus.Active].toLocaleLowerCase()}`,
   [AssetStatus.ActiveHigh]: `will be marked as ${AssetStatusLabel[AssetStatus.ActiveHigh].toLocaleLowerCase()}`,
-  [AssetStatus.Frozen]: 'will be removed',
   [AssetStatus.ActiveLow]: `will be marked as ${AssetStatusLabel[AssetStatus.ActiveLow].toLocaleLowerCase()}`,
+  [AssetStatus.Frozen]: 'will stop scanning',
+  [AssetStatus.Deleted]: 'will stop scanning',
+};
+
+export const getStartMessage = (status: AssetStatus) => {
+  if (status === AssetStatus.Frozen) {
+    return RiskScanMessage.Stop;
+  }
+
+  if (status === AssetStatus.ActiveHigh) {
+    return RiskScanMessage.StartHigh;
+  } else if (status === AssetStatus.ActiveLow) {
+    return RiskScanMessage.StartLow;
+  } else if (status === AssetStatus.Active) {
+    return RiskScanMessage.Start;
+  } else {
+    return '';
+  }
 };
 
 export const useUpdateAsset = () => {
@@ -46,10 +62,7 @@ export const useUpdateAsset = () => {
       if (status && showSnackbar) {
         Snackbar({
           title: `${name} ${AssetsSnackbarTitle[status]}`,
-          description:
-            status === AssetStatus.Frozen
-              ? RiskScanMessage.Stop
-              : RiskScanMessage.Start,
+          description: getStartMessage(status),
           variant: 'success',
         });
       }
@@ -88,9 +101,7 @@ export function mapAssetStataus(asset: Asset) {
     return AssetStatus.Active;
   }
 
-  return (
-    asset.status.length === 1 ? asset.status : asset.status[1]
-  ) as AssetStatus;
+  return asset.status as AssetStatus;
 }
 
 export const useCreateAsset = () => {
@@ -163,7 +174,7 @@ export const useBulkAddAsset = () => {
       if (validResults.length > 0) {
         Snackbar({
           title: `Added ${validResults.length} assets`,
-          description: startMessage,
+          description: getStartMessage(AssetStatus.Active),
           variant: 'success',
         });
 

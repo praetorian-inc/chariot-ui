@@ -1,3 +1,5 @@
+import { AxiosHeaders } from 'axios';
+
 import { Snackbar } from '@/components/Snackbar';
 import {
   PROFILE_PICTURE_ID,
@@ -33,12 +35,28 @@ export function useUploadFile() {
 
   return useMutation({
     defaultErrorMessage: `Failed to Upload file`,
-    mutationFn: (props: UploadFilesProps) => {
-      return axios.put(`/file`, props.content, {
+    mutationFn: async (props: UploadFilesProps) => {
+      const res = await axios.put(`/file`, null, {
         params: {
           name: props.name,
         },
       });
+
+      const uploadUrl = res.data.url;
+
+      if (!uploadUrl) {
+        throw new Error('Failed to upload file');
+      }
+
+      await axios.put(uploadUrl, props.content, {
+        headers: {
+          common: {
+            Authorization: undefined,
+          },
+        } as unknown as AxiosHeaders,
+      });
+
+      return null;
     },
     onSuccess: (_, variable) => {
       invalidateMyFiles();

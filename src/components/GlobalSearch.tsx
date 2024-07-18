@@ -16,17 +16,15 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Menu } from '@headlessui/react';
 
 import { Input, InputEvent } from '@/components/form/Input';
-import { AssetsIcon, AttributesIcon, RisksIcon } from '@/components/icons';
+import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { RiskDropdown } from '@/components/ui/RiskDropdown';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
-import { getAttributeDetails } from '@/sections/Attributes';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { useSearchContext } from '@/state/search';
 import {
   Account,
   Asset,
-  Attribute,
   Job,
   MyFile,
   MyResource,
@@ -128,6 +126,36 @@ const GlobalSearch = () => {
         }
         onFocus={() => setIsFocused(true)}
       />
+      {isFocused && search?.length === 0 ? (
+        <div className="font-default absolute right-0 top-10 z-10 w-[500px] rounded-sm bg-white p-4 text-black shadow-lg">
+          <div className="mb-4 text-gray-700">
+            <div className="mb-3">
+              <span className="font-bold">Global Search:</span> Enter any term
+              to find matching records beginning with that term.
+            </div>
+            <div className="mb-3">
+              <span className="font-bold">Hash Search:</span> Start your search
+              with <span className="font-bold">#</span> to filter records by DNS
+              within the current page table.
+            </div>
+          </div>
+          <div className="rounded-md bg-gray-100 p-3">
+            <p className="mb-3 font-medium text-gray-800">Example searches:</p>
+            <p>
+              <span className="font-semibold">dev</span>: Find all records
+              beginning with the term &quot;dev&quot;.
+            </p>
+            <p>
+              <span className="font-semibold">#name</span>: Filter the current
+              page table by &quot;name&quot;.
+            </p>
+            <p>
+              <span className="font-semibold">dns:staging</span>: Search for
+              assets with &quot;staging&quot; in the name.
+            </p>
+          </div>
+        </div>
+      ) : null}
       {isGenericSearch && isFocused && search?.length > 0 && (
         <SearchResultDropdown
           {...(data as unknown as Search)}
@@ -173,10 +201,8 @@ const SearchResultDropdown: React.FC<Search> = ({
   risks,
   files,
   assets,
-  attributes,
   accounts,
   seeds,
-  attribute,
   jobs,
   isLoading,
   setIsFocused,
@@ -190,10 +216,8 @@ const SearchResultDropdown: React.FC<Search> = ({
     !risks &&
     !files &&
     !assets &&
-    !attributes &&
     !accounts &&
     !seeds &&
-    !attribute &&
     !jobs &&
     search?.length > 0;
 
@@ -219,35 +243,6 @@ const SearchResultDropdown: React.FC<Search> = ({
         )}
         {!isLoading && (
           <>
-            <SearchResultDropdownSeaction<Attribute>
-              title="Attributes"
-              items={attributes}
-              onSelect={() => onSelect('attribute')}
-              onClick={item => {
-                navigate(getAttributeDetails(item).url);
-              }}
-              row={item => {
-                const attDetail = getAttributeDetails(item);
-
-                const icon =
-                  attDetail.attributeType === 'asset' ? (
-                    <AssetsIcon className="mr-2 size-4 text-gray-400" />
-                  ) : (
-                    <RisksIcon className="mr-2 size-4 text-gray-400" />
-                  );
-
-                return (
-                  <div className="flex items-center space-x-2">
-                    {icon}
-                    <span className="text-nowrap">
-                      {attDetail.name} ({attDetail.class})
-                    </span>
-                    <ChevronRightIcon className="size-2" />
-                    <span className="text-nowrap">{attDetail.dns}</span>
-                  </div>
-                );
-              }}
-            />
             <SearchResultDropdownSeaction<Asset>
               title="Assets"
               items={assets}
@@ -291,26 +286,6 @@ const SearchResultDropdown: React.FC<Search> = ({
               onSelect={() => onSelect('file')}
               Icon={DocumentIcon}
               row={item => item.name}
-            />
-            <SearchResultDropdownSeaction<Attribute>
-              title="Attribute"
-              items={attribute}
-              Icon={AttributesIcon}
-              onClick={item => {
-                navigate(getAttributeDetails(item).url);
-              }}
-              row={item => {
-                const attDetail = getAttributeDetails(item);
-
-                return (
-                  <div className="flex flex-nowrap items-center space-x-2">
-                    <span className="text-nowrap">{attDetail.name}</span>
-                    <span className="text-nowrap">({attDetail.class})</span>
-                    <ChevronRightIcon className="size-2" />
-                    <span className="text-nowrap">{attDetail.dns}</span>
-                  </div>
-                );
-              }}
             />
             <SearchResultDropdownSeaction<Job>
               title="Jobs"

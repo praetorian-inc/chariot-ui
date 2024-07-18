@@ -132,7 +132,7 @@ export function Drawer({
                 >
                   <EllipsisVerticalIcon className="w-6" />
                 </div> */}
-                <div className="h-full">
+                <div className="h-full overflow-auto">
                   <div className="mx-2 my-4 flex justify-between">
                     <div className="flex">
                       <Tooltip title="Go Back">
@@ -150,7 +150,7 @@ export function Drawer({
                       />
                     </Tooltip>
                   </div>
-                  <div className="h-[calc(100%-52px)]">{children}</div>
+                  <div className="">{children}</div>
                 </div>
                 {footer && (
                   <div className={cn('w-full bg-layer1 p-3', footerClassname)}>

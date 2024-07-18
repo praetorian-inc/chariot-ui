@@ -1,33 +1,32 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { PlusIcon, PuzzlePieceIcon } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
-import { SpinnerIcon } from '@/components/icons/Spinner.icon';
-import { OverflowText } from '@/components/OverflowText';
+import { HorseIcon } from '@/components/icons/Horse.icon';
 import { showBulkSnackbar, Snackbar } from '@/components/Snackbar';
 import SourceDropdown from '@/components/SourceDropdown';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { getAssetStatusProperties } from '@/components/ui/AssetStatusChip';
+import { AttributeFilter } from '@/components/ui/AttributeFilter';
 import { useMy } from '@/hooks';
-import { AssetsSnackbarTitle, useUpdateAsset } from '@/hooks/useAssets';
+import {
+  AssetsSnackbarTitle,
+  getStartMessage,
+  useUpdateAsset,
+} from '@/hooks/useAssets';
 import { useFilter } from '@/hooks/useFilter';
 import { useIntegration } from '@/hooks/useIntegration';
 import { AssetStatusWarning } from '@/sections/AssetStatusWarning';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { getFilterLabel } from '@/sections/RisksTable';
+import { parseKeys } from '@/sections/SearchByType';
 import { useGlobalState } from '@/state/global.state';
-import {
-  Asset,
-  AssetStatus,
-  AssetStatusLabel,
-  Risk,
-  RiskScanMessage,
-} from '@/types';
+import { Asset, AssetStatus, AssetStatusLabel, Risk } from '@/types';
 import { useMergeStatus } from '@/utils/api';
 
 type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
@@ -71,7 +70,6 @@ const Assets: React.FC = () => {
       asset: { onOpenChange: setShowAddAsset },
     },
   } = useGlobalState();
-
   const {
     isLoading,
     status: assetsStatus,
@@ -80,6 +78,8 @@ const Assets: React.FC = () => {
     error,
     isFetchingNextPage,
     fetchNextPage,
+    isFetching,
+    isError,
   } = useMy({
     resource: 'asset',
     filterByGlobalSearch: true,
@@ -97,6 +97,9 @@ const Assets: React.FC = () => {
     'asset-source-filter',
     setSelectedRows
   );
+  const [assetsWithAttributesFilter, setAssetsWithAttributesFilter] = useState<
+    string[]
+  >([]);
 
   const status = useMergeStatus(riskStatus, assetsStatus);
   const { getAssetDrawerLink } = getDrawerLink();
@@ -106,9 +109,7 @@ const Assets: React.FC = () => {
   );
   const [showAssetStatusWarning, setShowAssetStatusWarning] =
     useState<boolean>(false);
-  const [assetStatus, setAssetStatus] = useState<
-    AssetStatus.ActiveHigh | AssetStatus.Frozen | ''
-  >('');
+  const [assetStatus, setAssetStatus] = useState<AssetStatus | ''>('');
 
   const { mutateAsync: updateAsset } = useUpdateAsset();
 
@@ -124,16 +125,29 @@ const Assets: React.FC = () => {
     }
   }, []);
 
+  // Filter assets list with the selected attributes
+  const assetsObjectWithAttributesFilter: Asset[] = useMemo(() => {
+    return assetsWithAttributesFilter &&
+      Array.isArray(assetsWithAttributesFilter) &&
+      assetsWithAttributesFilter.length > 0
+      ? ((assetsWithAttributesFilter as string[])
+          .map(key => assets.find(asset => asset.key === key))
+          .filter(Boolean) as Asset[])
+      : assets;
+  }, [assets, assetsWithAttributesFilter]);
+
   // merge risk data with asset data
-  const assetsWithRisk: AssetsWithRisk[] = assets.map(asset => {
-    const riskSummary = openRiskDataset[asset.dns];
+  const assetsWithRisk: AssetsWithRisk[] = assetsObjectWithAttributesFilter.map(
+    asset => {
+      const riskSummary = openRiskDataset[asset.dns];
 
-    if (riskSummary) {
-      return { ...asset, riskSummary };
+      if (riskSummary) {
+        return { ...asset, riskSummary };
+      }
+
+      return asset;
     }
-
-    return asset;
-  });
+  );
 
   const filteredAssets = useMemo(() => {
     let filteredAssets = assetsWithRisk;
@@ -165,12 +179,15 @@ const Assets: React.FC = () => {
       cell: (asset: AssetsWithRisk) => {
         const integration = isIntegration(asset);
         const containsRisks = Object.values(asset.riskSummary || {}).length > 0;
-        const { detail } = getAssetStatusProperties(asset.status);
+        const simplifiedStatus = asset.status.startsWith('F')
+          ? AssetStatus.Frozen
+          : asset.status;
+        const { detail } = getAssetStatusProperties(simplifiedStatus);
         const icons: JSX.Element[] = [];
 
         icons.push(
-          <Tooltip title={detail || 'Closed'}>
-            {getAssetStatusIcon(asset.status)}
+          <Tooltip title={detail || simplifiedStatus}>
+            {getAssetStatusIcon(simplifiedStatus)}
           </Tooltip>
         );
         if (containsRisks) {
@@ -197,7 +214,6 @@ const Assets: React.FC = () => {
     },
     {
       label: 'Asset',
-      className: 'w-full',
       id: 'name',
       to: item => getAssetDrawerLink(item),
       copy: true,
@@ -205,18 +221,17 @@ const Assets: React.FC = () => {
     {
       label: 'Status',
       id: 'status',
-      fixedWidth: 200,
       cell: (asset: Asset) => {
-        return AssetStatusLabel[asset.status];
+        const simplifiedStatus = asset.status.startsWith('F')
+          ? AssetStatus.Frozen
+          : asset.status;
+        return AssetStatusLabel[simplifiedStatus];
       },
     },
     {
       label: 'DNS',
       id: 'dns',
-      className: 'w-full hidden md:table-cell',
-      cell: (asset: Asset) => {
-        return <OverflowText text={asset.dns} truncateType="center" />;
-      },
+      className: 'hidden md:table-cell',
       copy: true,
     },
     {
@@ -237,23 +252,24 @@ const Assets: React.FC = () => {
     () =>
       Object.entries(AssetStatusLabel).map(([value, label]) => ({
         label,
-        labelSuffix: assetsWithRisk.filter(({ status }) => status === value)
-          .length,
+        labelSuffix: assetsWithRisk.filter(({ status }) =>
+          status.startsWith(value)
+        ).length,
         value,
       })),
     [assetsWithRisk]
   );
 
-  function updateStatus(assets: Asset[], status: AssetStatus) {
+  function updateStatus(assets: string[], status: AssetStatus) {
     const showBulk = showBulkSnackbar(assets.length);
     setShowAssetStatusWarning(false);
     setAssetStatus('');
 
-    assets.forEach(asset => {
+    assets.forEach(assetKey => {
       updateAsset(
         {
-          key: asset.key,
-          name: asset.name,
+          key: assetKey,
+          name: parseKeys.assetKey(assetKey).name,
           status,
           showSnackbar: !showBulk,
         },
@@ -262,12 +278,7 @@ const Assets: React.FC = () => {
             if (showBulk) {
               Snackbar({
                 title: `${assets.length} assets ${AssetsSnackbarTitle[status]}`,
-                description: [
-                  AssetStatus.Active,
-                  AssetStatus.ActiveHigh,
-                ].includes(status)
-                  ? RiskScanMessage.Start
-                  : RiskScanMessage.Stop,
+                description: getStartMessage(status),
                 variant: 'success',
               });
             }
@@ -277,12 +288,31 @@ const Assets: React.FC = () => {
     });
   }
 
+  useEffect(() => {
+    if (
+      !isError &&
+      !isFetching &&
+      assets.length > 0 &&
+      filteredAssets.length === 0
+    ) {
+      fetchNextPage();
+    }
+  }, [
+    isError,
+    isFetching,
+    JSON.stringify(assets),
+    JSON.stringify(filteredAssets),
+  ]);
+
   return (
     <div className="flex w-full flex-col">
       <Table
         name="assets"
         filters={
           <div className="flex gap-4">
+            <AttributeFilter
+              onAssetsChange={assets => setAssetsWithAttributesFilter(assets)}
+            />
             <Dropdown
               styleType="header"
               label={getFilterLabel(
@@ -339,13 +369,13 @@ const Assets: React.FC = () => {
                   label: 'Add Risk',
                   icon: <RisksIcon />,
                   onClick: () => {
-                    setSelectedAssets(assets);
+                    setSelectedAssets(assets.map(asset => asset.key));
                     setShowAddRisk(true);
                   },
                 },
                 { type: 'divider', label: 'Divider' },
                 {
-                  label: 'Change Priority',
+                  label: 'Change Status',
                   type: 'label',
                 },
                 {
@@ -355,7 +385,7 @@ const Assets: React.FC = () => {
                     asset => asset.status === AssetStatus.ActiveHigh
                   ),
                   onClick: () => {
-                    setSelectedAssets(assets);
+                    setSelectedAssets(assets.map(asset => asset.key));
                     setShowAssetStatusWarning(true);
                     setAssetStatus(AssetStatus.ActiveHigh);
                   },
@@ -366,7 +396,11 @@ const Assets: React.FC = () => {
                   disabled: assets.every(
                     asset => asset.status === AssetStatus.Active
                   ),
-                  onClick: () => updateStatus(assets, AssetStatus.Active),
+                  onClick: () =>
+                    updateStatus(
+                      assets.map(asset => asset.key),
+                      AssetStatus.Active
+                    ),
                 },
                 {
                   label: AssetStatusLabel[AssetStatus.ActiveLow],
@@ -374,15 +408,28 @@ const Assets: React.FC = () => {
                   disabled: assets.every(
                     asset => asset.status === AssetStatus.ActiveLow
                   ),
-                  onClick: () => updateStatus(assets, AssetStatus.ActiveLow),
+                  onClick: () =>
+                    updateStatus(
+                      assets.map(asset => asset.key),
+                      AssetStatus.ActiveLow
+                    ),
                 },
                 {
                   label: AssetStatusLabel[AssetStatus.Frozen],
                   icon: getAssetStatusIcon(AssetStatus.Frozen),
                   onClick: () => {
-                    setSelectedAssets(assets);
+                    setSelectedAssets(assets.map(asset => asset.key));
                     setShowAssetStatusWarning(true);
                     setAssetStatus(AssetStatus.Frozen);
+                  },
+                },
+                {
+                  label: AssetStatusLabel[AssetStatus.Deleted],
+                  icon: getAssetStatusIcon(AssetStatus.Deleted),
+                  onClick: () => {
+                    setSelectedAssets(assets.map(asset => asset.key));
+                    setShowAssetStatusWarning(true);
+                    setAssetStatus(AssetStatus.Deleted);
                   },
                 },
               ],
@@ -396,10 +443,15 @@ const Assets: React.FC = () => {
         fetchNextPage={fetchNextPage}
         isFetchingNextPage={isFetchingNextPage}
         noData={{
-          icon: <SpinnerIcon className="size-[100px]" />,
-          title: 'Scans Running',
+          icon: <HorseIcon />,
+          title:
+            assets.length === 0
+              ? 'Discovering Assets...'
+              : 'No Matching Assets',
           description:
-            'Your seeds are being scanned and your assets will appear here soon',
+            assets.length === 0
+              ? 'We are currently scanning for assets. They will appear here as soon as they are discovered. Please check back shortly.'
+              : 'Try adjusting your filters or add new assets to see results.',
         }}
       />
 

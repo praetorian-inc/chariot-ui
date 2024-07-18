@@ -100,9 +100,9 @@ const Jobs: React.FC = () => {
     const parts = date.split('@');
     return (
       <p className="inline">
-        <span className="font-semibold">{parts[0]}</span>
+        <span>{parts[0]}</span>
         <span>@</span>
-        <span className="font-semibold">{parts[1]}</span>
+        <span>{parts[1]}</span>
       </p>
     );
   };
@@ -125,45 +125,30 @@ const Jobs: React.FC = () => {
       fixedWidth: 120,
     },
     {
-      label: 'Name',
+      label: 'Job',
+      id: 'source',
+      fixedWidth: 160,
+    },
+    {
+      label: 'Source IP',
       id: 'name',
       cell: (job: Job) => {
-        return (
-          <div className="flex">
-            {job.status === 'JQ' ? (
-              <div className="w-4" />
-            ) : (
-              <>
-                <div className="hidden shrink-0 items-center lg:flex">
-                  <span className="mr-1 font-semibold">Praetorian</span>
-                  <span className="hidden md:inline">({job.name})</span>
-                </div>
-                <span className="mx-1 hidden lg:block">to</span>
-              </>
-            )}
-            <div className="ml-4 flex flex-1 items-center lg:ml-0">
-              <span className="mr-1 font-semibold">{job.dns}</span>
-              <span className="hidden sm:inline">
-                ({job.key.split('#')[4]})
-              </span>
-            </div>
-          </div>
-        );
+        if (job.status === 'JQ') {
+          return <span className="italic text-gray-500">Not started</span>;
+        } else return job.name;
       },
     },
+    {
+      label: 'DNS',
+      id: 'dns',
+    },
+
     {
       label: 'Updated',
       id: 'updated',
       fixedWidth: 220,
       cell: (job: Job) => {
-        return (
-          <div className="mr-4">
-            <span className="hidden md:inline">on</span>
-            <span className="mx-1 ">
-              {designedDate(formatDate(job.updated))}
-            </span>
-          </div>
-        );
+        return designedDate(formatDate(job.updated));
       },
     },
   ];

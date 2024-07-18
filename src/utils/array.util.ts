@@ -11,3 +11,7 @@ export const partition = <T>(
     [[], []]
   );
 };
+
+export function uniqByKeepLast<T>(data: T[], key: (data: T) => string) {
+  return [...new Map(data.map(x => [key(x), x])).values()];
+}

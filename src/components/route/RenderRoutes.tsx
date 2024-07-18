@@ -73,7 +73,7 @@ function RenderTitleAndBreadcrumb(props: { route: RouteObject }) {
 function RenderBreadcrumb(props: { title: string }) {
   const { useBreadCrumb } = useBreadCrumbsContext();
 
-  useBreadCrumb({ order: 2, label: props.title });
+  useBreadCrumb({ order: 2, label: props.title, className: 'flex-shrink-0' });
 
   return null;
 }

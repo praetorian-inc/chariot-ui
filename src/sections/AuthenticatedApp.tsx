@@ -9,7 +9,6 @@ import { ShortcutsHelper } from '@/components/ui/Shortcuts';
 import { useMy } from '@/hooks';
 import { useGetDisplayName } from '@/hooks/useAccounts';
 import { AddAsset } from '@/sections/add/AddAsset';
-import { AddAttribute } from '@/sections/add/AddAttribute';
 import { AddFile } from '@/sections/add/AddFile';
 import { AddRisks } from '@/sections/add/AddRisks';
 import { DetailsDrawer } from '@/sections/detailsDrawer';
@@ -118,7 +117,6 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
       <AddRisks />
       <AddAsset />
       <AddFile />
-      <AddAttribute />
       {accountsStatus === 'success' && showUpgrade && <Upgrade />}
     </div>
   );
@@ -149,7 +147,7 @@ export function Header() {
         <div className="w-full max-w-screen-xl">
           <TopNavBar />
           <hr className="h-px bg-layer0 opacity-15" />
-          <div className={cn('flex items-center justify-between gap-2')}>
+          <div className={cn('flex items-center justify-between gap-10')}>
             <Loader
               styleType="header"
               className="my-9 h-11 w-1/2"
@@ -157,7 +155,7 @@ export function Header() {
             >
               <BreadCrumbs breadcrumbs={breadcrumbs} />
             </Loader>
-            <div id={HeaderPortalSections.BREADCRUMBS} />
+            <div id={HeaderPortalSections.BREADCRUMBS} className="shrink-0" />
           </div>
         </div>
       </div>

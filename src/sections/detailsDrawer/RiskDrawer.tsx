@@ -37,10 +37,10 @@ import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeade
 import { DrawerList } from '@/sections/detailsDrawer/DrawerList';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import {
+  EntityHistory,
   JobStatus,
   Risk,
   RiskCombinedStatus,
-  RiskHistory,
   RiskSeverity,
   RiskStatus,
   RiskStatusLabel,
@@ -104,7 +104,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
 
   const [, dns, name] = compositeKey.split('#');
 
-  const referenceFilter = `#risk#${dns}#${name}`;
+  const attributesFilter = `source:#risk#${dns}#${name}`;
 
   const [isEditingMarkdown, setIsEditingMarkdown] = useState(false);
   const [markdownValue, setMarkdownValue] = useState('');
@@ -133,10 +133,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     },
     { enabled: open }
   );
-  const { data: attributes } = useMy(
+  const { data: attributesGenericSearch } = useGenericSearch(
     {
-      resource: 'attribute',
-      query: referenceFilter,
+      query: attributesFilter,
     },
     {
       enabled: open,
@@ -153,7 +152,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     },
     { enabled: open, refetchInterval: sToMs(10) }
   );
-  const { data: knownExploitedThreats = [] } = useGetKev({ enabled: open });
+  const { data: knownExploitedThreats = [] } = useGetKev();
   const { data: riskNameGenericSearch } = useGenericSearch(
     { query: name },
     { enabled: open }
@@ -199,7 +198,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     const riskHistory = risk.history || [];
     const noHistory = riskHistory.length === 0;
 
-    const firstTrackedHistory: RiskHistory = {
+    const firstTrackedHistory: EntityHistory = {
       from: '',
       to: noHistory ? risk.status : risk.history[0].from,
       updated: risk.created,
@@ -434,6 +433,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
               </TabPanel>
               <TabPanel className="h-full">
                 <DrawerList
+                  dns={risk.dns}
                   items={riskOccurrence.map(data => {
                     const riskStatusKey =
                       `${data.status?.[0]}${data.status?.[2] || ''}` as RiskStatus;
@@ -481,12 +481,15 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 </div>
                 <div>
                   <DrawerList
+                    dns={risk.dns}
                     allowEmpty={true}
-                    items={attributes.map(data => ({
-                      label: data.class,
-                      value: data.name,
-                      updated: data.updated,
-                    }))}
+                    items={(attributesGenericSearch?.attributes || [])?.map(
+                      data => ({
+                        label: data.name,
+                        value: data.value,
+                        updated: data.updated,
+                      })
+                    )}
                   />
                 </div>
               </TabPanel>
@@ -528,7 +531,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
 }
 
 function getHistoryDiff(
-  history: RiskHistory,
+  history: EntityHistory,
   isFirst: boolean
 ): {
   title: ReactNode;

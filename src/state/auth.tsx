@@ -27,12 +27,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const emptyAuth: AuthState = {
   token: '',
-  backend: '',
-  api: '',
-  region: '',
-  clientId: '',
+  backend: 'chariot',
+  api: 'https://d0qcl2e18h.execute-api.us-east-2.amazonaws.com/chariot',
+  region: 'us-east-2',
+  clientId: '795dnnr45so7m17cppta0b295o',
   me: '',
   friend: { email: '', displayName: '' },
+  isImpersonating: false,
 };
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -157,6 +158,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       ...auth,
       login,
       logout,
+      isImpersonating: auth.friend.email !== '',
       setCognitoAuthStates,
       startImpersonation,
       stopImpersonation,

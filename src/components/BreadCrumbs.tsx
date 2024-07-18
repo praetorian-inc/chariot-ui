@@ -1,7 +1,11 @@
 import React from 'react';
 
+import { OverflowText } from '@/components/OverflowText';
+import { cn } from '@/utils/classname';
+
 export interface Breadcrumb {
   label: string;
+  className?: string;
   order: number;
   to?: string;
 }
@@ -24,7 +28,7 @@ const pageTitles = {
 export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
   const currentPage = breadcrumbs[breadcrumbs.length - 1].label;
   return (
-    <div className="flex flex-col pb-5 pt-9">
+    <div className="flex flex-col overflow-hidden pb-5 pt-9">
       <ul className="flex items-center">
         {breadcrumbs.map((breadcrumb, idx) => {
           return (
@@ -34,11 +38,15 @@ export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
                   /
                 </li>
               )}
-              <li
-                className={`text-2xl font-bold ${idx === 0 && 'hidden sm:inline'}`}
-              >
-                {breadcrumb.label}
-              </li>
+              <OverflowText
+                className={cn(
+                  `whitespace-nowrap text-2xl font-bold`,
+                  idx === 0 && 'max-sm:hidden',
+                  breadcrumb.className
+                )}
+                placement="bottom"
+                text={breadcrumb.label}
+              />
             </React.Fragment>
           );
         })}

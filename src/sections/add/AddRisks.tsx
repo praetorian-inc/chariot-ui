@@ -15,7 +15,7 @@ import { useModifyAccount, useUploadFile } from '@/hooks';
 import { useIntegration } from '@/hooks/useIntegration';
 import { useCreateRisk } from '@/hooks/useRisks';
 import { TabPanelContent } from '@/sections/add/AddAsset';
-import { SearchAndSelectTypes } from '@/sections/SearchByType';
+import { parseKeys, TypeSearch } from '@/sections/SearchByType';
 import { useGlobalState } from '@/state/global.state';
 import {
   Account,
@@ -75,12 +75,12 @@ export const AddRisks = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allPromise: Promise<any>[] = selectedAssets?.flatMap(asset => {
+    const allPromise: Promise<any>[] = selectedAssets?.flatMap(assetKey => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const api: Promise<any>[] = [
         addRisk({
           ...formData,
-          key: asset.key,
+          key: assetKey,
           status:
             `${formData.status}${formData.severity}` as RiskCombinedStatus,
         }),
@@ -90,7 +90,7 @@ export const AddRisks = () => {
         api.push(
           uploadFile({
             ignoreSnackbar: true,
-            name: `${asset.dns}/${formData.name}`,
+            name: `${parseKeys.assetKey(assetKey).dns}/${formData.name}`,
             content: poe,
           })
         );
@@ -135,6 +135,20 @@ export const AddRisks = () => {
       };
     }
   }, [isOpen]);
+
+  // Set the form data for the hook integration
+  useEffect(() => {
+    if (IntegrationsMeta[selectedIndex - 1]?.name === 'hook') {
+      const payload: Values = {};
+      const formValues = IntegrationsMeta[selectedIndex - 1].inputs;
+      formValues?.forEach(input => {
+        payload[input.name] = input.value;
+      });
+      setIntegrationFormData([payload]);
+    } else {
+      setIntegrationFormData([]);
+    }
+  }, [selectedIndex]);
 
   async function handleConfigureIntegration() {
     integrationFormData.map(data => link(data as unknown as LinkAccount));
@@ -228,13 +242,13 @@ export const AddRisks = () => {
                     </p>
                   </div>
                 </div>
-                <div className="mt-4 flex flex-1 flex-col justify-center">
+                <div className="border-1 mt-4 flex flex-1 flex-col justify-center rounded-sm border border-gray-200 p-4">
                   <form
                     id="addRisk"
                     onSubmit={handleSubmit}
                     className="space-y-4"
                   >
-                    <SearchAndSelectTypes
+                    <TypeSearch
                       label="Select Assets"
                       types={['assets']}
                       value={{ assets: selectedAssets }}
@@ -291,12 +305,12 @@ export const AddRisks = () => {
                         setFormData(formData => ({ ...formData, ...values }))
                       }
                     />
-                    <p className="mt-3 text-center text-xs text-gray-500">
-                      Manually entered risks will be tracked but not
-                      automatically monitored.
-                    </p>
                   </form>
                 </div>
+                <p className="mt-3 text-center text-xs text-gray-500">
+                  Manually entered risks will be tracked but not automatically
+                  monitored.
+                </p>
               </div>
             </TabPanel>
             {Tabs.map(tab => {

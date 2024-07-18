@@ -20,7 +20,10 @@ export const AssetStatusDropdown = (props: Props) => {
   const { asset } = props;
   const { mutateAsync: updateAsset, status: updateAssetStatus } =
     useUpdateAsset();
-  const [status, setStatus] = useState(asset.status);
+  const simplifiedStatus = asset.status.startsWith('F')
+    ? AssetStatus.Frozen
+    : asset.status;
+  const [status, setStatus] = useState(simplifiedStatus);
 
   function handleChange(status: AssetStatus) {
     // setShowAssetStatusWarning(false);

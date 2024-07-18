@@ -3,6 +3,7 @@ import {
   MagnifyingGlassIcon,
   NoSymbolIcon,
   ShieldCheckIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 
 import { AssetStatus } from '@/types';
@@ -18,6 +19,8 @@ export const getAssetStatusIcon = (
       return <MagnifyingGlassCircleIcon className={className} />;
     case AssetStatus.ActiveLow:
       return <MagnifyingGlassIcon className={className} />;
+    case AssetStatus.Deleted:
+      return <TrashIcon className={className} />;
     case AssetStatus.Frozen:
     default:
       return <NoSymbolIcon className={className} />;

@@ -20,6 +20,7 @@ interface FormGroupProps extends PropsWithChildren {
   name: string;
   info?: FormInfo;
   className?: string;
+  formClassName?: string;
   isLoading?: boolean;
 }
 
@@ -33,13 +34,14 @@ export const FormGroup = (props: FormGroupProps) => {
     name,
     isLoading,
     className,
+    formClassName,
     info,
   } = props;
   const rightIcon = error || endIcon;
   const [showInfo, setShowInfo] = React.useState(false);
 
   return (
-    <div className="">
+    <div className={formClassName}>
       {label && (
         <div className="mb-1 flex items-center gap-1">
           <label

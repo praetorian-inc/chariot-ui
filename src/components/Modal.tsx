@@ -7,7 +7,7 @@ import React, {
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 
-import { Button } from '@/components/Button';
+import { Button, ButtonProps } from '@/components/Button';
 import { cn } from '@/utils/classname';
 import { getTransitionSettings } from '@/utils/transition.util';
 
@@ -15,6 +15,7 @@ type Size = 'sm' | 'md' | 'lg' | 'xl';
 interface Props extends PropsWithChildren {
   className?: string;
   footer?: {
+    styleType?: ButtonProps['styleType'];
     text?: string;
     onClick?: () => void;
     left?: JSX.Element;
@@ -164,7 +165,7 @@ export const Modal: React.FC<Props> = props => {
               <Button
                 onClick={footer?.onClick}
                 startIcon={footer?.startIcon}
-                styleType="primary"
+                styleType={footer.styleType || 'primary'}
                 className={cn('ml-2 w-24', footer?.className)}
                 form={footer?.form}
                 type={footer?.form ? 'submit' : undefined}

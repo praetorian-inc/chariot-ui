@@ -3,6 +3,7 @@ import { AssetStatus, AssetStatusLabel } from '@/types';
 
 export const getAssetStatusProperties = (status: AssetStatus) => {
   const styles: Record<AssetStatus, ChipProps['style']> = {
+    [AssetStatus.Deleted]: 'error',
     [AssetStatus.Frozen]: 'error',
     [AssetStatus.Active]: 'primary',
     [AssetStatus.ActiveHigh]: 'primary',
@@ -10,6 +11,7 @@ export const getAssetStatusProperties = (status: AssetStatus) => {
   };
 
   const texts: Record<AssetStatus, string> = {
+    [AssetStatus.Deleted]: 'Deleted',
     [AssetStatus.Frozen]: 'Frozen',
     [AssetStatus.Active]: 'Active',
     [AssetStatus.ActiveHigh]: 'Active',

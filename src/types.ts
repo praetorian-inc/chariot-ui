@@ -1,6 +1,8 @@
 export enum RiskScanMessage {
   Stop = 'Risk scanning will stop.',
   Start = 'Risk scanning will start automatically.',
+  StartHigh = 'Comprehensive risk scanning will start automatically.',
+  StartLow = 'Asset discovery will start automatically.',
 }
 
 export enum UniqueQueryKeys {
@@ -45,13 +47,15 @@ export enum AssetStatus {
   ActiveLow = 'AL',
   Active = 'A',
   Frozen = 'F',
+  Deleted = 'D',
 }
 
 export const AssetStatusLabel: Record<AssetStatus, string> = {
   [AssetStatus.ActiveHigh]: 'Comprehensive Scan',
   [AssetStatus.Active]: 'Standard Scan',
   [AssetStatus.ActiveLow]: 'Asset Discovery',
-  [AssetStatus.Frozen]: 'Exclude Asset',
+  [AssetStatus.Frozen]: 'Excluded',
+  [AssetStatus.Deleted]: 'Deleted',
 };
 
 export const RiskStatusLabel: Record<RiskStatus, string> = {
@@ -165,9 +169,9 @@ export interface LinkAccount {
 export interface AccountMetadata {
   displayName?: string;
   pin?: string;
+  [key: string]: AccountMetadata | string | undefined;
 }
 
-// TODO: Discover the unknowns
 export interface Asset {
   class: string;
   comment: string;
@@ -175,7 +179,7 @@ export interface Asset {
   created: string;
   dns: string;
   seed: boolean;
-  history: unknown;
+  history: EntityHistory[];
   key: string;
   name: string;
   source: string;
@@ -208,7 +212,7 @@ export interface RiskTemplate {
   status: RiskCombinedStatus;
 }
 
-export type RiskHistory = {
+export type EntityHistory = {
   from: string;
   to: string;
   updated: string;
@@ -224,7 +228,7 @@ export interface Risk extends RiskTemplate {
   ttl: number;
   source: string;
   seed: string;
-  history: RiskHistory[];
+  history: EntityHistory[];
 }
 
 export interface Seed {
@@ -245,10 +249,11 @@ export interface Seed {
 export interface Attribute {
   key: string;
   name: string;
-  class: string;
+  source: string;
   ttl: number;
   updated: string;
   username: string;
+  value: string;
 }
 
 export interface Reference {
@@ -428,6 +433,7 @@ export interface AuthState {
   rToken?: string;
   expiry?: Date;
   friend: { email: string; displayName: string };
+  isImpersonating: boolean;
 }
 
 export interface AuthContextType extends AuthState {

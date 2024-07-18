@@ -1,11 +1,16 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
+import {
+  ExclamationTriangleIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import MD5 from 'crypto-js/md5';
 
 import { Button } from '@/components/Button';
 import { Dropzone, Files } from '@/components/Dropzone';
 import { Input } from '@/components/form/Input';
 import { Loader } from '@/components/Loader';
+import { Modal } from '@/components/Modal';
 import { Paper } from '@/components/Paper';
 import {
   PROFILE_PICTURE_ID,
@@ -15,20 +20,25 @@ import {
   useGetCollaboratorEmails,
   useGetDisplayName,
   useModifyAccount,
+  usePurgeAccount,
 } from '@/hooks/useAccounts';
 import { useUploadFile } from '@/hooks/useFiles';
 import { useMy } from '@/hooks/useMy';
 import { CollaboratingWith } from '@/sections/CollaboratingWith';
+import { SSOSetupForm } from '@/sections/SSOSetupForm';
 import Avatar from '@/sections/topNavBar/Avatar';
 import { Users } from '@/sections/Users';
 import { useAuth } from '@/state/auth';
 
 const Account: React.FC = () => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [displayName, setDisplayName] = useState('');
 
-  const { me, friend } = useAuth();
+  const { me, friend, isImpersonating } = useAuth();
   const { data, status } = useMy({ resource: 'account' });
   const { mutate: updateAccount } = useModifyAccount('updateSetting');
+  const { mutateAsync: purgeAccount } = usePurgeAccount();
+
   const accountDisplayName = useGetDisplayName(data);
   const isDirty = status === 'success' && accountDisplayName !== displayName;
   const header = MD5(friend.email || me).toString();
@@ -73,21 +83,12 @@ const Account: React.FC = () => {
               config: { displayName },
             });
           }}
+          className="flex flex-col space-y-6"
         >
-          <Input
-            label="Organization Name"
-            value={displayName}
-            name="displayName"
-            isLoading={status === 'pending'}
-            onChange={e => setDisplayName(e.target.value)}
-          />
-
-          <>
-            <div className="mt-5 flex items-center">
-              <label className="block text-sm font-medium leading-6 text-gray-900">
-                Organization Logo
-              </label>
-            </div>
+          <div>
+            <label className="block text-sm font-medium leading-6 text-gray-900">
+              Organization Logo
+            </label>
             <Loader
               isLoading={profilePictureStatus === 'pending'}
               className="m-0 h-5"
@@ -103,7 +104,10 @@ const Account: React.FC = () => {
               )}
               {!showDpDropzone && (
                 <div className="flex flex-row items-center">
-                  <Avatar className="mr-2 size-20" email={friend.email || me} />
+                  <Avatar
+                    className="mr-2 size-20 rounded-md"
+                    email={friend.email || me}
+                  />
 
                   <Button
                     styleType="text"
@@ -119,7 +123,22 @@ const Account: React.FC = () => {
                 </div>
               )}
             </Loader>
-          </>
+          </div>
+
+          <Input
+            label="Organization Name"
+            value={displayName}
+            name="displayName"
+            isLoading={status === 'pending'}
+            onChange={e => setDisplayName(e.target.value)}
+          />
+
+          <div className="mt-5">
+            <label className="block text-sm font-medium leading-6 text-gray-900">
+              Single Sign-On (SSO)
+            </label>
+            <SSOSetupForm />
+          </div>
 
           <Button
             style={{
@@ -138,13 +157,11 @@ const Account: React.FC = () => {
 
       <Section
         title="Authorized Users"
-        description="These individuals are allowed to see the data in your Praetorian
-            account."
+        description="These individuals are allowed to see the data in your Praetorian account."
       >
         <Users />
       </Section>
-      {/* Regarding `friend.length === 0`: This is a hack to avoid nested impersonation */}
-      {/* It's a temporary solution until a better approach is implemented */}
+
       {collaborators &&
         collaborators.length > 0 &&
         friend.email.length === 0 && (
@@ -160,6 +177,7 @@ const Account: React.FC = () => {
             <CollaboratingWith />
           </Section>
         )}
+
       <Section
         title="Whitelisting Details"
         description="We have different methods of whitelisting our service so we can scan your network without being blocked by your security measures."
@@ -173,6 +191,54 @@ const Account: React.FC = () => {
           </div>
         </div>
       </Section>
+
+      {!isImpersonating && (
+        <Section
+          title="Delete Account"
+          description="Deleting your account is a permanent action that cannot be reversed."
+        >
+          <>
+            <Button
+              type="button"
+              styleType="error"
+              onClick={() => {
+                setIsDeleteModalOpen(true);
+              }}
+              startIcon={<TrashIcon className="size-5" />}
+            >
+              Delete Account
+            </Button>
+            <Modal
+              style="dialog"
+              title={
+                <div className="flex items-center gap-1">
+                  <ExclamationTriangleIcon className="size-5 text-red-600" />
+                  Delete Account
+                </div>
+              }
+              open={isDeleteModalOpen}
+              onClose={() => {
+                setIsDeleteModalOpen(false);
+              }}
+              footer={{
+                text: 'Delete',
+                onClick: async () => {
+                  await purgeAccount();
+                  // Call api to delete account
+                  setIsDeleteModalOpen(false);
+                },
+                styleType: 'error',
+              }}
+            >
+              <div className="space-y-2 text-sm text-default-light">
+                Deleting your account is a permanent action that cannot be
+                reversed. This will remove all your data from Praetorian servers
+                and delete your login credentials.
+              </div>
+            </Modal>
+          </>
+        </Section>
+      )}
     </div>
   );
 };

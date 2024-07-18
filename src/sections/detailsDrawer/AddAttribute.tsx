@@ -18,7 +18,7 @@ export const AddAttribute = (props: Props) => {
     value: '',
   });
   const { mutateAsync: createAttribute, status: creatingAttribute } =
-    useCreateAttribute();
+    useCreateAttribute(resourceKey);
 
   function reset() {
     setFormData({

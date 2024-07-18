@@ -19,13 +19,13 @@ interface GlobalState {
     risk: UseModalState & SelectedAssets;
     asset: UseModalState;
     file: UseModalState;
-    integration: {
+    module: {
       value?: {
         module: Module;
         integration: Integration | '';
       };
       onValueChange: React.Dispatch<
-        React.SetStateAction<GlobalState['modal']['integration']['value']>
+        React.SetStateAction<GlobalState['modal']['module']['value']>
       >;
     };
   };
@@ -49,7 +49,7 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [assetOpen, setAssetOpen] = useState(false);
   const [fileOpen, setFileOpen] = useState(false);
   const [integrationModal, setIntegrationModalOpen] = useStorage<
-    GlobalState['modal']['integration']['value'] | undefined
+    GlobalState['modal']['module']['value'] | undefined
   >({ queryKey: 'integrationModal' });
 
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
@@ -58,7 +58,7 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
     <GlobalStateContext.Provider
       value={{
         modal: {
-          integration: {
+          module: {
             value: integrationModal,
             onValueChange: setIntegrationModalOpen,
           },

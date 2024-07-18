@@ -104,10 +104,9 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
   },
 };
 
-type IntegrationData = Record<
-  Integration,
-  { isConnected: true; accounts: Account[] }
->;
+export type IntegrationData = { isConnected: true; accounts: Account[] };
+
+export type IntegrationsData = Record<Integration, IntegrationData>;
 
 export function useGetModuleData(): {
   data: Record<
@@ -122,7 +121,7 @@ export function useGetModuleData(): {
       isLoading: boolean;
     }
   >;
-  integrationsData: IntegrationData;
+  integrationsData: IntegrationsData;
   isLoading: boolean;
 } {
   const { data: accounts, status: accountStatus } = useMy({
@@ -157,7 +156,7 @@ export function useGetModuleData(): {
         },
       ];
     })
-  ) as IntegrationData;
+  ) as IntegrationsData;
 
   function isIntegrationsConnected(module: Module) {
     const isConnected = Modules[module].integrations.find(integration => {
@@ -241,7 +240,7 @@ export function useGetModuleData(): {
     data,
     integrationsData,
     isLoading:
-      accountStatus === 'success' ||
+      accountStatus === 'pending' ||
       basAttributesStatus === 'pending' ||
       csAttributesStatus === 'pending' ||
       ctiAttributeStatus === 'pending',
@@ -279,14 +278,13 @@ function BasDefaultTab() {
           className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-default [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none  [&::-webkit-slider-thumb]:rounded-full  [&::-webkit-slider-thumb]:!bg-brand "
         />
       </label>
-
-      <Loader isLoading={isLoading}>
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 pt-4">
+        <Loader isLoading={isLoading}>
           {BAS.assetAttributes.map((attribute, index) => {
             return <div key={index}>{attribute.key.split('#')[5]}</div>;
           })}
-        </div>
-      </Loader>
+        </Loader>
+      </div>
     </div>
   );
 }

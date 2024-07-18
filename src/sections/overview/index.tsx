@@ -27,6 +27,7 @@ import { useModifyAccount } from '@/hooks/useAccounts';
 import { useBulkAddAsset } from '@/hooks/useAssets';
 import { useBulkAddAttributes } from '@/hooks/useAttribute';
 import { useIntegration } from '@/hooks/useIntegration';
+import { Integrations } from '@/sections/overview/Integration';
 import { Modules, useGetModuleData } from '@/sections/overview/Module';
 import { Tabs } from '@/sections/overview/Tab';
 import { useGlobalState } from '@/state/global.state';
@@ -36,7 +37,7 @@ import { generateUuid } from '@/utils/uuid.util';
 
 export function Overview() {
   const {
-    modal: { integration },
+    modal: { module: moduleState },
   } = useGlobalState();
 
   const { data: modulesData } = useGetModuleData();
@@ -117,7 +118,7 @@ export function Overview() {
                 <Button
                   className="m-auto w-full bg-header-light text-white"
                   onClick={() => {
-                    integration.onValueChange({
+                    moduleState.onValueChange({
                       module: moduleKey as Module,
                       integration: '',
                     });
@@ -140,10 +141,12 @@ export function Overview() {
   );
 }
 
-export function IntegrationsByModuleCategoryModal() {
+export function ModulesModal() {
   const {
-    modal: { integration },
+    modal: { module: moduleState },
   } = useGlobalState();
+  const { integrationsData, isLoading } = useGetModuleData();
+
   const [formData, setFormData] = useState<Values[]>([]);
 
   const { mutateAsync: unlink, status: unlinkStatus } =
@@ -158,29 +161,27 @@ export function IntegrationsByModuleCategoryModal() {
   const { getConnectedIntegration } = useIntegration();
 
   function handleClose() {
-    integration.onValueChange(undefined);
+    moduleState.onValueChange(undefined);
   }
 
   const selectedIntegration = useMemo(() => {
-    if (integration.value?.integration) {
-      const integrations = getConnectedIntegration(
-        integration.value.integration
-      );
+    if (moduleState.value?.integration) {
+      const accounts = integrationsData[moduleState.value.integration].accounts;
 
-      return integrations.map(integration => {
-        if (integration.config) {
-          Object.keys(integration.config).forEach((key: string) => {
-            if (integration.config[key as keyof AccountMetadata] === '') {
-              integration.config[key as keyof AccountMetadata] = '********';
+      return accounts.map(account => {
+        if (account.config) {
+          Object.keys(account.config).forEach((key: string) => {
+            if (account.config[key as keyof AccountMetadata] === '') {
+              account.config[key as keyof AccountMetadata] = '********';
             }
           });
         }
-        return integration;
+        return account;
       });
     }
 
     return [];
-  }, [integration.value?.integration, getConnectedIntegration]);
+  }, [moduleState.value?.integration, getConnectedIntegration]);
 
   async function handleDisconnect() {
     if (selectedIntegration.length > 0) {
@@ -204,8 +205,7 @@ export function IntegrationsByModuleCategoryModal() {
     const formElement = event.target as HTMLFormElement;
     const form = new FormData(formElement);
 
-    console.log('form', form);
-    if (integration.value?.module === Module.BAS) {
+    if (moduleState.value?.module === Module.BAS) {
       const basAgentValue = form.get('bas-agents') as string;
       const basAgents = Number(basAgentValue);
 
@@ -223,16 +223,11 @@ export function IntegrationsByModuleCategoryModal() {
 
       const basAssets = await createBulkAsset(assets);
 
-      console.log('basAssets', basAssets);
       const attributes = basAssets.map(({ key }) => {
         return { key, name: 'source', value: 'bas' };
       });
-      console.log('attributes', attributes);
 
       await createBulkAttribute(attributes);
-      console.log('basAgents', basAgents);
-
-      //
     } else {
       const promises = formData.map(data =>
         link(data as unknown as LinkAccount)
@@ -240,17 +235,17 @@ export function IntegrationsByModuleCategoryModal() {
       await Promise.all(promises);
     }
 
-    // handleClose();
+    handleClose();
   }
 
-  if (!integration.value?.module) return null;
+  if (!moduleState.value?.module) return null;
 
   return (
     <Modal
       title="Integrations"
-      open={Boolean(integration.value)}
+      open={Boolean(moduleState.value)}
       onClose={() => {
-        integration.onValueChange(undefined);
+        moduleState.onValueChange(undefined);
       }}
       className="h-[500px] p-0"
       size="lg"
@@ -271,35 +266,37 @@ export function IntegrationsByModuleCategoryModal() {
           : undefined,
       }}
     >
-      <form id="overviewForm" className="h-full" onSubmit={handleSubmit}>
-        <Tabs
-          tabs={Object.values(Module).map(module => {
-            return {
-              id: module,
-              label: Modules[module].label,
-              Content: IntegrationTabs,
-              contentProps: {
-                module: module,
-                onClose: handleClose,
-                onChange: setFormData,
-              },
-            };
-          })}
-          contentWrapperClassName="p-0 m-0"
-          value={integration.value.module}
-          onChange={value => {
-            integration.onValueChange({
-              module: value,
-              integration: '',
-            });
-          }}
-        />
-      </form>
+      <Loader isLoading={isLoading} type="spinner">
+        <form id="overviewForm" className="h-full" onSubmit={handleSubmit}>
+          <Tabs
+            tabs={Object.values(Module).map(module => {
+              return {
+                id: module,
+                label: Modules[module].label,
+                Content: ModuleComponent,
+                contentProps: {
+                  module: module,
+                  onClose: handleClose,
+                  onChange: setFormData,
+                },
+              };
+            })}
+            contentWrapperClassName="p-0 m-0"
+            value={moduleState.value.module}
+            onChange={value => {
+              moduleState.onValueChange({
+                module: value,
+                integration: '',
+              });
+            }}
+          />
+        </form>
+      </Loader>
     </Modal>
   );
 }
 
-function IntegrationTabs(props: {
+function ModuleComponent(props: {
   module: Module;
   onChange: Dispatch<SetStateAction<Values[]>>;
   onClose: () => void;
@@ -307,65 +304,76 @@ function IntegrationTabs(props: {
   const { module, onChange, onClose } = props;
 
   const {
-    modal: { integration },
+    modal: { module: moduleState },
   } = useGlobalState();
-  const { isIntegrationConnected } = useIntegration();
-  const integrations = Modules[module].integrations;
+
+  const { integrationsData } = useGetModuleData();
+
+  const Module = Modules[module];
+  const integrations = Module.integrations;
+  const selectedIntegrationId = moduleState.value?.integration;
 
   return (
-    <Tabs
-      tabs={integrations.map(integration => {
-        const isConnected = isIntegrationConnected(integration.id);
+    <div className="size-full">
+      {!selectedIntegrationId && (
+        <div className="flex flex-col gap-2">
+          {Module.defaultTab}
+          {integrations.length > 0 && (
+            <div>
+              {integrations.map((integration, index) => {
+                const integrationData = integrationsData[integration.id];
 
-        return {
-          id: integration.id,
-          tabClassName: 'relative',
-          label: integration.id ? (
-            <div className="flex min-h-[20px] items-center justify-center pl-4 pr-2">
-              {isConnected && (
-                <CheckCircleIcon className="absolute left-2 size-5 text-green-500" />
-              )}
-              {integration.logo && (
-                <img
-                  className="h-4"
-                  src={integration.logo || ''}
-                  alt={integration.name || ''}
-                />
-              )}
-              {!integration.logo && integration.name && (
-                <span>{integration.name}</span>
-              )}
+                return (
+                  <div
+                    key={index}
+                    className=" flex min-h-[20px] items-center justify-center pl-4 pr-2"
+                    onClick={() => {
+                      moduleState.onValueChange({
+                        module: module,
+                        integration: integration.id,
+                      });
+                    }}
+                  >
+                    {integrationData.isConnected && (
+                      <CheckCircleIcon className="size-5 text-green-500" />
+                    )}
+                    {integration.logo && (
+                      <img
+                        className="h-4"
+                        src={integration.logo || ''}
+                        alt={integration.name || ''}
+                      />
+                    )}
+                    {!integration.logo && integration.name && (
+                      <span>{integration.name}</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          ) : (
-            ''
-          ),
-          Content: IntegrationTab,
-          contentProps: {
-            onChange,
-            integration,
-            onClose,
-          },
-        };
-      })}
-      value={integration.value?.integration}
-      onChange={value => {
-        integration.onValueChange({
-          module: module,
-          integration: value,
-        });
-      }}
-    />
+          )}
+        </div>
+      )}
+      {selectedIntegrationId && (
+        <IntegrationComponent
+          onChange={onChange}
+          integration={Integrations[selectedIntegrationId]}
+          onClose={onClose}
+        />
+      )}
+    </div>
   );
 }
 
-interface IntegrationContentProps {
+interface IntegrationComponentProps {
   integration: IntegrationMeta;
   onChange: Dispatch<SetStateAction<Values[]>>;
   onClose: () => void;
 }
 
-const IntegrationTab = (props: IntegrationContentProps) => {
+const IntegrationComponent = (props: IntegrationComponentProps) => {
   const { integration, onChange: setFormData, onClose } = props;
+
   const {
     description = '',
     markup = '',
@@ -376,12 +384,13 @@ const IntegrationTab = (props: IntegrationContentProps) => {
     warning = false,
     help,
   } = integration;
+  const { integrationsData } = useGetModuleData();
 
-  const { getConnectedIntegration } = useIntegration();
+  const integrationData = integrationsData[integration.id];
 
-  const connectedIntegration = getConnectedIntegration(integration.id);
+  const connectedIntegration = integrationData.accounts;
 
-  const isConnected = connectedIntegration.length > 0;
+  const isConnected = integrationData.isConnected;
   const [count, setCount] = useState<number>(connectedIntegration.length || 1);
 
   const navigate = useNavigate();

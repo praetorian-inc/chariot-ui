@@ -90,8 +90,9 @@ export function IntegrationsByModuleCategoryModal() {
   } = useGlobalState();
   const [formData, setFormData] = useState<Values[]>([]);
 
-  const { mutate: unlink, status: unlinkStatus } = useModifyAccount('unlink');
-  const { mutate: link } = useModifyAccount('link');
+  const { mutateAsync: unlink, status: unlinkStatus } =
+    useModifyAccount('unlink');
+  const { mutateAsync: link, status: linkStatus } = useModifyAccount('link');
 
   const { getConnectedIntegration } = useIntegration();
 
@@ -121,11 +122,11 @@ export function IntegrationsByModuleCategoryModal() {
     }
 
     return [];
-  }, [integration.value?.integration]);
+  }, [integration.value?.integration, getConnectedIntegration]);
 
   async function handleDisconnect() {
     if (selectedIntegration.length > 0) {
-      selectedIntegration.forEach(account =>
+      const promises = selectedIntegration.map(account =>
         unlink({
           username: account.member,
           member: account.member,
@@ -134,12 +135,15 @@ export function IntegrationsByModuleCategoryModal() {
           key: account.key,
         })
       );
+
+      await Promise.all(promises);
       handleClose();
     }
   }
 
   async function handleAddAsset() {
-    formData.map(data => link(data as unknown as LinkAccount));
+    const promises = formData.map(data => link(data as unknown as LinkAccount));
+    await Promise.all(promises);
 
     handleClose();
   }
@@ -159,6 +163,7 @@ export function IntegrationsByModuleCategoryModal() {
       footer={{
         text: selectedIntegration.length ? 'Update' : 'Add',
         onClick: handleAddAsset,
+        isLoading: linkStatus === 'pending',
         disconnect: selectedIntegration.length
           ? {
               text: 'Disconnect',
@@ -176,8 +181,8 @@ export function IntegrationsByModuleCategoryModal() {
             content: (
               <IntegrationTabs
                 module={module}
-                handleClose={handleClose}
-                setFormData={setFormData}
+                onClose={handleClose}
+                onChange={setFormData}
               />
             ),
           };
@@ -197,10 +202,10 @@ export function IntegrationsByModuleCategoryModal() {
 
 function IntegrationTabs(props: {
   module: Modules;
-  setFormData: Dispatch<SetStateAction<Values[]>>;
-  handleClose: () => void;
+  onChange: Dispatch<SetStateAction<Values[]>>;
+  onClose: () => void;
 }) {
-  const { module, setFormData, handleClose } = props;
+  const { module, onChange, onClose } = props;
 
   const {
     modal: { integration },
@@ -243,10 +248,9 @@ function IntegrationTabs(props: {
             <Loader type="spinner" isLoading={accountStatus === 'pending'}>
               <IntegrationTab
                 connectedIntegration={connectedIntegration}
-                key={integration.id}
-                onChange={setFormData}
-                tab={integration}
-                onCancel={handleClose}
+                onChange={onChange}
+                integration={integration}
+                onClose={onClose}
               />
             </Loader>
           ),
@@ -264,14 +268,19 @@ function IntegrationTabs(props: {
 }
 
 interface IntegrationContentProps {
+  integration: IntegrationMeta;
   onChange: Dispatch<SetStateAction<Values[]>>;
-  tab: IntegrationMeta;
   connectedIntegration: Account[];
-  onCancel: () => void;
+  onClose: () => void;
 }
 
 const IntegrationTab = (props: IntegrationContentProps) => {
-  const { tab, onChange: setFormData, connectedIntegration, onCancel } = props;
+  const {
+    integration,
+    onChange: setFormData,
+    connectedIntegration,
+    onClose,
+  } = props;
   const {
     description = '',
     markup = '',
@@ -281,7 +290,7 @@ const IntegrationTab = (props: IntegrationContentProps) => {
     multiple = false,
     message = '',
     warning = false,
-  } = tab;
+  } = integration;
 
   const isConnected = connectedIntegration.length > 0;
   const [count, setCount] = useState<number>(connectedIntegration.length || 1);
@@ -310,7 +319,7 @@ const IntegrationTab = (props: IntegrationContentProps) => {
                 pathname: getRoute(['app', 'jobs']),
                 search: `?hashSearch=${encodeURIComponent(`#${connectedIntegration[0].member}`)}`,
               });
-              onCancel();
+              onClose();
             }}
           >
             Recent Activity

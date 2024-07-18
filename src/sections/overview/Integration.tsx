@@ -13,13 +13,11 @@ const defaultPin = (
 const uuid = uuidv4();
 
 export interface IntegrationMeta {
-  id?: number;
   name: string;
   displayName: string;
   description?: JSX.Element | string;
   logo?: string;
   connected?: boolean;
-  issue?: number;
   inputs?: InputsT;
   warning?: string;
   message?: JSX.Element;

@@ -129,7 +129,11 @@ const HeaderPortalSections = {
   EXTRA_CONTENT: 'header-extra-content-section',
 };
 
-export function Header() {
+export function Header({
+  hideBreadcrumbs = false,
+}: {
+  hideBreadcrumbs?: boolean;
+}) {
   const { friend } = useAuth();
   const { status: statusAccount } = useMy({ resource: 'account' });
   const { breadcrumbs } = useBreadCrumbsContext();
@@ -148,17 +152,24 @@ export function Header() {
       >
         <div className="w-full max-w-screen-xl">
           <TopNavBar />
-          <hr className="h-px bg-layer0 opacity-15" />
-          <div className={cn('flex items-center justify-between gap-10')}>
-            <Loader
-              styleType="header"
-              className="my-9 h-11 w-1/2"
-              isLoading={statusAccount === 'pending'}
-            >
-              <BreadCrumbs breadcrumbs={breadcrumbs} />
-            </Loader>
-            <div id={HeaderPortalSections.BREADCRUMBS} className="shrink-0" />
-          </div>
+          {!hideBreadcrumbs && (
+            <>
+              <hr className="h-px bg-layer0 opacity-15" />
+              <div className={cn('flex items-center justify-between gap-10')}>
+                <Loader
+                  styleType="header"
+                  className="my-9 h-11 w-1/2"
+                  isLoading={statusAccount === 'pending'}
+                >
+                  <BreadCrumbs breadcrumbs={breadcrumbs} />
+                </Loader>
+                <div
+                  id={HeaderPortalSections.BREADCRUMBS}
+                  className="shrink-0"
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
       <div

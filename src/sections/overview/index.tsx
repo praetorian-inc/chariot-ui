@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import {
   CheckCircleIcon,
   ChevronRightIcon,
@@ -36,67 +37,77 @@ export function Overview() {
   const modules = useGetModules();
 
   return (
-    <div className="flex flex-wrap justify-center gap-5">
-      {Object.entries(modules).map(([moduleKey, module], index) => {
-        return (
-          <div
-            key={index}
-            className="flex w-full basis-1/4 flex-col gap-2 overflow-hidden rounded-md border-2 border-default bg-layer2 p-4"
-          >
-            <div className="text-xs text-default-light">{module.label}</div>
-            <div className="flex items-center gap-4">
-              {module.Icon && (
-                <span className="rounded-full bg-brand-light p-2">
-                  <module.Icon className="size-4 text-layer0" />
-                </span>
-              )}
-              <div className="rounded-sm text-xl font-bold text-default">
-                {module.name}
-              </div>
-            </div>
-            <div className="mt-4 line-clamp-3 min-h-12 text-xs text-default-light">
-              {module.description}
-            </div>
-            {(module.assets !== undefined || module.risks !== undefined) && (
-              <div className="my-8 flex">
-                {module.assets !== undefined && (
-                  <div className="w-full p-2 text-center">
-                    <p className="mb-4 text-4xl text-brand">
-                      {module.assets || getRandom()}
-                    </p>
-                    <p className="text-xs text-brand-light">Assets</p>
+    <div>
+      <h6 className="m-10 text-center text-7xl font-bold">
+        We Prevent Breaches by Emulating Attackers
+      </h6>
+      <p className="m-auto mb-10 w-2/3 text-center">
+        Proactively identify and address exploitable vulnerabilities in your
+        organization with our comprehensive suite of cybersecurity solutions.
+        From point-in-time assessments to our continuous managed security
+        offering, experience the Praetorian difference.
+      </p>
+      <div className="mb-10 flex justify-center gap-5">
+        {Object.entries(modules).map(([moduleKey, module], index) => {
+          return (
+            <div key={index} className="relative w-full">
+              <div className="flex flex-col gap-2 overflow-hidden rounded-md border-2 border-default bg-layer2 p-4">
+                <div className="text-xs text-default-light">{module.label}</div>
+                <div className="flex items-center gap-4">
+                  {module.Icon && (
+                    <span className="rounded-full bg-brand-light p-2">
+                      <module.Icon className="size-4 text-layer0" />
+                    </span>
+                  )}
+                  <div className="rounded-sm text-xl font-bold text-default">
+                    {module.name}
+                  </div>
+                  {module.assets !== undefined && (
+                    <span className="ml-auto text-end text-xs text-brand-light">
+                      <p>{module.assets || getRandom()}</p>
+                      <p>Assets</p>
+                    </span>
+                  )}
+                </div>
+                <div className="mt-4 line-clamp-3 min-h-12 text-xs text-default-light">
+                  {module.description}
+                </div>
+                {(module.assets !== undefined ||
+                  module.risks !== undefined) && (
+                  <div className="my-8 flex">
+                    {module.risks !== undefined && (
+                      <div className="w-full p-2 text-center">
+                        <p className="mb-4 text-4xl text-brand">
+                          {module.risks || getRandom()}
+                        </p>
+                        <p className="text-xs text-brand-light">Risks</p>
+                      </div>
+                    )}
                   </div>
                 )}
-                {module.assets !== undefined && module.risks !== undefined && (
-                  <div className="my-4">
-                    <div className="h-full w-px border-l-2 border-default"></div>
-                  </div>
-                )}
-                {module.risks !== undefined && (
-                  <div className="w-full p-2 text-center">
-                    <p className="mb-4 text-4xl text-brand">
-                      {module.risks || getRandom()}
-                    </p>
-                    <p className="text-xs text-brand-light">Risks</p>
-                  </div>
-                )}
-              </div>
-            )}
 
-            <Button
-              className="m-auto w-full"
-              onClick={() => {
-                integration.onValueChange({
-                  module: moduleKey as Modules,
-                  integration: '',
-                });
-              }}
-            >
-              Manage
-            </Button>
-          </div>
-        );
-      })}
+                <Button
+                  className="m-auto w-full"
+                  onClick={() => {
+                    integration.onValueChange({
+                      module: moduleKey as Modules,
+                      integration: '',
+                    });
+                  }}
+                >
+                  Manage
+                </Button>
+              </div>
+              {module.banner && (
+                <p className="items-center space-x-1 p-2 text-center text-xs text-red-500">
+                  <ExclamationCircleIcon className="inline size-4 " />
+                  <span>{module.banner}</span>
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

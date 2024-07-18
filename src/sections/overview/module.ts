@@ -5,6 +5,7 @@ import { Modules } from '@/types';
 export function useGetModules(): Record<
   Modules,
   {
+    banner?: string;
     label: string;
     name: string;
     description: string;
@@ -15,6 +16,7 @@ export function useGetModules(): Record<
 > {
   return {
     ASM: {
+      banner: 'Banner text',
       Icon: BeakerIcon,
       label: 'Attack surface management',
       name: 'ASM',
@@ -31,6 +33,7 @@ export function useGetModules(): Record<
       risks: 0,
     },
     CIS: {
+      banner: 'Banner text',
       Icon: TrophyIcon,
       label: 'Attack surface management',
       name: 'CIS',

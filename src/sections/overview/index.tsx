@@ -95,7 +95,7 @@ export function Overview() {
                       </p>
                     </Loader>
                     <p className="text-sm font-medium text-default-light">
-                      Open Risks
+                      Material Risks
                     </p>
                   </div>
                 )}

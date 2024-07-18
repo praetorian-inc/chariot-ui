@@ -254,11 +254,14 @@ const SearchResultDropdown: React.FC<Search> = ({
         )}
         {!isLoading && (
           <>
-            <li className="flex gap-4 px-4 py-2 font-semibold">
-              {tags.map(({ title }) => (
-                <SearchResultDropdownTag title={title} key={title} />
-              ))}
-            </li>
+            {/* Only show tags when there is more than one section */}
+            {tags.length > 1 && (
+              <li className="flex gap-4 px-4 py-2 font-semibold">
+                {tags.map(({ title }) => (
+                  <SearchResultDropdownTag title={title} key={title} />
+                ))}
+              </li>
+            )}
             <SearchResultDropdownSeaction<Asset>
               title={ResourceLabels.asset}
               items={assets}

@@ -14,24 +14,27 @@ export const Body = forwardRef(function Paper(
   },
   ref?: React.Ref<HTMLDivElement>
 ) {
-  const { footer = true, header = true, hideBreadcrumbs = false } = props;
+  const {
+    className = '',
+    footer = true,
+    header = true,
+    hideBreadcrumbs = false,
+  } = props;
 
   return (
     <div
       ref={ref}
-      className={
-        'flex size-full flex-col justify-between overflow-x-auto rounded-[2px]'
-      }
+      className={cn(
+        'flex size-full flex-col justify-between overflow-x-auto rounded-[2px]',
+        className
+      )}
       id="body"
       style={{ overflowAnchor: 'none' }}
     >
       <div>
         {header && <Header hideBreadcrumbs={hideBreadcrumbs} />}
         <div
-          className={cn(
-            'mx-auto w-full max-w-screen-xl rounded-sm',
-            props.className
-          )}
+          className={cn('mx-auto w-full max-w-screen-xl rounded-sm')}
           style={{ marginTop: header ? -16 : 0 }}
         >
           {props.children}

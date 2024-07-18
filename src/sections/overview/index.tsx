@@ -38,15 +38,17 @@ export function Overview() {
 
   return (
     <div>
-      <h6 className="m-10 text-center text-7xl font-bold">
-        We Prevent Breaches by Emulating Attackers
-      </h6>
-      <p className="m-auto mb-10 w-2/3 text-center">
-        Proactively identify and address exploitable vulnerabilities in your
-        organization with our comprehensive suite of cybersecurity solutions.
-        From point-in-time assessments to our continuous managed security
-        offering, experience the Praetorian difference.
-      </p>
+      <div className="text-header-light">
+        <h6 className="m-10 text-center text-7xl font-bold">
+          We Prevent Breaches by Emulating Attackers
+        </h6>
+        <p className="m-auto mb-10 w-2/3 text-center">
+          Proactively identify and address exploitable vulnerabilities in your
+          organization with our comprehensive suite of cybersecurity solutions.
+          From point-in-time assessments to our continuous managed security
+          offering, experience the Praetorian difference.
+        </p>
+      </div>
       <div className="mb-10 flex justify-center gap-5">
         {Object.entries(modules).map(([moduleKey, module], index) => {
           return (

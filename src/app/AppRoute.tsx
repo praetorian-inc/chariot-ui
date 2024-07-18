@@ -87,7 +87,7 @@ const appRoutes = {
     },
     overview: {
       element: (
-        <Body hideBreadcrumbs={true}>
+        <Body className="bg-header" hideBreadcrumbs={true}>
           <Overview />
         </Body>
       ),

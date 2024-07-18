@@ -77,7 +77,7 @@ export function Overview() {
                 )}
 
                 <Button
-                  className="m-auto w-full"
+                  className="m-auto w-full bg-header-light text-white"
                   onClick={() => {
                     integration.onValueChange({
                       module: moduleKey as Modules,

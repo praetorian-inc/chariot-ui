@@ -111,12 +111,11 @@ export const AddRisks = () => {
   return (
     <>
       <Modal
-        className="h-[72vh]"
-        title="Risk Management"
+        title="Add Risk"
         icon={<RisksIcon className="size-6 text-default-light" />}
         open={isOpen}
         onClose={onClose}
-        size="lg"
+        size="md"
         closeOnOutsideClick={false}
         footer={{
           text: 'Add',
@@ -124,18 +123,7 @@ export const AddRisks = () => {
         }}
       >
         <div>
-          <div className="flex flex-1 flex-col space-y-4">
-            <div>
-              <h3 className="mt-4 text-xl font-medium text-gray-700">
-                What is a Risk?
-              </h3>
-              <p className="text-md text-gray-500">
-                Any exploitable threat or vulnerability in your IT
-                infrastructure.
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 flex flex-1 flex-col justify-center">
+          <div className="flex flex-1 flex-col justify-center">
             <form id="addRisk" onSubmit={handleSubmit} className="space-y-4">
               <TypeSearch
                 label="Select Assets"

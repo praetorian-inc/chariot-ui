@@ -68,8 +68,8 @@ export function Overview() {
                         <p className="mb-4 text-6xl text-default">
                           {module.risks || getRandom()}
                         </p>
-                        <p className="text-sm font-medium text-default">
-                          Risks
+                        <p className="text-sm font-medium text-default-light">
+                          Open Risks
                         </p>
                       </div>
                     )}

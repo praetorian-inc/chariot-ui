@@ -18,7 +18,7 @@ export function useGetModules(): Record<
     ASM: {
       banner: 'Banner text',
       Icon: BeakerIcon,
-      label: 'Attack surface management',
+      label: 'Attack Surface Management',
       name: 'ASM',
       description: `Attack surface management (ASM) refers to the proactive approach of identifying, analyzing, and managing potential points of attack on an organization's IT infrastructure, applications, and networks. The goal of ASM is to minimize the attack surface, which is the sum of all possible entry points that an attacker can exploit to gain unauthorized access or cause damage.`,
       assets: 0,

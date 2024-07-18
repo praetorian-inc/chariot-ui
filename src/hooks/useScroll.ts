@@ -27,3 +27,14 @@ export const useScroll = (
     }
   }, [parentRef]);
 };
+
+export const useScrollToElement = ({ className }: { className: string }) => {
+  function scrollToElement() {
+    const el = document.getElementsByClassName(className);
+    if (el && el.length > 0) {
+      el[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }
+
+  return { scrollToElement };
+};

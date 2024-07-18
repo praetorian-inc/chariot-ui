@@ -15,11 +15,13 @@ import {
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { Menu } from '@headlessui/react';
 
+import { Chip } from '@/components/Chip';
 import { Input, InputEvent } from '@/components/form/Input';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { RiskDropdown } from '@/components/ui/RiskDropdown';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
+import { useScrollToElement } from '@/hooks/useScroll';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { useSearchContext } from '@/state/search';
 import {
@@ -28,6 +30,7 @@ import {
   Job,
   MyFile,
   MyResource,
+  ResourceLabels,
   Risk,
   RiskCombinedStatus,
   RiskSeverity,
@@ -127,7 +130,7 @@ const GlobalSearch = () => {
         onFocus={() => setIsFocused(true)}
       />
       {isFocused && search?.length === 0 ? (
-        <div className="font-default absolute right-0 top-10 z-10 w-[500px] rounded-sm bg-white p-4 text-black shadow-lg">
+        <div className="font-default absolute right-0 top-10 z-10 w-[500px] rounded-sm bg-white p-4 text-sm text-black shadow-lg">
           <div className="mb-4 text-gray-700">
             <div className="mb-3">
               <span className="font-bold">Global Search:</span> Enter any term
@@ -221,6 +224,14 @@ const SearchResultDropdown: React.FC<Search> = ({
     !jobs &&
     search?.length > 0;
 
+  const tags = [
+    { title: ResourceLabels.asset, data: assets },
+    { title: ResourceLabels.risk, data: risks },
+    { title: ResourceLabels.file, data: files },
+    { title: ResourceLabels.job, data: jobs },
+    { title: ResourceLabels.user, data: accounts },
+  ].filter(({ data = [] }) => data.length > 0);
+
   return (
     <div
       onClick={() => setIsFocused(false)}
@@ -243,8 +254,13 @@ const SearchResultDropdown: React.FC<Search> = ({
         )}
         {!isLoading && (
           <>
+            <div className="flex gap-4 px-4 py-2">
+              {tags.map(({ title }) => (
+                <SearchResultDropdownTag title={title} key={title} />
+              ))}
+            </div>
             <SearchResultDropdownSeaction<Asset>
-              title="Assets"
+              title={ResourceLabels.asset}
               items={assets}
               onSelect={() => onSelect('asset')}
               Icon={AssetsIcon}
@@ -260,7 +276,7 @@ const SearchResultDropdown: React.FC<Search> = ({
               )}
             />
             <SearchResultDropdownSeaction<Risk>
-              title="Risks"
+              title={ResourceLabels.risk}
               items={risks}
               onSelect={() => onSelect('risk')}
               Icon={RisksIcon}
@@ -281,21 +297,21 @@ const SearchResultDropdown: React.FC<Search> = ({
               }}
             />
             <SearchResultDropdownSeaction<MyFile>
-              title="Files"
+              title={ResourceLabels.file}
               items={files}
               onSelect={() => onSelect('file')}
               Icon={DocumentIcon}
               row={item => item.name}
             />
             <SearchResultDropdownSeaction<Job>
-              title="Jobs"
+              title={ResourceLabels.job}
               items={jobs}
               onSelect={() => onSelect('job')}
               Icon={DocumentIcon}
               row={item => `${item.source} (${item.status}) - ${item.dns}`}
             />
             <SearchResultDropdownSeaction<Account>
-              title="Users"
+              title={ResourceLabels.user}
               items={accounts}
               onSelect={() => onSelect('user')}
               Icon={UserIcon}
@@ -307,6 +323,27 @@ const SearchResultDropdown: React.FC<Search> = ({
     </div>
   );
 };
+
+function SearchResultDropdownTag({ title }: { title: string }) {
+  const { scrollToElement } = useScrollToElement({
+    className: `search-${title}`,
+  });
+
+  return (
+    <Chip
+      className="cursor-pointer rounded-full px-2"
+      style="default"
+      onClick={event => {
+        event.preventDefault();
+        event.stopPropagation();
+        scrollToElement();
+      }}
+      key={title}
+    >
+      {title}
+    </Chip>
+  );
+}
 
 interface SearchResultDropdownSeactionInterface<TData> {
   title: string;
@@ -331,7 +368,7 @@ function SearchResultDropdownSeaction<TData extends { key: string }>({
 
   return items && items.length > 0 ? (
     <Menu>
-      <SearchHeader onSelect={onSelect}>
+      <SearchHeader onSelect={onSelect} className={`search-${title}`}>
         {title} ({items.length} found)
       </SearchHeader>
 
@@ -373,11 +410,14 @@ function SearchResultDropdownSeaction<TData extends { key: string }>({
 }
 
 function SearchHeader({
+  className: classNameProp = '',
   onSelect,
   children,
-}: PropsWithChildren<{ onSelect?: () => void }>) {
-  const className =
-    'w-full px-4 py-2 text-left text-sm font-semibold text-gray-800 hover:bg-gray-200';
+}: PropsWithChildren<{ className?: string; onSelect?: () => void }>) {
+  const className = cn(
+    'w-full px-4 py-2 text-left text-sm font-semibold text-gray-800 hover:bg-gray-200',
+    classNameProp
+  );
 
   if (onSelect) {
     return (

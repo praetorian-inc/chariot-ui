@@ -144,6 +144,14 @@ export const OverviewLabels: Record<string, string> = {
   risks: 'Risks',
 };
 
+export const ResourceLabels: Record<string, string> = {
+  asset: 'Assets',
+  risk: 'Risks',
+  file: 'Files',
+  job: 'Jobs',
+  user: 'Users',
+};
+
 interface AccountTemplate {
   username: string;
   key: string;

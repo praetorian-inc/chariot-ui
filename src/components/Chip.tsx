@@ -2,7 +2,7 @@ import { PropsWithChildren } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export interface ChipProps extends PropsWithChildren {
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   className?: string;
   style?: 'default' | 'primary' | 'secondary' | 'error';
 }

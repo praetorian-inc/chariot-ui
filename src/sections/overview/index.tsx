@@ -1,6 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import {
+  ExclamationCircleIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/24/outline';
 import {
   CheckCircleIcon,
   ChevronRightIcon,
@@ -22,7 +25,13 @@ import {
 import { useGetModules } from '@/sections/overview/module';
 import { Tabs } from '@/sections/overview/Tab';
 import { useGlobalState } from '@/state/global.state';
-import { Account, AccountMetadata, LinkAccount, Modules } from '@/types';
+import {
+  Account,
+  AccountMetadata,
+  LinkAccount,
+  Modules,
+  PUBLIC_ASSET,
+} from '@/types';
 import { getRoute } from '@/utils/route.util';
 
 // TODO: Remove this before PROD
@@ -305,10 +314,12 @@ const IntegrationTab = (props: IntegrationContentProps) => {
     markup = '',
     inputs = [],
     logo = '',
+    name = '',
     displayName = '',
     multiple = false,
     message = '',
     warning = false,
+    help,
   } = integration;
 
   const isConnected = connectedIntegration.length > 0;
@@ -320,10 +331,10 @@ const IntegrationTab = (props: IntegrationContentProps) => {
 
   useEffect(() => {
     setCount(connectedIntegration.length || 1);
-  }, [JSON.stringify(connectedIntegration)]);
+  }, [connectedIntegration.length]);
 
   return (
-    <div>
+    <div className="mt-4 px-4">
       <div className="flex items-center gap-2">
         {logo && (
           <h3 className="text-xl font-medium text-gray-700">{displayName}</h3>
@@ -346,11 +357,30 @@ const IntegrationTab = (props: IntegrationContentProps) => {
         ) : undefined}
       </div>
       {description && (
-        <p className="text-md mb-8 text-gray-500">{description}</p>
+        <p className="text-md mb-2 text-gray-500">{description}</p>
       )}
-      {message && <div className=" text-gray-500">{message}</div>}
+      {help && (
+        <div className="mb-2 rounded-lg bg-gray-100 p-4">
+          <p className="mb-2 text-sm font-bold">Need help?</p>
+          <div className="flex flex-col space-y-2">
+            <a
+              href={help.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 text-blue-600 hover:underline"
+            >
+              <InformationCircleIcon className="size-5" />
+              <span>{help.label}</span>
+            </a>
+          </div>
+        </div>
+      )}
       <div className="mt-4 flex">
-        <form id="new-asset" className="w-full">
+        <form
+          id="new-asset"
+          className="border-1 w-full rounded-sm border border-gray-200 p-4"
+        >
+          {message && <div className="mb-4 text-gray-500">{message}</div>}
           <div>
             {markup && <div className="relative">{markup}</div>}
             {showInputs &&
@@ -359,7 +389,7 @@ const IntegrationTab = (props: IntegrationContentProps) => {
                   {index > 0 && (
                     <Button
                       aria-label="CloseIcon"
-                      className="absolute right-0 top-[-8px]"
+                      className="absolute right-0 top-0"
                       onClick={() => {
                         setCount(count => count - 1);
                         setFormData(values =>
@@ -428,6 +458,20 @@ const IntegrationTab = (props: IntegrationContentProps) => {
           )}
         </form>
       </div>
+      {name === PUBLIC_ASSET && (
+        <p className="mt-4 rounded bg-yellow-100 p-2 text-sm text-yellow-600">
+          <ExclamationTriangleIcon className="mr-2 inline size-5 text-yellow-700" />
+          <a
+            href="https://github.com/praetorian-inc/praetorian-cli"
+            target={'_blank'}
+            rel={'noreferrer'}
+            className="inline p-0 text-yellow-900 no-underline"
+          >
+            Praetorian CLI
+          </a>{' '}
+          is available for bulk asset addition.
+        </p>
+      )}
     </div>
   );
 };

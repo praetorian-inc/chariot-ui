@@ -469,3 +469,5 @@ export enum Modules {
   CTI = 'CTI',
   MSP = 'MSP',
 }
+
+export const PUBLIC_ASSET = 'publicAsset';

@@ -7,9 +7,7 @@ import { AssetsIcon } from '@/components/icons';
 import { Modal } from '@/components/Modal';
 import { useCreateAsset } from '@/hooks/useAssets';
 import { useGlobalState } from '@/state/global.state';
-import { Asset, AssetStatus, AssetStatusLabel } from '@/types';
-
-const PUBLIC_ASSET = 'publicAsset';
+import { Asset, AssetStatus, AssetStatusLabel, PUBLIC_ASSET } from '@/types';
 
 const AddAssetMessage = () => (
   <div>

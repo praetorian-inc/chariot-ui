@@ -466,12 +466,20 @@ export interface CognitoAuthStates {
 
 export type ChartType = 'area' | 'bar' | 'line' | 'donut';
 
-export enum Modules {
+export enum Module {
   ASM = 'ASM',
   BAS = 'BAS',
   CIS = 'CIS',
   CTI = 'CTI',
   MSP = 'MSP',
+}
+export interface ModuleMeta {
+  banner?: string;
+  label: string;
+  name: string;
+  description: string;
+  risks?: number;
+  Icon?: React.ElementType;
 }
 
 export enum Integration {

@@ -20,9 +20,9 @@ import { useModifyAccount } from '@/hooks/useAccounts';
 import { useIntegration } from '@/hooks/useIntegration';
 import {
   Integrations,
-  useGetIntegrationsByCategory,
+  IntegrationsByCategory,
 } from '@/sections/overview/Integration';
-import { useGetModules } from '@/sections/overview/module';
+import { Modules, useGetModules } from '@/sections/overview/module';
 import { Tabs } from '@/sections/overview/Tab';
 import { useGlobalState } from '@/state/global.state';
 import {
@@ -30,7 +30,7 @@ import {
   AccountMetadata,
   IntegrationMeta,
   LinkAccount,
-  Modules,
+  Module,
 } from '@/types';
 import { getRoute } from '@/utils/route.util';
 
@@ -69,27 +69,21 @@ export function Overview() {
                 <div className="line-clamp-3 min-h-12 text-xs text-default-light">
                   {module.description}
                 </div>
-                {(module.assets !== undefined ||
-                  module.risks !== undefined) && (
-                  <div className="my-8 flex">
-                    {module.risks !== undefined && (
-                      <div className="w-full p-2 text-center">
-                        <p className="mb-4 text-6xl text-default">
-                          {module.risks || getRandom()}
-                        </p>
-                        <p className="text-sm font-medium text-default-light">
-                          Open Risks
-                        </p>
-                      </div>
-                    )}
+                {module.risks !== undefined && (
+                  <div className="my-8 w-full p-2 text-center">
+                    <p className="mb-4 text-6xl text-default">
+                      {module.risks || getRandom()}
+                    </p>
+                    <p className="text-sm font-medium text-default-light">
+                      Open Risks
+                    </p>
                   </div>
                 )}
-
                 <Button
                   className="m-auto w-full bg-header-light text-white"
                   onClick={() => {
                     integration.onValueChange({
-                      module: moduleKey as Modules,
+                      module: moduleKey as Module,
                       integration: '',
                     });
                   }}
@@ -116,7 +110,6 @@ export function IntegrationsByModuleCategoryModal() {
     modal: { integration },
   } = useGlobalState();
   const [formData, setFormData] = useState<Values[]>([]);
-  const allModules = useGetModules();
 
   const { mutateAsync: unlink, status: unlinkStatus } =
     useModifyAccount('unlink');
@@ -202,10 +195,10 @@ export function IntegrationsByModuleCategoryModal() {
       }}
     >
       <Tabs
-        tabs={Object.values(Modules).map(module => {
+        tabs={Object.values(Module).map(module => {
           return {
             id: module,
-            label: allModules[module].label,
+            label: Modules[module].label,
             content: (
               <IntegrationTabs
                 module={module}
@@ -229,7 +222,7 @@ export function IntegrationsByModuleCategoryModal() {
 }
 
 function IntegrationTabs(props: {
-  module: Modules;
+  module: Module;
   onChange: Dispatch<SetStateAction<Values[]>>;
   onClose: () => void;
 }) {
@@ -238,9 +231,8 @@ function IntegrationTabs(props: {
   const {
     modal: { integration },
   } = useGlobalState();
-  const integrationsByCategory = useGetIntegrationsByCategory();
   const { getConnectedIntegration, accountStatus } = useIntegration();
-  const integrations = integrationsByCategory[module];
+  const integrations = IntegrationsByCategory[module];
 
   return (
     <Tabs

@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Input } from '@/components/form/Input';
 import WebhookExample from '@/components/ui/WebhookExample';
-import { useGetModules } from '@/sections/overview/module';
-import { Integration, IntegrationMeta, Modules } from '@/types';
+import { Modules } from '@/sections/overview/module';
+import { Integration, IntegrationMeta, Module } from '@/types';
 
 const defaultPin = (
   Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000
@@ -513,61 +513,54 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
   },
 };
 
-export function useGetIntegrationsByCategory(): Record<
-  Modules,
-  IntegrationMeta[]
-> {
-  const modules = useGetModules();
-
-  return {
-    ASM: [
-      {
-        id: '',
-        name: '',
-        description: <div>{modules.ASM.description}</div>,
-      },
-      Integrations.github,
-      Integrations.amazon,
-      Integrations.ns1,
-      Integrations.gcp,
-      Integrations.azure,
-      Integrations.gitlab,
-    ],
-    BAS: [
-      {
-        id: '',
-        name: '',
-        description: <div>{modules.BAS.description}</div>,
-      },
-    ],
-    CIS: [
-      {
-        id: '',
-        name: '',
-        description: <div>{modules.CIS.description}</div>,
-      },
-      Integrations.crowdstrike,
-    ],
-    CTI: [
-      {
-        id: '',
-        name: '',
-        description: <div>{modules.CTI.description}</div>,
-      },
-    ],
-    MSP: [
-      {
-        id: '',
-        name: '',
-        description: <div>{modules.MSP.description}</div>,
-      },
-      Integrations.hook,
-      Integrations.slack,
-      Integrations.jira,
-      Integrations.zulip,
-    ],
-  };
-}
+export const IntegrationsByCategory: Record<Module, IntegrationMeta[]> = {
+  ASM: [
+    {
+      id: '',
+      name: '',
+      description: <div>{Modules.ASM.description}</div>,
+    },
+    Integrations.github,
+    Integrations.amazon,
+    Integrations.ns1,
+    Integrations.gcp,
+    Integrations.azure,
+    Integrations.gitlab,
+  ],
+  BAS: [
+    {
+      id: '',
+      name: '',
+      description: <div>{Modules.BAS.description}</div>,
+    },
+  ],
+  CIS: [
+    {
+      id: '',
+      name: '',
+      description: <div>{Modules.CIS.description}</div>,
+    },
+    Integrations.crowdstrike,
+  ],
+  CTI: [
+    {
+      id: '',
+      name: '',
+      description: <div>{Modules.CTI.description}</div>,
+    },
+  ],
+  MSP: [
+    {
+      id: '',
+      name: '',
+      description: <div>{Modules.MSP.description}</div>,
+    },
+    Integrations.hook,
+    Integrations.slack,
+    Integrations.jira,
+    Integrations.zulip,
+  ],
+};
 
 export const AvailableIntegrations = Object.values(Integrations)
   .filter(integration => integration.connected)

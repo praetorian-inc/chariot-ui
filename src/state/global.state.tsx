@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import { Modules } from '@/types';
+import { Module } from '@/types';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
 interface UseModalState {
@@ -21,7 +21,7 @@ interface GlobalState {
     file: UseModalState;
     integration: {
       value?: {
-        module: Modules;
+        module: Module;
         integration: string;
       };
       onValueChange: React.Dispatch<
@@ -50,7 +50,7 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [fileOpen, setFileOpen] = useState(false);
   const [integrationModal, setIntegrationModalOpen] = useStorage<
     | {
-        module: Modules;
+        module: Module;
         integration: string;
       }
     | undefined

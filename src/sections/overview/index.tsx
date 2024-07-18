@@ -22,7 +22,7 @@ import {
   Integrations,
   IntegrationsByCategory,
 } from '@/sections/overview/Integration';
-import { Modules, useGetModules } from '@/sections/overview/module';
+import { Modules, useGetModules } from '@/sections/overview/Module';
 import { Tabs } from '@/sections/overview/Tab';
 import { useGlobalState } from '@/state/global.state';
 import {
@@ -233,6 +233,7 @@ function IntegrationTabs(props: {
     modal: { integration },
   } = useGlobalState();
   const { getConnectedIntegration, accountStatus } = useIntegration();
+  const modules = useGetModules();
   const integrations = IntegrationsByCategory[module];
 
   return (
@@ -267,6 +268,7 @@ function IntegrationTabs(props: {
           ),
           content: (
             <Loader type="spinner" isLoading={accountStatus === 'pending'}>
+              {modules[module] && modules[module].categoryDescription}
               <IntegrationTab
                 connectedIntegration={connectedIntegration}
                 onChange={onChange}

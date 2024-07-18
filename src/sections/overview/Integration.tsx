@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Input } from '@/components/form/Input';
 import WebhookExample from '@/components/ui/WebhookExample';
-import { Modules } from '@/sections/overview/module';
+import { Modules } from '@/sections/overview/Module';
 import { Integration, IntegrationMeta, Module } from '@/types';
 
 const defaultPin = (

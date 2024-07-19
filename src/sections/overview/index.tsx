@@ -22,7 +22,8 @@ import { Inputs, Values } from '@/components/form/Inputs';
 import { Link } from '@/components/Link';
 import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
-import { useModifyAccount } from '@/hooks/useAccounts';
+import { useMy } from '@/hooks';
+import { useGetDisplayName, useModifyAccount } from '@/hooks/useAccounts';
 import { useBulkAddAsset } from '@/hooks/useAssets';
 import { useBulkAddAttributes } from '@/hooks/useAttribute';
 import { Integrations } from '@/sections/overview/Integration';
@@ -40,6 +41,11 @@ export function Overview() {
   } = useGlobalState();
 
   const { data: modulesData } = useGetModuleData();
+  const { data: accounts, status: accountsStatus } = useMy({
+    resource: 'account',
+  });
+
+  const displayName = useGetDisplayName(accounts);
 
   const size = 150;
 
@@ -61,11 +67,19 @@ export function Overview() {
               fill={'white'}
             />
           </svg>
-          <p className="ml-6">
-            My
-            <span className="text-gray-400"> Chariot</span>
-          </p>
+          <div className="ml-6 flex flex-col text-left">
+            <p>
+              My
+              <span className="text-gray-400"> Chariot</span>
+            </p>
+            <Loader isLoading={accountsStatus === 'pending'}>
+              <p className="mt-2 w-full text-left text-3xl">
+                {displayName}&apos;s Organization
+              </p>
+            </Loader>
+          </div>
         </h6>
+
         <p className="m-auto mb-20 w-2/3 text-center text-gray-300">
           Proactively identify and address exploitable vulnerabilities in your
           organization with our comprehensive suite of cybersecurity solutions.

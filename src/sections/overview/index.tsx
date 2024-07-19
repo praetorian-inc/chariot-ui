@@ -93,17 +93,13 @@ export function Overview() {
                   moduleData.enabled ? 'bg-white' : 'bg-gray-200'
                 )}
               >
-                <div className="text-2xl font-bold text-default">
+                <div className="text-5xl font-bold text-default">
+                  {module.name}
+                </div>
+                <div className="line-clamp-3 text-sm text-default-light">
                   {module.label}
                 </div>
-                <div className="line-clamp-3 min-h-12 text-sm text-default-light">
-                  <Loader
-                    className="mb-4 h-[20px]"
-                    isLoading={moduleData.isLoading}
-                  >
-                    Discovered {moduleData.noOfAsset} Assets
-                  </Loader>
-                </div>
+
                 <div className="my-8 w-full p-2 text-center">
                   <Loader
                     className="mb-4 h-[60px]"
@@ -135,7 +131,7 @@ export function Overview() {
               {module.banner && (
                 <p className="items-center space-x-1 p-2 text-center text-xs text-yellow-500">
                   <ExclamationCircleIcon className="inline size-4 " />
-                  <span>{module.banner}</span>
+                  <span>Discovered {moduleData.noOfAsset} assets</span>
                 </p>
               )}
             </div>

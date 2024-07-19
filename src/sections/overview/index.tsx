@@ -130,7 +130,7 @@ export function Overview() {
               </div>
               {moduleData.noOfAsset > 0 && (
                 <p className="items-center space-x-1 p-2 text-center text-xs text-yellow-500">
-                  <ExclamationCircleIcon className="inline size-4 " />
+                  <ExclamationCircleIcon className="mb-0.5 inline size-4" />
                   <span>Discovered {moduleData.noOfAsset} assets</span>
                 </p>
               )}

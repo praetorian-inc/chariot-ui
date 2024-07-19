@@ -25,7 +25,7 @@ const pageTitles = {
 };
 
 export function BreadCrumbs({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) {
-  const currentPage = breadcrumbs[breadcrumbs.length - 1].label;
+  const currentPage = breadcrumbs[breadcrumbs.length - 1]?.label || '';
   return (
     <div className="flex flex-col overflow-hidden pb-5 pt-9">
       <ul className="flex items-center">

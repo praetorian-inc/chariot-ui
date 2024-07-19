@@ -128,7 +128,7 @@ export function Overview() {
                   {moduleData.enabled ? 'Manage' : 'Enable'}
                 </Button>
               </div>
-              {moduleData.noOfAsset && (
+              {moduleData.noOfAsset > 0 && (
                 <p className="items-center space-x-1 p-2 text-center text-xs text-yellow-500">
                   <ExclamationCircleIcon className="inline size-4 " />
                   <span>Discovered {moduleData.noOfAsset} assets</span>

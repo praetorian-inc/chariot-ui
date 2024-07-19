@@ -29,6 +29,7 @@ import { useBulkAddAttributes } from '@/hooks/useAttribute';
 import { Integrations } from '@/sections/overview/Integration';
 import { Modules, useGetModuleData } from '@/sections/overview/Module';
 import { Tabs } from '@/sections/overview/Tab';
+import { useAuth } from '@/state/auth';
 import { useGlobalState } from '@/state/global.state';
 import { AccountMetadata, IntegrationMeta, LinkAccount, Module } from '@/types';
 import { cn } from '@/utils/classname';
@@ -40,12 +41,14 @@ export function Overview() {
     modal: { module: moduleState },
   } = useGlobalState();
 
+  const { me, friend } = useAuth();
   const { data: modulesData } = useGetModuleData();
   const { data: accounts, status: accountsStatus } = useMy({
     resource: 'account',
   });
 
-  const displayName = useGetDisplayName(accounts);
+  const displayName =
+    useGetDisplayName(accounts) || friend.displayName || friend.email || me;
 
   const size = 150;
 

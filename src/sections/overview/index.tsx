@@ -129,7 +129,7 @@ export function Overview() {
                 <Button
                   className={cn(
                     'm-auto w-full  text-white',
-                    moduleData.enabled ? 'bg-header-light' : 'bg-brand'
+                    moduleData.enabled ? 'bg-brand' : 'bg-header-light'
                   )}
                   onClick={() => {
                     moduleState.onValueChange({

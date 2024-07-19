@@ -90,6 +90,11 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           including network, application, infrastructure, and security
           management, ensuring efficient and secure operations.
         </p>
+        <button className="mt-4 rounded-sm bg-brand px-4 py-2 text-white">
+          Upgrade Now
+        </button>
+
+        <h3 className="-mb-4 mt-4 text-2xl font-semibold">Workflows</h3>
       </div>
     ),
     integrations: [

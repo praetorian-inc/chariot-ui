@@ -26,7 +26,6 @@ import { Modal } from '@/components/Modal';
 import { useModifyAccount } from '@/hooks/useAccounts';
 import { useBulkAddAsset } from '@/hooks/useAssets';
 import { useBulkAddAttributes } from '@/hooks/useAttribute';
-import { useIntegration } from '@/hooks/useIntegration';
 import { Integrations } from '@/sections/overview/Integration';
 import { Modules, useGetModuleData } from '@/sections/overview/Module';
 import { Tabs } from '@/sections/overview/Tab';
@@ -164,7 +163,6 @@ export function ModulesModal() {
     mutateAsync: createBulkAttribute,
     status: createBulkAttributeStatus,
   } = useBulkAddAttributes();
-  const { getConnectedIntegration } = useIntegration();
 
   function handleClose() {
     moduleState.onValueChange(undefined);
@@ -187,7 +185,7 @@ export function ModulesModal() {
     }
 
     return [];
-  }, [moduleState.value?.integration, getConnectedIntegration]);
+  }, [moduleState.value?.integration]);
 
   async function handleDisconnect() {
     if (selectedIntegration.length > 0) {

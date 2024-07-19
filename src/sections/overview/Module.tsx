@@ -3,8 +3,10 @@ import { BeakerIcon, HomeIcon, TrophyIcon } from '@heroicons/react/24/solid';
 
 import { Loader } from '@/components/Loader';
 import { useMy } from '@/hooks';
+import { useCounts } from '@/hooks/useCounts';
 import { Integrations } from '@/sections/overview/Integration';
 import { Account, Integration, Module, ModuleMeta } from '@/types';
+import { useMergeStatus } from '@/utils/api';
 
 export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
   ASM: {
@@ -119,6 +121,14 @@ export function useGetModuleData(): {
   integrationsData: IntegrationsData;
   isLoading: boolean;
 } {
+  const { data: assetCount, status: assetCountStatus } = useCounts({
+    resource: 'asset',
+  });
+  const { data: riskCount, status: riskCountStatus } = useCounts({
+    resource: 'risk',
+  });
+
+  console.log('assetCount', assetCount, riskCount);
   const { data: accounts, status: accountStatus } = useMy({
     resource: 'account',
   });
@@ -184,13 +194,18 @@ export function useGetModuleData(): {
 
   const data = {
     ASM: {
-      noOfRisk: 0,
-      noOfAsset: 0,
+      noOfRisk: assetCount
+        ? Object.values(assetCount.status).reduce((acc, val) => acc + val, 0)
+        : 0,
+      noOfAsset: riskCount
+        ? Object.values(riskCount.status).reduce((acc, val) => acc + val, 0)
+        : 0,
       status: 'pending',
       enabled: true,
       assetAttributes: [],
       riskAttributes: [],
-      isLoading: true,
+      isLoading:
+        riskCountStatus === 'pending' || assetCountStatus === 'pending',
     },
     BAS: {
       noOfRisk: basRiskAttribute.length,
@@ -235,10 +250,14 @@ export function useGetModuleData(): {
     data,
     integrationsData,
     isLoading:
-      accountStatus === 'pending' ||
-      basAttributesStatus === 'pending' ||
-      csAttributesStatus === 'pending' ||
-      ctiAttributeStatus === 'pending',
+      useMergeStatus(
+        accountStatus,
+        basAttributesStatus,
+        csAttributesStatus,
+        ctiAttributeStatus,
+        assetCountStatus,
+        riskCountStatus
+      ) === 'pending',
   };
 }
 

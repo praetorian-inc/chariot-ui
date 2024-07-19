@@ -23,26 +23,7 @@ export const useIntegration = () => {
     [accountStatus]
   );
 
-  const isIntegrationConnected = useCallback(
-    (name: string) => {
-      return accounts.map(({ member }) => member).includes(name);
-    },
-    [accounts]
-  );
-
-  const getConnectedIntegration = useCallback(
-    (name: string) => {
-      return isIntegrationConnected(name)
-        ? accounts.filter(({ member }) => member === name)
-        : [];
-    },
-    [accounts]
-  );
-
   return {
     isIntegration,
-    isIntegrationConnected,
-    getConnectedIntegration,
-    accountStatus,
   };
 };

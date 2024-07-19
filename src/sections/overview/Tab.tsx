@@ -45,7 +45,7 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
       {tabLabels.length > 0 && (
         <div
           className={cn(
-            'border-r-2 border-t border-layer1 h-full',
+            'border-r-2 border-layer1 h-full',
             props.tabWrapperclassName
           )}
         >
@@ -76,7 +76,7 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
       )}
       <div
         className={cn(
-          'w-full px-4 overflow-auto h-full',
+          'w-full px-4 overflow-auto h-full border-t border-gray-200',
           props?.contentWrapperClassName
         )}
       >

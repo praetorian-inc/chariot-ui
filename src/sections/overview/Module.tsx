@@ -203,10 +203,16 @@ export function useGetModuleData(): {
   const data = {
     ASM: {
       noOfRisk: assetCount
-        ? Object.values(assetCount.status).reduce((acc, val) => acc + val, 0)
+        ? Object.values(assetCount?.status || {}).reduce(
+            (acc, val) => acc + val,
+            0
+          )
         : 0,
       noOfAsset: riskCount
-        ? Object.values(riskCount.status).reduce((acc, val) => acc + val, 0)
+        ? Object.values(riskCount?.status || {}).reduce(
+            (acc, val) => acc + val,
+            0
+          )
         : 0,
       status: 'pending',
       enabled: true,

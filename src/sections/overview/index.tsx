@@ -326,72 +326,67 @@ function ModuleComponent(props: {
 
   const Module = Modules[module];
   const integrations = Module.integrations;
-  const selectedIntegrationId = moduleState.value?.integration;
+
+  if (!moduleState.value) return null;
 
   return (
-    <div className="flex h-full flex-row border-t border-gray-200 ">
-      <div className="flex h-full flex-col gap-2 border-r border-gray-200">
-        {integrations.length > 0 && (
-          <div className="">
-            {integrations.map((integration, index) => {
-              const integrationData = integrationsData[integration.id];
+    <Tabs
+      tabs={[
+        {
+          id: '' as const,
+          label: '',
+          Content: () => Module.defaultTab,
+        },
+        ...integrations.map(integration => {
+          const integrationData = integrationsData[integration.id];
 
-              return (
-                <div
-                  key={index}
-                  className={cn(
-                    `flex w-[320px] items-center rounded-sm  border-b border-gray-200 p-4  ${'bg-white hover:bg-gray-50'} cursor-pointer`,
-                    selectedIntegrationId === integration.id
-                      ? 'bg-gray-100'
-                      : 'bg-white'
-                  )}
-                  onClick={() => {
-                    moduleState.onValueChange({
-                      module: module,
-                      integration: integration.id,
-                    });
-                  }}
-                >
-                  {integration.logo ? (
-                    <img
-                      className="mr-4 size-10 object-contain"
-                      src={integration.logo}
-                      alt={integration.name}
-                    />
-                  ) : (
-                    <span className="mr-4 text-lg font-semibold text-gray-800">
-                      {integration.name}
-                    </span>
-                  )}
-                  <div className="flex flex-col">
-                    <span className="text-lg font-semibold text-gray-800">
-                      {integration.name}
-                    </span>
-                    <span
-                      className={`text-sm font-medium ${integrationData.isConnected ? 'text-green-500' : 'text-red-500'}`}
-                    ></span>
-                  </div>
-                  {integrationData.isConnected ? (
-                    <CheckCircleIcon className="ml-auto size-6 text-green-500" />
-                  ) : (
-                    <ArrowRightCircleIcon className="ml-auto size-6 text-gray-400" />
-                  )}
+          return {
+            id: integration.id,
+            label: (
+              <div className={cn(`flex w-[320px] items-center p-4`)}>
+                {integration.logo ? (
+                  <img
+                    className="mr-4 size-10 object-contain"
+                    src={integration.logo}
+                    alt={integration.name}
+                  />
+                ) : (
+                  <span className="mr-4 text-lg font-semibold text-gray-800">
+                    {integration.name}
+                  </span>
+                )}
+                <div className="flex flex-col">
+                  <span className="text-lg font-semibold text-gray-800">
+                    {integration.name}
+                  </span>
+                  <span
+                    className={`text-sm font-medium ${integrationData.isConnected ? 'text-green-500' : 'text-red-500'}`}
+                  ></span>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-      {selectedIntegrationId ? (
-        <IntegrationComponent
-          onChange={onChange}
-          integration={Integrations[selectedIntegrationId]}
-          onClose={onClose}
-        />
-      ) : (
-        <div className="flex h-full flex-col ">{Module.defaultTab}</div>
-      )}
-    </div>
+                {integrationData.isConnected ? (
+                  <CheckCircleIcon className="ml-auto size-6 text-green-500" />
+                ) : (
+                  <ArrowRightCircleIcon className="ml-auto size-6 text-gray-400" />
+                )}
+              </div>
+            ),
+            Content: IntegrationComponent,
+            contentProps: {
+              onChange: onChange,
+              integration: Integrations[integration.id],
+              onClose: onClose,
+            },
+          };
+        }),
+      ]}
+      value={moduleState.value.integration}
+      onChange={integrationId => {
+        moduleState.onValueChange({
+          module: module,
+          integration: integrationId,
+        });
+      }}
+    />
   );
 }
 

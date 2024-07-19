@@ -310,7 +310,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                     ? isJobRunningForThisRisk
                       ? 'Scanning in progress'
                       : 'Revalidate the risk'
-                    : `On-demand scanning is only available for automated risks.`
+                    : 'On-demand scanning is only available for discovered risks.'
                 }
               >
                 <Button

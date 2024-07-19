@@ -7,13 +7,11 @@ import {
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ExclamationCircleIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/24/outline';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
   CheckCircleIcon,
   ChevronRightIcon,
+  ExclamationCircleIcon,
   ExclamationTriangleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/solid';
@@ -93,24 +91,32 @@ export function Overview() {
                   moduleData.enabled ? 'bg-white' : 'bg-gray-200'
                 )}
               >
-                <div className="text-5xl font-bold text-default">
-                  {module.name}
+                <div className="space-between flex h-12 w-full items-center text-5xl font-bold text-default">
+                  <p>{module.name}</p>
+                  {moduleData.enabled &&
+                    (moduleData.noOfRisk === 0 ? (
+                      <CheckCircleIcon className="ml-auto block size-12 text-green-500" />
+                    ) : (
+                      <ExclamationCircleIcon className="ml-auto block size-12 text-red-500" />
+                    ))}
                 </div>
-                <div className="line-clamp-3 text-sm text-default-light">
+                <div className="line-clamp-3 h-10 text-sm text-default-light">
                   {module.label}
                 </div>
 
-                <div className="my-8 w-full p-2 text-center">
-                  <Loader
-                    className="mb-4 h-[60px]"
-                    isLoading={moduleData.isLoading}
-                  >
-                    <p className="mb-4 text-6xl text-default">
-                      {moduleData.noOfRisk}
+                <div className="flex h-36  w-full flex-col items-center justify-center text-center">
+                  <Loader isLoading={moduleData.isLoading}>
+                    <p
+                      className={cn(
+                        'mb-2 text-6xl text-default',
+                        moduleData.enabled ? 'text-default' : 'text-gray-400'
+                      )}
+                    >
+                      {moduleData.enabled ? moduleData.noOfRisk : '-'}
                     </p>
                   </Loader>
                   <p className="text-sm font-medium text-default-light">
-                    Material Risks
+                    Risks
                   </p>
                 </div>
                 <Button
@@ -128,9 +134,9 @@ export function Overview() {
                   {moduleData.enabled ? 'Manage' : 'Enable'}
                 </Button>
               </div>
-              {moduleData.noOfAsset > 0 && (
+              {module.banner && (
                 <p className="items-center space-x-1 p-2 text-center text-xs text-yellow-500">
-                  <ExclamationCircleIcon className="mb-0.5 inline size-4" />
+                  <ExclamationCircleIcon className="inline size-4 " />
                   <span>Discovered {moduleData.noOfAsset} assets</span>
                 </p>
               )}

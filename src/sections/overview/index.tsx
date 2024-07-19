@@ -272,7 +272,14 @@ export function ModulesModal() {
             tabs={Object.values(Module).map(module => {
               return {
                 id: module,
-                label: Modules[module].label,
+                label: (
+                  <div className="flex flex-col text-left">
+                    <p className="text-3xl font-bold">{Modules[module].name}</p>
+                    <p className="text-xs text-gray-500">
+                      {Modules[module].label}
+                    </p>
+                  </div>
+                ),
                 Content: ModuleComponent,
                 contentProps: {
                   module: module,
@@ -314,7 +321,7 @@ function ModuleComponent(props: {
   const selectedIntegrationId = moduleState.value?.integration;
 
   return (
-    <div className="size-full">
+    <div className="mx-6 mt-2">
       {!selectedIntegrationId && (
         <div className="flex flex-col gap-2">
           {Module.defaultTab}
@@ -326,7 +333,11 @@ function ModuleComponent(props: {
                 return (
                   <div
                     key={index}
-                    className=" flex min-h-[20px] items-center justify-center pl-4 pr-2"
+                    className={`m-2 flex items-center rounded-sm border p-4 shadow-sm transition-transform ${
+                      integrationData.isConnected
+                        ? 'border-green-300 bg-green-50 hover:bg-green-100'
+                        : 'border-gray-200 bg-white hover:bg-gray-50'
+                    } cursor-pointer`}
                     onClick={() => {
                       moduleState.onValueChange({
                         module: module,
@@ -334,18 +345,31 @@ function ModuleComponent(props: {
                       });
                     }}
                   >
-                    {integrationData.isConnected && (
-                      <CheckCircleIcon className="size-5 text-green-500" />
-                    )}
-                    {integration.logo && (
+                    {integration.logo ? (
                       <img
-                        className="h-4"
-                        src={integration.logo || ''}
-                        alt={integration.name || ''}
+                        className="mr-4 size-10 object-contain"
+                        src={integration.logo}
+                        alt={integration.name}
                       />
+                    ) : (
+                      <span className="mr-4 text-lg font-semibold text-gray-800">
+                        {integration.name}
+                      </span>
                     )}
-                    {!integration.logo && integration.name && (
-                      <span>{integration.name}</span>
+                    <div className="flex flex-col">
+                      <span className="text-lg font-semibold text-gray-800">
+                        {integration.name}
+                      </span>
+                      <span
+                        className={`text-sm font-medium ${integrationData.isConnected ? 'text-green-500' : 'text-red-500'}`}
+                      >
+                        {integrationData.isConnected
+                          ? 'Connected'
+                          : 'Not Connected'}
+                      </span>
+                    </div>
+                    {integrationData.isConnected && (
+                      <CheckCircleIcon className="ml-auto size-6 text-green-500" />
                     )}
                   </div>
                 );

@@ -15,13 +15,11 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
     description: `Attack surface management (ASM) refers to the proactive approach of identifying, analyzing, and managing potential points of attack on an organization&apos;s IT infrastructure, applications, and networks. The goal of ASM is to minimize the attack surface, which is the sum of all possible entry points that an attacker can exploit to gain unauthorized access or cause damage.`,
     defaultTab: (
       <div className="p-4">
-        <h3 className="text-xl font-semibold">Attack Surface Management</h3>
-        <p className="mt-2">
-          Attack Surface Management (ASM) is a proactive strategy for
-          identifying, analyzing, and managing potential attack points on your
-          organization&apos;s IT infrastructure, applications, and networks. The
-          goal is to minimize the attack surface, reducing the number of entry
-          points that attackers can exploit.
+        <h3 className="text-2xl font-semibold">Attack Surface Management</h3>
+        <p className="mt-2 text-default-light">
+          Gain visibility into your expanding attack surface through continuous
+          discovery, identification, and monitoring of your evolving digital
+          landscape.
         </p>
       </div>
     ),
@@ -50,12 +48,11 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
     description: `CIS provides essential cybersecurity benchmarks and guidelines, helping organizations protect against threats and improve their security posture.`,
     defaultTab: (
       <div className="p-4">
-        <h3 className="text-xl font-semibold">Center for Internet Security</h3>
-        <p className="mt-2">
-          The Center for Internet Security (CIS) offers vital cybersecurity
-          benchmarks and guidelines. These resources help organizations defend
-          against threats and improve their security posture, ensuring a robust
-          defense against cyber risks.
+        <h3 className="text-2xl font-semibold">Center for Internet Security</h3>
+        <p className="mt-2 text-default-light">
+          CIS provides essential benchmarks and guidelines to enhance your
+          organization&quot;s cybersecurity and improve defenses against
+          threats.
         </p>
       </div>
     ),
@@ -68,12 +65,11 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
     description: `CTI collects and analyzes cyber threat information to help organizations proactively defend against and respond to attacks.`,
     defaultTab: (
       <div className="p-4">
-        <h3 className="text-xl font-semibold">Cyber Threat Intelligence</h3>
-        <p className="mt-2">
-          Cyber Threat Intelligence (CTI) gathers and examines cyber threat
-          data. This intelligence enables organizations to proactively defend
-          against potential attacks and effectively respond to security
-          incidents.
+        <h3 className="text-2xl font-semibold">Cyber Threat Intelligence</h3>
+        <p className="mt-2 text-default-light">
+          Chariot monitors emerging threats, including detailed analysis of new
+          vulnerabilities, exploits, and attack vectors from a variety of
+          trusted sources.
         </p>
       </div>
     ),
@@ -86,12 +82,11 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
     description: `Our Managed Service Provider (MSP) offers comprehensive IT services, including network, application, infrastructure, and security management, ensuring efficient and secure operation of your organization&apos;s IT systems.`,
     defaultTab: (
       <div className="p-4">
-        <h3 className="text-xl font-semibold">Managed Service Provider</h3>
-        <p className="mt-2">
-          Our Managed Service Provider (MSP) delivers all-encompassing IT
-          services. These include network, application, infrastructure, and
-          security management, ensuring your organization&apos;s IT systems
-          operate efficiently and securely.
+        <h3 className="text-2xl font-semibold">Managed Service Provider</h3>
+        <p className="mt-2 text-default-light">
+          Our Managed Service Provider (MSP) offers comprehensive IT services,
+          including network, application, infrastructure, and security
+          management, ensuring efficient and secure operations.
         </p>
       </div>
     ),
@@ -257,12 +252,9 @@ function BasDefaultTab() {
 
   return (
     <div className="p-4">
-      <h3 className="text-xl font-semibold">Breach & Attack Simulation</h3>
-      <p className="mt-2">
-        Breach and Attack Simulation (BAS) employs automated tools to replicate
-        real-world cyber attacks. This continuous simulation helps your
-        organization identify vulnerabilities, enhance threat detection, and
-        strengthen your overall security posture.
+      <h3 className="text-2xl font-semibold">Breach & Attack Simulation</h3>
+      <p className="mt-2 text-default-light">
+        Proactively test your defenses against simulated real-world attacks.
       </p>
       <label htmlFor="bas-agents" className="mt-4 block">
         <p>How many agents would you like? {sliderVlaue}</p>

@@ -26,12 +26,17 @@ import { useMy } from '@/hooks';
 import { useGetDisplayName, useModifyAccount } from '@/hooks/useAccounts';
 import { useBulkAddAsset } from '@/hooks/useAssets';
 import { useBulkAddAttributes } from '@/hooks/useAttribute';
-import { Integrations } from '@/sections/overview/Integration';
 import { Modules, useGetModuleData } from '@/sections/overview/Module';
 import { Tabs } from '@/sections/overview/Tab';
 import { useAuth } from '@/state/auth';
 import { useGlobalState } from '@/state/global.state';
-import { AccountMetadata, IntegrationMeta, LinkAccount, Module } from '@/types';
+import {
+  AccountMetadata,
+  Integration,
+  IntegrationMeta,
+  LinkAccount,
+  Module,
+} from '@/types';
 import { cn } from '@/utils/classname';
 import { generateUuid } from '@/utils/uuid.util';
 
@@ -139,8 +144,11 @@ export function Overview() {
                           : 'text-gray-400'
                       )}
                       onClick={() => {
-                        if (moduleData.enabled) {
-                          console.log('open risks');
+                        if (!moduleData.enabled) {
+                          moduleState.onValueChange({
+                            module: moduleKey as Module,
+                            integration: '',
+                          });
                         }
                       }}
                     >
@@ -201,8 +209,12 @@ export function ModulesModal() {
   }
 
   const selectedIntegration = useMemo(() => {
-    if (moduleState.value?.integration) {
-      const accounts = integrationsData[moduleState.value.integration].accounts;
+    const integrationData =
+      moduleState.value?.integration &&
+      integrationsData[moduleState.value.integration as Integration];
+
+    if (integrationData) {
+      const accounts = integrationData.accounts;
 
       return accounts.map(account => {
         if (account.config) {
@@ -241,7 +253,7 @@ export function ModulesModal() {
     const formElement = event.target as HTMLFormElement;
     const form = new FormData(formElement);
 
-    if (moduleState.value?.module === Module.BAS) {
+    if (moduleState.value?.integration === Integration.basAgent) {
       const basAgentValue = form.get('bas-agents') as string;
       const basAgents = Number(basAgentValue);
 
@@ -269,9 +281,8 @@ export function ModulesModal() {
         link(data as unknown as LinkAccount)
       );
       await Promise.all(promises);
+      handleClose();
     }
-
-    handleClose();
   }
 
   if (!moduleState.value?.module) return null;
@@ -286,21 +297,25 @@ export function ModulesModal() {
       className="h-[500px] p-0"
       size="xl"
       closeOnOutsideClick={false}
-      footer={{
-        text: selectedIntegration.length ? 'Update' : 'Add',
-        isLoading:
-          linkStatus === 'pending' ||
-          createBulkAssetStatus === 'pending' ||
-          createBulkAttributeStatus === 'pending',
-        form: 'overviewForm',
-        disconnect: selectedIntegration.length
+      footer={
+        moduleState.value?.integration
           ? {
-              text: 'Disconnect All',
-              onClick: handleDisconnect,
-              isLoading: unlinkStatus === 'pending',
+              text: selectedIntegration.length ? 'Update' : 'Add',
+              isLoading:
+                linkStatus === 'pending' ||
+                createBulkAssetStatus === 'pending' ||
+                createBulkAttributeStatus === 'pending',
+              form: 'overviewForm',
+              disconnect: selectedIntegration.length
+                ? {
+                    text: 'Disconnect All',
+                    onClick: handleDisconnect,
+                    isLoading: unlinkStatus === 'pending',
+                  }
+                : undefined,
             }
-          : undefined,
-      }}
+          : {}
+      }
     >
       <Loader isLoading={isLoading} type="spinner">
         <form id="overviewForm" className="h-full" onSubmit={handleSubmit}>
@@ -320,7 +335,7 @@ export function ModulesModal() {
                 contentProps: {
                   module: module,
                   onClose: handleClose,
-                  onChange: setFormData,
+                  setFormData,
                 },
               };
             })}
@@ -341,10 +356,10 @@ export function ModulesModal() {
 
 function ModuleComponent(props: {
   module: Module;
-  onChange: Dispatch<SetStateAction<Values[]>>;
+  setFormData: Dispatch<SetStateAction<Values[]>>;
   onClose: () => void;
 }) {
-  const { module, onChange, onClose } = props;
+  const { module, setFormData, onClose } = props;
 
   const {
     modal: { module: moduleState },
@@ -361,7 +376,7 @@ function ModuleComponent(props: {
     <Tabs
       tabs={[
         {
-          id: '' as const,
+          id: '',
           label: '',
           Content: () => Module.defaultTab,
         },
@@ -369,7 +384,7 @@ function ModuleComponent(props: {
           const integrationData = integrationsData[integration.id];
 
           return {
-            id: integration.id,
+            id: integration.id as string,
             label: (
               <div className={cn(`flex w-[320px] items-center h-[52px]`)}>
                 {integration.logo ? (
@@ -400,8 +415,8 @@ function ModuleComponent(props: {
             ),
             Content: IntegrationComponent,
             contentProps: {
-              onChange: onChange,
-              integration: Integrations[integration.id],
+              setFormData,
+              integration,
               onClose: onClose,
             },
           };
@@ -420,12 +435,12 @@ function ModuleComponent(props: {
 
 interface IntegrationComponentProps {
   integration: IntegrationMeta;
-  onChange: Dispatch<SetStateAction<Values[]>>;
+  setFormData: Dispatch<SetStateAction<Values[]>>;
   onClose: () => void;
 }
 
 const IntegrationComponent = (props: IntegrationComponentProps) => {
-  const { integration, onChange: setFormData } = props;
+  const { integration, setFormData } = props;
 
   const {
     markup = '',
@@ -445,7 +460,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
   const isConnected = integrationData.isConnected;
   const [count, setCount] = useState<number>(connectedIntegration.length || 1);
 
-  const showInputs = inputs?.some(input => !input.hidden);
+  const showInputs = inputs.length > 0;
 
   useEffect(() => {
     setCount(connectedIntegration.length || 1);

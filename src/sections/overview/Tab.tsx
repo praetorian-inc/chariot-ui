@@ -36,7 +36,6 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
   );
 
   const tabLabels = props.tabs.filter(tab => tab.label);
-  const selectedTab = props.tabs.find(tab => tab.id === selectedTabId);
 
   if (props.tabs.length === 0) return null;
 
@@ -45,7 +44,7 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
       {tabLabels.length > 0 && (
         <div
           className={cn(
-            'border-r-2 border-layer1 h-full',
+            'border-r-2 border-layer1 h-full overflow-auto flex-shrink-0',
             props.tabWrapperclassName
           )}
         >
@@ -59,16 +58,17 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
                 key={index}
                 styleType="secondary"
                 className={cn(
-                  'w-full rounded-none border-x-0 shadow-none text-nowrap',
-                  tab.tabClassName,
-                  index > 0 && 'mt-[-1px]'
+                  'w-full rounded-none border-x-0 shadow-none text-nowrap justify-start',
+                  index > 0 && 'mt-[-1px]',
+                  isSelected && 'sticky top-0 left-0 z-10',
+                  tab.tabClassName
                 )}
                 isSelected={isSelected}
                 onClick={() => {
                   setSelectedTabId(tab.id);
                 }}
               >
-                <p className="w-full ">{tab.label}</p>
+                {tab.label}
               </Button>
             );
           })}
@@ -76,11 +76,17 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
       )}
       <div
         className={cn(
-          'w-full px-4 overflow-auto h-full border-t border-gray-200',
+          'w-full px-4 overflow-auto h-ful',
           props?.contentWrapperClassName
         )}
       >
-        {selectedTab && <selectedTab.Content {...selectedTab.contentProps} />}
+        {props.tabs.map((tab, index) => {
+          const isSelected = tab.id === selectedTabId;
+
+          if (!isSelected) return null;
+
+          return <tab.Content key={index} {...tab.contentProps} />;
+        })}
       </div>
     </div>
   );

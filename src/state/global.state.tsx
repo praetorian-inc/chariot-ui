@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-import { Integration, Module } from '@/types';
+import { Module } from '@/types';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
 interface UseModalState {
@@ -22,7 +22,7 @@ interface GlobalState {
     module: {
       value?: {
         module: Module;
-        integration: Integration | '';
+        integration: string;
       };
       onValueChange: React.Dispatch<
         React.SetStateAction<GlobalState['modal']['module']['value']>

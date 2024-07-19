@@ -214,7 +214,7 @@ export function useGetModuleData(): {
       assetAttributes: cisAssetAttribute,
       riskAttributes: cisRiskAttribute,
       isLoading:
-        csAttributesStatus === 'pending' || accountStatus === 'success',
+        csAttributesStatus === 'pending' || accountStatus === 'pending',
     },
     CTI: {
       noOfRisk: ctiRiskAttribute.length,

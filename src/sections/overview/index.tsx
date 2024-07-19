@@ -328,7 +328,7 @@ function ModuleComponent(props: {
   const selectedIntegrationId = moduleState.value?.integration;
 
   return (
-    <div className="flex h-full flex-row ">
+    <div className="flex h-full flex-row border-t border-gray-200 ">
       <div className="flex h-full flex-col gap-2 border-r border-gray-200">
         {integrations.length > 0 && (
           <div className="">
@@ -338,11 +338,12 @@ function ModuleComponent(props: {
               return (
                 <div
                   key={index}
-                  className={`flex w-[300px] items-center rounded-sm  border-b border-gray-200 p-4  ${
-                    integrationData.isConnected
-                      ? ' bg-green-50 hover:bg-green-100'
-                      : 'bg-white hover:bg-gray-50'
-                  } cursor-pointer`}
+                  className={cn(
+                    `flex w-[300px] items-center rounded-sm  border-b border-gray-200 p-4  ${'bg-white hover:bg-gray-50'} cursor-pointer`,
+                    selectedIntegrationId === integration.id
+                      ? 'bg-gray-100'
+                      : 'bg-white'
+                  )}
                   onClick={() => {
                     moduleState.onValueChange({
                       module: module,

@@ -187,7 +187,6 @@ export const useBulkAddAsset = () => {
         invalidateAsset();
       }
 
-      console.log('response', response);
       return response;
     },
   });

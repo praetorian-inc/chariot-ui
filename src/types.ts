@@ -474,7 +474,6 @@ export enum Module {
   MSP = 'MSP',
 }
 export interface ModuleMeta {
-  banner?: string;
   label: string;
   name: string;
   description: string;

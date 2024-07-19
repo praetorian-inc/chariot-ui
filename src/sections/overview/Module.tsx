@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BeakerIcon, HomeIcon, TrophyIcon } from '@heroicons/react/24/solid';
 
+import { Button } from '@/components/Button';
 import { Loader } from '@/components/Loader';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
@@ -10,7 +11,6 @@ import { useMergeStatus } from '@/utils/api';
 
 export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
   ASM: {
-    banner: 'Comprehensive Insight',
     Icon: BeakerIcon,
     label: 'Attack Surface Management',
     name: 'ASM',
@@ -43,7 +43,6 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
     integrations: [],
   },
   CIS: {
-    banner: 'Trusted Benchmarks',
     Icon: TrophyIcon,
     label: 'Center for Internet Security',
     name: 'CIS',
@@ -90,10 +89,15 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           including network, application, infrastructure, and security
           management, ensuring efficient and secure operations.
         </p>
-        <button className="mt-4 rounded-sm bg-brand px-4 py-2 text-white">
+        <Button
+          styleType="primary"
+          className="mt-4"
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        >
           Upgrade Now
-        </button>
-
+        </Button>
         <h3 className="-mb-4 mt-4 text-2xl font-semibold">Workflows</h3>
       </div>
     ),
@@ -133,7 +137,6 @@ export function useGetModuleData(): {
     resource: 'risk',
   });
 
-  console.log('assetCount', assetCount, riskCount);
   const { data: accounts, status: accountStatus } = useMy({
     resource: 'account',
   });

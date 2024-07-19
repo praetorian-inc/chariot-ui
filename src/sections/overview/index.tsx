@@ -255,7 +255,7 @@ export function ModulesModal() {
         moduleState.onValueChange(undefined);
       }}
       className="h-[500px] p-0"
-      size="lg"
+      size="xl"
       closeOnOutsideClick={false}
       footer={{
         text: selectedIntegration.length ? 'Update' : 'Add',
@@ -328,69 +328,64 @@ function ModuleComponent(props: {
   const selectedIntegrationId = moduleState.value?.integration;
 
   return (
-    <div className="mx-6 mt-2">
-      {!selectedIntegrationId && (
-        <div className="flex flex-col gap-2">
-          {Module.defaultTab}
-          {integrations.length > 0 && (
-            <div>
-              {integrations.map((integration, index) => {
-                const integrationData = integrationsData[integration.id];
+    <div className="flex h-full flex-row ">
+      <div className="flex h-full flex-col gap-2 border-r border-gray-200">
+        {integrations.length > 0 && (
+          <div className="">
+            {integrations.map((integration, index) => {
+              const integrationData = integrationsData[integration.id];
 
-                return (
-                  <div
-                    key={index}
-                    className={`m-2 flex items-center rounded-sm border p-4 shadow-sm transition-transform ${
-                      integrationData.isConnected
-                        ? 'border-green-300 bg-green-50 hover:bg-green-100'
-                        : 'border-gray-200 bg-white hover:bg-gray-50'
-                    } cursor-pointer`}
-                    onClick={() => {
-                      moduleState.onValueChange({
-                        module: module,
-                        integration: integration.id,
-                      });
-                    }}
-                  >
-                    {integration.logo ? (
-                      <img
-                        className="mr-4 size-10 object-contain"
-                        src={integration.logo}
-                        alt={integration.name}
-                      />
-                    ) : (
-                      <span className="mr-4 text-lg font-semibold text-gray-800">
-                        {integration.name}
-                      </span>
-                    )}
-                    <div className="flex flex-col">
-                      <span className="text-lg font-semibold text-gray-800">
-                        {integration.name}
-                      </span>
-                      <span
-                        className={`text-sm font-medium ${integrationData.isConnected ? 'text-green-500' : 'text-red-500'}`}
-                      >
-                        {integrationData.isConnected
-                          ? 'Connected'
-                          : 'Not Connected'}
-                      </span>
-                    </div>
-                    {integrationData.isConnected && (
-                      <CheckCircleIcon className="ml-auto size-6 text-green-500" />
-                    )}
+              return (
+                <div
+                  key={index}
+                  className={`flex w-[300px] items-center rounded-sm  border-b border-gray-200 p-4  ${
+                    integrationData.isConnected
+                      ? ' bg-green-50 hover:bg-green-100'
+                      : 'bg-white hover:bg-gray-50'
+                  } cursor-pointer`}
+                  onClick={() => {
+                    moduleState.onValueChange({
+                      module: module,
+                      integration: integration.id,
+                    });
+                  }}
+                >
+                  {integration.logo ? (
+                    <img
+                      className="mr-4 size-10 object-contain"
+                      src={integration.logo}
+                      alt={integration.name}
+                    />
+                  ) : (
+                    <span className="mr-4 text-lg font-semibold text-gray-800">
+                      {integration.name}
+                    </span>
+                  )}
+                  <div className="flex flex-col">
+                    <span className="text-lg font-semibold text-gray-800">
+                      {integration.name}
+                    </span>
+                    <span
+                      className={`text-sm font-medium ${integrationData.isConnected ? 'text-green-500' : 'text-red-500'}`}
+                    ></span>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-      {selectedIntegrationId && (
+                  {integrationData.isConnected && (
+                    <CheckCircleIcon className="ml-auto size-6 text-green-500" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      {selectedIntegrationId ? (
         <IntegrationComponent
           onChange={onChange}
           integration={Integrations[selectedIntegrationId]}
           onClose={onClose}
         />
+      ) : (
+        <div className="flex h-full flex-col ">{Module.defaultTab}</div>
       )}
     </div>
   );
@@ -433,7 +428,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
   }, [connectedIntegration.length]);
 
   return (
-    <div className="mt-4 px-4">
+    <div className="mt-4 w-full px-4">
       <div className="flex items-center gap-2">
         {name && <h3 className="text-xl font-medium text-gray-700">{name}</h3>}
         {isConnected && <CheckCircleIcon className="size-6 text-green-500" />}
@@ -453,9 +448,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
           </Button>
         ) : undefined}
       </div>
-      {description && (
-        <p className="text-md mb-2 text-gray-500">{description}</p>
-      )}
       {help && (
         <div className="mb-2 rounded-lg bg-gray-100 p-4">
           <p className="mb-2 text-sm font-bold">Need help?</p>

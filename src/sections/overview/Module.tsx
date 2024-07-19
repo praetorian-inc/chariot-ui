@@ -31,8 +31,10 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           pace with the dynamic threat environment.
         </p>
         <a
-          href="#"
+          href="https://www.praetorian.com/chariot/attack-surface-management/"
+          target="_blank"
           className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
+          rel="noreferrer"
         >
           Learn More
         </a>
@@ -66,8 +68,10 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           techniques.
         </p>
         <a
-          href="#"
+          href="https://www.praetorian.com/chariot/breach-attack-simulation/"
           className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
+          target="_blank"
+          rel="noreferrer"
         >
           Learn More
         </a>
@@ -93,12 +97,6 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           Improve your security posture by leveraging advanced analytics and
           automated responses to mitigate risks effectively.
         </p>
-        <a
-          href="#"
-          className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
-        >
-          Learn More
-        </a>
       </div>
     ),
     integrations: [Integrations.crowdstrike],
@@ -121,8 +119,10 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           prepare for, and respond to evolving cyber threats.
         </p>
         <a
-          href="#"
+          href="https://www.praetorian.com/chariot/threat-intelligence/"
           className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
+          target="_blank"
+          rel="noreferrer"
         >
           Learn More
         </a>
@@ -148,8 +148,10 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           your core business activities.
         </p>
         <a
-          href="#"
+          href="https://www.praetorian.com/contact-us/"
           className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
+          target="_blank"
+          rel="noreferrer"
         >
           Learn More
         </a>
@@ -179,8 +181,10 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           across your IT infrastructure.
         </p>
         <a
-          href="#"
+          href="https://www.praetorian.com/chariot/vulnerability-management/"
           className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
+          target="_blank"
+          rel="noreferrer"
         >
           Learn More
         </a>

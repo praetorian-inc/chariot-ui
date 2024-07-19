@@ -48,7 +48,7 @@ import {
 } from '@/types';
 import { formatDate } from '@/utils/date.util';
 import { sToMs } from '@/utils/date.util';
-import { isManualORPRrovidedRisk } from '@/utils/risk.util';
+import { isKEVRisk, isManualORPRrovidedRisk } from '@/utils/risk.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch, useSearchParams } from '@/utils/url.util';
 
@@ -231,7 +231,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
             prefix={
               <div className="flex flex-row items-center space-x-1">
                 <RisksIcon className="size-5" />
-                {knownExploitedThreats.includes(risk.name) && (
+                {isKEVRisk(risk, knownExploitedThreats) && (
                   <Tooltip
                     title={
                       <span>

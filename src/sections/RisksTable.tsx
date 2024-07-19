@@ -38,7 +38,7 @@ import {
   SeverityDef,
 } from '@/types';
 import { useMergeStatus } from '@/utils/api';
-import { Regex } from '@/utils/regex.util';
+import { isKEVRisk } from '@/utils/risk.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch } from '@/utils/url.util';
 
@@ -68,12 +68,7 @@ const getFilteredRisksByCISA = (
 ) => {
   if (knownExploitedThreats && knownExploitedThreats.length > 0) {
     return risks.filter(risk => {
-      const parsedCVEIDFromRisk = Regex.CVE_ID.exec(risk.name)?.[0];
-
-      return (
-        parsedCVEIDFromRisk &&
-        knownExploitedThreats.includes(parsedCVEIDFromRisk)
-      );
+      return isKEVRisk(risk, knownExploitedThreats);
     });
   }
   return [];

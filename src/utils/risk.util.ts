@@ -260,4 +260,13 @@ const getDescription = (file: unknown): Record<string, unknown> => {
 export const isManualORPRrovidedRisk = (risk: Risk) =>
   risk.source.includes('@') || risk.source === 'provided';
 
+export const isKEVRisk = (risk: Risk, knownExploitedThreats: string[]) => {
+  const matchedKEV = knownExploitedThreats.find(kev => {
+    const [, , dns, name] = kev.split('#');
+    return risk.dns === dns && risk.name === name;
+  });
+
+  return Boolean(matchedKEV);
+};
+
 export { getDescription };

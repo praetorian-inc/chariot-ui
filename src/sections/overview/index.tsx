@@ -32,6 +32,7 @@ import { Modules, useGetModuleData } from '@/sections/overview/Module';
 import { Tabs } from '@/sections/overview/Tab';
 import { useGlobalState } from '@/state/global.state';
 import { AccountMetadata, IntegrationMeta, LinkAccount, Module } from '@/types';
+import { cn } from '@/utils/classname';
 import { getRoute } from '@/utils/route.util';
 import { generateUuid } from '@/utils/uuid.util';
 
@@ -80,27 +81,29 @@ export function Overview() {
           const moduleData = modulesData[moduleKey];
 
           return (
-            <div key={index} className="relative w-full">
-              <div className="flex flex-col gap-2 overflow-hidden rounded-md border-2 border-default bg-layer2 p-4">
+            <div
+              key={index}
+              className={cn(
+                'relative w-full',
+                !moduleData.enabled && '-translate-y-4'
+              )}
+            >
+              <div
+                className={cn(
+                  'flex flex-col gap-2 overflow-hidden rounded-md border-2 border-default p-4',
+                  moduleData.enabled ? 'bg-white' : 'bg-gray-200'
+                )}
+              >
                 <div className="text-2xl font-bold text-default">
                   {module.label}
                 </div>
-                {`Enabled:${moduleData.enabled}`}
-                <div className="line-clamp-3 min-h-12 text-xs text-default-light">
-                  {module.description}
-                </div>
-                <div className="my-8 w-full p-2 text-center">
+                <div className="line-clamp-3 min-h-12 text-sm text-default-light">
                   <Loader
-                    className="mb-4 h-[60px]"
+                    className="mb-4 h-[20px]"
                     isLoading={moduleData.isLoading}
                   >
-                    <p className="mb-4 text-6xl text-default">
-                      {moduleData.noOfAsset}
-                    </p>
+                    Discovered {moduleData.noOfAsset} Assets
                   </Loader>
-                  <p className="text-sm font-medium text-default-light">
-                    Assets
-                  </p>
                 </div>
                 <div className="my-8 w-full p-2 text-center">
                   <Loader
@@ -116,7 +119,10 @@ export function Overview() {
                   </p>
                 </div>
                 <Button
-                  className="m-auto w-full bg-header-light text-white"
+                  className={cn(
+                    'm-auto w-full  text-white',
+                    moduleData.enabled ? 'bg-header-light' : 'bg-brand'
+                  )}
                   onClick={() => {
                     moduleState.onValueChange({
                       module: moduleKey as Module,
@@ -124,7 +130,7 @@ export function Overview() {
                     });
                   }}
                 >
-                  Manage
+                  {moduleData.enabled ? 'Manage' : 'Enable'}
                 </Button>
               </div>
               {module.banner && (

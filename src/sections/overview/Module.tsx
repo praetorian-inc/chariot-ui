@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BeakerIcon, HomeIcon, TrophyIcon } from '@heroicons/react/24/solid';
 
 import { Loader } from '@/components/Loader';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
+import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { Integrations } from '@/sections/overview/Integration';
 import { Account, Integration, Module, ModuleMeta } from '@/types';
 import { useMergeStatus } from '@/utils/api';
+import { formatDate } from '@/utils/date.util';
 
 export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
   ASM: {
@@ -114,7 +117,7 @@ export function useGetModuleData(): {
       noOfAsset: number;
       status: string;
       enabled: boolean;
-      assetAttributes: Array<{ key: string; value: string }>;
+      assetAttributes: Array<{ key: string; value: string; updated: string }>;
       riskAttributes: Array<{ key: string; value: string }>;
       isLoading: boolean;
     }
@@ -274,6 +277,8 @@ function BasDefaultTab() {
   } = useGetModuleData();
 
   const [sliderVlaue, setSliderValue] = useState(0);
+  const navigate = useNavigate();
+  const { getAssetDrawerLink } = getDrawerLink();
 
   return (
     <div className="p-4">
@@ -296,9 +301,30 @@ function BasDefaultTab() {
         />
       </label>
       <div className="flex flex-col gap-2 pt-4">
+        <h3 className="text-lg font-semibold">
+          Installed Agents ({BAS.assetAttributes.length})
+        </h3>
         <Loader isLoading={isLoading}>
           {BAS.assetAttributes.map((attribute, index) => {
-            return <div key={index}>{attribute.key.split('#')[5]}</div>;
+            return (
+              <button
+                onClick={() => {
+                  const assetKey = attribute.key.split('#')[5];
+                  const link = getAssetDrawerLink({
+                    dns: assetKey,
+                    name: assetKey,
+                  });
+                  navigate(link);
+                }}
+                className="block text-left text-sm"
+                key={index}
+              >
+                <span className="mr-1 font-medium text-brand">
+                  {attribute.key.split('#')[5]}
+                </span>{' '}
+                added {formatDate(attribute.updated)}
+              </button>
+            );
           })}
         </Loader>
       </div>

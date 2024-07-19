@@ -14,6 +14,7 @@ import {
   ChevronRightIcon,
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
+  LockClosedIcon,
   XMarkIcon,
 } from '@heroicons/react/24/solid';
 
@@ -137,7 +138,11 @@ export function Overview() {
                         }
                       }}
                     >
-                      {moduleData.enabled ? moduleData.noOfRisk : '?'}
+                      {moduleData.enabled ? (
+                        moduleData.noOfRisk
+                      ) : (
+                        <LockClosedIcon className="size-16 text-gray-400" />
+                      )}
                     </button>
                   </Loader>
                   <p className="text-sm font-medium text-default-light">

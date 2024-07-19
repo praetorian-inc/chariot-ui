@@ -340,7 +340,7 @@ function ModuleComponent(props: {
                 <div
                   key={index}
                   className={cn(
-                    `flex w-[300px] items-center rounded-sm  border-b border-gray-200 p-4  ${'bg-white hover:bg-gray-50'} cursor-pointer`,
+                    `flex w-[320px] items-center rounded-sm  border-b border-gray-200 p-4  ${'bg-white hover:bg-gray-50'} cursor-pointer`,
                     selectedIntegrationId === integration.id
                       ? 'bg-gray-100'
                       : 'bg-white'

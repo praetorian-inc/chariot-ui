@@ -161,7 +161,7 @@ export function Overview() {
                     });
                   }}
                 >
-                  {moduleData.enabled ? 'Manage' : 'Enable'}
+                  {moduleData.enabled ? 'Manage' : 'Unlock'}
                 </Button>
               </div>
             </div>

@@ -59,7 +59,7 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
                 key={index}
                 styleType="secondary"
                 className={cn(
-                  'w-full rounded-none border-x-0 shadow-none',
+                  'w-full rounded-none border-x-0 shadow-none text-nowrap',
                   tab.tabClassName,
                   index > 0 && 'mt-[-1px]'
                 )}
@@ -68,7 +68,7 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
                   setSelectedTabId(tab.id);
                 }}
               >
-                {tab.label}
+                <p className="w-full ">{tab.label}</p>
               </Button>
             );
           })}

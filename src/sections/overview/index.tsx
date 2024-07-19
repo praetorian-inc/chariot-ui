@@ -343,7 +343,7 @@ function ModuleComponent(props: {
           return {
             id: integration.id,
             label: (
-              <div className={cn(`flex w-[320px] items-center p-4`)}>
+              <div className={cn(`flex w-[320px] items-center h-[52px]`)}>
                 {integration.logo ? (
                   <img
                     className="mr-4 size-10 object-contain"

@@ -472,6 +472,7 @@ export enum Module {
   EDR = 'EDR',
   CTI = 'CTI',
   MSP = 'MSP',
+  VM = 'VM',
 }
 export interface ModuleMeta {
   label: string;

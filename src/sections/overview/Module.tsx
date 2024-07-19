@@ -96,12 +96,28 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
       </div>
     ),
     integrations: [
-      Integrations.nessus,
       Integrations.hook,
       Integrations.slack,
       Integrations.jira,
       Integrations.zulip,
     ],
+  },
+  VM: {
+    Icon: TrophyIcon,
+    label: 'Vulnerability Management',
+    name: 'VM',
+    description: `Our Vulnerability Management (VM) offers comprehensive IT services, including network, application, infrastructure, and security management, ensuring efficient and secure operation of your organization's IT systems.`,
+    defaultTab: (
+      <div className="p-4">
+        <h3 className="text-2xl font-semibold">Vulnerability Management</h3>
+        <p className="mt-2 text-default-light">
+          Vulnerability Management (VM) identifies and manages security
+          vulnerabilities in your IT infrastructure, integrating with various
+          tools for efficient tracking and resolution.
+        </p>
+      </div>
+    ),
+    integrations: [Integrations.nessus],
   },
 };
 
@@ -249,6 +265,15 @@ export function useGetModuleData(): {
       noOfAsset: 0,
       status: 'pending',
       enabled: isIntegrationsConnected(Module.MSP),
+      assetAttributes: [],
+      riskAttributes: [],
+      isLoading: accountStatus === 'pending',
+    },
+    VM: {
+      noOfRisk: 0,
+      noOfAsset: 0,
+      status: 'pending',
+      enabled: isIntegrationsConnected(Module.VM),
       assetAttributes: [],
       riskAttributes: [],
       isLoading: accountStatus === 'pending',

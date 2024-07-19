@@ -6,7 +6,6 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
   ArrowRightCircleIcon,
@@ -34,7 +33,6 @@ import { useAuth } from '@/state/auth';
 import { useGlobalState } from '@/state/global.state';
 import { AccountMetadata, IntegrationMeta, LinkAccount, Module } from '@/types';
 import { cn } from '@/utils/classname';
-import { getRoute } from '@/utils/route.util';
 import { generateUuid } from '@/utils/uuid.util';
 
 export function Overview() {
@@ -52,6 +50,14 @@ export function Overview() {
     useGetDisplayName(accounts) || friend.displayName || friend.email || me;
 
   const size = 150;
+
+  const featuredModules = [
+    Module.ASM,
+    Module.BAS,
+    Module.EDR,
+    Module.CTI,
+    Module.MSP,
+  ];
 
   return (
     <div>
@@ -92,7 +98,7 @@ export function Overview() {
         </p>
       </div>
       <div className="mb-10 flex justify-center gap-5">
-        {Object.values(Module).map((moduleKey, index) => {
+        {featuredModules.map((moduleKey, index) => {
           const module = Modules[moduleKey];
           const moduleData = modulesData[moduleKey];
 
@@ -419,10 +425,9 @@ interface IntegrationComponentProps {
 }
 
 const IntegrationComponent = (props: IntegrationComponentProps) => {
-  const { integration, onChange: setFormData, onClose } = props;
+  const { integration, onChange: setFormData } = props;
 
   const {
-    description = '',
     markup = '',
     inputs = [],
     name = '',
@@ -440,8 +445,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
   const isConnected = integrationData.isConnected;
   const [count, setCount] = useState<number>(connectedIntegration.length || 1);
 
-  const navigate = useNavigate();
-
   const showInputs = inputs?.some(input => !input.hidden);
 
   useEffect(() => {
@@ -453,21 +456,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
       <div className="flex items-center gap-2">
         {name && <h3 className="text-xl font-medium text-gray-700">{name}</h3>}
         {isConnected && <CheckCircleIcon className="size-6 text-green-500" />}
-        {isConnected ? (
-          <Button
-            styleType="text"
-            className="ml-auto underline"
-            onClick={() => {
-              navigate({
-                pathname: getRoute(['app', 'jobs']),
-                search: `?hashSearch=${encodeURIComponent(`#${connectedIntegration[0].member}`)}`,
-              });
-              onClose();
-            }}
-          >
-            Recent Activity
-          </Button>
-        ) : undefined}
       </div>
       {help && (
         <div className="mb-2 rounded-lg bg-gray-100 p-4">

@@ -251,7 +251,7 @@ export function useGetModuleData(): {
       enabled: isIntegrationsConnected(Module.MSP),
       assetAttributes: [],
       riskAttributes: [],
-      isLoading: accountStatus === 'success',
+      isLoading: accountStatus === 'pending',
     },
   };
 

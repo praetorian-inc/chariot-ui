@@ -469,9 +469,9 @@ export type ChartType = 'area' | 'bar' | 'line' | 'donut';
 export enum Module {
   ASM = 'ASM',
   BAS = 'BAS',
-  CIS = 'CIS',
+  EDR = 'EDR',
   CTI = 'CTI',
-  MSP = 'MSP',
+  VM = 'VM',
 }
 export interface ModuleMeta {
   label: string;

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { BeakerIcon, HomeIcon, TrophyIcon } from '@heroicons/react/24/solid';
 
-import { Button } from '@/components/Button';
 import { Loader } from '@/components/Loader';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
@@ -42,16 +41,18 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
     defaultTab: <BasDefaultTab />,
     integrations: [],
   },
-  CIS: {
+  EDR: {
     Icon: TrophyIcon,
-    label: 'Center for Internet Security',
-    name: 'CIS',
-    description: `CIS provides essential cybersecurity benchmarks and guidelines, helping organizations protect against threats and improve their security posture.`,
+    label: 'Endpoint Detection and Response',
+    name: 'EDR',
+    description: `EDR provides essential cybersecurity benchmarks and guidelines, helping organizations protect against threats and improve their security posture.`,
     defaultTab: (
       <div className="p-4">
-        <h3 className="text-2xl font-semibold">Center for Internet Security</h3>
+        <h3 className="text-2xl font-semibold">
+          Endpoint Detection and Response
+        </h3>
         <p className="mt-2 text-default-light">
-          CIS provides essential benchmarks and guidelines to enhance your
+          EDR provides essential benchmarks and guidelines to enhance your
           organization&quot;s cybersecurity and improve defenses against
           threats.
         </p>
@@ -76,32 +77,23 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
     ),
     integrations: [],
   },
-  MSP: {
+  VM: {
     Icon: TrophyIcon,
-    label: 'Managed Service Provider',
-    name: 'MSP',
-    description: `Our Managed Service Provider (MSP) offers comprehensive IT services, including network, application, infrastructure, and security management, ensuring efficient and secure operation of your organization&apos;s IT systems.`,
+    label: 'Vulnerability Management',
+    name: 'VM',
+    description: `Our Vulnerability Management (VM) offers comprehensive IT services, including network, application, infrastructure, and security management, ensuring efficient and secure operation of your organization's IT systems.`,
     defaultTab: (
       <div className="p-4">
-        <h3 className="text-2xl font-semibold">Managed Service Provider</h3>
+        <h3 className="text-2xl font-semibold">Workflows</h3>
         <p className="mt-2 text-default-light">
-          Our Managed Service Provider (MSP) offers comprehensive IT services,
+          Our Vulnerability Management (VM) offers comprehensive IT services,
           including network, application, infrastructure, and security
           management, ensuring efficient and secure operations.
         </p>
-        <Button
-          styleType="primary"
-          className="mt-4"
-          onClick={e => {
-            e.stopPropagation();
-          }}
-        >
-          Upgrade Now
-        </Button>
-        <h3 className="-mb-4 mt-4 text-2xl font-semibold">Workflows</h3>
       </div>
     ),
     integrations: [
+      Integrations.nessus,
       Integrations.hook,
       Integrations.slack,
       Integrations.jira,
@@ -189,7 +181,7 @@ export function useGetModuleData(): {
   const cisAssetAttribute = csAttributes.filter(({ source }) => {
     return source.startsWith('#asset');
   });
-  const cisRiskAttribute = csAttributes.filter(({ source }) => {
+  const edrRiskAttribute = csAttributes.filter(({ source }) => {
     return source.startsWith('#risk');
   });
 
@@ -230,13 +222,13 @@ export function useGetModuleData(): {
       riskAttributes: basRiskAttribute,
       isLoading: basAttributesStatus === 'pending',
     },
-    CIS: {
-      noOfRisk: cisRiskAttribute.length,
+    EDR: {
+      noOfRisk: edrRiskAttribute.length,
       noOfAsset: cisAssetAttribute.length,
       status: 'pending',
-      enabled: isIntegrationsConnected(Module.CIS),
+      enabled: isIntegrationsConnected(Module.EDR),
       assetAttributes: cisAssetAttribute,
-      riskAttributes: cisRiskAttribute,
+      riskAttributes: edrRiskAttribute,
       isLoading:
         csAttributesStatus === 'pending' || accountStatus === 'pending',
     },
@@ -249,11 +241,11 @@ export function useGetModuleData(): {
       riskAttributes: ctiRiskAttribute,
       isLoading: ctiAttributeStatus === 'pending',
     },
-    MSP: {
+    VM: {
       noOfRisk: 0,
       noOfAsset: 0,
       status: 'pending',
-      enabled: isIntegrationsConnected(Module.MSP),
+      enabled: isIntegrationsConnected(Module.VM),
       assetAttributes: [],
       riskAttributes: [],
       isLoading: accountStatus === 'success',

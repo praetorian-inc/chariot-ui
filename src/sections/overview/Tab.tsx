@@ -45,7 +45,7 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
       {tabLabels.length > 0 && (
         <div
           className={cn(
-            'border-1 border-r-2 border-layer1 h-full',
+            'border-r-2 border-t border-layer1 h-full',
             props.tabWrapperclassName
           )}
         >
@@ -54,22 +54,33 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
 
             if (!tab.label) return null;
 
+            const categories = {
+              hook: 'Workflows',
+              nessus: 'Vulnerability Management',
+            };
+
             return (
-              <Button
-                key={index}
-                styleType="secondary"
-                className={cn(
-                  'w-full rounded-none border-x-0 shadow-none text-nowrap',
-                  tab.tabClassName,
-                  index > 0 && 'mt-[-1px]'
+              <div key={index} className="flex flex-col">
+                {Object.keys(categories).includes(tab.id as string) && (
+                  <div className=" border-t border-gray-200 bg-gray-100 px-2 py-4 font-semibold text-gray-600">
+                    {categories[tab.id as keyof typeof categories]}
+                  </div>
                 )}
-                isSelected={isSelected}
-                onClick={() => {
-                  setSelectedTabId(tab.id);
-                }}
-              >
-                <p className="w-full ">{tab.label}</p>
-              </Button>
+                <Button
+                  styleType="secondary"
+                  className={cn(
+                    'w-full rounded-none border-x-0 shadow-none text-nowrap',
+                    tab.tabClassName,
+                    index > 0 && 'mt-[-1px]'
+                  )}
+                  isSelected={isSelected}
+                  onClick={() => {
+                    setSelectedTabId(tab.id);
+                  }}
+                >
+                  <p className="w-full ">{tab.label}</p>
+                </Button>
+              </div>
             );
           })}
         </div>

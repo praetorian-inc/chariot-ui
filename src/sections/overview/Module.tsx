@@ -80,10 +80,10 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
     ),
     integrations: [],
   },
-  VM: {
+  MSP: {
     Icon: TrophyIcon,
-    label: 'Vulnerability Management',
-    name: 'VM',
+    label: 'Managed Service Provider',
+    name: 'MSP',
     description: `Our Vulnerability Management (VM) offers comprehensive IT services, including network, application, infrastructure, and security management, ensuring efficient and secure operation of your organization's IT systems.`,
     defaultTab: (
       <div className="p-4">
@@ -244,11 +244,11 @@ export function useGetModuleData(): {
       riskAttributes: ctiRiskAttribute,
       isLoading: ctiAttributeStatus === 'pending',
     },
-    VM: {
+    MSP: {
       noOfRisk: 0,
       noOfAsset: 0,
       status: 'pending',
-      enabled: isIntegrationsConnected(Module.VM),
+      enabled: isIntegrationsConnected(Module.MSP),
       assetAttributes: [],
       riskAttributes: [],
       isLoading: accountStatus === 'success',

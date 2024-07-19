@@ -471,7 +471,7 @@ export enum Module {
   BAS = 'BAS',
   EDR = 'EDR',
   CTI = 'CTI',
-  VM = 'VM',
+  MSP = 'MSP',
 }
 export interface ModuleMeta {
   label: string;

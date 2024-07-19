@@ -1,4 +1,4 @@
-import yaml from 'js-yaml';
+import { Risk } from '@/types';
 
 interface GitHubRepo {
   name: string;
@@ -256,5 +256,8 @@ const getDescription = (file: unknown): Record<string, unknown> => {
 
   return {};
 };
+
+export const isManualORPRrovidedRisk = (risk: Risk) =>
+  risk.source.includes('@') || risk.source === 'provided';
 
 export { getDescription };

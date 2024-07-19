@@ -9,6 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
+  ArrowRightCircleIcon,
   CheckCircleIcon,
   ChevronRightIcon,
   ExclamationCircleIcon,
@@ -370,8 +371,10 @@ function ModuleComponent(props: {
                       className={`text-sm font-medium ${integrationData.isConnected ? 'text-green-500' : 'text-red-500'}`}
                     ></span>
                   </div>
-                  {integrationData.isConnected && (
+                  {integrationData.isConnected ? (
                     <CheckCircleIcon className="ml-auto size-6 text-green-500" />
+                  ) : (
+                    <ArrowRightCircleIcon className="ml-auto size-6 text-gray-400" />
                   )}
                 </div>
               );

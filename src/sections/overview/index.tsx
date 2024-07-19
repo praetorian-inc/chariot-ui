@@ -7,10 +7,7 @@ import {
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Cog6ToothIcon,
-  InformationCircleIcon,
-} from '@heroicons/react/24/outline';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
   CheckCircleIcon,
   ChevronRightIcon,
@@ -107,45 +104,33 @@ export function Overview() {
                   {module.label}
                 </div>
 
-                {moduleData.enabled && (
-                  <div className="flex h-36  w-full flex-col items-center justify-center text-center">
-                    <Loader isLoading={moduleData.isLoading}>
-                      <p
-                        className={cn(
-                          'mb-2 text-6xl text-default',
-                          moduleData.enabled ? 'text-default' : 'text-gray-400'
-                        )}
-                      >
-                        {moduleData.enabled ? moduleData.noOfRisk : '-'}
-                      </p>
-                    </Loader>
-                    <p className="text-sm font-medium text-default-light">
-                      Risks
-                    </p>
-                  </div>
-                )}
+                <div className="flex h-36  w-full flex-col items-center justify-center text-center">
+                  <Loader isLoading={moduleData.isLoading}>
+                    <button
+                      className={cn(
+                        'mb-2 text-6xl text-default',
+                        moduleData.enabled && moduleData.noOfRisk > 0
+                          ? 'text-brand'
+                          : 'text-gray-400'
+                      )}
+                      onClick={() => {
+                        if (moduleData.enabled) {
+                          console.log('open risks');
+                        }
+                      }}
+                    >
+                      {moduleData.enabled ? moduleData.noOfRisk : '?'}
+                    </button>
+                  </Loader>
+                  <p className="text-sm font-medium text-default-light">
+                    Risks
+                  </p>
+                </div>
                 <Button
                   className={cn(
                     'm-auto w-full  text-white',
-                    moduleData.enabled ? 'bg-header-light' : 'bg-brand mt-5'
+                    moduleData.enabled ? 'bg-header-light' : 'bg-brand'
                   )}
-                  onClick={() => {
-                    if (!moduleData.enabled) {
-                      moduleState.onValueChange({
-                        module: moduleKey as Module,
-                        integration: '',
-                      });
-                    } else {
-                      console.log('open filtered risks view');
-                    }
-                  }}
-                >
-                  {moduleData.enabled ? 'View Risks' : 'Enable'}
-                </Button>
-              </div>
-              {moduleData.enabled && (
-                <button
-                  className="w-full items-center space-x-1 p-2 text-center text-sm text-yellow-500"
                   onClick={() => {
                     moduleState.onValueChange({
                       module: moduleKey as Module,
@@ -153,10 +138,9 @@ export function Overview() {
                     });
                   }}
                 >
-                  <Cog6ToothIcon className="mr-1 inline size-5" />
-                  Configure
-                </button>
-              )}
+                  {moduleData.enabled ? 'Manage' : 'Enable'}
+                </Button>
+              </div>
             </div>
           );
         })}

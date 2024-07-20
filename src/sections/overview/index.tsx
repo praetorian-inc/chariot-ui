@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
   ArrowRightCircleIcon,
@@ -38,6 +39,7 @@ import {
   Module,
 } from '@/types';
 import { cn } from '@/utils/classname';
+import { getRoute } from '@/utils/route.util';
 import { generateUuid } from '@/utils/uuid.util';
 
 export function Overview() {
@@ -178,6 +180,12 @@ export function Overview() {
                   {moduleData.enabled ? 'Manage' : 'Unlock'}
                 </Button>
               </div>
+              {moduleData.noOfAsset > 0 && (
+                <p className="items-center space-x-1 p-2 text-center text-xs text-yellow-500">
+                  <ExclamationCircleIcon className="mb-0.5 inline size-4" />
+                  <span>Discovered {moduleData.noOfAsset} assets</span>
+                </p>
+              )}
             </div>
           );
         })}
@@ -441,7 +449,7 @@ interface IntegrationComponentProps {
 }
 
 const IntegrationComponent = (props: IntegrationComponentProps) => {
-  const { integration, setFormData } = props;
+  const { integration, setFormData, onClose } = props;
 
   const {
     markup = '',
@@ -452,6 +460,8 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     warning = false,
     help,
   } = integration;
+
+  const navigate = useNavigate();
   const { integrationsData } = useGetModuleData();
 
   const integrationData = integrationsData[integration.id];
@@ -472,7 +482,23 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
       <div className="flex items-center gap-2">
         {name && <h3 className="text-xl font-medium text-gray-700">{name}</h3>}
         {isConnected && <CheckCircleIcon className="size-6 text-green-500" />}
+        {isConnected ? (
+          <Button
+            styleType="none"
+            className="ml-auto hover:underline"
+            onClick={() => {
+              navigate({
+                pathname: getRoute(['app', 'jobs']),
+                search: `?hashSearch=${encodeURIComponent(`#${connectedIntegration[0].member}`)}`,
+              });
+              onClose();
+            }}
+          >
+            Recent Activity
+          </Button>
+        ) : undefined}
       </div>
+
       {help && (
         <div className="mb-2 rounded-lg bg-gray-100 p-4">
           <p className="mb-2 text-sm font-bold">Need help?</p>

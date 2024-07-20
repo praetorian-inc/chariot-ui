@@ -26,6 +26,15 @@ const defaultPin = (
 const uuid = generateUuid();
 
 export const Integrations: Record<Integration, IntegrationMeta> = {
+  kev: {
+    id: Integration.kev,
+    name: 'kev',
+    description: '',
+    logo: '/icons/PraetorianWebhook.svg',
+    connected: true,
+    inputs: [],
+    markup: <div>ss</div>,
+  },
   basAgent: {
     id: Integration.basAgent,
     name: 'Bas Agent',
@@ -654,7 +663,7 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
         </a>
       </div>
     ),
-    integrations: [],
+    integrations: [Integrations.kev],
   },
   MSP: {
     Icon: TrophyIcon,
@@ -791,6 +800,15 @@ export function useGetModuleData(): {
           integration,
           {
             isConnected: basAssetAttribute.length > 0,
+            accounts: [],
+          },
+        ];
+      }
+      if (integration === Integration.kev) {
+        return [
+          integration,
+          {
+            isConnected: true,
             accounts: [],
           },
         ];

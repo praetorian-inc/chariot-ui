@@ -61,7 +61,7 @@ export function Overview() {
     Module.BAS,
     Module.EDR,
     Module.CTI,
-    Module.MSP,
+    Module.VM,
   ];
 
   return (
@@ -298,7 +298,8 @@ export function ModulesModal() {
       size="xl"
       closeOnOutsideClick={false}
       footer={
-        moduleState.value?.integration
+        moduleState.value?.integration &&
+        moduleState.value?.integration !== Integration.kev
           ? {
               text: selectedIntegration.length ? 'Update' : 'Add',
               isLoading:

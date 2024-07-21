@@ -7,6 +7,7 @@ import { Loader } from '@/components/Loader';
 import WebhookExample from '@/components/ui/WebhookExample';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
+import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import {
   Account,
@@ -739,7 +740,6 @@ export function useGetModuleData(): {
     {
       noOfRisk: number;
       noOfAsset: number;
-      status: string;
       enabled: boolean;
       assetAttributes: Attribute[];
       riskAttributes: Attribute[];
@@ -755,6 +755,8 @@ export function useGetModuleData(): {
   const { data: riskCount, status: riskCountStatus } = useCounts({
     resource: 'risk',
   });
+
+  const { data: cveRisksGenericSearch } = useGenericSearch({ query: 'CVE' });
 
   const { data: accounts, status: accountStatus } = useMy({
     resource: 'account',
@@ -833,7 +835,6 @@ export function useGetModuleData(): {
     ASM: {
       noOfRisk: riskCount
         ? Object.entries(riskCount?.status || {}).reduce((acc, [key, val]) => {
-            console.log('key', key);
             if (key.startsWith('O')) {
               return acc + val;
             }
@@ -846,7 +847,6 @@ export function useGetModuleData(): {
             0
           )
         : 0,
-      status: 'pending',
       enabled: true,
       assetAttributes: [],
       riskAttributes: [],
@@ -856,7 +856,6 @@ export function useGetModuleData(): {
     BAS: {
       noOfRisk: basRiskAttribute.length,
       noOfAsset: basAssetAttribute.length,
-      status: 'pending',
       enabled: basAssetAttribute.length > 0,
       assetAttributes: basAssetAttribute,
       riskAttributes: basRiskAttribute,
@@ -865,7 +864,6 @@ export function useGetModuleData(): {
     EDR: {
       noOfRisk: edrRiskAttribute.length,
       noOfAsset: cisAssetAttribute.length,
-      status: 'pending',
       enabled: isIntegrationsConnected(Module.EDR),
       assetAttributes: cisAssetAttribute,
       riskAttributes: edrRiskAttribute,
@@ -875,7 +873,6 @@ export function useGetModuleData(): {
     CTI: {
       noOfRisk: ctiRiskAttribute.length,
       noOfAsset: ctiAssetAttribute.length,
-      status: 'pending',
       enabled: true,
       assetAttributes: ctiAssetAttribute,
       riskAttributes: ctiRiskAttribute,
@@ -884,16 +881,14 @@ export function useGetModuleData(): {
     MSP: {
       noOfRisk: 0,
       noOfAsset: 0,
-      status: 'pending',
       enabled: isIntegrationsConnected(Module.MSP),
       assetAttributes: [],
       riskAttributes: [],
       isLoading: accountStatus === 'pending',
     },
     VM: {
-      noOfRisk: 0,
+      noOfRisk: cveRisksGenericSearch?.risks.length || 0,
       noOfAsset: 0,
-      status: 'pending',
       enabled: isIntegrationsConnected(Module.VM),
       assetAttributes: [],
       riskAttributes: [],

@@ -950,27 +950,34 @@ export function BasIntegration() {
           Installed Agents ({BAS.assetAttributes.length})
         </h3>
         <Loader isLoading={isLoading}>
-          {BAS.assetAttributes.map((attribute, index) => {
-            return (
-              <button
-                onClick={() => {
-                  const assetKey = attribute.key.split('#')[5];
-                  const link = getAssetDrawerLink({
-                    dns: assetKey,
-                    name: assetKey,
-                  });
-                  navigate(link);
-                }}
-                className="block text-left text-sm"
-                key={index}
-              >
-                <span className="mr-1 font-medium text-brand">
-                  {attribute.key.split('#')[5]}
-                </span>{' '}
-                added {formatDate(attribute.updated)}
-              </button>
-            );
-          })}
+          {BAS.assetAttributes
+            .sort((a, b) => {
+              const bDate = new Date(b.updated);
+              const aDate = new Date(a.updated);
+
+              return bDate.getTime() - aDate.getTime();
+            })
+            .map((attribute, index) => {
+              return (
+                <button
+                  onClick={() => {
+                    const assetKey = attribute.key.split('#')[5];
+                    const link = getAssetDrawerLink({
+                      dns: assetKey,
+                      name: assetKey,
+                    });
+                    navigate(link);
+                  }}
+                  className="block text-left text-sm"
+                  key={index}
+                >
+                  <span className="mr-1 font-medium text-brand">
+                    {attribute.key.split('#')[5]}
+                  </span>{' '}
+                  added {formatDate(attribute.updated)}
+                </button>
+              );
+            })}
         </Loader>
       </div>
     </div>

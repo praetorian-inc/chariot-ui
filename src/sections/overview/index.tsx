@@ -482,7 +482,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
       <div className="flex min-h-11 items-center gap-2">
         {name && <h3 className="text-xl font-medium text-gray-700">{name}</h3>}
         {isConnected && <CheckCircleIcon className="size-6 text-green-500" />}
-        {isConnected ? (
+        {isConnected && connectedIntegration.length > 0 ? (
           <Button
             styleType="none"
             className="ml-auto hover:underline"

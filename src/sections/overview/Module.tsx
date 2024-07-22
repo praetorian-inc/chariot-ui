@@ -51,10 +51,20 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     id: Integration.kev,
     name: 'kev',
     description: '',
-    logo: '/icons/PraetorianWebhook.svg',
+    logo: '/icons/kev.svg',
     connected: true,
     inputs: [],
-    markup: <div>ss</div>,
+    markup: (
+      <div>
+        Known Exploited Vulnerabilities - The Cybersecurity & Infrastructure
+        Security Agency (CISA) maintains the knowledge on cybersecurity risks
+        that are being exploited in the real world. Each Known Exploited Risk
+        (KEV), moves a cybersecurity vulnerability from theoretical to
+        practical. Chariot shows you whether your organization is susceptible to
+        KEVs so that you can focus attention on protecting against attacks that
+        are being used now.
+      </div>
+    ),
   },
   basAgent: {
     id: Integration.basAgent,
@@ -791,10 +801,6 @@ export function useGetModuleData(): {
     resource: 'attribute',
     query: '#source#bas',
   });
-  const { data: csAttributes, status: csAttributesStatus } = useMy({
-    resource: 'attribute',
-    query: 'source:crowdstrike',
-  });
   const { data: kevAttributes, status: ctiAttributeStatus } = useMy({
     resource: 'attribute',
     query: '#source#kev',
@@ -808,13 +814,6 @@ export function useGetModuleData(): {
     return source.startsWith('#asset');
   });
   const basRiskAttribute = basAttributes.filter(({ source }) => {
-    return source.startsWith('#risk');
-  });
-
-  const cisAssetAttribute = csAttributes.filter(({ source }) => {
-    return source.startsWith('#asset');
-  });
-  const edrRiskAttribute = csAttributes.filter(({ source }) => {
     return source.startsWith('#risk');
   });
 
@@ -901,13 +900,12 @@ export function useGetModuleData(): {
       isLoading: basAttributesStatus === 'pending',
     },
     CPT: {
-      noOfRisk: edrRiskAttribute.length,
-      noOfAsset: cisAssetAttribute.length,
+      noOfRisk: 0,
+      noOfAsset: 0,
       enabled: isIntegrationsConnected(Module.CPT),
-      assetAttributes: cisAssetAttribute,
-      riskAttributes: edrRiskAttribute,
-      isLoading:
-        csAttributesStatus === 'pending' || accountStatus === 'pending',
+      assetAttributes: [],
+      riskAttributes: [],
+      isLoading: false,
     },
     CTI: {
       noOfRisk: ctiRiskAttribute.length,
@@ -950,7 +948,6 @@ export function useGetModuleData(): {
       useMergeStatus(
         accountStatus,
         basAttributesStatus,
-        csAttributesStatus,
         ctiAttributeStatus,
         assetCountStatus,
         riskCountStatus,

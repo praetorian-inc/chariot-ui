@@ -2,9 +2,7 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 
-import { BreadCrumbs } from '@/components/BreadCrumbs';
 import ImpersonationBanner from '@/components/ImpersonationBanner';
-import { Loader } from '@/components/Loader';
 import { ShortcutsHelper } from '@/components/ui/Shortcuts';
 import { useMy } from '@/hooks';
 import { useGetDisplayName } from '@/hooks/useAccounts';
@@ -136,7 +134,6 @@ export function Header({
   hideBreadcrumbs?: boolean;
 }) {
   const { friend } = useAuth();
-  const { status: statusAccount } = useMy({ resource: 'account' });
   const { breadcrumbs } = useBreadCrumbsContext();
 
   // TODO: FIXME - this is a hack to not show sticky header on table pages
@@ -153,24 +150,6 @@ export function Header({
       >
         <div className="w-full max-w-screen-xl">
           <TopNavBar />
-          {!hideBreadcrumbs && (
-            <>
-              <hr className="h-px bg-layer0 opacity-15" />
-              <div className={cn('flex items-center justify-between gap-10')}>
-                <Loader
-                  styleType="header"
-                  className="my-9 h-11 w-1/2"
-                  isLoading={statusAccount === 'pending'}
-                >
-                  <BreadCrumbs breadcrumbs={breadcrumbs} />
-                </Loader>
-                <div
-                  id={HeaderPortalSections.BREADCRUMBS}
-                  className="shrink-0"
-                />
-              </div>
-            </>
-          )}
         </div>
       </div>
       <div

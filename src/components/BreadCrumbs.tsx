@@ -10,7 +10,7 @@ export interface Breadcrumb {
   to?: string;
 }
 
-const pageTitles = {
+export const pageTitles = {
   Assets:
     'Configure and track discovered assets to ensure thorough security scans and risk assessment.',
   Risks:

@@ -62,7 +62,6 @@ export function Table<TData>(props: TableProps<TData>) {
   const [expandedGroups, setExpandedGroups] = useState(
     groupBy?.map(group => group.label) || []
   );
-
   const indexedData: InternalTData<TData>[] = useMemo(() => {
     return rawData.map((item, _index) => ({
       ...item,

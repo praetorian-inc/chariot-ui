@@ -61,9 +61,9 @@ export function Overview() {
   const featuredModules = [
     Module.ASM,
     Module.BAS,
-    Module.EDR,
     Module.CTI,
     Module.VM,
+    Module.CPT,
   ];
 
   return (

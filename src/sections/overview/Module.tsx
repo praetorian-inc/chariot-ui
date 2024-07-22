@@ -608,6 +608,7 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
       Integrations.gcp,
       Integrations.azure,
       Integrations.gitlab,
+      Integrations.crowdstrike,
     ],
   },
   BAS: {
@@ -639,28 +640,6 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
       </div>
     ),
     integrations: [Integrations.basAgent],
-  },
-  EDR: {
-    Icon: TrophyIcon,
-    label: 'Endpoint Detection and Response',
-    name: 'EDR',
-    description: `Endpoint Detection and Response (EDR) solutions provide continuous monitoring and response to advanced threats on endpoints, helping organizations detect and mitigate security incidents in real-time.`,
-    defaultTab: (
-      <div className="p-4">
-        <h3 className="text-2xl font-semibold">
-          Endpoint Detection and Response
-        </h3>
-        <p className="mt-2 text-default-light">
-          EDR solutions offer comprehensive visibility into endpoint activities,
-          enabling rapid detection and response to potential threats.
-        </p>
-        <p className="mt-2 text-default-light">
-          Improve your security posture by leveraging advanced analytics and
-          automated responses to mitigate risks effectively.
-        </p>
-      </div>
-    ),
-    integrations: [Integrations.crowdstrike],
   },
   CTI: {
     Icon: HomeIcon,
@@ -752,6 +731,28 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
       </div>
     ),
     integrations: [Integrations.nessus],
+  },
+  CPT: {
+    Icon: TrophyIcon,
+    label: 'Endpoint Detection and Response',
+    name: 'CPT',
+    description: `Endpoint Detection and Response (EDR) solutions provide continuous monitoring and response to advanced threats on endpoints, helping organizations detect and mitigate security incidents in real-time.`,
+    defaultTab: (
+      <div className="p-4">
+        <h3 className="text-2xl font-semibold">
+          Endpoint Detection and Response
+        </h3>
+        <p className="mt-2 text-default-light">
+          EDR solutions offer comprehensive visibility into endpoint activities,
+          enabling rapid detection and response to potential threats.
+        </p>
+        <p className="mt-2 text-default-light">
+          Improve your security posture by leveraging advanced analytics and
+          automated responses to mitigate risks effectively.
+        </p>
+      </div>
+    ),
+    integrations: [],
   },
 };
 
@@ -894,15 +895,15 @@ export function useGetModuleData(): {
     BAS: {
       noOfRisk: basRiskAttribute.length,
       noOfAsset: basAssetAttribute.length,
-      enabled: basAssetAttribute.length > 0,
+      enabled: isIntegrationsConnected(Module.BAS),
       assetAttributes: basAssetAttribute,
       riskAttributes: basRiskAttribute,
       isLoading: basAttributesStatus === 'pending',
     },
-    EDR: {
+    CPT: {
       noOfRisk: edrRiskAttribute.length,
       noOfAsset: cisAssetAttribute.length,
-      enabled: isIntegrationsConnected(Module.EDR),
+      enabled: isIntegrationsConnected(Module.CPT),
       assetAttributes: cisAssetAttribute,
       riskAttributes: edrRiskAttribute,
       isLoading:
@@ -911,7 +912,7 @@ export function useGetModuleData(): {
     CTI: {
       noOfRisk: ctiRiskAttribute.length,
       noOfAsset: ctiAssetAttribute.length,
-      enabled: true,
+      enabled: isIntegrationsConnected(Module.CTI),
       assetAttributes: ctiAssetAttribute,
       riskAttributes: ctiRiskAttribute,
       isLoading: ctiAttributeStatus === 'pending',

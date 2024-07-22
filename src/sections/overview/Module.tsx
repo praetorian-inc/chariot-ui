@@ -4,6 +4,7 @@ import { BeakerIcon, HomeIcon, TrophyIcon } from '@heroicons/react/24/solid';
 
 import { Input } from '@/components/form/Input';
 import { Loader } from '@/components/Loader';
+import { MarkdownPreview } from '@/components/markdown/MarkdownPreview';
 import WebhookExample from '@/components/ui/WebhookExample';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
@@ -20,6 +21,25 @@ import {
 import { useMergeStatus } from '@/utils/api';
 import { formatDate } from '@/utils/date.util';
 import { generateUuid } from '@/utils/uuid.util';
+
+const nessusMarkdown = `
+Use our open-source command line interface (CLI) to import assets and risks from Nessus scans.
+
+1. Install the CLI using the following command:
+    \`\`\`
+    pip install praetorian-cli
+    \`\`\`
+2. Follow the instructions on our GitHub repo to configure the CLI:
+    \`\`\`
+    Visit: https://github.com/praetorian-inc/praetorian-cli
+   \`\`\`
+3. Run one of the following commands to import Nessus results:
+    
+    \`\`\`
+    Using Nessus API: praetorian chariot plugin nessus-api
+    Using Nessus XML export files: praetorian chariot plugin nessus-sml
+    \`\`\`
+`;
 
 const defaultPin = (
   Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000
@@ -44,6 +64,10 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     connected: true,
     inputs: [],
     markup: <BasIntegration />,
+    help: {
+      href: 'https://docs.praetorian.com/hc/en-us/articles/25815125222171-Workplace-Messaging#slack',
+      label: 'How to: Download and Install Bas Agent',
+    },
   },
   hook: {
     id: Integration.hook,
@@ -495,6 +519,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
       'Industry-standard vulnerability scanner for comprehensive security assessments.',
     logo: '/icons/Nessus.svg',
     connected: false,
+    markup: <MarkdownPreview source={nessusMarkdown} />,
   },
   qualys: {
     id: Integration.qualys,
@@ -773,6 +798,10 @@ export function useGetModuleData(): {
     resource: 'attribute',
     query: '#source#kev',
   });
+  const { data: nessusAttributes, status: nessusAttributesStatus } = useMy({
+    resource: 'attribute',
+    query: '#source#nessus',
+  });
 
   const basAssetAttribute = basAttributes.filter(({ source }) => {
     return source.startsWith('#asset');
@@ -811,6 +840,15 @@ export function useGetModuleData(): {
           integration,
           {
             isConnected: true,
+            accounts: [],
+          },
+        ];
+      }
+      if (integration === Integration.nessus) {
+        return [
+          integration,
+          {
+            isConnected: nessusAttributes.length > 0,
             accounts: [],
           },
         ];
@@ -914,7 +952,8 @@ export function useGetModuleData(): {
         csAttributesStatus,
         ctiAttributeStatus,
         assetCountStatus,
-        riskCountStatus
+        riskCountStatus,
+        nessusAttributesStatus
       ) === 'pending',
   };
 }

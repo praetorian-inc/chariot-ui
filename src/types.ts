@@ -467,10 +467,10 @@ export interface CognitoAuthStates {
 export type ChartType = 'area' | 'bar' | 'line' | 'donut';
 
 export enum Module {
+  PM = 'PM',
   ASM = 'ASM',
   BAS = 'BAS',
   CTI = 'CTI',
-  MSP = 'MSP',
   VM = 'VM',
   CPT = 'CPT',
 }

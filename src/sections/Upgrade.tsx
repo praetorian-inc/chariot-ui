@@ -1,10 +1,11 @@
-import { useState } from 'react';
-
 import { Modal } from '@/components/Modal';
 import { useUpgrade } from '@/hooks/useUpgrade';
+import { useGlobalState } from '@/state/global.state';
 
 export function Upgrade() {
-  const [isOpen, setIsOpen] = useState(false);
+  const {
+    modal: { upgrade },
+  } = useGlobalState();
 
   return (
     <>
@@ -13,7 +14,7 @@ export function Upgrade() {
           <div className="absolute inset-0 w-[150px] animate-ping rounded-full bg-indigo-500 opacity-25 blur-md"></div>
           <button
             className="relative z-10 flex items-center justify-center space-x-2 rounded-full border border-indigo-500 bg-indigo-600 px-4 py-2 text-white shadow-lg transition-transform hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
-            onClick={() => setIsOpen(true)}
+            onClick={() => upgrade.onOpenChange(true)}
           >
             <span className=" px-2 py-1 text-lg font-medium">Upgrade Now</span>
             <svg
@@ -33,31 +34,29 @@ export function Upgrade() {
           </button>
         </div>
       </div>
-      <UpgradeModal isOpen={isOpen} setIsOpen={setIsOpen} />
     </>
   );
 }
 
-interface UpgradeModalProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-}
+export const UpgradeModal = () => {
+  const {
+    modal: { upgrade: upgradeState },
+  } = useGlobalState();
 
-const UpgradeModal = ({ isOpen, setIsOpen }: UpgradeModalProps) => {
   const { mutate: upgrade } = useUpgrade();
 
   return (
     <Modal
       title={'Free Upgrade'}
       size="lg"
-      open={isOpen}
-      onClose={() => setIsOpen(false)}
+      open={upgradeState.open}
+      onClose={() => upgradeState.onOpenChange(false)}
       footer={{
         className: 'w-32',
         text: 'Free Upgrade',
         onClick: () => {
           upgrade();
-          setIsOpen(false);
+          upgradeState.onOpenChange(false);
         },
       }}
     >
@@ -69,23 +68,23 @@ const UpgradeModal = ({ isOpen, setIsOpen }: UpgradeModalProps) => {
           </p>
         </div>
 
-        <div className="flex justify-around mt-6 space-x-2">
-          <div className="flex flex-col items-center p-6 bg-gray-50 rounded-sm w-1/3 h-60">
-            <p className="text-lg font-bold  h-1/4">Free Tier</p>
-            <p className="text-gray-700 text-center h-1/2">
+        <div className="mt-6 flex justify-around space-x-2">
+          <div className="flex h-60 w-1/3 flex-col items-center rounded-sm bg-gray-50 p-6">
+            <p className="h-1/4 text-lg  font-bold">Free Tier</p>
+            <p className="h-1/2 text-center text-gray-700">
               Enter one domain for asset and risk discovery
             </p>
             <button
-              className="mt-4 px-4 py-2 bg-gray-200 text-gray-600 rounded-sm cursor-not-allowed h-1/4"
+              className="mt-4 h-1/4 cursor-not-allowed rounded-sm bg-gray-200 px-4 py-2 text-gray-600"
               disabled
             >
               Current Plan
             </button>
           </div>
 
-          <div className="flex flex-col items-center p-6 bg-gray-50 rounded-sm w-1/3 h-60">
-            <p className="text-lg font-bold  h-1/4">Self-Service</p>
-            <p className="text-gray-700 text-center h-1/2">
+          <div className="flex h-60 w-1/3 flex-col items-center rounded-sm bg-gray-50 p-6">
+            <p className="h-1/4 text-lg  font-bold">Self-Service</p>
+            <p className="h-1/2 text-center text-gray-700">
               Enter unlimited domains for asset and risk discovery
             </p>
             <button
@@ -97,15 +96,15 @@ const UpgradeModal = ({ isOpen, setIsOpen }: UpgradeModalProps) => {
                   'noopener noreferrer'
                 );
               }}
-              className="mt-4 px-4 py-2 border border-brand-light h-1/4 text-brand rounded-sm"
+              className="mt-4 h-1/4 rounded-sm border border-brand-light px-4 py-2 text-brand"
             >
               Contact Us
             </button>
           </div>
 
-          <div className="flex flex-col items-center p-6 bg-gray-50 rounded-sm w-1/3 h-60 border border-brand">
-            <p className="text-lg font-bold h-1/4">Managed-Service</p>
-            <p className="text-gray-700 text-center h-1/2">
+          <div className="flex h-60 w-1/3 flex-col items-center rounded-sm border border-brand bg-gray-50 p-6">
+            <p className="h-1/4 text-lg font-bold">Managed-Service</p>
+            <p className="h-1/2 text-center text-gray-700">
               Unlimited domains + expert risk assessment
             </p>
             <button
@@ -117,13 +116,13 @@ const UpgradeModal = ({ isOpen, setIsOpen }: UpgradeModalProps) => {
                   'noopener noreferrer'
                 );
               }}
-              className="mt-4 px-4 py-2 border border-brand-light h-1/4 text-brand rounded-sm"
+              className="mt-4 h-1/4 rounded-sm border border-brand-light px-4 py-2 text-brand"
             >
               Contact Us
             </button>
           </div>
         </div>
-        <p className="text-md text-gray-600 text-right mt-12">
+        <p className="text-md mt-12 text-right text-gray-600">
           Our team will contact you within 24 hours to start your managed
           service trial.
         </p>

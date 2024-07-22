@@ -44,7 +44,7 @@ import { generateUuid } from '@/utils/uuid.util';
 
 export function Overview() {
   const {
-    modal: { module: moduleState },
+    modal: { module: moduleState, upgrade: upgradeState },
   } = useGlobalState();
 
   const { me, friend } = useAuth();
@@ -165,20 +165,29 @@ export function Overview() {
                     Risks
                   </p>
                 </div>
-                <Button
-                  className={cn(
-                    'm-auto w-full  text-white',
-                    moduleData.enabled ? 'bg-brand' : 'bg-header-light'
-                  )}
-                  onClick={() => {
-                    moduleState.onValueChange({
-                      module: moduleKey as Module,
-                      integration: '',
-                    });
-                  }}
-                >
-                  {moduleData.enabled ? 'Manage' : 'Unlock'}
-                </Button>
+                {moduleKey === Module.CPT ? (
+                  <Button
+                    styleType="header"
+                    onClick={() => {
+                      upgradeState.onOpenChange(true);
+                    }}
+                  >
+                    Upgrade
+                  </Button>
+                ) : (
+                  <Button
+                    className={cn('m-auto w-full')}
+                    styleType={moduleData.enabled ? 'primary' : 'header'}
+                    onClick={() => {
+                      moduleState.onValueChange({
+                        module: moduleKey as Module,
+                        integration: '',
+                      });
+                    }}
+                  >
+                    {moduleData.enabled ? 'Manage' : 'Unlock'}
+                  </Button>
+                )}
               </div>
               {moduleData.noOfAsset > 0 && (
                 <p className="items-center space-x-1 p-2 text-center text-xs text-yellow-500">
@@ -329,12 +338,25 @@ export function ModulesModal() {
       <Loader isLoading={isLoading} type="spinner">
         <form id="overviewForm" className="h-full" onSubmit={handleSubmit}>
           <Tabs
-            tabs={Object.values(Module).map(module => {
+            tabs={Object.values(Module).map((module, index) => {
+              const isPM = index === 0;
+
+              // If PM update design
               return {
                 id: module,
+                hide:
+                  !Modules[module].defaultTab &&
+                  Modules[module].integrations.length === 0,
                 label: (
                   <div className="flex flex-col text-left">
-                    <p className="text-3xl font-bold">{Modules[module].name}</p>
+                    <p
+                      className={cn(
+                        'text-3xl font-bold',
+                        isPM && 'font-medium'
+                      )}
+                    >
+                      {Modules[module].name}
+                    </p>
                     <p className="text-xs text-gray-500">
                       {Modules[module].label}
                     </p>
@@ -522,7 +544,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             {message && <div className="mb-4 text-gray-500">{message}</div>}
             {(showInputs || markup) && (
               <div>
-                {markup && <div className="relative">{markup}</div>}
+                {markup && <div>{markup}</div>}
                 {showInputs &&
                   [...Array(count).keys()].map(index => (
                     <div key={index} className="relative space-y-4">

@@ -16,7 +16,7 @@ import { NewUserSeedModal } from '@/sections/NewUserSeedModal';
 import { ModulesModal } from '@/sections/overview';
 import { ProofOfExploit } from '@/sections/ProofOfExploit';
 import { TopNavBar } from '@/sections/topNavBar/TopNavBar';
-import { Upgrade } from '@/sections/Upgrade';
+import { Upgrade, UpgradeModal } from '@/sections/Upgrade';
 import { useAuth } from '@/state/auth';
 import { useBreadCrumbsContext } from '@/state/breadcrumbs';
 import { cn } from '@/utils/classname';
@@ -119,6 +119,7 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
       <AddAsset />
       <AddFile />
       <ModulesModal />
+      <UpgradeModal />
       {accountsStatus === 'success' && showUpgrade && <Upgrade />}
     </div>
   );

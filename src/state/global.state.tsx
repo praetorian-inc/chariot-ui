@@ -28,6 +28,7 @@ interface GlobalState {
         React.SetStateAction<GlobalState['modal']['module']['value']>
       >;
     };
+    upgrade: UseModalState;
   };
 }
 
@@ -51,6 +52,7 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [integrationModal, setIntegrationModalOpen] = useStorage<
     GlobalState['modal']['module']['value'] | undefined
   >({ queryKey: 'integrationModal' });
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
 
@@ -58,6 +60,10 @@ export const GlobalStateProvider: React.FC<{ children: React.ReactNode }> = ({
     <GlobalStateContext.Provider
       value={{
         modal: {
+          upgrade: {
+            open: upgradeOpen,
+            onOpenChange: setUpgradeOpen,
+          },
           module: {
             value: integrationModal,
             onValueChange: setIntegrationModalOpen,

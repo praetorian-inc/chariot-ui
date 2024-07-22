@@ -12,6 +12,7 @@ interface Tab<ID = string> {
   contentProps?: object;
   tabClassName?: string;
   contentClassName?: string;
+  hide?: boolean;
 }
 
 export interface TabsProps<ID = string> {
@@ -44,14 +45,14 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
       {tabLabels.length > 0 && (
         <div
           className={cn(
-            'border-r-2 border-layer1 h-full overflow-auto flex-shrink-0',
+            'border-r-2 border-layer1 h-full overflow-auto flex-shrink-0 flex flex-col',
             props.tabWrapperclassName
           )}
         >
           {tabLabels.map((tab, index) => {
             const isSelected = tab.id === selectedTabId;
 
-            if (!tab.label) return null;
+            if (!tab.label || tab.hide) return null;
 
             return (
               <Button

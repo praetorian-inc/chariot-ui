@@ -583,6 +583,27 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
 };
 
 export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
+  PM: {
+    Icon: TrophyIcon,
+    name: 'Project management',
+    label: 'Integrate with your existing workflows',
+    description: '',
+    defaultTab: (
+      <div className="p-4">
+        <h3 className="text-2xl font-semibold">Project management</h3>
+        <p className="mt-2 text-default-light">
+          Project management integrations allow you to integrate with your
+          existing workflows
+        </p>
+      </div>
+    ),
+    integrations: [
+      Integrations.hook,
+      Integrations.slack,
+      Integrations.jira,
+      Integrations.zulip,
+    ],
+  },
   ASM: {
     Icon: BeakerIcon,
     label: 'Attack Surface Management',
@@ -601,14 +622,6 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           exposures, ensuring your organization&apos;s security measures keep
           pace with the dynamic threat environment.
         </p>
-        <a
-          href="https://www.praetorian.com/chariot/attack-surface-management/"
-          target="_blank"
-          className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
-          rel="noreferrer"
-        >
-          Learn More
-        </a>
       </div>
     ),
     integrations: [
@@ -639,14 +652,6 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           continuously testing your defenses against the latest attack
           techniques.
         </p>
-        <a
-          href="https://www.praetorian.com/chariot/breach-attack-simulation/"
-          className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Learn More
-        </a>
       </div>
     ),
     integrations: [Integrations.basAgent],
@@ -668,51 +673,9 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           Empower your organization with actionable intelligence to anticipate,
           prepare for, and respond to evolving cyber threats.
         </p>
-        <a
-          href="https://www.praetorian.com/chariot/threat-intelligence/"
-          className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Learn More
-        </a>
       </div>
     ),
     integrations: [Integrations.kev],
-  },
-  MSP: {
-    Icon: TrophyIcon,
-    label: 'Managed Service Provider',
-    name: 'MSP',
-    description: `Our Managed Service Provider (MSP) offerings include comprehensive IT services such as network, application, infrastructure, and security management, ensuring efficient and secure operation of your organization's IT systems.`,
-    defaultTab: (
-      <div className="p-4">
-        <h3 className="text-2xl font-semibold">Managed Service Provider</h3>
-        <p className="mt-2 text-default-light">
-          MSP services provide end-to-end IT management, including proactive
-          monitoring, maintenance, and support to ensure optimal performance and
-          security.
-        </p>
-        <p className="mt-2 text-default-light">
-          Leverage our expertise to streamline your IT operations and focus on
-          your core business activities.
-        </p>
-        <a
-          href="https://www.praetorian.com/contact-us/"
-          className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Learn More
-        </a>
-      </div>
-    ),
-    integrations: [
-      Integrations.hook,
-      Integrations.slack,
-      Integrations.jira,
-      Integrations.zulip,
-    ],
   },
   VM: {
     Icon: TrophyIcon,
@@ -730,14 +693,6 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
           Enhance your security posture by proactively managing vulnerabilities
           across your IT infrastructure.
         </p>
-        <a
-          href="https://www.praetorian.com/chariot/vulnerability-management/"
-          className="mt-4 inline-block rounded-sm border border-brand p-3 text-brand"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Learn More
-        </a>
       </div>
     ),
     integrations: [Integrations.nessus],
@@ -915,16 +870,16 @@ export function useGetModuleData(): {
       riskAttributes: ctiRiskAttribute,
       isLoading: ctiAttributeStatus === 'pending',
     },
-    MSP: {
+    PM: {
       noOfRisk: 0,
       noOfAsset: 0,
-      enabled: isIntegrationsConnected(Module.MSP),
+      enabled: isIntegrationsConnected(Module.PM),
       assetAttributes: [],
       riskAttributes: [],
       isLoading: accountStatus === 'pending',
     },
     VM: {
-      noOfRisk: cveRisksGenericSearch?.risks.length || 0,
+      noOfRisk: cveRisksGenericSearch?.risks?.length || 0,
       noOfAsset: 0,
       enabled: isIntegrationsConnected(Module.VM),
       assetAttributes: [],
@@ -968,6 +923,9 @@ export function BasIntegration() {
 
   return (
     <div className="p-4">
+      {/* <Button styleType="text" className="absolute right-[32px] top-[78px]">
+        Enable
+      </Button> */}
       <label htmlFor="bas-agents" className="mt-4 block">
         <p>How many agents would you like? {sliderVlaue}</p>
         <input

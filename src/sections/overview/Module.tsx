@@ -1,15 +1,19 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { BeakerIcon, HomeIcon, TrophyIcon } from '@heroicons/react/24/solid';
 
+import { Button } from '@/components/Button';
+import { CopyToClipboard } from '@/components/CopyToClipboard';
+import { Dropzone } from '@/components/Dropzone';
 import { Input } from '@/components/form/Input';
+import { InputText } from '@/components/form/InputText';
 import { Loader } from '@/components/Loader';
 import { MarkdownPreview } from '@/components/markdown/MarkdownPreview';
+import { OverflowText } from '@/components/OverflowText';
 import WebhookExample from '@/components/ui/WebhookExample';
 import { useMy } from '@/hooks';
+import { useBulkAddAsset } from '@/hooks/useAssets';
+import { useBulkAddAttributes } from '@/hooks/useAttribute';
 import { useCounts } from '@/hooks/useCounts';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
-import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import {
   Account,
   Attribute,
@@ -19,7 +23,7 @@ import {
   ModuleMeta,
 } from '@/types';
 import { useMergeStatus } from '@/utils/api';
-import { formatDate } from '@/utils/date.util';
+import { cn } from '@/utils/classname';
 import { generateUuid } from '@/utils/uuid.util';
 
 const nessusMarkdown = `
@@ -73,11 +77,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
     logo: '/icons/PraetorianWebhook.svg',
     connected: true,
     inputs: [],
-    markup: <BasIntegration />,
-    help: {
-      href: 'https://docs.praetorian.com/hc/en-us/articles/25815125222171-Workplace-Messaging#slack',
-      label: 'How to: Download and Install Bas Agent',
-    },
+    customIntegration: <BasIntegration />,
   },
   hook: {
     id: Integration.hook,
@@ -917,33 +917,58 @@ export function BasIntegration() {
     isLoading,
   } = useGetModuleData();
 
-  const [sliderVlaue, setSliderValue] = useState(0);
-  const navigate = useNavigate();
-  const { getAssetDrawerLink } = getDrawerLink();
+  const { mutateAsync: createBulkAsset, status: createBulkAssetStatus } =
+    useBulkAddAsset();
 
+  const {
+    mutateAsync: createBulkAttribute,
+    status: createBulkAttributeStatus,
+  } = useBulkAddAttributes();
+
+  async function handleSubmit() {
+    const basAgents = 10;
+
+    const assets = Array(basAgents)
+      .fill(0)
+      .map(() => {
+        return {
+          name: generateUuid(),
+        };
+      });
+
+    const basAssets = await createBulkAsset(assets);
+
+    const attributes = basAssets.map(({ key }) => {
+      return { key, name: 'source', value: 'bas' };
+    });
+
+    await createBulkAttribute(attributes);
+  }
+
+  const isEnabled = BAS.assetAttributes.length > 0;
+
+  console.log('BAS', BAS.assetAttributes);
   return (
-    <div className="p-4">
-      {/* <Button styleType="text" className="absolute right-[32px] top-[78px]">
-        Enable
-      </Button> */}
-      <label htmlFor="bas-agents" className="mt-4 block">
-        <p>How many agents would you like? {sliderVlaue}</p>
-        <input
-          id="bas-agents"
-          type="range"
-          name="bas-agents"
-          min={0}
-          max={20}
-          step={1}
-          value={sliderVlaue}
-          onChange={e => setSliderValue(parseInt(e.target.value, 10))}
-          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-default [&::-webkit-slider-thumb]:size-5 [&::-webkit-slider-thumb]:appearance-none  [&::-webkit-slider-thumb]:rounded-full  [&::-webkit-slider-thumb]:!bg-brand "
-        />
-      </label>
+    <div className={cn('p-4')}>
+      <div className="flex min-h-11 items-center gap-2">
+        <h3 className="text-xl font-medium text-gray-700">Bas Agent</h3>
+        {!isEnabled && (
+          <Button
+            isLoading={
+              createBulkAssetStatus === 'pending' ||
+              createBulkAttributeStatus === 'pending'
+            }
+            disabled={BAS.isLoading}
+            styleType="text"
+            className="ml-auto"
+            onClick={handleSubmit}
+          >
+            Enable
+          </Button>
+        )}
+      </div>
+      <Dropzone onFilesDrop={() => {}} type="string" />
       <div className="flex flex-col gap-2 pt-4">
-        <h3 className="text-lg font-semibold">
-          Installed Agents ({BAS.assetAttributes.length})
-        </h3>
         <Loader isLoading={isLoading}>
           {BAS.assetAttributes
             .sort((a, b) => {
@@ -954,23 +979,20 @@ export function BasIntegration() {
             })
             .map((attribute, index) => {
               return (
-                <button
-                  onClick={() => {
-                    const assetKey = attribute.key.split('#')[5];
-                    const link = getAssetDrawerLink({
-                      dns: assetKey,
-                      name: assetKey,
-                    });
-                    navigate(link);
-                  }}
-                  className="block text-left text-sm"
-                  key={index}
-                >
-                  <span className="mr-1 font-medium text-brand">
-                    {attribute.key.split('#')[5]}
-                  </span>{' '}
-                  added {formatDate(attribute.updated)}
-                </button>
+                <div className="flex gap-2" key={index}>
+                  <InputText
+                    className="w-[100px]"
+                    name={`bas-asset-${index}`}
+                    onChange={() => {}}
+                    value={''}
+                  />
+                  <CopyToClipboard className="w-full overflow-hidden">
+                    <OverflowText
+                      text={attribute.key.split('#')[6]}
+                      className="mr-1 text-nowrap font-medium text-brand"
+                    />
+                  </CopyToClipboard>
+                </div>
               );
             })}
         </Loader>

@@ -19,10 +19,10 @@ export function CopyToClipboard(props: CopyToClipboardProps) {
     textToCopy || getTextToCopyFromChildren(children);
 
   return (
-    <div className={cn('flex items-center group')}>
+    <div className={cn('flex items-center group', className)}>
       <div className="flex overflow-hidden">{children}</div>
       {!hideCopyIcon && textToCopyFromChildren && (
-        <div className={className}>
+        <div>
           <Tooltip title={copied ? 'Copied to Clipboard' : ''}>
             <ClipboardDocumentIcon
               className="invisible ml-1 size-5 cursor-pointer text-gray-400 hover:text-gray-500 group-hover:visible"

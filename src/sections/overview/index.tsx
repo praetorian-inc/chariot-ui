@@ -316,7 +316,9 @@ export function ModulesModal() {
       closeOnOutsideClick={false}
       footer={
         moduleState.value?.integration &&
-        moduleState.value?.integration !== Integration.kev
+        !([Integration.kev, Integration.basAgent] as string[]).includes(
+          moduleState.value?.integration
+        )
           ? {
               text: selectedIntegration.length ? 'Update' : 'Add',
               isLoading:
@@ -481,6 +483,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     message = '',
     warning = false,
     help,
+    customIntegration,
   } = integration;
 
   const navigate = useNavigate();
@@ -498,6 +501,10 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
   useEffect(() => {
     setCount(connectedIntegration.length || 1);
   }, [connectedIntegration.length]);
+
+  if (customIntegration) {
+    return customIntegration;
+  }
 
   return (
     <div className="mt-4 w-full px-4">

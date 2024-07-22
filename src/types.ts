@@ -505,6 +505,7 @@ export enum Integration {
 export interface IntegrationMeta {
   id: Integration;
   name: string;
+  customIntegration?: ReactNode;
   description?: ReactNode;
   logo?: string;
   connected?: boolean;

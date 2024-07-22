@@ -158,7 +158,7 @@ export function Header({
       >
         <div
           id={HeaderPortalSections.EXTRA_CONTENT}
-          className="m-auto max-w-screen-xl [&:has(*)]:pb-9"
+          className="m-auto max-w-screen-xl text-[10px] [&:has(*)]:pb-7"
         />
       </div>
     </>

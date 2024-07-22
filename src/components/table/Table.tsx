@@ -318,7 +318,7 @@ export function Table<TData>(props: TableProps<TData>) {
               <Input
                 name="search"
                 placeholder={`Search ${tableName}`}
-                className="h-11 w-64 justify-end rounded-sm border-gray-900 bg-header-light p-2 text-sm text-white  ring-0"
+                className="h-9 w-64 justify-end rounded-sm border-gray-900 bg-header-light p-2 text-sm text-white  ring-0"
                 value={searchValue}
                 onChange={e => setSearchValue(e.target.value)}
                 startIcon={
@@ -397,7 +397,7 @@ export function Table<TData>(props: TableProps<TData>) {
           <thead
             className={cn(
               'sticky bg-layer0',
-              isTableView && !skipHeader ? 'top-20' : 'top-0'
+              isTableView && !skipHeader ? 'top-16' : 'top-0'
             )}
             style={{ zIndex: 1 }}
           >

@@ -151,9 +151,6 @@ export const AddRisks = () => {
   }, [selectedIndex]);
 
   async function handleConfigureIntegration() {
-    if (selectedIndex === 0) {
-      return;
-    }
     integrationFormData.map(data => link(data as unknown as LinkAccount));
     onClose();
   }

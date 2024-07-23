@@ -61,7 +61,9 @@ const Chart: React.FC<ChartProps> = ({ type, data, xField, yField }) => {
             index={xField}
             category={yField}
           />
-          <Legend categories={data.map(d => d[xField].toString())} />
+          <Legend
+            categories={data.map(d => (d[xField] ? d[xField].toString() : ''))}
+          />
         </div>
       );
     default:

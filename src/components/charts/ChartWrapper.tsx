@@ -8,7 +8,6 @@ import { aggregates as accountAggregates } from '@/utils/aggregates/account';
 import { getAggregates, runAggregate } from '@/utils/aggregates/aggregate';
 import { aggregates as assetAggregates } from '@/utils/aggregates/asset';
 import { aggregates as riskAggregates } from '@/utils/aggregates/risk';
-import { aggregates as seedAggregates } from '@/utils/aggregates/seed';
 
 interface ChartWrapperProps {
   id: string;
@@ -39,8 +38,6 @@ const ChartWrapper: React.FC<ChartWrapperProps> = ({
           return getAggregates(accountAggregates);
         case 'risk':
           return getAggregates(riskAggregates);
-        case 'seed':
-          return getAggregates(seedAggregates);
         case 'asset':
           return getAggregates(assetAggregates);
         default:
@@ -56,8 +53,6 @@ const ChartWrapper: React.FC<ChartWrapperProps> = ({
           return runAggregate(accountAggregates, aggregate, data as Account[]);
         case 'risk':
           return runAggregate(riskAggregates, aggregate, data as Risk[]);
-        case 'seed':
-          return runAggregate(seedAggregates, aggregate, data as Seed[]);
         case 'asset':
           return runAggregate(assetAggregates, aggregate, data as Asset[]);
         default:

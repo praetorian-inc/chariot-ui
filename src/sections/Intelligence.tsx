@@ -18,7 +18,6 @@ import { aggregates as accountAggregates } from '@/utils/aggregates/account';
 import { getAggregates } from '@/utils/aggregates/aggregate';
 import { aggregates as assetAggregates } from '@/utils/aggregates/asset';
 import { aggregates as riskAggregates } from '@/utils/aggregates/risk';
-import { aggregates as seedAggregates } from '@/utils/aggregates/seed';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
 interface ChartConfig {
@@ -64,14 +63,6 @@ const Intelligence: React.FC = () => {
             Object.keys(getAggregates(riskAggregates)).map(id => ({
               value: id,
               label: getAggregates(riskAggregates)[id].label,
-            }))
-          );
-          break;
-        case 'seed':
-          setAggregates(
-            Object.keys(getAggregates(seedAggregates)).map(id => ({
-              value: id,
-              label: getAggregates(seedAggregates)[id].label,
             }))
           );
           break;
@@ -161,8 +152,6 @@ const Intelligence: React.FC = () => {
         return getAggregates(accountAggregates)[aggregate]?.label;
       case 'risk':
         return getAggregates(riskAggregates)[aggregate]?.label;
-      case 'seed':
-        return getAggregates(seedAggregates)[aggregate]?.label;
       case 'asset':
         return getAggregates(assetAggregates)[aggregate]?.label;
       default:
@@ -196,7 +185,6 @@ const Intelligence: React.FC = () => {
             options={[
               { value: '', label: 'Select resource', disabled: true },
               { value: 'divider', label: '', divider: true },
-              { value: 'seed', label: 'Seeds' },
               { value: 'asset', label: 'Assets' },
               { value: 'risk', label: 'Risks' },
               { value: 'account', label: 'Accounts' },

@@ -45,12 +45,6 @@ const riskSeverity = (status: string): string => {
 };
 
 export const aggregates: AggregateCollection<Risk> = {
-  countRisksByClass: defineAggregate<Risk>(
-    'Count risks by class',
-    risk => risk.class,
-    'class',
-    'count'
-  ),
   countRisksByDate: defineAggregate<Risk>(
     'Count risks updated by date',
     risk => getDateFromISO(risk.updated),

@@ -500,6 +500,7 @@ export enum Integration {
   zulip = 'zulip',
   basAgent = 'basAgent',
   kev = 'kev',
+  teams = 'teams',
 }
 
 export interface IntegrationMeta {

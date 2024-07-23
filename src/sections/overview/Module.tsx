@@ -674,6 +674,46 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
       },
     ],
   },
+  teams: {
+    id: Integration.teams,
+    name: 'Microsoft Teams',
+    description: 'Receive Teams notifications when new risks are discovered.',
+    logo: '/icons/Teams.svg',
+    inputs: [
+      {
+        name: 'username',
+        value: 'teams',
+        hidden: true,
+      },
+      {
+        label: 'Webhook URL',
+        value: '',
+        placeholder:
+          'https://xxxxxxx.logic.azure.com:443/workflows/xxxxxxx',
+        name: 'webhook',
+        required: true,
+        info: {
+          url: 'https://support.microsoft.com/en-us/office/post-a-workflow-when-a-webhook-request-is-received-in-microsoft-teams-8ae491c7-0394-4861-ba59-055e33f75498',
+          text: 'Learn more',
+        },
+      },
+      {
+        label: 'Severity',
+        value: 'MHC',
+        placeholder: 'Select a minimum severity level for your Teams alerts',
+        name: 'severities',
+        required: true,
+        type: Input.Type.SELECT,
+        options: [
+          { label: 'Info', value: 'ILMHC' },
+          { label: 'Low', value: 'LMHC' },
+          { label: 'Medium', value: 'MHC' },
+          { label: 'High', value: 'HC' },
+          { label: 'Critical', value: 'C' },
+        ],
+      },
+    ],
+  },
 };
 
 export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
@@ -701,6 +741,7 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
       Integrations.slack,
       Integrations.jira,
       Integrations.zulip,
+      Integrations.teams,
     ],
   },
   ASM: {

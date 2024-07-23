@@ -195,7 +195,7 @@ export function AddAsset() {
       footer={{
         isLoading: creatingAsset === 'pending',
         text: selectedIntegration.length ? 'Update' : 'Add',
-        onClick: handleAddAsset,
+        form: 'new-asset',
         disconnect: selectedIntegration.length
           ? {
               text: 'Disconnect',
@@ -246,6 +246,7 @@ export function AddAsset() {
                 onChange={setFormData}
                 tab={tab}
                 onCancel={onClose}
+                onSubmit={handleAddAsset}
               />
             );
           })}
@@ -260,10 +261,11 @@ interface TabPanelContentProps {
   tab: IntegrationMeta;
   connectedIntegration: Account[];
   onCancel: () => void;
+  onSubmit: () => void;
 }
 
 export const TabPanelContent = (props: TabPanelContentProps) => {
-  const { tab, onChange, connectedIntegration, onCancel } = props;
+  const { tab, onChange, connectedIntegration, onCancel, onSubmit } = props;
   const {
     description = '',
     markup = '',
@@ -337,6 +339,10 @@ export const TabPanelContent = (props: TabPanelContentProps) => {
         <form
           id="new-asset"
           className="border-1 w-full rounded-sm border border-gray-200 p-4"
+          onSubmit={event => {
+            event.preventDefault();
+            onSubmit();
+          }}
         >
           {message && <div className="mb-4 text-gray-500">{message}</div>}
           <div>

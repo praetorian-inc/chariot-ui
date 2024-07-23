@@ -151,6 +151,9 @@ export const AddRisks = () => {
   }, [selectedIndex]);
 
   async function handleConfigureIntegration() {
+    if (selectedIndex === 0) {
+      return;
+    }
     integrationFormData.map(data => link(data as unknown as LinkAccount));
     onClose();
   }
@@ -181,10 +184,8 @@ export const AddRisks = () => {
         size="lg"
         closeOnOutsideClick={false}
         footer={{
-          onClick:
-            selectedIndex === 0 ? () => null : handleConfigureIntegration,
           text: selectedIndex === 0 ? 'Add' : 'Configure',
-          form: selectedIndex === 0 ? 'addRisk' : undefined,
+          form: selectedIndex === 0 ? 'addRisk' : 'new-asset',
           disconnect: selectedIntegration.length
             ? {
                 text: 'Disconnect',
@@ -324,6 +325,7 @@ export const AddRisks = () => {
                   onChange={setIntegrationFormData}
                   tab={tab}
                   onCancel={onClose}
+                  onSubmit={handleConfigureIntegration}
                 />
               );
             })}

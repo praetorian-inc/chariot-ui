@@ -123,7 +123,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
   webhook: {
     id: Integration.webhook,
     name: 'ServiceNow',
-    description: 'Push assets and risks to Chariot.',
+    description: 'Push opened risks to ServiceNow.',
     logo: '/icons/ServiceNow.svg',
     inputs: [
       {
@@ -139,7 +139,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
       {
         label: 'Severity',
         value: 'MHC',
-        placeholder: 'Select a minimum severity level for your Slack alerts',
+        placeholder: 'Select a minimum severity level for your ServiceNow alerts',
         name: 'severities',
         required: true,
         type: Input.Type.SELECT,

@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { To } from 'react-router-dom';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import {
   BookOpen,
   ClipboardList,
@@ -19,6 +20,7 @@ import { Input } from '@/components/form/Input';
 import { InputText } from '@/components/form/InputText';
 import { Link } from '@/components/Link';
 import { Loader } from '@/components/Loader';
+import { Snackbar } from '@/components/Snackbar';
 import { Tooltip } from '@/components/Tooltip';
 import WebhookExample from '@/components/ui/WebhookExample';
 import { useMy, useUploadFile } from '@/hooks';
@@ -1219,6 +1221,8 @@ export function BasIntegration() {
     mutateAsync: removeBulkAttribute,
     status: removeBulkAttributeStatus,
   } = useBulkDeleteAttributes({ showToast: false });
+  const [progress, setProgress] = useState<null | number>(null);
+  const [updatingIndex, setUpdatingIndex] = useState<null | number>(null);
 
   const allAttLabels = useMemo(() => {
     return basLabelAttributes.reduce(
@@ -1262,14 +1266,35 @@ export function BasIntegration() {
     const [, uuid, platform] =
       file.name.match(/(.*)-(windows|darwin|linux)(?:\.(.*))?$/) || [];
 
-    console.log('file', file);
-
     if (uuid && platform) {
+      setProgress(0);
       const fileName = `malware/${uuid}-${platform}`;
       await uploadFile({
         name: fileName,
         content,
-      });
+        onProgress: progressEvent => {
+          const progress =
+            (progressEvent.loaded / (progressEvent.total ?? 1)) * 100;
+          setProgress(progress >= 100 ? null : progress);
+        },
+      })
+        .then(() => {
+          updateAgents();
+          Snackbar({
+            title: fileName,
+            description: 'The file has been uploaded successfully.',
+            variant: 'success',
+          });
+          setProgress(null); // Reset progress on success
+        })
+        .catch(() => {
+          Snackbar({
+            title: fileName,
+            description: 'Failed to upload the file.',
+            variant: 'error',
+          });
+          setProgress(null); // Reset progress on error
+        });
 
       const jobs = BAS.assetAttributes.map(attribute => {
         const attMeta = parseKeys.attributeKey(attribute.key);
@@ -1322,6 +1347,15 @@ export function BasIntegration() {
     }
 
     await createBulkAttribute(attributes);
+  }
+
+  async function updateAgents() {
+    for (let i = 0; i < BAS.assetAttributes.length; i++) {
+      setUpdatingIndex(i);
+      const randomDelay = Math.floor(Math.random() * 1000) + 500; // Random delay between 500ms to 1500ms
+      await new Promise(resolve => setTimeout(resolve, randomDelay));
+    }
+    setUpdatingIndex(null);
   }
 
   useEffect(() => {
@@ -1386,15 +1420,40 @@ export function BasIntegration() {
       )}
       {isEnabled && (
         <div>
-          <Dropzone
-            multiple={false}
-            onFilesDrop={handleFileDrop}
-            type="arrayBuffer"
-            title=""
-            subTitle={`Upload your TTP (Tactics, Techniques, and Procedures) executable
+          {progress !== null ? (
+            <div className="w-full">
+              <div className="relative pt-1">
+                <div className="mb-2 flex items-center justify-between">
+                  <div>
+                    <span className="inline-block px-2 py-1 text-xs font-semibold uppercase text-default">
+                      Uploading...
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="inline-block text-xs font-semibold text-brand">
+                      {Math.round(progress)}%
+                    </span>
+                  </div>
+                </div>
+                <div className="mb-4 flex h-2 overflow-hidden rounded bg-brand-light text-xs">
+                  <div
+                    style={{ width: `${progress}%` }}
+                    className="flex flex-col justify-center whitespace-nowrap bg-brand text-center text-white shadow-none"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Dropzone
+              multiple={false}
+              onFilesDrop={handleFileDrop}
+              type="arrayBuffer"
+              title=""
+              subTitle={`Upload your TTP (Tactics, Techniques, and Procedures) executable
               for Chariot's internal assessments.`}
-            className="m-0 mt-2 h-[200px]"
-          />
+              className="m-0 mt-2 h-[200px]"
+            />
+          )}
 
           <div className="flex flex-col pt-4">
             <Loader isLoading={isLoading}>
@@ -1414,13 +1473,16 @@ export function BasIntegration() {
                       className="flex flex-row justify-start border-gray-200"
                     >
                       <div className="flex w-full items-center">
-                        <div className="w-full">
+                        <div className="relative w-full">
                           <Loader
                             className="h-[36px] w-[100px]"
                             isLoading={basLabelAttributesStatus === 'pending'}
                           >
                             <InputText
-                              className="w-full border-0 border-b border-gray-300 ring-0"
+                              className={cn(
+                                'w-full border-0 border-b border-gray-300 ring-0',
+                                updatingIndex === index && 'italic'
+                              )}
                               placeholder="Agent Name"
                               name={attributeMeta.name}
                               onChange={event => {
@@ -1431,9 +1493,19 @@ export function BasIntegration() {
                                   };
                                 });
                               }}
-                              value={attLabels[attributeMeta.name] || ''}
+                              value={
+                                updatingIndex === index
+                                  ? 'Updating...'
+                                  : attLabels[attributeMeta.name] || ''
+                              }
+                              disabled={updatingIndex !== null}
                             />
                           </Loader>
+                          {updatingIndex == index && (
+                            <div className="absolute inset-y-0 right-0 flex animate-spin items-center justify-center">
+                              <ArrowPathIcon className="size-6 text-gray-400" />
+                            </div>
+                          )}
                         </div>
 
                         <Link

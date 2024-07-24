@@ -1498,7 +1498,7 @@ export function BasIntegration() {
                                   ? 'Updating...'
                                   : attLabels[attributeMeta.name] || ''
                               }
-                              disabled={updatingIndex !== null}
+                              disabled={updatingIndex === index}
                             />
                           </Loader>
                           {updatingIndex == index && (

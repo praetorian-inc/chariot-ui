@@ -35,7 +35,8 @@ const WebhookExample: React.FC<Props> = ({ defaultPin }) => {
       payload: `{  
   "dns": "public-facing-api.domain.com",
   "name": "192.168.15.30",
-  "finding": "exposed-administration-interface"
+  "finding": "exposed-administration-interface",
+  "source": "webhook" # optional source of the risk, like 'nessus' or 'qualys'
 }`,
     },
   ];

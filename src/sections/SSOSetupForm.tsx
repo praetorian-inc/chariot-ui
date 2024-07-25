@@ -7,6 +7,8 @@ import { Input } from '@/components/form/Input';
 import { Inputs } from '@/components/form/Inputs';
 import { Modal } from '@/components/Modal';
 import { useModifyAccount, useMy } from '@/hooks';
+import {CopyToClipboard} from "@/components/CopyToClipboard";
+import {useAuth} from "@/state/auth";
 
 const DefaultFormValues = {
   domain: '',
@@ -16,6 +18,7 @@ const DefaultFormValues = {
 };
 
 export const SSOSetupForm = () => {
+  const { me, friend } = useAuth();
   const { data: accounts } = useMy({ resource: 'account' });
   const { mutate: link } = useModifyAccount('link');
   const { mutate: unlink } = useModifyAccount('unlink');
@@ -104,7 +107,9 @@ export const SSOSetupForm = () => {
           </div>
           <p className="text-sm font-bold">
             Add a TXT record to your domain with the following value:{' '}
-            <code>chariot=&lt;email&gt;</code>
+            <code className="prose block overflow-x-auto whitespace-pre-wrap rounded bg-gray-100 p-4 text-xs text-default">
+              <CopyToClipboard>{`chariot=${friend.email || me}`}</CopyToClipboard>
+            </code>
           </p>
           <Inputs
             inputs={[

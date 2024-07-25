@@ -105,8 +105,7 @@ export function Overview() {
         <p className="m-auto mb-20 w-2/3 text-center text-gray-300">
           Proactively identify and address exploitable vulnerabilities in your
           organization with our comprehensive suite of cybersecurity solutions.
-          From point-in-time assessments to our continuous managed security
-          offering, experience the Praetorian difference.
+          Experience the Praetorian difference.
         </p>
       </div>
       <div className="mb-10 flex justify-center gap-5">

@@ -101,9 +101,9 @@ const appRoutes = {
       ),
       title: 'Overview',
     },
-    '*': <Navigate to="/app/risks" replace />,
+    '*': <Navigate to="/app/overview" replace />,
   },
-  '*': <Navigate to="/app/risks" replace />,
+  '*': <Navigate to="/app/overview" replace />,
 } as const;
 
 export function AppRoutes() {

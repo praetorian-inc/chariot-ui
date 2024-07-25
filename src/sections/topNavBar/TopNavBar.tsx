@@ -10,6 +10,9 @@ export function TopNavBar() {
   const [showNotification, setShowNotification] = useState<boolean>(false);
   const location = useLocation();
 
+  // TODO: Add back the notification on jobs
+  console.log('showNotification', showNotification);
+
   const currentPage = location.pathname.split('/').pop();
   const isCurrentPage = (page: string) => currentPage === page;
   const linkSize = 'w-20';
@@ -20,7 +23,7 @@ export function TopNavBar() {
       <div className="flex flex-col items-center justify-between py-3 md:flex-row">
         <div className="flex w-full items-center">
           <div className="flex w-full flex-nowrap items-center">
-            <Link to={getRoute(['app', 'risks'])}>
+            <Link to={getRoute(['app', 'overview'])}>
               <LogoIcon className="mr-4 size-9" />
             </Link>
 

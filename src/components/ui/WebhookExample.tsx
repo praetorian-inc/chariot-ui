@@ -1,4 +1,4 @@
-import { Input } from '@/components/form/Input';
+import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { useMy } from '@/hooks';
 import { useAuth } from '@/state/auth';
 import { getChariotWebhookURL } from '@/utils/integration.util';
@@ -35,7 +35,8 @@ const WebhookExample: React.FC<Props> = ({ defaultPin }) => {
       payload: `{  
   "dns": "public-facing-api.domain.com",
   "name": "192.168.15.30",
-  "finding": "exposed-administration-interface"
+  "finding": "exposed-administration-interface",
+  "source": "webhook" # optional source of the risk, like 'nessus' or 'qualys'
 }`,
     },
   ];
@@ -45,12 +46,9 @@ const WebhookExample: React.FC<Props> = ({ defaultPin }) => {
       <p className="block text-sm font-medium leading-6 text-gray-900">
         Webhook URL
       </p>
-      <Input
-        onChange={() => null}
-        name="webhook_url"
-        className="mb-4 break-all text-xs"
-        value={url}
-      />
+      <CopyToClipboard textToCopy={url}>
+        <p className="text-sm">{url}</p>
+      </CopyToClipboard>
       {samples.map(sample => (
         <div key={sample.id} className="mt-4 ">
           <p className="pb-1 text-sm font-medium">

@@ -86,7 +86,7 @@ export const UpgradeModal = () => {
             </button>
           </div>
         </div>
-        <p className="text-md mt-12 text-right text-gray-600">
+        <p className="text-md mt-12 text-center text-gray-600">
           Our team will contact you within 24 hours to start your managed
           service trial.
         </p>

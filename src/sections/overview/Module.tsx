@@ -1,6 +1,9 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { To } from 'react-router-dom';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowPathIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/24/outline';
 import {
   BookOpen,
   ClipboardList,
@@ -8,7 +11,6 @@ import {
   Fingerprint,
   GlobeLock,
   Goal,
-  Handshake,
   Radar,
   RefreshCcwDot,
 } from 'lucide-react';
@@ -18,7 +20,6 @@ import { Button } from '@/components/Button';
 import { Dropzone, Files } from '@/components/Dropzone';
 import { Input } from '@/components/form/Input';
 import { InputText } from '@/components/form/InputText';
-import { Link } from '@/components/Link';
 import { Loader } from '@/components/Loader';
 import { Snackbar } from '@/components/Snackbar';
 import { Tooltip } from '@/components/Tooltip';
@@ -81,18 +82,6 @@ const NessusInstructions = () => {
           <code>praetorian chariot plugin nessus-xml</code>
         </pre>
       </div>
-      <p className="text-sm">
-        For more information, please visit our{' '}
-        <a
-          href="https://github.com/praetorian-inc/praetorian-cli"
-          className="text-blue-500 underline"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          GitHub repository
-        </a>
-        .
-      </p>
     </div>
   );
 };
@@ -134,7 +123,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
   webhook: {
     id: Integration.webhook,
     name: 'ServiceNow',
-    description: 'Push assets and risks to Chariot.',
+    description: 'Push opened risks to ServiceNow.',
     logo: '/icons/ServiceNow.svg',
     inputs: [
       {
@@ -150,7 +139,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
       {
         label: 'Severity',
         value: 'MHC',
-        placeholder: 'Select a minimum severity level for your Slack alerts',
+        placeholder: 'Select a minimum severity level for your ServiceNow alerts',
         name: 'severities',
         required: true,
         type: Input.Type.SELECT,
@@ -943,7 +932,7 @@ export const Modules: Record<Module, Omit<ModuleMeta, 'risks' | 'status'>> = {
         </div>
         <div className="rounded-md bg-gray-100 p-4 shadow-sm">
           <h4 className="font-semibold">
-            <Handshake className="-mt-1 inline size-4" /> Tailored Remediation
+            <RefreshCcwDot className="-mt-1 inline size-4" /> Continuous VM
           </h4>
           <p className="text-default-light">
             Chariot provides the data, up front, in a way that allows a tailored
@@ -1490,11 +1479,24 @@ export function BasIntegration() {
               onFilesDrop={handleFileDrop}
               type="arrayBuffer"
               title=""
-              subTitle={`Upload your TTP (Tactics, Techniques, and Procedures) executable
-              for Chariot's internal assessments.`}
+              subTitle={
+                'Upload a security test to launch an internal assessment'
+              }
               className="m-0 mt-2 h-[200px]"
             />
           )}
+          <p className="mt-1 text-sm text-gray-500">
+            <InformationCircleIcon className="mr-2 inline size-4" />
+            Learn to write your own tests:{' '}
+            <a
+              href="https://github.com/praetorian-inc/chariot-bas"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="font-medium text-brand"
+            >
+              praetorian-inc/chariot-bas
+            </a>
+          </p>
 
           <div className="flex flex-col pt-4">
             <Loader isLoading={isLoading}>
@@ -1549,23 +1551,15 @@ export function BasIntegration() {
                           )}
                         </div>
 
-                        <Link
-                          className="mb-1 mt-auto text-xs"
-                          to={getAssetDrawerLink({
-                            name: attributeMeta.name,
-                            dns: attributeMeta.name,
-                          })}
-                        >
+                        <p className="mt-4 text-sm font-medium">
                           {attributeMeta.name.slice(0, 5)}
-                        </Link>
+                        </p>
                       </div>
                       <div className="ml-3 flex shrink-0 border-l border-gray-200 bg-gray-50 py-2 ">
                         {Object.values(systemTypes).map((system, index) => {
                           function handleCopy() {
-                            const filename =
-                              system === 'windows' ? 'agent.ps1' : 'agent.sh';
                             copyToClipboard(
-                              `curl -o ${filename} https://d0qcl2e18h.execute-api.us-east-2.amazonaws.com/chariot/${friend.email || me}/${attributeMeta.name}/${system}`
+                              `https://d0qcl2e18h.execute-api.us-east-2.amazonaws.com/chariot/${friend.email || me}/${attributeMeta.name}/${system}`
                             );
                           }
 

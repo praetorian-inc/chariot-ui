@@ -47,7 +47,7 @@ export const UpgradeModal = () => {
           </div>
 
           <div className="flex h-60 w-1/3 flex-col items-center rounded-sm bg-gray-50 p-6">
-            <p className="h-1/4 text-lg  font-bold">Self-Service</p>
+            <p className="h-1/4 text-lg font-bold">Unmanaged</p>
             <p className="h-1/2 text-center text-gray-700">
               Enter unlimited domains for asset and risk discovery
             </p>
@@ -67,7 +67,7 @@ export const UpgradeModal = () => {
           </div>
 
           <div className="flex h-60 w-1/3 flex-col items-center rounded-sm border border-brand bg-gray-50 p-6">
-            <p className="h-1/4 text-lg font-bold">Managed-Service</p>
+            <p className="h-1/4 text-lg font-bold">Managed</p>
             <p className="h-1/2 text-center text-gray-700">
               Unlimited domains + expert risk assessment
             </p>

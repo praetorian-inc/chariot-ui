@@ -9,7 +9,7 @@ const Footer = () => {
             Copyright &copy; {new Date().getFullYear()}. All Rights Reserved.
           </div>
           <div className="center flex w-1/3 items-center justify-center">
-            <LogoIcon className="mr-1 size-9" />
+            <LogoIcon className="mr-2 mt-1 size-5" />
             <span className="text-lg font-bold leading-8">praetorian</span>
           </div>
           <div className="flex w-1/3 space-x-4 font-semibold">

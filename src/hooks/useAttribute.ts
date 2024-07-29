@@ -160,7 +160,7 @@ export const useAssetsWithAttributes = (attributes: string[]) => {
       .filter(x => Boolean(x))
       .map(attribute => {
         return {
-          queryKey: getQueryKey.getUnpaginatedMy('attribute', `#${attribute}`),
+          queryKey: getQueryKey.getMy('attribute', `#${attribute}`),
           queryFn: async () => {
             const res = await axios.get(`/my`, {
               params: {
@@ -168,7 +168,7 @@ export const useAssetsWithAttributes = (attributes: string[]) => {
               },
             });
 
-            return (res.data['attributes'] || []) as Attribute[];
+            return { pages: [res.data['attributes'] || []], pageParams: [] };
           },
         };
       }),
@@ -177,7 +177,9 @@ export const useAssetsWithAttributes = (attributes: string[]) => {
         data: results
           .filter(x => x)
           .reduce((acc, result) => {
-            const currentSources = (result.data || []).map(
+            const processedData = result.data ? result.data.pages.flat() : [];
+
+            const currentSources = processedData.map(
               (attribute: Attribute) => attribute.source
             );
             return acc.length === 0

@@ -5,6 +5,13 @@ export const getQueryKey = {
   getMy: (key: MyResourceKey, compositeKey?: string) => {
     return [UniqueQueryKeys.MY, key, ...(compositeKey ? [compositeKey] : [])];
   },
+  getUnpaginatedMy: (key: MyResourceKey, compositeKey?: string) => {
+    return [
+      UniqueQueryKeys.UN_PAGINATED_MY,
+      key,
+      ...(compositeKey ? [compositeKey] : []),
+    ];
+  },
   getBackend: () => [UniqueQueryKeys.Backends],
   getFile: (props: GetFilesProps) => [UniqueQueryKeys.GET_FILE, props.name],
   genericSearch: (search: string) => [

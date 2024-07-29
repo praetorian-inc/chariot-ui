@@ -1258,14 +1258,14 @@ export function BasIntegration() {
   const [progress, setProgress] = useState<null | number>(null);
   const [updatingIndex, setUpdatingIndex] = useState<null | number>(null);
 
-  const allAttLabels = useMemo(() => {
+  const initialAttLabels = useMemo(() => {
     return basLabelAttributes.reduce(
       (acc, { key }) => {
-        const assetKey = parseKeys.attributeKey(key);
+        const attributeMeta = parseKeys.attributeKey(key);
 
         return {
           ...acc,
-          [assetKey.name]: assetKey.value,
+          [attributeMeta.dns]: attributeMeta.value,
         };
       },
       {} as Record<string, string>
@@ -1331,10 +1331,10 @@ export function BasIntegration() {
         });
 
       const jobs = BAS.assetAttributes.map(attribute => {
-        const attMeta = parseKeys.attributeKey(attribute.key);
+        const attributeMeta = parseKeys.attributeKey(attribute.key);
 
         return {
-          dns: attMeta.name,
+          dns: attributeMeta.dns,
           capability: uuid,
         };
       });
@@ -1350,22 +1350,22 @@ export function BasIntegration() {
       .filter(({ key }) => {
         const attributeMeta = parseKeys.attributeKey(key);
 
-        return attLabels[attributeMeta.name];
+        return attLabels[attributeMeta.dns];
       })
       .map(({ key }) => {
         const attributeMeta = parseKeys.attributeKey(key);
 
         return {
-          key: `#asset#${attributeMeta.name}#${attributeMeta.name}`,
+          key: `#asset#${attributeMeta.dns}#${attributeMeta.dns}`,
           name: 'basAgentName',
-          value: `${attLabels[attributeMeta.name]}`,
+          value: `${attLabels[attributeMeta.dns]}`,
         };
       });
 
     const attToRemove = BAS.assetAttributes.filter(({ key }) => {
       const attributeMeta = parseKeys.attributeKey(key);
 
-      return allAttLabels[attributeMeta.name];
+      return initialAttLabels[attributeMeta.dns];
     });
 
     if (attToRemove.length > 0) {
@@ -1374,7 +1374,7 @@ export function BasIntegration() {
           const attributeMeta = parseKeys.attributeKey(key);
 
           return {
-            key: `#attribute#basAgentName#${allAttLabels[attributeMeta.name]}#asset#${attributeMeta.name}#${attributeMeta.name}`,
+            key: `#attribute#basAgentName#${initialAttLabels[attributeMeta.dns]}#asset#${attributeMeta.dns}#${attributeMeta.dns}`,
           };
         })
       );
@@ -1400,7 +1400,7 @@ export function BasIntegration() {
 
           return {
             ...acc,
-            [attributeMeta.name]: allAttLabels[attributeMeta.name] || '',
+            [attributeMeta.dns]: initialAttLabels[attributeMeta.dns] || '',
           };
         },
         {} as Record<string, string>
@@ -1535,19 +1535,19 @@ export function BasIntegration() {
                                 updatingIndex === index && 'italic'
                               )}
                               placeholder="Agent Name"
-                              name={attributeMeta.name}
+                              name={attributeMeta.dns}
                               onChange={event => {
                                 setAttLabels(prev => {
                                   return {
                                     ...prev,
-                                    [attributeMeta.name]: event.target.value,
+                                    [attributeMeta.dns]: event.target.value,
                                   };
                                 });
                               }}
                               value={
                                 updatingIndex === index
                                   ? 'Updating...'
-                                  : attLabels[attributeMeta.name] || ''
+                                  : attLabels[attributeMeta.dns] || ''
                               }
                               disabled={updatingIndex === index}
                             />
@@ -1560,14 +1560,14 @@ export function BasIntegration() {
                         </div>
 
                         <p className="mt-4 text-sm font-medium">
-                          {attributeMeta.name.slice(0, 5)}
+                          {attributeMeta.dns.slice(0, 5)}
                         </p>
                       </div>
                       <div className="ml-3 flex shrink-0 border-l border-gray-200 bg-gray-50 py-2 ">
                         {Object.values(systemTypes).map((system, index) => {
                           function handleCopy() {
                             copyToClipboard(
-                              `${api}/${friend.email || me}/${attributeMeta.name}/${system}`
+                              `${api}/${friend.email || me}/${attributeMeta.dns}/${system}`
                             );
                           }
 

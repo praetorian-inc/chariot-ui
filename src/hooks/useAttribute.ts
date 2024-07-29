@@ -160,7 +160,7 @@ export const useAssetsWithAttributes = (attributes: string[]) => {
       .filter(x => Boolean(x))
       .map(attribute => {
         return {
-          queryKey: getQueryKey.getMy('attribute', `#${attribute}`),
+          queryKey: getQueryKey.getUnpaginatedMy('attribute', `#${attribute}`),
           queryFn: async () => {
             const res = await axios.get(`/my`, {
               params: {
@@ -168,7 +168,7 @@ export const useAssetsWithAttributes = (attributes: string[]) => {
               },
             });
 
-            return res.data['attributes'] as Attribute[];
+            return (res.data['attributes'] || []) as Attribute[];
           },
         };
       }),

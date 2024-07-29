@@ -23,12 +23,12 @@ import { Inputs, Values } from '@/components/form/Inputs';
 import { Link } from '@/components/Link';
 import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
+import { Tabs } from '@/components/Tab';
 import { useMy } from '@/hooks';
 import { useGetDisplayName, useModifyAccount } from '@/hooks/useAccounts';
 import { useBulkAddAsset } from '@/hooks/useAssets';
 import { useBulkAddAttributes } from '@/hooks/useAttribute';
 import { Modules, useGetModuleData } from '@/sections/overview/Module';
-import { Tabs } from '@/sections/overview/Tab';
 import { useAuth } from '@/state/auth';
 import { useGlobalState } from '@/state/global.state';
 import {

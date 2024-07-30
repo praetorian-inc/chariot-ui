@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
 import { Button } from '@/components/Button';
+import { Type } from '@/components/form/Input';
+import { InputText } from '@/components/form/InputText';
 
 interface Props {
   comment: string;
@@ -53,12 +55,11 @@ export const Comment: React.FC<Props> = ({ comment, onSave }: Props) => {
       )}
       {isEditing && (
         <>
-          <textarea
-            id="message"
-            rows={6}
+          <InputText
+            type={Type.TEXT_AREA}
+            name="message"
             value={value}
             onChange={e => setValue(e.target.value)}
-            className="block w-full rounded-sm border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 "
             placeholder="Write your thoughts here..."
           />
           <div className="mt-2 flex justify-end space-x-2">

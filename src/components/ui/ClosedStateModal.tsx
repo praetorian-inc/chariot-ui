@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { InformationCircleIcon } from '@heroicons/react/24/solid';
 
+import { Type } from '@/components/form/Input';
+import { InputText } from '@/components/form/InputText';
 import { Modal } from '@/components/Modal';
 import {
   RiskClosedStatus,
@@ -89,12 +91,11 @@ export const ClosedStateModal = (props: ClosedStateModal) => {
             </div>
           </label>
         ))}
-        <textarea
-          id="message"
-          rows={6}
+        <InputText
+          type={Type.TEXT_AREA}
+          name="message"
           value={closingComment}
           onChange={e => setClosingComment(e.target.value)}
-          className="block w-full rounded-sm border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 "
           placeholder="Whats the reason for closing this risk?"
         />
         <p className="mt-4 rounded bg-blue-100 p-2 text-sm">

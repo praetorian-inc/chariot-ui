@@ -167,8 +167,8 @@ export function Td(props: {
     <td
       colSpan={props.colSpan}
       className={cn(
-        'pl-3 text-default max-w-full truncate text-sm relative',
-        props.align === 'center' && '[&>*]:m-auto text-center',
+        'pl-2 pr-1 text-default max-w-full truncate text-sm relative',
+        props.align === 'center' && '[&>*]:m-auto text-center pr-3',
         props.align === 'right' && 'text-right',
         props.className
       )}

@@ -317,6 +317,8 @@ export const parseKeys = {
     attributeType: AttributeType;
     dns: string;
   } {
+    // attributeType: asset | risk
+    // #attribute#{attribute.dns}#{attribute.name}#{attributeType}#{attributeType_dns}#{attributeType_name}
     const [, , name, value, attributeType, dns] = key.split('#');
 
     return { name, value, attributeType: attributeType as AttributeType, dns };
@@ -325,8 +327,20 @@ export const parseKeys = {
     dns: string;
     name: string;
   } {
+    // #asset#{asset.dns}#{asset.name}
     const [, , dns, name] = key.split('#');
 
     return { dns, name };
+  },
+  jobKey(key: string): {
+    assetDns: string;
+    assetName: string;
+    capability: string;
+  } {
+    // #job#{asset.dns}#{asset.name}#{capability}
+
+    const [, , assetDns, assetName, capability] = key.split('#');
+
+    return { assetDns, assetName, capability };
   },
 };

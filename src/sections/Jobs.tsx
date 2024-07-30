@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 
 import { Dropdown } from '@/components/Dropdown';
@@ -11,6 +12,7 @@ import { Tooltip } from '@/components/Tooltip';
 import { useMy } from '@/hooks';
 import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
+import { useReRunJob } from '@/hooks/useJobs';
 import { Job, JobLabels, JobStatus } from '@/types';
 
 const formatDate = (dateString: string) => {
@@ -65,6 +67,7 @@ const Jobs: React.FC = () => {
     resource: 'job',
     filterByGlobalSearch: true,
   });
+  const { mutateAsync: reRunJob } = useReRunJob();
 
   const [filter, setFilter] = useFilter('', 'job-status');
   const [sources, setSources] = useFilter([''], 'job-sources');
@@ -142,13 +145,28 @@ const Jobs: React.FC = () => {
       label: 'DNS',
       id: 'dns',
     },
-
     {
       label: 'Updated',
       id: 'updated',
       fixedWidth: 220,
       cell: (job: Job) => {
         return designedDate(formatDate(job.updated));
+      },
+    },
+    {
+      label: 'Retry',
+      id: '',
+      fixedWidth: 75,
+      align: 'center',
+      cell: (job: Job) => {
+        return (
+          <ArrowPathIcon
+            className="size-4 cursor-pointer"
+            onClick={() => {
+              reRunJob({ capability: job.source, jobKey: job.key });
+            }}
+          />
+        );
       },
     },
   ];

@@ -565,8 +565,8 @@ export function Th(props: {
     <th
       {...restProps}
       className={cn(
-        'pl-3 py-3 text-bold text-left text-sm font-bold relative text-nowrap',
-        props.align === 'center' && 'text-center',
+        'pl-2 pr-1 py-3 text-bold text-left text-sm font-bold relative text-nowrap',
+        props.align === 'center' && 'text-center pr-3',
         props.align === 'right' && 'text-right',
         props.className
       )}
@@ -584,18 +584,13 @@ export function Th(props: {
     >
       <div className="th-top-border absolute left-0 top-0 w-full border-b border-solid border-default" />
       <div className="th-bottom-border absolute bottom-0 left-0 w-full border-b border-solid border-default" />
-
-      <div className="flex justify-between">
-        {props.children}
-        {resize && (
-          <span
-            className="resize-el text-layer1 hover:cursor-col-resize"
-            onMouseDown={onMouseDown}
-          >
-            |
-          </span>
-        )}
-      </div>
+      {props.children}
+      {resize && (
+        <div
+          className="resize-el absolute right-px top-1/3 h-1/3 w-0.5 select-none bg-default-dark hover:cursor-col-resize"
+          onMouseDown={onMouseDown}
+        ></div>
+      )}
     </th>
   );
 }

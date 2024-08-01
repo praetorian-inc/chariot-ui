@@ -140,7 +140,11 @@ export const Modal: React.FC<Props> = props => {
           <div
             className={cn(
               'ml-auto',
-              confirmDisconnect ? 'w-[460px]' : 'w-[260px]'
+              confirmDisconnect
+                ? 'w-[460px]'
+                : title == 'Proof of Exploit'
+                  ? 'w-full'
+                  : 'w-[260px]'
             )}
           >
             {footer?.left}

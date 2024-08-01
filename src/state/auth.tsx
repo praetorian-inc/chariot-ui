@@ -162,6 +162,22 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   async function logout() {
+    queryClient.clear();
+    setAuth(auth => {
+      const backendStack = {
+        api: auth.api,
+        backend: auth.backend,
+        clientId: auth.clientId,
+        userPoolId: auth.userPoolId,
+      };
+
+      return {
+        ...emptyAuth,
+        ...backendStack,
+      };
+    });
+    navigate(getRoute(['login']));
+
     await signOut();
   }
 
@@ -177,6 +193,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   async function getToken() {
     const session = await fetchAuthSession();
     const token = session.tokens?.idToken?.toString() ?? '';
+
+    if (!token) {
+      console.error('Error occured while fetching token');
+
+      logout();
+    }
 
     return token;
   }

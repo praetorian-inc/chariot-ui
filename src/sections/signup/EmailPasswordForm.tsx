@@ -63,15 +63,6 @@ export const EmailPasswordForm = ({
           setCredentials(auth => ({ ...auth, ...values }));
         }}
       />
-      <div className="text-xs">
-        <Button
-          onClick={() => navigate(getRoute(['forgot-password']))}
-          className="p-0 text-xs"
-          styleType="textPrimary"
-        >
-          Forgot Password ?
-        </Button>
-      </div>
       <Button
         disabled={isLoading}
         styleType="primary"
@@ -84,6 +75,27 @@ export const EmailPasswordForm = ({
       <SignupError error={error} />
       {isLogin && (
         <div>
+          <div className="flex justify-between">
+            <div className="py-3 text-xs">
+              <Button
+                onClick={() => navigate(getRoute(['forgot-password']))}
+                className="p-0 text-xs"
+                styleType="textPrimary"
+              >
+                Forgot Password ?
+              </Button>
+            </div>
+            <p className="text-xs">
+              {`Need an account ? `}
+              <Button
+                onClick={() => navigate(getRoute(['signup']))}
+                className="text-xs"
+                styleType="textPrimary"
+              >
+                Sign Up
+              </Button>
+            </p>
+          </div>
           <p className="text-xs">
             {`SSO user ? `}
             <Button
@@ -92,16 +104,6 @@ export const EmailPasswordForm = ({
               styleType="textPrimary"
             >
               Sign In
-            </Button>
-          </p>
-          <p className="text-xs">
-            {`Need an account ? `}
-            <Button
-              onClick={() => navigate(getRoute(['signup']))}
-              className="text-xs"
-              styleType="textPrimary"
-            >
-              Sign Up
             </Button>
           </p>
         </div>
@@ -118,8 +120,8 @@ export const EmailPasswordForm = ({
           </Button>
         </p>
       )}
-      <Disclaimer />
       <SSO />
+      <Disclaimer />
     </form>
   );
 };

@@ -27,9 +27,9 @@ export const Users: React.FC = () => {
 
   const users = [
     {
-      username: friend.email || me,
-      member: friend.email || me,
-      name: friend.email || me,
+      username: friend || me,
+      member: friend || me,
+      name: friend || me,
       updated: '',
       config: {},
       key: 'self',

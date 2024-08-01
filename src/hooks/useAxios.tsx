@@ -19,7 +19,7 @@ export function useInitAxiosInterceptors() {
   useMemo(() => {
     axiosInstance.defaults.baseURL = api ?? '';
     axiosInstance.defaults.headers.common['account'] =
-      friend.email && friend.email !== '' ? friend.email : undefined;
+      friend !== '' ? friend : undefined;
 
     axiosInstance.interceptors.request.use(
       async config => {

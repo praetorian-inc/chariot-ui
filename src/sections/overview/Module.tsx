@@ -1565,7 +1565,7 @@ export function BasIntegration() {
                         {Object.values(systemTypes).map((system, index) => {
                           function handleCopy() {
                             copyToClipboard(
-                              `${api}/${friend.email || me}/${attributeMeta.dns}/${system}`
+                              `${api}/${friend || me}/${attributeMeta.dns}/${system}`
                             );
                           }
 

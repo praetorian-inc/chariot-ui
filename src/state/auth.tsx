@@ -36,7 +36,7 @@ const defaultStack: BackendStack = {
 
 export const emptyAuth: AuthState = {
   ...defaultStack,
-  friend: { email: '', displayName: '' },
+  friend: '',
   isImpersonating: false,
   me: '',
 };
@@ -60,11 +60,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isTokenFetching, setIsTokenFetching] = useState(true);
 
-  function startImpersonation(memberId: string, displayName: string) {
+  function startImpersonation(memberId: string) {
     setAuth(prevAuth => {
       return {
         ...prevAuth,
-        friend: { email: memberId, displayName: displayName },
+        friend: memberId,
       };
     });
     window.location.assign('/app/overview');
@@ -74,7 +74,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuth(prevAuth => {
       return {
         ...prevAuth,
-        friend: { email: '', displayName: '' },
+        friend: '',
       };
     });
     window.location.assign('/app/account');
@@ -255,7 +255,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         error,
         setError,
         confirmOTP,
-        isImpersonating: auth.friend.email !== '',
+        isImpersonating: auth.friend !== '',
         isLoading,
         login,
         logout,

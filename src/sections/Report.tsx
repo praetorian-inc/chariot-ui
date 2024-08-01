@@ -20,8 +20,7 @@ export const Report = () => {
     resource: 'account',
   });
 
-  const client =
-    useGetDisplayName(accounts) || friend.displayName || friend.email || me;
+  const client = useGetDisplayName(accounts) || friend || me;
   const [showDetails, setShowDetails] = useState(false);
   const { counts } = useAggregateCounts();
   const jobsRunning = counts.jobsRunning;

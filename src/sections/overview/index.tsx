@@ -55,8 +55,7 @@ export function Overview() {
     resource: 'account',
   });
 
-  const displayName =
-    useGetDisplayName(accounts) || friend.displayName || friend.email || me;
+  const displayName = useGetDisplayName(accounts) || friend || me;
 
   const size = 150;
 

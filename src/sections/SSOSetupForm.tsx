@@ -3,12 +3,12 @@ import { InformationCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
+import { CopyToClipboard } from '@/components/CopyToClipboard';
 import { Input } from '@/components/form/Input';
 import { Inputs } from '@/components/form/Inputs';
 import { Modal } from '@/components/Modal';
 import { useModifyAccount, useMy } from '@/hooks';
-import {CopyToClipboard} from "@/components/CopyToClipboard";
-import {useAuth} from "@/state/auth";
+import { useAuth } from '@/state/auth';
 
 const DefaultFormValues = {
   domain: '',
@@ -108,7 +108,7 @@ export const SSOSetupForm = () => {
           <p className="text-sm font-bold">
             Add a TXT record to your domain with the following value:{' '}
             <code className="prose block overflow-x-auto whitespace-pre-wrap rounded bg-gray-100 p-4 text-xs text-default">
-              <CopyToClipboard>{`chariot=${friend.email || me}`}</CopyToClipboard>
+              <CopyToClipboard>{`chariot=${friend || me}`}</CopyToClipboard>
             </code>
           </p>
           <Inputs

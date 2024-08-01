@@ -64,7 +64,7 @@ export const AccountDropdown: React.FC = () => {
               />
             ),
             value: displayName || me,
-            onClick: () => friend?.email && stopImpersonation(),
+            onClick: () => friend && stopImpersonation(),
           },
           ...collaborators.map(collaborator => ({
             label: (
@@ -124,15 +124,15 @@ export const AccountDropdown: React.FC = () => {
             to: getRoute(['app', 'logout']),
           },
         ],
-        value: friend?.email || me,
+        value: friend || me,
       }}
     >
       <div className="flex h-5 flex-row items-center">
         <div className="mr-0  text-nowrap p-2 text-xs">
-          {friend.displayName || friend.email || displayName || me}
+          {displayName || friend || me}
         </div>
         <Hexagon>
-          <Avatar className="scale-150" email={friend.email || me} />
+          <Avatar className="scale-150" email={friend || me} />
         </Hexagon>
       </div>
     </Dropdown>

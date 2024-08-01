@@ -53,7 +53,7 @@ export const useMy = <ResourceKey extends MyResourceKey>(
     }
   }
 
-  const isImperonating = friend.email !== '';
+  const isImperonating = friend !== '';
 
   const queryKey = getQueryKey.getMy(
     props.resource,

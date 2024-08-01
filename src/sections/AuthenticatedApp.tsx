@@ -83,7 +83,7 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
   }, []);
 
   useBreadCrumb({
-    label: displayName || friend.displayName || friend.email || me,
+    label: displayName || friend || me,
     order: 1,
   });
 

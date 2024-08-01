@@ -14,6 +14,7 @@ import { useCounts } from '@/hooks/useCounts';
 import { useFilter } from '@/hooks/useFilter';
 import { useReRunJob } from '@/hooks/useJobs';
 import { Job, JobLabels, JobStatus } from '@/types';
+import { cn } from '@/utils/classname';
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -159,11 +160,18 @@ const Jobs: React.FC = () => {
       fixedWidth: 75,
       align: 'center',
       cell: (job: Job) => {
+        const isRunning = job.status === JobStatus.Running;
+
         return (
           <ArrowPathIcon
-            className="size-4 cursor-pointer"
+            className={cn(
+              'size-4 cursor-pointer',
+              isRunning && 'text-gray-300 cursor-not-allowed'
+            )}
             onClick={() => {
-              reRunJob({ capability: job.source, jobKey: job.key });
+              if (!isRunning) {
+                reRunJob({ capability: job.source, jobKey: job.key });
+              }
             }}
           />
         );

@@ -34,25 +34,55 @@ function CheckAuth(props: { children: ReactNode }) {
   }
 }
 
+function CheckNoAuth(props: { children: ReactNode }) {
+  const { me } = useAuth();
+
+  if (!me) {
+    return props.children;
+  } else {
+    return <Navigate to={getRoute(['app'])} replace />;
+  }
+}
+
 const appRoutes = {
   login: {
-    element: <Login />,
+    element: (
+      <CheckNoAuth>
+        <Login />
+      </CheckNoAuth>
+    ),
     title: 'Login',
   },
   'login-sso': {
-    element: <LoginSSO />,
+    element: (
+      <CheckNoAuth>
+        <LoginSSO />
+      </CheckNoAuth>
+    ),
     title: 'Login',
   },
   signup: {
-    element: <Signup />,
+    element: (
+      <CheckNoAuth>
+        <Signup />
+      </CheckNoAuth>
+    ),
     title: 'Sign Up',
   },
   'forgot-password': {
-    element: <ForgotPassword />,
+    element: (
+      <CheckNoAuth>
+        <ForgotPassword />
+      </CheckNoAuth>
+    ),
     title: 'Forgot Password',
   },
   hello: {
-    element: <Hello />,
+    element: (
+      <CheckNoAuth>
+        <Hello />
+      </CheckNoAuth>
+    ),
     title: 'Hello',
   },
   app: {

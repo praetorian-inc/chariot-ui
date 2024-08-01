@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
+import { toast } from 'sonner';
 
-import { Snackbar } from '@/components/Snackbar';
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
 import { AvailableIntegrations } from '@/sections/overview/Integration';
@@ -81,24 +81,23 @@ export const useModifyAccount = (
         }
 
         // Show success snackbar
-        Snackbar({
-          title: `${capitalize(snackbarTitle)} ${snackbarAction}`,
+        toast.success(`${capitalize(snackbarTitle)} ${snackbarAction}`, {
           description:
             username === 'hook'
               ? action === 'link'
                 ? 'Webhook URL copied to clipboard.'
                 : 'Webhook URL was destroyed.'
               : `Your ${snackbarTitle} has been successfully ${snackbarAction}.`,
-          variant: 'success',
         });
 
         return data;
       } catch (error) {
-        Snackbar({
-          title: `Error ${action === 'link' ? 'connecting' : 'disconnecting'} account`,
-          description: 'Please check your username and secret and try again.',
-          variant: 'error',
-        });
+        toast.error(
+          `Error ${action === 'link' ? 'connecting' : 'disconnecting'} account`,
+          {
+            description: 'Please check your username and secret and try again.',
+          }
+        );
         throw error;
       }
     },

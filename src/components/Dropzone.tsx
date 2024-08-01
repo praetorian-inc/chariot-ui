@@ -1,8 +1,8 @@
 import { PropsWithChildren } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { PlusCircleIcon } from '@heroicons/react/24/solid';
+import { toast } from 'sonner';
 
-import { Snackbar } from '@/components/Snackbar';
 import { cn } from '@/utils/classname';
 
 type FileReadType = 'string' | 'arrayBuffer';
@@ -67,10 +67,8 @@ export function Dropzone<T extends FileReadType>(props: Props<T>) {
   };
 
   function handleError() {
-    Snackbar({
-      title: 'Cannot process the file you have uploaded.',
+    toast.error('Cannot process the file you have uploaded.', {
       description: '',
-      variant: 'error',
     });
   }
 

@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-restricted-imports
 import { useQueries } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-import { Snackbar } from '@/components/Snackbar';
 import { useAxios } from '@/hooks/useAxios';
 import { useCounts } from '@/hooks/useCounts';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
@@ -34,18 +34,19 @@ export const useCreateAttribute = (resourceKey = '') => {
   return useMutation({
     defaultErrorMessage: `Failed to add attribute`,
     mutationFn: async (attribute: CreateAttribute) => {
-      const { data } = await axios.post(`/attribute`, {
+      const promise = axios.post(`/attribute`, {
         key: attribute.key,
         name: attribute.name,
         value: attribute.value,
       });
 
-      Snackbar({
-        title: `Attribute added`,
-        description: '',
-        variant: 'success',
+      toast.promise(promise, {
+        loading: 'Adding attribute...',
+        success: 'Attribute added',
+        error: 'Failed to add attribute',
       });
 
+      const { data } = await promise;
       invalidateAttributeCounts();
       invalidateAttributesGenericSearch();
 
@@ -69,7 +70,7 @@ export const useBulkAddAttributes = () => {
     defaultErrorMessage: 'Failed to bulk add attributes',
 
     mutationFn: async (attributes: CreateAttribute[]) => {
-      const response = await Promise.all<Attribute>(
+      const promise = Promise.all<Attribute>(
         attributes
           .map(attribute => {
             return axios.post(`/attribute`, {
@@ -82,17 +83,18 @@ export const useBulkAddAttributes = () => {
           .map(p => p.catch(e => e))
       );
 
+      toast.promise(promise, {
+        loading: 'Adding attributes',
+        success: 'Attributes added',
+        error: 'Failed to add attributes',
+      });
+
+      const response = await promise;
       const validResults = response.filter(
         result => !(result instanceof Error)
       );
 
       if (validResults.length > 0) {
-        Snackbar({
-          title: `Added ${validResults.length} Attributes`,
-          description: '',
-          variant: 'success',
-        });
-
         invalidateAttributeCounts();
         invalidateAttribute();
       }
@@ -118,7 +120,7 @@ export const useBulkDeleteAttributes = (props?: { showToast?: boolean }) => {
   return useMutation({
     defaultErrorMessage: 'Failed to delete attributes',
     mutationFn: async (attributes: { key: string }[]) => {
-      const response = await Promise.all<Attribute>(
+      const promise = Promise.all<Attribute>(
         attributes
           .map(attribute => {
             return axios.delete(`/attribute`, {
@@ -131,21 +133,23 @@ export const useBulkDeleteAttributes = (props?: { showToast?: boolean }) => {
           .map(p => p.catch(e => e))
       );
 
+      if (showToast) {
+        toast.promise(promise, {
+          loading: 'Deleting attributes',
+          success: 'Attributes removed',
+          error: 'Failed to remove attributes',
+        });
+      }
+
+      const response = await promise;
+
       const validResults = response.filter(
         result => !(result instanceof Error)
       );
 
       if (validResults.length > 0) {
-        if (showToast) {
-          Snackbar({
-            title: `Removed ${validResults.length} Attributes`,
-            description: '',
-            variant: 'success',
-          });
-
-          invalidateAttributeCounts();
-          invalidateAttribute();
-        }
+        invalidateAttributeCounts();
+        invalidateAttribute();
       }
 
       return response;

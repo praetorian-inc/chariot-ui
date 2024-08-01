@@ -33,7 +33,7 @@
     "react-grid-layout": "^1.4.4",
     "react-markdown": "^9.0.1",
     "react-router-dom": "^6.22.2",
-    "react-toastify": "^10.0.4",
+    "sonner": "^1.5.0",
     "tailwind-merge": "^2.2.2",
     "use-debounce": "^10.0.0",
     "uuid": "^10.0.0",

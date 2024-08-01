@@ -2,9 +2,9 @@ import { PropsWithChildren, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { ConfigIniParser } from 'config-ini-parser';
+import { toast } from 'sonner';
 
 import { AwsCloudformation } from '@/components/icons/AwsCloudformation';
-import { Snackbar } from '@/components/Snackbar';
 import { useBackends } from '@/hooks';
 import { CustomerQuote } from '@/sections/signup/CustomerQuote';
 import { emptyAuth, useAuth } from '@/state/auth';
@@ -67,23 +67,7 @@ export const PageWrapper = ({
         }
       } catch (error) {
         if (error instanceof Error && error.message) {
-          Snackbar({
-            variant: 'error',
-            title: 'Failed to parse ini file',
-            description: (
-              <div>
-                <div>{`${error.message}. Please make sure the file is in the correct format`}</div>
-                <a
-                  className="text-brand"
-                  href={'/keychain.ini'}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View sample .ini file
-                </a>
-              </div>
-            ),
-          });
+          toast.error('Invalid keychain format');
         }
       }
     };

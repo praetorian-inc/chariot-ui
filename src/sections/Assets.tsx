@@ -6,7 +6,6 @@ import AssetStatusDropdown from '@/components/AssetStatusDropdown';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { getAssetStatusIcon } from '@/components/icons/AssetStatus.icon';
 import { HorseIcon } from '@/components/icons/Horse.icon';
-import { showBulkSnackbar, Snackbar } from '@/components/Snackbar';
 import SourceDropdown from '@/components/SourceDropdown';
 import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
@@ -14,11 +13,7 @@ import { Tooltip } from '@/components/Tooltip';
 import { getAssetStatusProperties } from '@/components/ui/AssetStatusChip';
 import { AttributeFilter } from '@/components/ui/AttributeFilter';
 import { useMy } from '@/hooks';
-import {
-  AssetsSnackbarTitle,
-  getStartMessage,
-  useUpdateAsset,
-} from '@/hooks/useAssets';
+import { useUpdateAsset } from '@/hooks/useAssets';
 import { useFilter } from '@/hooks/useFilter';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useIntegration } from '@/hooks/useIntegration';
@@ -297,7 +292,6 @@ const Assets: React.FC = () => {
   ];
 
   function updateStatus(assets: string[], status: AssetStatus) {
-    const showBulk = showBulkSnackbar(assets.length);
     setShowAssetStatusWarning(false);
     setAssetStatus('');
 
@@ -307,18 +301,10 @@ const Assets: React.FC = () => {
           key: assetKey,
           name: parseKeys.assetKey(assetKey).name,
           status,
-          showSnackbar: !showBulk,
         },
         {
           onSuccess: () => {
             setSelectedRows([]);
-            if (showBulk) {
-              Snackbar({
-                title: `${assets.length} assets ${AssetsSnackbarTitle[status]}`,
-                description: getStartMessage(status),
-                variant: 'success',
-              });
-            }
           },
         }
       );

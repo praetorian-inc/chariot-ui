@@ -1,4 +1,5 @@
-import { Snackbar } from '@/components/Snackbar';
+import { toast } from 'sonner';
+
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
 import { useMutation } from '@/utils/api';
@@ -14,11 +15,7 @@ export const useUpgrade = () => {
       return axios.post('upgrade');
     },
     onSuccess: () => {
-      Snackbar({
-        title: 'Account Upgraded',
-        description: 'Successfully upgraded your account.',
-        variant: 'success',
-      });
+      toast.success('Account Upgraded');
       invalidate();
     },
   });

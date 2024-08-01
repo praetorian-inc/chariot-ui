@@ -1,6 +1,6 @@
 import { AxiosHeaders, AxiosProgressEvent } from 'axios';
+import { toast } from 'sonner';
 
-import { Snackbar } from '@/components/Snackbar';
 import {
   PROFILE_PICTURE_ID,
   useGetProfilePictureUrl,
@@ -37,12 +37,19 @@ export function useUploadFile() {
   return useMutation({
     defaultErrorMessage: 'Failed to Upload file',
     mutationFn: async (props: UploadFilesProps) => {
-      const res = await axios.put(`/file`, null, {
+      const promise = axios.put(`/file`, null, {
         params: {
           name: props.name,
         },
       });
 
+      toast.promise(promise, {
+        loading: 'Uploading file...',
+        success: 'File uploaded',
+        error: 'Failed to upload file',
+      });
+
+      const res = await promise;
       const uploadUrl = res.data.url;
 
       if (!uploadUrl) {
@@ -68,17 +75,6 @@ export function useUploadFile() {
       if (!variable.ignoreSnackbar) {
         if (variable.name === PROFILE_PICTURE_ID) {
           invalidateProfilePicture();
-          Snackbar({
-            variant: 'success',
-            title: `Profile picture uploaded successfully`,
-            description: '',
-          });
-        } else {
-          Snackbar({
-            variant: 'success',
-            title: `File "${variable.name}" uploaded successfully`,
-            description: '',
-          });
         }
       }
     },

@@ -14,8 +14,8 @@ import {
   signOut,
   signUp,
 } from 'aws-amplify/auth';
+import { toast } from 'sonner';
 
-import { Snackbar } from '@/components/Snackbar';
 import { queryClient } from '@/queryclient';
 import { AuthContextType, AuthState, BackendType } from '@/types';
 import { initAmplify } from '@/utils/amplify.util';
@@ -171,11 +171,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (error) {
       if (error instanceof Error && error.message) {
-        Snackbar({
-          variant: 'error',
-          title: 'Failed to confirm OTP',
-          description: error.message,
-        });
+        toast.error('Failed to confirm OTP');
+        console.error(error);
       }
       setIsLoading(false);
     }

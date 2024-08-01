@@ -1,4 +1,5 @@
-import { Snackbar } from '@/components/Snackbar';
+import { toast } from 'sonner';
+
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
 import { getQueryKey } from '@/hooks/useQueryKeys';
@@ -20,15 +21,15 @@ export const useCreateRisk = () => {
   return useMutation<Risk, Error, RiskTemplate>({
     defaultErrorMessage: `Failed to create risk`,
     mutationFn: async riskTemplate => {
-      const { data } = await axios.post('/risk', riskTemplate);
-      const newRisk = data.risks[0];
+      const promise = axios.post('/risk', riskTemplate);
 
-      Snackbar({
-        title: 'Risk Created',
-        description: 'A new risk has been successfully created.',
-        variant: 'success',
+      toast.promise(promise, {
+        loading: 'Creating risk...',
+        success: 'Risk created',
+        error: 'Failed to create risk',
       });
-
+      const { data } = await promise;
+      const newRisk = data.risks[0];
       updateAllSubQueries(previous => {
         const newPages = previous ? [...previous.pages] : [];
         newPages[0] = [newRisk, ...newPages[0]]; // Add the new risk to the first page
@@ -63,19 +64,22 @@ export const useUpdateRisk = () => {
     defaultErrorMessage: `Failed to update risk`,
     mutationFn: async riskUpdate => {
       const { showSnackbar = true, ...riskTemplate } = riskUpdate;
-      const { data } = await axios.put('/risk', riskTemplate);
+      const promise = axios.put('/risk', riskTemplate);
+
+      if (showSnackbar) {
+        toast.promise(promise, {
+          loading: 'Updating risk...',
+          success: 'Risk updated',
+          error: 'Failed to update risk',
+        });
+      }
+
+      const { data } = await promise;
       const updatedRisk = data.risks[0];
 
       queryClient.invalidateQueries({
         queryKey: getQueryKey.getCounts('risk'),
       });
-
-      showSnackbar &&
-        Snackbar({
-          title: 'Risk Updated',
-          description: 'The risk has been successfully updated.',
-          variant: 'success',
-        });
 
       updateAllSubQueries(previous => {
         const updatedPages = previous.pages.map(page =>
@@ -102,26 +106,27 @@ const useBulkUpdateRiskHook = () => {
   );
 
   return useMutation<unknown, Error, RiskTemplate[]>({
-    defaultErrorMessage: 'Failed to bulk update risks',
+    defaultErrorMessage: 'Failed to update risks',
     mutationFn: async (risks: RiskTemplate[]) => {
-      const response = await Promise.all(
+      const promise = Promise.all(
         risks
           .map(async risk => await axios.put(`/risk`, risk))
           // Note: Catch error so we can continue updating risk even if some fail
           .map(p => p.catch(e => e))
       );
 
+      toast.promise(promise, {
+        loading: 'Updating risks...',
+        success: 'Risks updated',
+        error: 'Failed to update risks',
+      });
+      const response = await promise;
+
       const validResults = response.filter(
         result => !(result instanceof Error)
       );
 
       if (validResults.length > 0) {
-        Snackbar({
-          title: `${risks.length} Risks Updated`,
-          description: 'The risk has been successfully updated.',
-          variant: 'success',
-        });
-
         const keys = risks.map(r => r.key);
 
         updateAllSubQueries(previous => {

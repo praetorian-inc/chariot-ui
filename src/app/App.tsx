@@ -1,6 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Toaster } from 'sonner';
 
 import { AppRoutes } from '@/app/AppRoute';
 import { useInitAxiosInterceptors } from '@/hooks/useAxios';
@@ -11,8 +11,6 @@ import { GlobalStateProvider } from '@/state/global.state';
 import { SearchProvider } from '@/state/search';
 import { initAmplify } from '@/utils/amplify.util';
 import { QueryClientProvider } from '@/utils/api';
-
-import 'react-toastify/dist/ReactToastify.css';
 
 function AppComponent() {
   useInitAxiosInterceptors();
@@ -44,17 +42,7 @@ function ThirdPartyProviders({ children }: { children: React.ReactNode }) {
             buttonPosition="bottom-left"
           />
         )}
-        <ToastContainer
-          hideProgressBar={true}
-          closeOnClick
-          newestOnTop={false}
-          stacked
-          position="top-right"
-          autoClose={3000}
-          draggablePercent={30}
-          draggable
-          limit={3}
-        />
+        <Toaster richColors position="bottom-right" />
         {children}
       </QueryClientProvider>
     </BrowserRouter>

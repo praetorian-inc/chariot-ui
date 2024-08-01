@@ -1,4 +1,5 @@
-import { Snackbar } from '@/components/Snackbar';
+import { toast } from 'sonner';
+
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
 import { Asset, AssetStatus, AssetStatusLabel, RiskScanMessage } from '@/types';
@@ -50,30 +51,21 @@ export const useUpdateAsset = () => {
 
   return useMutation<Asset, Error, UpdateAssetProps>({
     defaultErrorMessage: 'Failed to update asset',
-    mutationFn: async ({ key, name, status, comment, showSnackbar = true }) => {
-      const response = await axios.put(`/asset`, {
+    mutationFn: async ({ key, name, status, comment }) => {
+      const promise = axios.put(`/asset`, {
         key,
         status,
         comment,
       });
 
+      toast.promise(promise, {
+        loading: `Updating ${name}`,
+        success: `Updated ${name}`,
+        error: `Failed to update ${name}`,
+      });
+
+      const response = await promise;
       const data = response.data?.[0] as Asset;
-
-      if (status && showSnackbar) {
-        Snackbar({
-          title: `${name} ${AssetsSnackbarTitle[status]}`,
-          description: getStartMessage(status),
-          variant: 'success',
-        });
-      }
-
-      if (comment && showSnackbar) {
-        Snackbar({
-          title: `${name} comment updated`,
-          description: '',
-          variant: 'success',
-        });
-      }
 
       updateAllSubQueries(previous => {
         if (!previous) {
@@ -118,17 +110,19 @@ export const useCreateAsset = () => {
   return useMutation<Asset, Error, Pick<Asset, 'name' | 'status'>>({
     defaultErrorMessage: `Failed to add asset`,
     mutationFn: async asset => {
-      const { data } = await axios.post(`/asset`, {
+      const promise = axios.post(`/asset`, {
         dns: asset.name,
         name: asset.name,
         status: asset.status || AssetStatus.Active,
       });
 
-      Snackbar({
-        title: `${asset.name} added`,
-        description: '',
-        variant: 'success',
+      toast.promise(promise, {
+        loading: 'Adding asset',
+        success: `Added ${asset.name}`,
+        error: 'Failed to add asset',
       });
+
+      const { data } = await promise;
 
       invalidateJob();
       invalidateAssets();
@@ -157,7 +151,7 @@ export const useBulkAddAsset = () => {
     mutationFn: async (
       assets: (Partial<Pick<Asset, 'status'>> & Pick<Asset, 'name'>)[]
     ) => {
-      const response = await Promise.all<Asset>(
+      const promise = Promise.all<Asset>(
         assets
           .map(async asset => {
             const { data } = await axios.post<Asset[]>(`/asset`, {
@@ -172,27 +166,21 @@ export const useBulkAddAsset = () => {
           .map(p => p.catch(e => e))
       );
 
+      toast.promise(promise, {
+        loading: 'Adding assets',
+        success: `Added ${assets.length} assets`,
+        error: 'Failed to add assets',
+      });
+
+      const response = await promise;
+
       const validResults = response.filter(
         result => !(result instanceof Error)
       );
 
       if (validResults.length > 0) {
-        Snackbar({
-          title: `Added ${validResults.length} assets`,
-          description: getStartMessage(AssetStatus.Active),
-          variant: 'success',
-        });
-
         invalidateJob();
         invalidateAsset();
-      }
-
-      if (validResults.length < response.length) {
-        Snackbar({
-          title: `Failed to add ${response.length - validResults.length} assets`,
-          description: '',
-          variant: 'error',
-        });
       }
 
       return validResults;

@@ -21,7 +21,6 @@ import { Dropzone, Files } from '@/components/Dropzone';
 import { Input } from '@/components/form/Input';
 import { InputText } from '@/components/form/InputText';
 import { Loader } from '@/components/Loader';
-import { Snackbar } from '@/components/Snackbar';
 import { Tooltip } from '@/components/Tooltip';
 import WebhookExample from '@/components/ui/WebhookExample';
 import { useMy, useUploadFile } from '@/hooks';
@@ -1314,19 +1313,9 @@ export function BasIntegration() {
       })
         .then(() => {
           updateAgents();
-          Snackbar({
-            title: fileName,
-            description: 'The file has been uploaded successfully.',
-            variant: 'success',
-          });
           setProgress(null); // Reset progress on success
         })
         .catch(() => {
-          Snackbar({
-            title: fileName,
-            description: 'Failed to upload the file.',
-            variant: 'error',
-          });
           setProgress(null); // Reset progress on error
         });
 

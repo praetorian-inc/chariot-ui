@@ -1,4 +1,5 @@
-import { Snackbar } from '@/components/Snackbar';
+import { toast } from 'sonner';
+
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
 import { useMutation } from '@/utils/api';
@@ -21,11 +22,7 @@ export function useReRunJob() {
     },
     onSuccess: () => {
       // Note: Need to be updated to show the correct message
-      Snackbar({
-        title: `Processing Scan Request`,
-        description: '',
-        variant: 'success',
-      });
+      toast.success(`Processing Scan Request`);
 
       invalidateJobs();
     },
@@ -61,11 +58,7 @@ export function useBulkReRunJob() {
       );
 
       if (validResults.length > 0) {
-        Snackbar({
-          title: `Processing Scan Request`,
-          description: '',
-          variant: 'success',
-        });
+        toast.success(`Processing Scan Request`);
 
         invalidateJobs();
       }

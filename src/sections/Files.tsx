@@ -19,6 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { Divider } from '@tremor/react';
+import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
 
 import { Button } from '@/components/Button';
@@ -28,7 +29,6 @@ import FileViewer from '@/components/FileViewer';
 import { RisksIcon } from '@/components/icons';
 import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
-import { Snackbar } from '@/components/Snackbar';
 import { Tooltip } from '@/components/Tooltip';
 import { Body } from '@/components/ui/Body';
 import { NoData } from '@/components/ui/NoData';
@@ -239,32 +239,29 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
   ) => {
     files.forEach(({ content, file }) => {
       setUploadProgress(0); // Reset progress
-      uploadFile({
-        name: `${currentFolder.query}/${file.name}`,
-        content: content ?? '',
-        onProgress: progressEvent => {
-          const progress =
-            (progressEvent.loaded / (progressEvent.total ?? 1)) * 100;
-          setUploadProgress(progress >= 100 ? null : progress);
-        },
-      })
-        .then(() => {
-          Snackbar({
-            title: file.name,
-            description: 'The file has been uploaded successfully.',
-            variant: 'success',
-          });
-          setUploadProgress(null); // Reset progress on success
-          setShowFileUpload(false); // Hide Dropzone
-        })
-        .catch(() => {
-          Snackbar({
-            title: file.name,
-            description: 'Failed to upload the file.',
-            variant: 'error',
-          });
-          setUploadProgress(null); // Reset progress on error
-        });
+      toast.promise(
+        uploadFile({
+          name: `${currentFolder.query}/${file.name}`,
+          content: content ?? '',
+          onProgress: progressEvent => {
+            const progress =
+              (progressEvent.loaded / (progressEvent.total ?? 1)) * 100;
+            setUploadProgress(progress >= 100 ? null : progress);
+          },
+        }),
+        {
+          loading: 'Uploading...',
+          success: () => {
+            setUploadProgress(null);
+            setShowFileUpload(false);
+            return `${file.name} uploaded`;
+          },
+          error: () => {
+            setUploadProgress(null);
+            return 'Upload failed';
+          },
+        }
+      );
     });
   };
 
@@ -439,26 +436,24 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
         footer={{
           text: 'Save',
           onClick: async () => {
-            uploadFile({
-              ignoreSnackbar: true,
-              name: filename,
-              content: content ?? '',
-            })
-              .then(() => {
-                Snackbar({
-                  title: filename,
-                  description: 'The file has been saved successfully.',
-                  variant: 'success',
-                });
-                setFilename('');
-              })
-              .catch(() => {
-                Snackbar({
-                  title: filename,
-                  description: 'Failed to save the file.',
-                  variant: 'error',
-                });
-              });
+            toast.promise(
+              uploadFile({
+                ignoreSnackbar: true,
+                name: filename,
+                content: content ?? '',
+              }),
+              {
+                loading: 'Saving...',
+                success: () => {
+                  const fn = filename;
+                  setFilename('');
+                  return `${fn} saved`;
+                },
+                error: () => {
+                  return `Failed to save ${filename}`;
+                },
+              }
+            );
           },
         }}
       >

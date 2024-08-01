@@ -44,9 +44,9 @@ export function useUploadFile() {
       });
 
       toast.promise(promise, {
-        loading: 'Uploading file...',
-        success: 'File uploaded',
-        error: 'Failed to upload file',
+        loading: `Uploading ${props.name}...`,
+        success: `${props.name} uploaded`,
+        error: `Failed to upload ${props.name}`,
       });
 
       const res = await promise;

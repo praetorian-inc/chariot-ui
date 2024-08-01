@@ -19,7 +19,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/solid';
 import { Divider } from '@tremor/react';
-import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
 
 import { Button } from '@/components/Button';
@@ -239,29 +238,22 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
   ) => {
     files.forEach(({ content, file }) => {
       setUploadProgress(0); // Reset progress
-      toast.promise(
-        uploadFile({
-          name: `${currentFolder.query}/${file.name}`,
-          content: content ?? '',
-          onProgress: progressEvent => {
-            const progress =
-              (progressEvent.loaded / (progressEvent.total ?? 1)) * 100;
-            setUploadProgress(progress >= 100 ? null : progress);
-          },
-        }),
-        {
-          loading: 'Uploading...',
-          success: () => {
-            setUploadProgress(null);
-            setShowFileUpload(false);
-            return `${file.name} uploaded`;
-          },
-          error: () => {
-            setUploadProgress(null);
-            return 'Upload failed';
-          },
-        }
-      );
+      uploadFile({
+        name: `${currentFolder.query}/${file.name}`,
+        content: content ?? '',
+        onProgress: progressEvent => {
+          const progress =
+            (progressEvent.loaded / (progressEvent.total ?? 1)) * 100;
+          setUploadProgress(progress >= 100 ? null : progress);
+        },
+      })
+        .then(() => {
+          setUploadProgress(null); // Reset progress on success
+          setShowFileUpload(false); // Hide Dropzone
+        })
+        .catch(() => {
+          setUploadProgress(null); // Reset progress on error
+        });
     });
   };
 
@@ -436,24 +428,13 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
         footer={{
           text: 'Save',
           onClick: async () => {
-            toast.promise(
-              uploadFile({
-                ignoreSnackbar: true,
-                name: filename,
-                content: content ?? '',
-              }),
-              {
-                loading: 'Saving...',
-                success: () => {
-                  const fn = filename;
-                  setFilename('');
-                  return `${fn} saved`;
-                },
-                error: () => {
-                  return `Failed to save ${filename}`;
-                },
-              }
-            );
+            uploadFile({
+              ignoreSnackbar: true,
+              name: filename,
+              content: content ?? '',
+            }).then(() => {
+              setFilename('');
+            });
           },
         }}
       >

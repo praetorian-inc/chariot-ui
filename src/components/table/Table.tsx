@@ -554,11 +554,11 @@ export function Th(props: {
   resize?: boolean;
 }) {
   const ref = useRef<HTMLTableCellElement>(null);
-  const { fixedWidth, resize = false, ...restProps } = props;
+  const { fixedWidth, resize = false, storageKey, ...restProps } = props;
   const { size, onMouseDown } = useResize({
     el: ref.current || document.createElement('div'),
     minWidth: fixedWidth || 100,
-    storageKey: props.storageKey,
+    storageKey: storageKey,
   });
 
   return (

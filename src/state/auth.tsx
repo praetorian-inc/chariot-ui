@@ -187,7 +187,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = session.tokens?.idToken?.toString() ?? '';
 
     if (!token) {
-      console.error('Error occured while fetching token');
+      toast.error('Init token missing');
 
       queryClient.clear();
       setAuth(emptyAuth);

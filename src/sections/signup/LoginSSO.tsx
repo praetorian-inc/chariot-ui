@@ -6,16 +6,13 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/form/Input';
 import { Disclaimer } from '@/sections/signup/Disclaimer';
 import { PageWrapper } from '@/sections/signup/PageWrapper';
-import { useAuth } from '@/state/auth';
 import { getRoute } from '@/utils/route.util';
 
 export const LoginSSO = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>('');
-  const { setAuth } = useAuth();
 
   const handleSignin = async () => {
-    setAuth(prev => ({ ...prev, me: username }));
     await signInWithRedirect({
       provider: {
         custom: username.split('@')[1],

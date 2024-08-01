@@ -2,12 +2,15 @@ import { useAxios } from '@/hooks/useAxios';
 import { useAuth } from '@/state/auth';
 
 const useRiskDetails = () => {
-  const { token } = useAuth();
+  const { getToken } = useAuth();
+
   const axios = useAxios();
 
   const fetchRiskDetails = async (
     email: string
   ): Promise<{ filename: string; fileData: Blob }> => {
+    const token = await getToken();
+
     const initialResponse = await axios({
       method: 'get',
       url: '/risk/export',

@@ -8,7 +8,7 @@ import { AwsCloudformation } from '@/components/icons/AwsCloudformation';
 import { useBackends } from '@/hooks';
 import { CustomerQuote } from '@/sections/signup/CustomerQuote';
 import { emptyAuth, useAuth } from '@/state/auth';
-import { BackendType } from '@/types';
+import { BackendStack } from '@/types';
 
 interface Props extends PropsWithChildren {
   title: string;
@@ -44,26 +44,25 @@ export const PageWrapper = ({
 
         if (sections.length > 0) {
           const backend = sections.shift() ?? '';
-          let username = '';
-          let password = '';
 
-          const creds: BackendType = {
-            name: config.get(backend, 'name').trim() as string,
-            client_id: config.get(backend, 'client_id').trim() as string,
+          const creds: BackendStack = {
+            backend: config.get(backend, 'name').trim() as string,
+            clientId: config.get(backend, 'client_id').trim() as string,
             api: config.get(backend, 'api').trim() as string,
             userPoolId: config.get(backend, 'user_pool_id').trim() as string,
           };
+
+          setBackendStack(creds);
 
           if (
             config.isHaveOption(backend, 'username') &&
             config.isHaveOption(backend, 'password')
           ) {
-            username = config.get(backend, 'username').trim() as string;
-            password = config.get(backend, 'password').trim() as string;
-          }
+            const username = config.get(backend, 'username').trim() as string;
+            const password = config.get(backend, 'password').trim() as string;
 
-          setBackendStack(creds);
-          login(username, password);
+            login(username, password);
+          }
         }
       } catch (error) {
         if (error instanceof Error && error.message) {

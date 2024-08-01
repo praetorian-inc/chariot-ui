@@ -14,14 +14,29 @@ export const useAxios = () => {
 };
 
 export function useInitAxiosInterceptors() {
-  const { api, token, friend } = useAuth();
+  const { friend, api, getToken } = useAuth();
 
   useMemo(() => {
     axiosInstance.defaults.baseURL = api ?? '';
-    axiosInstance.defaults.headers.common['Authorization'] = token
-      ? `Bearer ${token}`
-      : '';
     axiosInstance.defaults.headers.common['account'] =
       friend.email && friend.email !== '' ? friend.email : undefined;
-  }, [api, token, friend]);
+
+    axiosInstance.interceptors.request.use(
+      async config => {
+        try {
+          // Get the current session from Amplify Auth
+          const token = await getToken();
+
+          // Add the token to the request headers
+          config.headers.Authorization = token ? `Bearer ${token}` : '';
+        } catch (error) {
+          console.error('Error getting Amplify token', error);
+        }
+        return config;
+      },
+      error => {
+        return Promise.reject(error);
+      }
+    );
+  }, [friend, api]);
 }

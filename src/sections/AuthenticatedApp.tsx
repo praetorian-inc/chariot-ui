@@ -120,7 +120,6 @@ const HeaderPortalSections = {
 };
 
 export function Header() {
-  const { friend } = useAuth();
   const { breadcrumbs } = useBreadCrumbsContext();
 
   // TODO: FIXME - this is a hack to not show sticky header on table pages
@@ -132,7 +131,7 @@ export function Header() {
     <>
       <div
         className={cn(
-          `${friend?.email?.length > 0 && 'pt-[10px]'} flex flex-col items-center w-full bg-header text-header px-4`
+          `flex flex-col items-center w-full bg-header text-header px-4`
         )}
       >
         <div className="w-full max-w-screen-xl">

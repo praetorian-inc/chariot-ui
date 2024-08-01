@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 
 import { RenderRoutes } from '@/components/route/RenderRoutes';
@@ -22,18 +22,10 @@ import { validateRoutes } from '@/utils/route.util';
 import { getRoute } from '@/utils/route.util';
 
 function CheckAuth(props: { children: ReactNode }) {
-  const { token, isLoading, fetchToken } = useAuth();
+  const { me } = useAuth();
   const location = useLocation();
 
-  useEffect(() => {
-    fetchToken();
-  }, []);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (token) {
+  if (me) {
     return props.children;
   } else {
     return (

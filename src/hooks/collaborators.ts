@@ -19,7 +19,8 @@ interface CollaboratorProps {
 }
 
 export function useGetCollaborators(props?: CollaboratorProps) {
-  const { token } = useAuth();
+  const { getToken } = useAuth();
+
   const axios = useAxios();
 
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
@@ -41,6 +42,8 @@ export function useGetCollaborators(props?: CollaboratorProps) {
 
       const requests = collaboratorEmails.map(
         async (email): Promise<Collaborator> => {
+          const token = await getToken();
+
           const promises = [
             axios<{ accounts: Account[] }>({
               method: 'get',
@@ -91,7 +94,7 @@ export function useGetCollaborators(props?: CollaboratorProps) {
       setCollaborators([]);
       setCollaboratorsStatus('success');
     }
-  }, [JSON.stringify(collaboratorEmails), token]);
+  }, [JSON.stringify(collaboratorEmails)]);
 
   return {
     data: collaborators,

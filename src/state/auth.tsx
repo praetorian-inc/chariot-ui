@@ -1,12 +1,12 @@
 import React, {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Amplify } from 'aws-amplify';
 import {
   confirmSignUp,
   fetchAuthSession,
@@ -14,11 +14,12 @@ import {
   signOut,
   signUp,
 } from 'aws-amplify/auth';
+import { Hub } from 'aws-amplify/utils';
 import { toast } from 'sonner';
 
 import { queryClient } from '@/queryclient';
-import { AuthContextType, AuthState, BackendType } from '@/types';
-import { initAmplify } from '@/utils/amplify.util';
+import { AuthContextType, AuthState, BackendStack } from '@/types';
+import { Regex } from '@/utils/regex.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
@@ -26,48 +27,40 @@ export const REGION_REGEX = /.*execute-api.(.*).amazonaws/;
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const emptyAuth: AuthState = {
-  token: '',
+const defaultStack: BackendStack = {
   backend: 'chariot',
   api: 'https://d0qcl2e18h.execute-api.us-east-2.amazonaws.com/chariot',
-  region: 'us-east-2',
   clientId: '795dnnr45so7m17cppta0b295o',
-  me: '',
+  userPoolId: 'us-east-2_BJ6QHVG2L',
+};
+
+export const emptyAuth: AuthState = {
+  ...defaultStack,
   friend: { email: '', displayName: '' },
   isImpersonating: false,
-  userPoolId: 'us-east-2_BJ6QHVG2L',
+  me: '',
 };
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [error, setError] = useState<string>('');
+
   const [auth, setAuth] = useStorage<AuthState>(
     { key: StorageKey.AUTH },
     emptyAuth
   );
 
+  const backendStack = {
+    api: auth.api,
+    backend: auth.backend,
+    clientId: auth.clientId,
+    userPoolId: auth.userPoolId,
+  };
+
   const [isLoading, setIsLoading] = useState(false);
-  const { expiry } = auth;
+  const [isTokenFetching, setIsTokenFetching] = useState(true);
 
-  const [, setIsTabVisible] = useState(true);
-  const [, setNewUserSeedModal] = useStorage(
-    { key: StorageKey.SHOW_NEW_USER_SEED_MODAL },
-    false
-  );
-
-  const [isTokenRefreshing, setIsTokenRefreshing] = useState(isExpired(expiry));
-
-  const updateTabVisibility = useCallback(() => {
-    const isVisible = document.visibilityState === 'visible';
-
-    if (isVisible) {
-      fetchToken();
-    }
-
-    setIsTabVisible(isVisible);
-  }, [expiry]);
-
-  const startImpersonation = (memberId: string, displayName: string) => {
+  function startImpersonation(memberId: string, displayName: string) {
     setAuth(prevAuth => {
       return {
         ...prevAuth,
@@ -75,9 +68,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       };
     });
     window.location.assign('/app/overview');
-  };
+  }
 
-  const stopImpersonation = () => {
+  function stopImpersonation() {
     setAuth(prevAuth => {
       return {
         ...prevAuth,
@@ -85,65 +78,27 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       };
     });
     window.location.assign('/app/account');
-  };
+  }
 
-  // This function is mainly to handle cases where the user is using their own stack
-  const setBackendStack = (backendStack?: BackendType) => {
-    const api = backendStack?.api || emptyAuth.api;
-    const backend = backendStack?.name || emptyAuth.backend;
-    const clientId = backendStack?.client_id || emptyAuth.clientId;
-    const userPoolId = backendStack?.userPoolId || emptyAuth.userPoolId;
-    const region = REGION_REGEX.exec(api)?.[1] ?? 'us-east-2';
-
-    initAmplify({
-      clientId,
-      userPoolId,
-      backend,
-      region,
-      api,
-    });
-
-    setAuth(prevAuth => ({
-      ...prevAuth,
-      backend,
-      clientId,
-      api,
-      userPoolId,
-    }));
-  };
-
-  const login = async (username = '', password = '') => {
+  async function login(username = '', password = '') {
     try {
       if (username && password) {
-        setNewUserSeedModal(true);
         setIsLoading(true);
-        const { isSignedIn } = await signIn({
+        await signIn({
           username,
           password,
         });
-        fetchToken();
-        if (isSignedIn) {
-          navigate('/');
-        }
       }
     } catch (error) {
       error instanceof Error && error.message && setError(error.message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   async function signup(username = '', password = '', gotoNext = () => {}) {
     try {
       setIsLoading(true);
-      if (emptyAuth.backend !== auth.backend) {
-        setBackendStack({
-          name: auth.backend,
-          client_id: auth.clientId,
-          api: auth.api,
-          userPoolId: auth.userPoolId,
-        });
-      }
       const { isSignUpComplete, nextStep } = await signUp({
         username,
         password,
@@ -178,60 +133,140 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  async function fetchToken() {
-    setIsTokenRefreshing(true);
+  async function fetchUserEmail() {
+    setIsTokenFetching(true);
     const session = await fetchAuthSession();
-    setAuth(auth => ({
-      ...auth,
-      token: session.tokens?.idToken?.toString() ?? '',
-      me: session.tokens?.idToken?.payload?.email?.toString() ?? '',
-    }));
-    setIsTokenRefreshing(false);
+
+    if (session.tokens) {
+      console.log('Fetched user email', {
+        currentDate: new Date(),
+      });
+
+      const ssoDomain = (
+        session.tokens?.idToken?.payload?.identities as unknown as {
+          providerName: string;
+        }[]
+      )?.[0]?.providerName;
+
+      const ssoUsername = `sso@${ssoDomain}`;
+
+      setAuth(auth => ({
+        ...auth,
+        me:
+          session.tokens?.idToken?.payload?.email?.toString() ??
+          ssoUsername ??
+          '',
+      }));
+    }
+    setIsTokenFetching(false);
   }
 
   async function logout() {
-    queryClient.clear();
-    setAuth(emptyAuth);
-    setNewUserSeedModal(false);
-
     await signOut();
-    navigate(getRoute(['login']));
-    setBackendStack();
   }
 
-  const value: AuthContextType = useMemo(
-    (): AuthContextType => ({
-      ...auth,
-      confirmOTP,
-      error,
-      fetchToken,
-      isImpersonating: auth.friend.email !== '',
-      isLoading,
-      login,
-      logout,
-      setAuth,
-      setBackendStack,
-      setError,
-      signup,
-      startImpersonation,
-      stopImpersonation,
-    }),
-    [login, logout, JSON.stringify(auth)]
-  );
+  function setBackendStack(backendStack: BackendStack = defaultStack) {
+    initAmplify(backendStack);
+
+    setAuth(prevAuth => ({
+      ...prevAuth,
+      ...backendStack,
+    }));
+  }
+
+  async function getToken() {
+    const session = await fetchAuthSession();
+    const token = session.tokens?.idToken?.toString() ?? '';
+
+    return token;
+  }
 
   useEffect(() => {
-    document.addEventListener('visibilitychange', updateTabVisibility);
+    const stopListen = Hub.listen('auth', async ({ payload }) => {
+      console.log('Hub', payload);
+
+      switch (payload.event) {
+        case 'signedIn': {
+          await fetchUserEmail();
+          navigate('/');
+
+          break;
+        }
+
+        case 'signedOut':
+          console.log('user have been signedOut successfully.', payload);
+          queryClient.clear();
+          setAuth(auth => {
+            const backendStack = {
+              api: auth.api,
+              backend: auth.backend,
+              clientId: auth.clientId,
+              userPoolId: auth.userPoolId,
+            };
+
+            return {
+              ...emptyAuth,
+              ...backendStack,
+            };
+          });
+          navigate(getRoute(['login']));
+
+          break;
+        case 'tokenRefresh':
+          console.log('auth tokens have been refreshed.', payload);
+
+          break;
+        case 'tokenRefresh_failure':
+          console.error('failure while refreshing auth tokens.', payload);
+
+          toast.error('Session expired, Please login again.');
+          logout();
+          break;
+        case 'signInWithRedirect_failure':
+          console.error(
+            'failure while trying to resolve signInWithRedirect API.',
+            payload
+          );
+          break;
+      }
+    });
+
+    fetchUserEmail();
 
     return () => {
-      document.removeEventListener('visibilitychange', updateTabVisibility);
+      stopListen();
     };
-  }, [updateTabVisibility]);
+  }, []);
 
-  if (isTokenRefreshing) {
+  useMemo(() => {
+    setBackendStack(backendStack);
+  }, [JSON.stringify(backendStack)]);
+
+  if (isTokenFetching) {
     return null;
   }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        ...auth,
+        getToken,
+        error,
+        setError,
+        confirmOTP,
+        isImpersonating: auth.friend.email !== '',
+        isLoading,
+        login,
+        logout,
+        signup,
+        startImpersonation,
+        stopImpersonation,
+        setBackendStack,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 // Hook to use auth context in any functional component
@@ -247,15 +282,40 @@ export const useAuth = () => {
 
 export default AuthProvider;
 
-function getCurrentData() {
-  return new Date();
-}
+const initAmplify = (stack: BackendStack = defaultStack) => {
+  const { clientId, userPoolId, api, backend } = stack;
 
-function isExpired(expiry?: Date) {
-  if (!expiry) return false;
+  const region = Regex.AWS_REGION_REGEX.exec(api)?.[1] ?? 'us-east-2';
 
-  const expiryDate = new Date(expiry);
-  const currentDate = getCurrentData();
-
-  return currentDate > expiryDate;
-}
+  Amplify.configure({
+    Auth: {
+      Cognito: {
+        userPoolClientId: clientId,
+        userPoolId,
+        loginWith: {
+          oauth: {
+            domain: `praetorian-${backend}.auth.${region}.amazoncognito.com`,
+            scopes: ['email', 'openid'],
+            redirectSignIn: [
+              'https://localhost:3000/hello',
+              'https://preview.chariot.praetorian.com/hello',
+            ],
+            redirectSignOut: [
+              'https://localhost:3000/goodbye',
+              'https://preview.chariot.praetorian.com/goodbye',
+            ],
+            responseType: 'code',
+          },
+        },
+      },
+    },
+    API: {
+      REST: {
+        [backend]: {
+          endpoint: api,
+          region,
+        },
+      },
+    },
+  });
+};

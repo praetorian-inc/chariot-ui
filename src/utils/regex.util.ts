@@ -8,6 +8,7 @@ export const Regex = {
   GIT_ORG: /https:\/\/github\.com\/([a-zA-Z\d-]+)/,
   EMAIL: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/,
   CVE_ID: /CVE-\d{4}-\d{4,7}/,
+  AWS_REGION_REGEX: /.*execute-api.(.*).amazonaws/,
 };
 
 export const AllowedSeedRegex = new RegExp(

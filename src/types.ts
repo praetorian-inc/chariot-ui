@@ -1,4 +1,4 @@
-import { Dispatch, ReactNode, SetStateAction } from 'react';
+import { ReactNode } from 'react';
 
 import { InputsT } from '@/components/form/Inputs';
 
@@ -415,29 +415,27 @@ export interface BackendType {
   userPoolId: string;
 }
 
-export interface AuthState {
-  token: string;
+export interface BackendStack {
   backend: string;
-  api: string;
-  region: string;
   clientId: string;
-  me: string;
-  rToken?: string;
-  expiry?: Date;
-  friend: { email: string; displayName: string };
-  isImpersonating: boolean;
+  api: string;
   userPoolId: string;
 }
 
+export interface AuthState extends BackendStack {
+  me: string;
+  friend: { email: string; displayName: string };
+  isImpersonating: boolean;
+}
+
 export interface AuthContextType extends AuthState {
+  getToken: () => Promise<string>;
   confirmOTP: (username: string, password: string, opt: string) => void;
   error: string;
-  fetchToken: () => void;
   isLoading: boolean;
   login: (username?: string, password?: string) => void;
   logout: () => void;
-  setAuth: Dispatch<SetStateAction<AuthState>>;
-  setBackendStack: (backend?: BackendType) => void;
+  setBackendStack: (backend?: BackendStack) => void;
   setError: (error: string) => void;
   signup: (username: string, password: string, gotoNext: () => void) => void;
   startImpersonation: (memberId: string, displayName: string) => void;

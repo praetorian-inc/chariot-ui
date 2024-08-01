@@ -529,7 +529,7 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
         required: true,
       },
       {
-        label: 'Secret',
+        label: 'Secret Value',
         value: '',
         placeholder: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
         name: 'secret',

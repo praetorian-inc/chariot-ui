@@ -17,7 +17,7 @@ export function useGetAccountAlerts(options?: UseExtendQueryOptions<Alert[]>) {
   return useQuery<Alert[]>({
     ...options,
     defaultErrorMessage: 'Failed to fetch account alerts',
-    queryKey: getQueryKey.getAccountAlerts(friend.email || me),
+    queryKey: getQueryKey.getAccountAlerts(friend || me),
     queryFn: async () => {
       const res = await axios.get(`/account/alert`);
       return res.data;

@@ -41,7 +41,7 @@ const Account: React.FC = () => {
 
   const accountDisplayName = useGetDisplayName(data);
   const isDirty = status === 'success' && accountDisplayName !== displayName;
-  const header = MD5(friend.email || me).toString();
+  const header = MD5(friend || me).toString();
 
   useEffect(() => {
     if (status === 'success') {
@@ -54,10 +54,7 @@ const Account: React.FC = () => {
   const { mutate: uploadFile } = useUploadFile();
 
   const { data: profilePicture, status: profilePictureStatus } =
-    useGetProfilePictureUrl(
-      { email: friend.email || me },
-      { enabled: !friend.email }
-    );
+    useGetProfilePictureUrl({ email: friend || me }, { enabled: !friend });
 
   const handleFileDrop = (files: Files<'arrayBuffer'>): void => {
     if (files.length === 1) {
@@ -106,7 +103,7 @@ const Account: React.FC = () => {
                 <div className="flex flex-row items-center">
                   <Avatar
                     className="mr-2 size-20 rounded-md"
-                    email={friend.email || me}
+                    email={friend || me}
                   />
 
                   <Button
@@ -162,21 +159,19 @@ const Account: React.FC = () => {
         <Users />
       </Section>
 
-      {collaborators &&
-        collaborators.length > 0 &&
-        friend.email.length === 0 && (
-          <Section
-            title="Collaborating With"
-            description={
-              <p>
-                These organizations have invited you to view their account
-                details. You are currently viewing <strong>open</strong> risks.
-              </p>
-            }
-          >
-            <CollaboratingWith />
-          </Section>
-        )}
+      {collaborators && collaborators.length > 0 && friend.length === 0 && (
+        <Section
+          title="Collaborating With"
+          description={
+            <p>
+              These organizations have invited you to view their account
+              details. You are currently viewing <strong>open</strong> risks.
+            </p>
+          }
+        >
+          <CollaboratingWith />
+        </Section>
+      )}
 
       <Section
         title="Whitelisting Details"

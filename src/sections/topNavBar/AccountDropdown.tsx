@@ -7,6 +7,7 @@ import {
 
 import { Dropdown } from '@/components/Dropdown';
 import { Hexagon } from '@/components/Hexagon';
+import { Loader } from '@/components/Loader';
 import { Tooltip } from '@/components/Tooltip';
 import { useGetCollaborators } from '@/hooks/collaborators';
 import { useGetDisplayName } from '@/hooks/useAccounts';
@@ -16,16 +17,27 @@ import { useAuth } from '@/state/auth';
 import { getRoute } from '@/utils/route.util';
 
 export const AccountDropdown: React.FC = () => {
-  const { friend, me, startImpersonation, stopImpersonation } = useAuth();
+  const { friend, me, startImpersonation, stopImpersonation, isImpersonating } =
+    useAuth();
 
-  const { data: accounts, status: accountsStatus } = useMy(
+  const { data: myAccounts, status: myAccountsStatus } = useMy(
     {
       resource: 'account',
     },
     { doNotImpersonate: true }
   );
 
-  const displayName = useGetDisplayName(accounts);
+  const { data: impersonatedAccounts, status: impersonatedAccountsStatus } =
+    useMy(
+      {
+        resource: 'account',
+      },
+      { enabled: isImpersonating }
+    );
+
+  const myDisplayName = useGetDisplayName(myAccounts);
+  const friendDisplayName = useGetDisplayName(impersonatedAccounts);
+
   const { data: collaborators, status: collaboratorsStatus } =
     useGetCollaborators({ doNotImpersonate: true });
 
@@ -48,12 +60,13 @@ export const AccountDropdown: React.FC = () => {
           {
             className: 'bg-layer2',
             isLoading:
-              collaboratorsStatus === 'pending' || accountsStatus === 'pending',
+              collaboratorsStatus === 'pending' ||
+              myAccountsStatus === 'pending',
             hide:
               collaboratorsStatus === 'error' ||
               (collaboratorsStatus === 'success' && collaborators.length === 0),
-            label: displayName ? (
-              <Tooltip title={me}>{displayName}</Tooltip>
+            label: myDisplayName ? (
+              <Tooltip title={me}>{myDisplayName}</Tooltip>
             ) : (
               me
             ),
@@ -63,8 +76,8 @@ export const AccountDropdown: React.FC = () => {
                 className="size-5 max-w-max scale-125 rounded-full"
               />
             ),
-            value: displayName || me,
-            onClick: () => friend?.email && stopImpersonation(),
+            value: myDisplayName || me,
+            onClick: () => friend && stopImpersonation(),
           },
           ...collaborators.map(collaborator => ({
             label: (
@@ -124,15 +137,24 @@ export const AccountDropdown: React.FC = () => {
             to: getRoute(['app', 'logout']),
           },
         ],
-        value: friend?.email || me,
+        value: friend || me,
       }}
     >
       <div className="flex h-5 flex-row items-center">
-        <div className="mr-0  text-nowrap p-2 text-xs">
-          {friend.displayName || friend.email || displayName || me}
+        <div className="mr-0 text-nowrap p-2 text-xs">
+          <Loader
+            isLoading={
+              myAccountsStatus === 'pending' ||
+              (isImpersonating && impersonatedAccountsStatus === 'pending')
+            }
+            className="h-[16px] w-20"
+            styleType="header"
+          >
+            {friendDisplayName || friend || myDisplayName || me}
+          </Loader>
         </div>
         <Hexagon>
-          <Avatar className="scale-150" email={friend.email || me} />
+          <Avatar className="scale-150" email={friend || me} />
         </Hexagon>
       </div>
     </Dropdown>

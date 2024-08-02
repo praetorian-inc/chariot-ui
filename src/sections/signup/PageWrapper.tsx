@@ -1,11 +1,10 @@
-import { PropsWithChildren, useCallback } from 'react';
+import { PropsWithChildren } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { ConfigIniParser } from 'config-ini-parser';
 import { toast } from 'sonner';
 
 import { AwsCloudformation } from '@/components/icons/AwsCloudformation';
-import { useBackends } from '@/hooks';
 import { CustomerQuote } from '@/sections/signup/CustomerQuote';
 import { emptyAuth, useAuth } from '@/state/auth';
 import { BackendStack } from '@/types';
@@ -21,21 +20,11 @@ export const PageWrapper = ({
   children,
 }: Props) => {
   const configIniParser = new ConfigIniParser();
-  const { data: backends } = useBackends();
   const { login, setBackendStack, backend } = useAuth();
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      try {
-        processFile(acceptedFiles[0]);
-      } catch (error) {
-        console.error('Error parsing file', error);
-      }
-    },
-    [backends, login]
-  );
+  const processFile = (files: File[]) => {
+    const file = files[0];
 
-  const processFile = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e: ProgressEvent<FileReader>) => {
       try {
@@ -73,7 +62,9 @@ export const PageWrapper = ({
     reader.readAsText(file);
   };
 
-  const { getRootProps, getInputProps, isDragAccept } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragAccept } = useDropzone({
+    onDrop: processFile,
+  });
 
   const dropzoneProps = {
     ...getRootProps(),

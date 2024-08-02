@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Amplify } from 'aws-amplify';
 import {
@@ -21,6 +15,7 @@ import { queryClient } from '@/queryclient';
 import { AuthContextType, AuthState, BackendStack } from '@/types';
 import { Regex } from '@/utils/regex.util';
 import { getRoute } from '@/utils/route.util';
+import { appStorage } from '@/utils/storage/appStorage.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
 export const REGION_REGEX = /.*execute-api.(.*).amazonaws/;
@@ -36,7 +31,7 @@ const defaultStack: BackendStack = {
 
 export const emptyAuth: AuthState = {
   ...defaultStack,
-  friend: { email: '', displayName: '' },
+  friend: '',
   isImpersonating: false,
   me: '',
 };
@@ -50,21 +45,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     emptyAuth
   );
 
-  const backendStack = {
-    api: auth.api,
-    backend: auth.backend,
-    clientId: auth.clientId,
-    userPoolId: auth.userPoolId,
-  };
-
   const [isLoading, setIsLoading] = useState(false);
   const [isTokenFetching, setIsTokenFetching] = useState(true);
 
-  function startImpersonation(memberId: string, displayName: string) {
+  function startImpersonation(memberId: string) {
     setAuth(prevAuth => {
       return {
         ...prevAuth,
-        friend: { email: memberId, displayName: displayName },
+        friend: memberId,
       };
     });
     window.location.assign('/app/overview');
@@ -74,13 +62,13 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setAuth(prevAuth => {
       return {
         ...prevAuth,
-        friend: { email: '', displayName: '' },
+        friend: '',
       };
     });
     window.location.assign('/app/account');
   }
 
-  async function login(username = '', password = '') {
+  async function login(username: string, password: string) {
     try {
       if (username && password) {
         setIsLoading(true);
@@ -189,9 +177,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!token) {
       toast.error('Init token missing');
 
-      queryClient.clear();
-      setAuth(emptyAuth);
-      navigate(getRoute(['login']));
+      logout();
     }
 
     return token;
@@ -208,27 +194,30 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
           break;
         }
-
-        case 'signedOut':
+        case 'signedOut': {
           console.log('user have been signedOut successfully.', payload);
 
           break;
-        case 'tokenRefresh':
+        }
+        case 'tokenRefresh': {
           console.log('auth tokens have been refreshed.', payload);
 
           break;
-        case 'tokenRefresh_failure':
+        }
+        case 'tokenRefresh_failure': {
           console.error('failure while refreshing auth tokens.', payload);
 
           toast.error('Session expired, Please login again.');
           logout();
           break;
-        case 'signInWithRedirect_failure':
+        }
+        case 'signInWithRedirect_failure': {
           console.error(
             'failure while trying to resolve signInWithRedirect API.',
             payload
           );
           break;
+        }
       }
     });
 
@@ -238,10 +227,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       stopListen();
     };
   }, []);
-
-  useMemo(() => {
-    setBackendStack(backendStack);
-  }, [JSON.stringify(backendStack)]);
 
   if (isTokenFetching) {
     return null;
@@ -255,7 +240,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         error,
         setError,
         confirmOTP,
-        isImpersonating: auth.friend.email !== '',
+        isImpersonating: auth.friend !== '',
         isLoading,
         login,
         logout,
@@ -320,3 +305,5 @@ const initAmplify = (stack: BackendStack = defaultStack) => {
     },
   });
 };
+
+initAmplify(appStorage.getItem<AuthState>(StorageKey.AUTH));

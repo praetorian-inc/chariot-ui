@@ -47,21 +47,6 @@ export const Notifications: React.FC<Props> = ({ onNotify, onClick }) => {
   return (
     <Dropdown
       className="h-7 border-r border-dashed border-gray-700 p-2"
-      startIcon={
-        <span className="relative inline-flex items-center space-x-2">
-          <span className="text-nowrap text-xs">Running:</span>
-          <button
-            type="button"
-            className={cn(
-              'inline-flex items-center  text-sm font-semibold leading-6 transition duration-150 ease-in-out',
-              runningJobs === 0 ? 'text-gray-500' : 'text-white'
-            )}
-            onClick={onClick}
-          >
-            {isPending ? '' : runningJobs}
-          </button>
-        </span>
-      }
       styleType="none"
       menu={{
         width: 300,
@@ -109,7 +94,20 @@ export const Notifications: React.FC<Props> = ({ onNotify, onClick }) => {
           },
         ],
       }}
-    />
+    >
+      <span className="relative inline-flex items-center space-x-2">
+        <span className="text-nowrap text-xs">Running:</span>
+        <div
+          className={cn(
+            'inline-flex items-center  text-sm font-semibold leading-6 transition duration-150 ease-in-out',
+            runningJobs === 0 ? 'text-gray-500' : 'text-white'
+          )}
+          onClick={onClick}
+        >
+          {isPending ? '' : runningJobs}
+        </div>
+      </span>
+    </Dropdown>
   );
 };
 

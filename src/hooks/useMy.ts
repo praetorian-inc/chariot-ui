@@ -23,7 +23,7 @@ export const useMy = <ResourceKey extends MyResourceKey>(
     doNotImpersonate?: boolean;
   }
 ) => {
-  const { friend } = useAuth();
+  const { isImpersonating } = useAuth();
   const axios = useAxios();
   const { hashSearchFromQuery, genericSearchFromQuery } = useSearchContext();
 
@@ -53,11 +53,9 @@ export const useMy = <ResourceKey extends MyResourceKey>(
     }
   }
 
-  const isImperonating = friend.email !== '';
-
   const queryKey = getQueryKey.getMy(
     props.resource,
-    `${compositeKey}${isImperonating && options?.doNotImpersonate ? '.notImpersonating' : ''}`
+    `${compositeKey}${isImpersonating && options?.doNotImpersonate ? '.notImpersonating' : ''}`
   );
   const response = useInfiniteQuery<MyResource[ResourceKey], Error>({
     ...options,

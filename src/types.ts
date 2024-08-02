@@ -424,7 +424,7 @@ export interface BackendStack {
 
 export interface AuthState extends BackendStack {
   me: string;
-  friend: { email: string; displayName: string };
+  friend: string;
   isImpersonating: boolean;
 }
 
@@ -433,7 +433,7 @@ export interface AuthContextType extends AuthState {
   confirmOTP: (username: string, password: string, opt: string) => void;
   error: string;
   isLoading: boolean;
-  login: (username?: string, password?: string) => void;
+  login: (username: string, password: string) => void;
   logout: () => void;
   setBackendStack: (backend?: BackendStack) => void;
   setError: (error: string) => void;

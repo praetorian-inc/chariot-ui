@@ -1,4 +1,3 @@
-import { AxiosProgressEvent } from 'axios';
 import { toast } from 'sonner';
 
 import {
@@ -12,12 +11,17 @@ import { queryClient } from '@/queryclient';
 import { useAuth } from '@/state/auth';
 import { UseExtendQueryOptions, useMutation, useQuery } from '@/utils/api';
 import { isArrayBufferEmpty } from '@/utils/misc.util';
+interface ProgressEventDetails {
+  loaded: number;
+  total: number;
+  percent: number;
+}
 
 interface UploadFilesProps {
   name: string;
   content: string | ArrayBuffer;
   ignoreSnackbar?: boolean;
-  onProgress?: (progressEvent: AxiosProgressEvent) => void;
+  onProgress?: (progressEvent: ProgressEventDetails) => void;
 }
 
 export function useUploadFile() {
@@ -52,6 +56,18 @@ export function useUploadFile() {
       const uploadPromise = new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('PUT', uploadUrl, true);
+
+        // Attach the progress event handler
+        xhr.upload.onprogress = (event: ProgressEvent<EventTarget>) => {
+          if (props.onProgress && event.lengthComputable) {
+            const progress: ProgressEventDetails = {
+              loaded: event.loaded,
+              total: event.total,
+              percent: (event.loaded / event.total) * 100,
+            };
+            props.onProgress(progress);
+          }
+        };
 
         xhr.onload = () => {
           if (xhr.status === 200) {

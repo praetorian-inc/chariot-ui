@@ -113,7 +113,6 @@ const getFilteredRisks = (
       trimmedStatusFilter.filter(Boolean).includes(getStatus(risk.status))
     );
   }
-  console.log('filtered', filteredRisks);
 
   if (trimmedSeverityFilter.length > 0) {
     filteredRisks = filteredRisks.filter(risk =>

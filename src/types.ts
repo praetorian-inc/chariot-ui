@@ -433,7 +433,7 @@ export interface AuthContextType extends AuthState {
   confirmOTP: (username: string, password: string, opt: string) => void;
   error: string;
   isLoading: boolean;
-  login: (username?: string, password?: string) => void;
+  login: (username: string, password: string) => void;
   logout: () => void;
   setBackendStack: (backend?: BackendStack) => void;
   setError: (error: string) => void;

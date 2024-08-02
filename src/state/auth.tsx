@@ -68,7 +68,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     window.location.assign('/app/account');
   }
 
-  async function login(username = '', password = '') {
+  async function login(username: string, password: string) {
     try {
       if (username && password) {
         setIsLoading(true);
@@ -194,27 +194,30 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
           break;
         }
-
-        case 'signedOut':
+        case 'signedOut': {
           console.log('user have been signedOut successfully.', payload);
 
           break;
-        case 'tokenRefresh':
+        }
+        case 'tokenRefresh': {
           console.log('auth tokens have been refreshed.', payload);
 
           break;
-        case 'tokenRefresh_failure':
+        }
+        case 'tokenRefresh_failure': {
           console.error('failure while refreshing auth tokens.', payload);
 
           toast.error('Session expired, Please login again.');
           logout();
           break;
-        case 'signInWithRedirect_failure':
+        }
+        case 'signInWithRedirect_failure': {
           console.error(
             'failure while trying to resolve signInWithRedirect API.',
             payload
           );
           break;
+        }
       }
     });
 

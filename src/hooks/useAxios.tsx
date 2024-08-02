@@ -24,13 +24,13 @@ export function useInitAxiosInterceptors() {
     axiosInstance.interceptors.request.use(
       async config => {
         try {
-          // Get the current session from Amplify Auth
+          // Get the current session from Auth
           const token = await getToken();
 
           // Add the token to the request headers
           config.headers.Authorization = token ? `Bearer ${token}` : '';
         } catch (error) {
-          console.error('Error getting Amplify token', error);
+          console.error('Error getting token', error);
         }
         return config;
       },

@@ -1,5 +1,5 @@
 import { ReactNode, useRef } from 'react';
-import { To, useNavigate } from 'react-router-dom';
+import { To } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { ConditionalRender } from '@/components/ConditionalRender';
@@ -25,7 +25,6 @@ interface Props {
 
 export const DrawerList = (props: Props) => {
   const { getAssetDrawerLink } = getDrawerLink();
-  const navigate = useNavigate();
   const { items, allowEmpty } = props;
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -57,21 +56,6 @@ export const DrawerList = (props: Props) => {
           {value}
         </a>
       );
-    } else if (label?.toLowerCase() === 'source') {
-      return (
-        <button
-          onClick={() => {
-            navigate(
-              getAssetDrawerLink({
-                dns: value?.toString() ?? '',
-                name: value?.toString() ?? '',
-              })
-            );
-          }}
-        >
-          {value}
-        </button>
-      );
     } else {
       return value;
     }
@@ -86,8 +70,19 @@ export const DrawerList = (props: Props) => {
         }}
       >
         {virtualItems.map(virtualItem => {
-          const { prefix, label, updated, value, to } =
-            items[virtualItem.index];
+          const {
+            prefix,
+            label,
+            updated,
+            value,
+            to: itemTo,
+          } = items[virtualItem.index];
+
+          const assetKey =
+            typeof value === 'string' && value.match(/#asset#(.*)#(.*)/);
+          const [, dns, name] = assetKey || [];
+
+          const to = itemTo || (assetKey && getAssetDrawerLink({ dns, name }));
 
           return (
             <li

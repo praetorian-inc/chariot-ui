@@ -31,6 +31,9 @@ const isAsset = (item: Asset | Risk): item is Asset => {
 
 const Alerts: React.FC = () => {
   const [query, setQuery] = useState<string | null>(null);
+  const [isClosedSubStateModalOpen, setIsClosedSubStateModalOpen] =
+    useState(false);
+  const [selectedItem, setSelectedItem] = useState<Asset | Risk | null>(null);
 
   const { mutateAsync: reRunJob, status: reRunJobStatus } = useReRunJob();
   const { data: alerts, refetch: refetchAlerts } = useGetAccountAlerts();
@@ -40,8 +43,6 @@ const Alerts: React.FC = () => {
 
   const { mutateAsync: updateAsset, status: updateAssetStatus } =
     useUpdateAsset();
-  const [isClosedSubStateModalOpen, setIsClosedSubStateModalOpen] =
-    useState(false);
   const { mutateAsync: updateRisk, status: updateRiskStatus } = useUpdateRisk();
 
   useEffect(() => {
@@ -94,6 +95,11 @@ const Alerts: React.FC = () => {
       refetchData();
     });
   }
+
+  const handleOpenModal = (item: Asset | Risk) => {
+    setSelectedItem(item);
+    setIsClosedSubStateModalOpen(true);
+  };
 
   const renderItemDetails = (item: Asset | Risk) => {
     const handleViewLink = isAsset(item)
@@ -169,7 +175,7 @@ const Alerts: React.FC = () => {
                   onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setIsClosedSubStateModalOpen(true);
+                    handleOpenModal(item);
                   }}
                   disabled={updateRiskStatus === 'pending'}
                 >
@@ -187,7 +193,7 @@ const Alerts: React.FC = () => {
                   onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setIsClosedSubStateModalOpen(true);
+                    handleOpenModal(item);
                   }}
                   disabled={updateRiskStatus === 'pending'}
                 >
@@ -240,7 +246,7 @@ const Alerts: React.FC = () => {
                   onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setIsClosedSubStateModalOpen(true);
+                    handleOpenModal(item);
                   }}
                   disabled={updateRiskStatus === 'pending'}
                 >
@@ -294,13 +300,6 @@ const Alerts: React.FC = () => {
           </Tooltip>
         </div>
         <ChevronRightIcon className="ml-auto size-5 text-gray-500" />
-        <ClosedStateModal
-          isOpen={isClosedSubStateModalOpen}
-          onClose={() => setIsClosedSubStateModalOpen(false)}
-          onStatusChange={({ status }) => {
-            handleRiskChange(item, status, item.status[1] as RiskSeverity);
-          }}
-        />
       </div>
     );
   };
@@ -418,6 +417,20 @@ const Alerts: React.FC = () => {
           </div>
         )}
       </div>
+      <ClosedStateModal
+        isOpen={isClosedSubStateModalOpen}
+        onClose={() => setIsClosedSubStateModalOpen(false)}
+        onStatusChange={({ status }) => {
+          if (selectedItem) {
+            handleRiskChange(
+              selectedItem,
+              status,
+              selectedItem.status[1] as RiskSeverity
+            );
+            setSelectedItem(null);
+          }
+        }}
+      />
     </div>
   );
 };

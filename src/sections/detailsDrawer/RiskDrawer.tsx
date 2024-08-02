@@ -137,6 +137,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const { data: attributesGenericSearch } = useGenericSearch(
     {
       query: attributesFilter,
+      equal: true,
     },
     {
       enabled: open,

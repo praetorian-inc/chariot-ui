@@ -1,4 +1,4 @@
-import { AxiosHeaders, AxiosProgressEvent } from 'axios';
+import { AxiosProgressEvent } from 'axios';
 import { toast } from 'sonner';
 
 import {
@@ -37,34 +37,41 @@ export function useUploadFile() {
   return useMutation({
     defaultErrorMessage: 'Failed to Upload file',
     mutationFn: async (props: UploadFilesProps) => {
-      const promise = axios.put(`/file`, null, {
+      const res = await axios.put(`/file`, null, {
         params: {
           name: props.name,
         },
       });
 
-      toast.promise(promise, {
-        loading: `Uploading ${props.name}...`,
-        success: `${props.name} uploaded`,
-        error: `Failed to upload ${props.name}`,
-      });
-
-      const res = await promise;
       const uploadUrl = res.data.url;
 
       if (!uploadUrl) {
         throw new Error('Failed to upload file');
       }
 
-      await axios.put(uploadUrl, props.content, {
-        headers: {
-          common: {
-            Authorization: undefined,
-          },
-        } as unknown as AxiosHeaders,
-        onUploadProgress: props.onProgress,
+      const uploadPromise = new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', uploadUrl, true);
+
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            resolve();
+          } else {
+            reject(new Error('Failed to upload file'));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error('Upload failed'));
+
+        xhr.send(props.content);
       });
 
+      toast.promise(uploadPromise, {
+        loading: `Uploading ${props.name}...`,
+        success: `${props.name} uploaded`,
+        error: `Failed to upload ${props.name}`,
+      });
+      await uploadPromise;
       return null;
     },
     onSuccess: (_, variable) => {

@@ -14,7 +14,7 @@ import { QueryClientProvider } from '@/utils/api';
 function AppComponent() {
   useInitAxiosInterceptors();
   (function () {
-    const currentVersion = '0.24.0';
+    const currentVersion = '0.24.1';
     const versionKey = 'chariot';
     const storedVersion = localStorage.getItem(versionKey);
 

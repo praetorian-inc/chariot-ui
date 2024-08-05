@@ -145,7 +145,11 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const jobKeys = useMemo(
     () =>
       (attributesGenericSearch?.attributes || [])
-        .filter(({ name }) => name === 'source')
+        .filter(
+          ({ name, value }) =>
+            name === 'source' &&
+            (value.startsWith('#attribute') || value.startsWith('#asset'))
+        )
         .map(attribute => attribute.value),
     [attributesGenericSearch]
   );
@@ -314,17 +318,22 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
               <Tooltip
                 placement="top"
                 title={
-                  risk.source && !isManualORPRrovidedRisk(risk)
-                    ? isJobRunningForThisRisk
-                      ? 'Scanning in progress'
-                      : 'Revalidate the risk'
-                    : 'On-demand scanning is only available for automated risk discovery.'
+                  isInitialLoading
+                    ? ''
+                    : risk.source && !isManualORPRrovidedRisk(risk)
+                      ? isJobRunningForThisRisk
+                        ? 'Scanning in progress'
+                        : jobKeys.length === 0
+                          ? 'On-demand scanning is only available for risk which have a source attribute'
+                          : 'Revalidate the risk'
+                      : 'On-demand scanning is only available for automated risk discovery.'
                 }
               >
                 <Button
                   className="border-1 h-8 border border-default"
                   startIcon={<ArrowPathIcon className="size-5" />}
                   disabled={
+                    isInitialLoading ||
                     jobKeys.length === 0 ||
                     isManualORPRrovidedRisk(risk) ||
                     Boolean(isJobRunningForThisRisk)

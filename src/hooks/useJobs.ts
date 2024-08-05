@@ -96,10 +96,8 @@ export const useJobsStatus = (
     queries: jobKeys
       .filter(x => Boolean(x))
       .map(key => {
-        console.log({ options });
         return {
           ...options,
-          staleTime: Infinity,
           queryKey: getQueryKey.getMy('job', key),
           queryFn: async () => {
             const res = await axios.get(`/my`, {

@@ -52,7 +52,7 @@ export function useBulkReRunJob() {
         .map(async ({ capability, dns }) => {
           const { data } = await axios.post(`/job/`, {
             name: capability,
-            key: `#asset#${dns}`,
+            key: `#job#${dns}#${dns}#${capability}`,
           });
 
           return data;

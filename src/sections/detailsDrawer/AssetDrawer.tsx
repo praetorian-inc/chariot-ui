@@ -119,6 +119,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }: Props) => {
     useGenericSearch(
       {
         query: attributeFilter,
+        exact: true,
       },
       { enabled: open }
     );

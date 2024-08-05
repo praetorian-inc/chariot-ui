@@ -18,6 +18,7 @@ export type { QueryStatus } from '@tanstack/react-query';
 export { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { queryClient } from '@/queryclient';
+import { JobStatus } from '@/types';
 import { createError } from '@/utils/error.util';
 import { capitalize } from '@/utils/lodash.util';
 import { appendPeriodIfMissing } from '@/utils/text.util';
@@ -172,6 +173,23 @@ function appendContactSupport(error: string) {
 interface CustomOptions {
   defaultErrorMessage: string;
   errorByStatusCode?: Record<number, string>;
+}
+
+type JobStatusType = JobStatus | '';
+export function mergeJobStatus(jobStatus: JobStatusType[]): JobStatusType {
+  if (jobStatus.includes(JobStatus.Queued)) {
+    return JobStatus.Queued;
+  }
+  if (jobStatus.includes(JobStatus.Running)) {
+    return JobStatus.Running;
+  }
+  if (jobStatus.includes(JobStatus.Fail)) {
+    return JobStatus.Fail;
+  }
+  if (jobStatus.includes(JobStatus.Pass)) {
+    return JobStatus.Pass;
+  }
+  return '';
 }
 
 /**

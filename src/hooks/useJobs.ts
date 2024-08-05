@@ -1,8 +1,17 @@
+// eslint-disable-next-line no-restricted-imports
+import { useQueries } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { useAxios } from '@/hooks/useAxios';
 import { useMy } from '@/hooks/useMy';
-import { useMutation } from '@/utils/api';
+import { getQueryKey } from '@/hooks/useQueryKeys';
+import { Job } from '@/types';
+import {
+  mergeJobStatus,
+  mergeStatus,
+  UseExtendQueryOptions,
+  useMutation,
+} from '@/utils/api';
 
 export function useReRunJob() {
   const axios = useAxios();
@@ -47,12 +56,14 @@ export function useBulkReRunJob() {
 
   return useMutation({
     defaultErrorMessage: 'Failed to re run job',
-    mutationFn: async (jobs: { capability: string; dns: string }[]) => {
+    mutationFn: async (
+      jobs: { capability: string; dns?: string; jobKey?: string }[]
+    ) => {
       const promises = jobs
-        .map(async ({ capability, dns }) => {
+        .map(async ({ capability, dns, jobKey }) => {
           const { data } = await axios.post(`/job/`, {
             name: capability,
-            key: `#asset#${dns}`,
+            key: jobKey || `#asset#${dns}`,
           });
 
           return data;
@@ -75,3 +86,39 @@ export function useBulkReRunJob() {
     },
   });
 }
+
+export const useJobsStatus = (
+  jobKeys: string[],
+  options?: UseExtendQueryOptions<Job>
+) => {
+  const axios = useAxios();
+  return useQueries({
+    queries: jobKeys
+      .filter(x => Boolean(x))
+      .map(key => {
+        console.log({ options });
+        return {
+          ...options,
+          staleTime: Infinity,
+          queryKey: getQueryKey.getMy('job', key),
+          queryFn: async () => {
+            const res = await axios.get(`/my`, {
+              params: {
+                key: `#job#${key}`,
+              },
+            });
+
+            return res.data.jobs[0] as Job;
+          },
+        };
+      }),
+    combine: results => {
+      return {
+        data: mergeJobStatus(
+          results.map(result => result.data?.status || '') || []
+        ),
+        status: mergeStatus(...results.map(result => result.status)),
+      };
+    },
+  });
+};

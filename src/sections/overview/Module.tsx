@@ -1,5 +1,3 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { To } from 'react-router-dom';
 import {
   ArrowPathIcon,
   InformationCircleIcon,
@@ -9,12 +7,14 @@ import {
   ClipboardList,
   Crosshair,
   Fingerprint,
+  Flag,
   GlobeLock,
   Goal,
   Radar,
   RefreshCcwDot,
 } from 'lucide-react';
-import { Flag } from 'lucide-react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { To } from 'react-router-dom';
 
 import { Button } from '@/components/Button';
 import { Dropzone, Files } from '@/components/Dropzone';
@@ -1332,7 +1332,7 @@ export function BasIntegration() {
         const attributeMeta = parseKeys.attributeKey(attribute.key);
 
         return {
-          dns: attributeMeta.dns,
+          jobKey: `#job#${attributeMeta.dns}#${attributeMeta.dns}#${uuid}`,
           capability: uuid,
         };
       });

@@ -138,8 +138,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const ssoUsername = `sso@${ssoDomain}`;
 
-      setAuth(auth => ({
-        ...auth,
+      setAuth(prevAuth => ({
+        ...prevAuth,
         me:
           session.tokens?.idToken?.payload?.email?.toString() ??
           ssoUsername ??
@@ -161,7 +161,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     navigate(getRoute(['login']));
   }
 
-  function setBackendStack(backendStack: BackendStack = defaultStack) {
+  function setBackendStack(backendStack?: BackendStack) {
     initAmplify(backendStack);
 
     setAuth(prevAuth => ({
@@ -268,7 +268,7 @@ export const useAuth = () => {
 
 export default AuthProvider;
 
-const initAmplify = (stack: BackendStack = defaultStack) => {
+function initAmplify(stack: BackendStack = defaultStack) {
   const { clientId, userPoolId, api, backend } = stack;
 
   const region = Regex.AWS_REGION_REGEX.exec(api)?.[1] ?? 'us-east-2';
@@ -304,6 +304,8 @@ const initAmplify = (stack: BackendStack = defaultStack) => {
       },
     },
   });
-};
+}
 
+// Amplify Hack to set stack to custom stack. Not sure why, but we are able to set custom stack only after setting default stack.
+initAmplify(defaultStack);
 initAmplify(appStorage.getItem<AuthState>(StorageKey.AUTH));

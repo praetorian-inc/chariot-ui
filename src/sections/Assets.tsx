@@ -337,6 +337,7 @@ const Assets: React.FC = () => {
     }
   }, [
     JSON.stringify({ filteredAssets }),
+    search,
     isFetching,
     isFetchingNextPage,
     riskStatus,

@@ -354,7 +354,12 @@ export function Risks() {
         setIsFilteredDataFetching(false);
       }
     }
-  }, [JSON.stringify({ sortedRisks }), isRisksFetching, isFetchingNextPage]);
+  }, [
+    JSON.stringify({ sortedRisks }),
+    search,
+    isRisksFetching,
+    isFetchingNextPage,
+  ]);
 
   return (
     <div className="flex w-full flex-col">

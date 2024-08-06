@@ -66,6 +66,9 @@ const Assets: React.FC = () => {
       asset: { onOpenChange: setShowAddAsset },
     },
   } = useGlobalState();
+
+  const [isFilteredDataFetching, setIsFilteredDataFetching] = useState(false);
+
   const [search, setSearch] = useState<string>('');
   const [debouncedSearch] = useDebounce(search, 500);
   const { data: dataDebouncedSearchName, status: statusDebouncedSearchName } =
@@ -137,11 +140,13 @@ const Assets: React.FC = () => {
     }
   }, [searchParams]);
 
-  const status = useMergeStatus(
-    ...(debouncedSearch
+  const apiStatus = useMergeStatus(
+    ...(search
       ? [statusDebouncedSearchDns, statusDebouncedSearchName, riskStatus]
       : [riskStatus, assetsStatus])
   );
+  const status = isFilteredDataFetching ? 'pending' : apiStatus;
+
   const { getAssetDrawerLink } = getDrawerLink();
   const openRiskDataset = useMemo(
     () => buildOpenRiskDataset(risks as Risk[]),
@@ -317,18 +322,24 @@ const Assets: React.FC = () => {
 
   useEffect(() => {
     if (
-      !isError &&
+      !search &&
       !isFetching &&
-      assets.length > 0 &&
-      filteredAssets.length === 0
+      !isFetchingNextPage &&
+      riskStatus === 'success' &&
+      filteredAssets.length < 50
     ) {
-      fetchNextPage();
+      setIsFilteredDataFetching(true);
+      fetchNextPage?.();
+
+      if (!fetchNextPage) {
+        setIsFilteredDataFetching(false);
+      }
     }
   }, [
-    isError,
+    JSON.stringify({ filteredAssets }),
     isFetching,
-    JSON.stringify(assets),
-    JSON.stringify(filteredAssets),
+    isFetchingNextPage,
+    riskStatus,
   ]);
 
   return (
@@ -350,7 +361,6 @@ const Assets: React.FC = () => {
             <SourceDropdown
               type="asset"
               onSelect={selected => setSourceFilter(selected)}
-              types={['Provided', 'Discovered']}
             />
           </div>
         }

@@ -173,6 +173,8 @@ export function Risks() {
     }
   }, [updateRiskStatus]);
 
+  const [isFilteredDataFetching, setIsFilteredDataFetching] = useState(false);
+
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 500);
   const { data: dataDebouncedSearch, status: statusDebouncedSearch } =
@@ -194,6 +196,7 @@ export function Risks() {
     status: risksStatus,
     error,
     isFetchingNextPage,
+    isFetching: isRisksFetching,
     fetchNextPage,
   } = useMy({
     resource: 'risk',
@@ -210,10 +213,12 @@ export function Risks() {
     ? dataDebouncedSearch?.risks || []
     : risksUseMy;
 
-  const status = useMergeStatus(
+  const apiStatus = useMergeStatus(
     debouncedSearch ? statusDebouncedSearch : risksStatus,
     threatsStatus
   );
+
+  const status = isFilteredDataFetching ? 'pending' : apiStatus;
 
   const filteredRisks = useMemo(() => {
     return getFilteredRisks(risks, {
@@ -334,6 +339,22 @@ export function Risks() {
     ],
     []
   );
+
+  useEffect(() => {
+    if (
+      !search &&
+      !isRisksFetching &&
+      !isFetchingNextPage &&
+      sortedRisks.length < 50
+    ) {
+      setIsFilteredDataFetching(true);
+      fetchNextPage?.();
+
+      if (!fetchNextPage) {
+        setIsFilteredDataFetching(false);
+      }
+    }
+  }, [JSON.stringify({ sortedRisks }), isRisksFetching, isFetchingNextPage]);
 
   return (
     <div className="flex w-full flex-col">

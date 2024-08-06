@@ -100,5 +100,6 @@ export const useMy = <ResourceKey extends MyResourceKey>(
   return {
     ...response,
     data: processedData,
+    fetchNextPage: offset ? response.fetchNextPage : undefined,
   };
 };

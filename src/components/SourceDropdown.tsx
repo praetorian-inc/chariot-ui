@@ -7,7 +7,6 @@ import { useCounts } from '@/hooks/useCounts';
 interface SourceDropdownProps {
   type: 'asset' | 'job' | 'risk';
   onSelect: (selected: string[]) => void;
-  types?: string[];
 }
 
 interface SourceData {

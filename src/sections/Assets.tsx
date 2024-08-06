@@ -194,17 +194,18 @@ const Assets: React.FC = () => {
 
     if (priorityFilter?.filter(Boolean).length > 0) {
       filteredAssets = filteredAssets.filter(({ status }) => {
-        console.log('status', status);
-        return priorityFilter.includes(status);
+        const parsedSource = status.startsWith('F')
+          ? AssetStatus.Frozen
+          : status;
+
+        return priorityFilter.includes(parsedSource);
       });
     }
 
     if (sourceFilter?.filter(Boolean).length > 0) {
-      filteredAssets = filteredAssets.filter(({ source }) => {
-        const parsedSource = source.startsWith('F') ? 'F' : source;
-
-        return sourceFilter.includes(parsedSource);
-      });
+      filteredAssets = filteredAssets.filter(({ source }) =>
+        sourceFilter.includes(source)
+      );
     }
     const sortOrder = Object.keys(AssetStatusLabel);
     filteredAssets = filteredAssets.sort((a, b) => {

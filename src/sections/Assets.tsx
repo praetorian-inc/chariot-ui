@@ -193,15 +193,18 @@ const Assets: React.FC = () => {
     let filteredAssets = assetsWithRisk;
 
     if (priorityFilter?.filter(Boolean).length > 0) {
-      filteredAssets = filteredAssets.filter(({ status }) =>
-        priorityFilter.includes(status)
-      );
+      filteredAssets = filteredAssets.filter(({ status }) => {
+        console.log('status', status);
+        return priorityFilter.includes(status);
+      });
     }
 
     if (sourceFilter?.filter(Boolean).length > 0) {
-      filteredAssets = filteredAssets.filter(({ source }) =>
-        sourceFilter.includes(source)
-      );
+      filteredAssets = filteredAssets.filter(({ source }) => {
+        const parsedSource = source.startsWith('F') ? 'F' : source;
+
+        return sourceFilter.includes(parsedSource);
+      });
     }
     const sortOrder = Object.keys(AssetStatusLabel);
     filteredAssets = filteredAssets.sort((a, b) => {

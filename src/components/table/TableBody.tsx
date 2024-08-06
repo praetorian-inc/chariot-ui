@@ -22,7 +22,7 @@ interface TableBodyProps<TData> {
   rowActions?: TableProps<TData>['rowActions'];
   rowData: InternalTData<TData>;
   rowIndex: number;
-  virtualRow: VirtualItem<Element>;
+  virtualRow: VirtualItem;
   isChecked: boolean;
   handleRowClick: (
     idx: number,

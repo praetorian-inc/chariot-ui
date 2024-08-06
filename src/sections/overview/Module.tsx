@@ -135,22 +135,6 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
         hidden: true,
       },
       {
-        label: 'Severity',
-        value: 'MHC',
-        placeholder:
-          'Select a minimum severity level for your ServiceNow alerts',
-        name: 'severities',
-        required: true,
-        type: Input.Type.SELECT,
-        options: [
-          { label: 'Info', value: 'ILMHC' },
-          { label: 'Low', value: 'LMHC' },
-          { label: 'Medium', value: 'MHC' },
-          { label: 'High', value: 'HC' },
-          { label: 'Critical', value: 'C' },
-        ],
-      },
-      {
         label: 'Scripted REST API',
         value: '',
         placeholder: 'https://webhook.com/services/',
@@ -177,6 +161,31 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
         required: true,
         info: {
           text: 'Optional, the value to populate `header` with',
+        },
+      },
+      {
+        label: 'Severity',
+        value: 'MHC',
+        name: 'severities',
+        required: true,
+        type: Input.Type.SELECT,
+        options: [
+          { label: 'Info', value: 'ILMHC' },
+          { label: 'Low', value: 'LMHC' },
+          { label: 'Medium', value: 'MHC' },
+          { label: 'High', value: 'HC' },
+          { label: 'Critical', value: 'C' },
+        ],
+        info: {
+          text: 'Learn more',
+          content: (
+            <>
+              <p>
+                Select the minimum risk severity level that should send
+                ServiceNow alerts.
+              </p>
+            </>
+          ),
         },
       },
     ],
@@ -235,7 +244,6 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
       {
         label: 'Severity',
         value: 'MHC',
-        placeholder: 'Select a minimum severity level for your Slack alerts',
         name: 'severities',
         required: true,
         type: Input.Type.SELECT,
@@ -246,6 +254,17 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
           { label: 'High', value: 'HC' },
           { label: 'Critical', value: 'C' },
         ],
+        info: {
+          text: 'Learn more',
+          content: (
+            <>
+              <p>
+                Select the minimum risk severity level that should send Slack
+                alerts.
+              </p>
+            </>
+          ),
+        },
       },
     ],
   },
@@ -690,7 +709,6 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
       {
         label: 'Severity',
         value: 'MHC',
-        placeholder: 'Select a minimum severity level for your Zulip alerts',
         name: 'severities',
         required: true,
         type: Input.Type.SELECT,
@@ -701,6 +719,17 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
           { label: 'High', value: 'HC' },
           { label: 'Critical', value: 'C' },
         ],
+        info: {
+          text: 'Learn more',
+          content: (
+            <>
+              <p>
+                Select the minimum risk severity level that should send Zulip
+                alerts.
+              </p>
+            </>
+          ),
+        },
       },
     ],
   },
@@ -729,7 +758,6 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
       {
         label: 'Severity',
         value: 'MHC',
-        placeholder: 'Select a minimum severity level for your Teams alerts',
         name: 'severities',
         required: true,
         type: Input.Type.SELECT,
@@ -740,6 +768,17 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
           { label: 'High', value: 'HC' },
           { label: 'Critical', value: 'C' },
         ],
+        info: {
+          text: 'Learn more',
+          content: (
+            <>
+              <p>
+                Select the minimum risk severity level that should send Teams
+                alerts.
+              </p>
+            </>
+          ),
+        },
       },
     ],
   },

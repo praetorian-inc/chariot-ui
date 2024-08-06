@@ -424,6 +424,8 @@ export interface BackendStack {
 
 export interface AuthState extends BackendStack {
   me: string;
+  isSignedIn: boolean;
+  isSSO: boolean;
   friend: string;
   isImpersonating: boolean;
 }

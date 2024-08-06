@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { ShortcutsHelper } from '@/components/ui/Shortcuts';
 import { useMy } from '@/hooks';
-import { useGetDisplayName } from '@/hooks/useAccounts';
+import { useGetAccountDetails } from '@/hooks/useAccounts';
 import { AddAsset } from '@/sections/add/AddAsset';
 import { AddFile } from '@/sections/add/AddFile';
 import { AddRisks } from '@/sections/add/AddRisks';
@@ -36,7 +36,7 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
     resource: 'account',
   });
 
-  const displayName = useGetDisplayName(accounts);
+  const { name: displayName } = useGetAccountDetails(accounts);
 
   const navigate = useNavigate();
   const [shortcutsHelper, setShortcutsHelper] = useState(false);

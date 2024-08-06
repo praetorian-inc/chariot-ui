@@ -6,7 +6,7 @@ import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 import { Button } from '@/components/Button';
 import CircularProgressBar from '@/components/CircularProgressBar';
 import { TabWrapper } from '@/components/ui/TabWrapper';
-import { useGetDisplayName } from '@/hooks/useAccounts';
+import { useGetAccountDetails } from '@/hooks/useAccounts';
 import { useAggregateCounts } from '@/hooks/useAggregateCounts';
 import { useGetFile } from '@/hooks/useFiles';
 import { useMy } from '@/hooks/useMy';
@@ -20,7 +20,7 @@ export const Report = () => {
     resource: 'account',
   });
 
-  const client = useGetDisplayName(accounts) || friend || me;
+  const client = useGetAccountDetails(accounts).name || friend || me;
   const [showDetails, setShowDetails] = useState(false);
   const { counts } = useAggregateCounts();
   const jobsRunning = counts.jobsRunning;

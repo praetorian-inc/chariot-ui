@@ -122,8 +122,15 @@ export function usePurgeAccount() {
   });
 }
 
-export function useGetDisplayName(accounts: Account[]) {
-  return useMemo(() => getDisplayName(accounts), [JSON.stringify(accounts)]);
+export function useGetAccountDetails(accounts: Account[]) {
+  return useMemo(() => {
+    const myAccount = accounts?.find(acc => acc.key.endsWith('#settings#'));
+
+    return {
+      name: myAccount?.config?.displayName || '',
+      email: myAccount?.name || '',
+    };
+  }, [JSON.stringify(accounts)]);
 }
 
 export function getDisplayName(accounts: Account[]) {

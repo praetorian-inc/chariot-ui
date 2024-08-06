@@ -17,8 +17,8 @@ import {
   useGetProfilePictureUrl,
 } from '@/hooks/profilePicture';
 import {
+  useGetAccountDetails,
   useGetCollaboratorEmails,
-  useGetDisplayName,
   useModifyAccount,
   usePurgeAccount,
 } from '@/hooks/useAccounts';
@@ -39,7 +39,7 @@ const Account: React.FC = () => {
   const { mutate: updateAccount } = useModifyAccount('updateSetting');
   const { mutateAsync: purgeAccount } = usePurgeAccount();
 
-  const accountDisplayName = useGetDisplayName(data);
+  const { name: accountDisplayName } = useGetAccountDetails(data);
   const isDirty = status === 'success' && accountDisplayName !== displayName;
   const header = MD5(friend || me).toString();
 

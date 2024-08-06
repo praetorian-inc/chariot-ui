@@ -329,6 +329,31 @@ export const Integrations: Record<Integration, IntegrationMeta> = {
           ),
         },
       },
+      {
+        label: 'Severity',
+        value: 'MHC',
+        name: 'severities',
+        required: true,
+        type: Input.Type.SELECT,
+        options: [
+          { label: 'Info', value: 'ILMHC' },
+          { label: 'Low', value: 'LMHC' },
+          { label: 'Medium', value: 'MHC' },
+          { label: 'High', value: 'HC' },
+          { label: 'Critical', value: 'C' },
+        ],
+        info: {
+          text: 'Learn more',
+          content: (
+            <>
+              <p>
+                Select the minimum risk severity level that should create Jira
+                tickets.
+              </p>
+            </>
+          ),
+        },
+      },
     ],
   },
   github: {

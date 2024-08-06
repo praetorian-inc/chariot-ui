@@ -638,7 +638,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                 {markup && <div>{markup}</div>}
                 {showInputs &&
                   [...Array(count).keys()].map(index => (
-                    <div key={index} className="relative space-y-4">
+                    <div key={index} className="relative space-y-4 mb-5">
                       {index > 0 && (
                         <Button
                           aria-label="CloseIcon"

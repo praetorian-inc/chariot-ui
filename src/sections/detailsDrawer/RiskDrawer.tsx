@@ -29,14 +29,13 @@ import { useMy } from '@/hooks';
 import { useGetKev } from '@/hooks/kev';
 import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
-import { useBulkReRunJob } from '@/hooks/useJobs';
+import { useBulkReRunJob, useJobsTimeline } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
 import { DRAWER_WIDTH } from '@/sections/detailsDrawer';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import {
   EntityHistory,
-  JobStatus,
   Risk,
   RiskCombinedStatus,
   RiskSeverity,
@@ -49,47 +48,6 @@ import { getSeverityClass } from '@/utils/getSeverityClass.util';
 import { isManualORPRrovidedRisk } from '@/utils/risk.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch, useSearchParams } from '@/utils/url.util';
-
-const getJobTimeline = ({
-  status,
-  updated = '',
-}: {
-  status?: JobStatus;
-  updated?: string;
-}) => {
-  const description = `Last Checked: ${formatDate(updated)}`;
-  return [
-    {
-      title: 'Idle',
-      status: '',
-    },
-    {
-      title: 'Queued',
-      status: JobStatus.Queued,
-    },
-    {
-      title: 'Scanning',
-      status: JobStatus.Running,
-    },
-    ...(status === JobStatus.Fail
-      ? [
-          {
-            title: 'Failed',
-            status: JobStatus.Fail,
-            className: 'bg-error',
-          },
-        ]
-      : [
-          {
-            title: 'Completed',
-            status: JobStatus.Pass,
-          },
-        ]),
-  ].map(current => ({
-    ...current,
-    description: current.status === status ? description : '',
-  }));
-};
 
 interface RiskDrawerProps {
   open: boolean;
@@ -140,7 +98,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       enabled: open,
     }
   );
-  const jobKeys = useMemo(
+  const sourceKeys = useMemo(
     () =>
       (attributesGenericSearch?.attributes || [])
         .filter(
@@ -151,7 +109,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
         .map(attribute => attribute.value),
     [attributesGenericSearch]
   );
-
   const {
     data: allAssetJobs = [],
     status: allAssetJobsStatus,
@@ -168,8 +125,8 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     { query: name },
     { enabled: open }
   );
-  const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
 
+  const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
   const definitionsFileValue =
     typeof definitionsFile === 'string'
       ? definitionsFile
@@ -180,24 +137,10 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const risk: Risk = risks[0] || {};
 
   const severityClass = getSeverityClass(risk.status?.[1]);
-
-  const jobForThisRisk = allAssetJobs.find(job => {
-    return job.source === risk.source;
+  const { jobsTimeline, jobsStatus, isJobsRunning } = useJobsTimeline({
+    allAssetJobs,
+    source: risk.source,
   });
-
-  const jobTimeline = useMemo(() => {
-    return getJobTimeline({
-      status: jobForThisRisk?.status,
-      updated: jobForThisRisk?.updated,
-    });
-  }, [jobForThisRisk?.status, jobForThisRisk?.updated]);
-
-  const isJobRunningForThisRisk = useMemo(
-    () =>
-      jobForThisRisk &&
-      [JobStatus.Running, JobStatus.Queued].includes(jobForThisRisk?.status),
-    [jobForThisRisk]
-  );
 
   const resetMarkdownValue = useCallback(() => {
     setMarkdownValue(isEditingMarkdown ? definitionsFileValue : '');
@@ -245,9 +188,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
           <div className="flex w-full flex-col px-10 pb-0 pt-6">
             {/* Job Timeline and Actions */}
             <HorizontalTimeline
-              steps={jobTimeline}
-              current={jobTimeline.findIndex(
-                ({ status }) => status === jobForThisRisk?.status
+              steps={jobsTimeline}
+              current={jobsTimeline.findIndex(
+                ({ status }) => status === jobsStatus
               )}
               className={severityClass + ' brightness-90'}
             />
@@ -408,9 +351,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                     isInitialLoading
                       ? ''
                       : risk.source && !isManualORPRrovidedRisk(risk)
-                        ? isJobRunningForThisRisk
+                        ? isJobsRunning
                           ? 'Scanning in progress'
-                          : jobKeys.length === 0
+                          : sourceKeys.length === 0
                             ? 'On-demand scanning is only available for risk which have a source attribute'
                             : 'Revalidate the risk'
                         : 'On-demand scanning is only available for automated risk discovery.'
@@ -421,9 +364,9 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                     startIcon={<ArrowPathIcon className="size-5" />}
                     disabled={
                       isInitialLoading ||
-                      jobKeys.length === 0 ||
+                      sourceKeys.length === 0 ||
                       isManualORPRrovidedRisk(risk) ||
-                      Boolean(isJobRunningForThisRisk)
+                      Boolean(isJobsRunning)
                     }
                     isLoading={
                       reRunJobStatus === 'pending' ||
@@ -431,7 +374,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                     }
                     onClick={async () => {
                       await bulkReRunJobs(
-                        jobKeys.map(jobKey => ({
+                        sourceKeys.map(jobKey => ({
                           capability: risk.source,
                           jobKey,
                         }))

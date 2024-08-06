@@ -34,7 +34,7 @@ const Account: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [displayName, setDisplayName] = useState('');
 
-  const { me, friend, isImpersonating } = useAuth();
+  const { isSSO, me, friend, isImpersonating } = useAuth();
   const { data, status } = useMy({ resource: 'account' });
   const { mutate: updateAccount } = useModifyAccount('updateSetting');
   const { mutateAsync: purgeAccount } = usePurgeAccount();
@@ -159,19 +159,22 @@ const Account: React.FC = () => {
         <Users />
       </Section>
 
-      {collaborators && collaborators.length > 0 && friend.length === 0 && (
-        <Section
-          title="Collaborating With"
-          description={
-            <p>
-              These organizations have invited you to view their account
-              details. You are currently viewing <strong>open</strong> risks.
-            </p>
-          }
-        >
-          <CollaboratingWith />
-        </Section>
-      )}
+      {!isSSO &&
+        collaborators &&
+        collaborators.length > 0 &&
+        friend.length === 0 && (
+          <Section
+            title="Collaborating With"
+            description={
+              <p>
+                These organizations have invited you to view their account
+                details. You are currently viewing <strong>open</strong> risks.
+              </p>
+            }
+          >
+            <CollaboratingWith />
+          </Section>
+        )}
 
       <Section
         title="Whitelisting Details"

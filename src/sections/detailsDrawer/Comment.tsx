@@ -40,7 +40,9 @@ export const Comment: React.FC<Props> = ({ comment, onSave }: Props) => {
       {!isEditing && (
         <>
           {comment ? (
-            <p className="whitespace-pre-wrap break-words">{comment}</p>
+            <p className="whitespace-pre-wrap break-words text-default">
+              {comment}
+            </p>
           ) : (
             <span className="italic text-gray-400">No comment provided.</span>
           )}

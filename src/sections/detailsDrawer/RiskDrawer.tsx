@@ -1,20 +1,22 @@
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowPathIcon,
   DocumentTextIcon,
-  EyeIcon,
   PencilSquareIcon,
 } from '@heroicons/react/24/outline';
-import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
+import {
+  ClipboardCheck,
+  HistoryIcon,
+  MessageSquare,
+  NotepadText,
+} from 'lucide-react';
 
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
 import { HorizontalTimeline } from '@/components/HorizontalTimeline';
 import { RisksIcon } from '@/components/icons';
 import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
-import { getRiskStatusIcon } from '@/components/icons/RiskStatus.icon';
 import { UnionIcon } from '@/components/icons/Union.icon';
 import { Loader } from '@/components/Loader';
 import { MarkdownEditor } from '@/components/markdown/MarkdownEditor';
@@ -23,75 +25,29 @@ import { Modal } from '@/components/Modal';
 import { Timeline } from '@/components/Timeline';
 import { Tooltip } from '@/components/Tooltip';
 import { RiskDropdown } from '@/components/ui/RiskDropdown';
-import { TabWrapper } from '@/components/ui/TabWrapper';
 import { useMy } from '@/hooks';
 import { useGetKev } from '@/hooks/kev';
 import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
-import { useBulkReRunJob } from '@/hooks/useJobs';
+import { useBulkReRunJob, useJobsTimeline } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
 import { DRAWER_WIDTH } from '@/sections/detailsDrawer';
-import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { Comment } from '@/sections/detailsDrawer/Comment';
-import { DetailsDrawerHeader } from '@/sections/detailsDrawer/DetailsDrawerHeader';
-import { DrawerList } from '@/sections/detailsDrawer/DrawerList';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import {
   EntityHistory,
-  JobStatus,
   Risk,
   RiskCombinedStatus,
   RiskSeverity,
-  RiskStatus,
-  RiskStatusLabel,
   SeverityDef,
 } from '@/types';
+import { cn } from '@/utils/classname';
 import { formatDate } from '@/utils/date.util';
 import { sToMs } from '@/utils/date.util';
-import { isKEVRisk, isManualORPRrovidedRisk } from '@/utils/risk.util';
+import { getSeverityClass } from '@/utils/getSeverityClass.util';
+import { isManualORPRrovidedRisk } from '@/utils/risk.util';
 import { StorageKey } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch, useSearchParams } from '@/utils/url.util';
-
-const getJobTimeline = ({
-  status,
-  updated = '',
-}: {
-  status?: JobStatus;
-  updated?: string;
-}) => {
-  const description = `Last Checked: ${formatDate(updated)}`;
-  return [
-    {
-      title: 'Idle',
-      status: '',
-    },
-    {
-      title: 'Queued',
-      status: JobStatus.Queued,
-    },
-    {
-      title: 'Scanning',
-      status: JobStatus.Running,
-    },
-    ...(status === JobStatus.Fail
-      ? [
-          {
-            title: 'Failed',
-            status: JobStatus.Fail,
-            className: 'bg-error',
-          },
-        ]
-      : [
-          {
-            title: 'Completed',
-            status: JobStatus.Pass,
-          },
-        ]),
-  ].map(current => ({
-    ...current,
-    description: current.status === status ? description : '',
-  }));
-};
 
 interface RiskDrawerProps {
   open: boolean;
@@ -101,7 +57,7 @@ interface RiskDrawerProps {
 export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const navigate = useNavigate();
   const { removeSearchParams } = useSearchParams();
-  const { getRiskDrawerLink } = getDrawerLink();
+  const { getRiskDrawerLink, getAssetDrawerLink } = getDrawerLink();
 
   const [, dns, name] = compositeKey.split('#');
 
@@ -143,7 +99,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       enabled: open,
     }
   );
-  const jobKeys = useMemo(
+  const sourceKeys = useMemo(
     () =>
       (attributesGenericSearch?.attributes || [])
         .filter(
@@ -154,7 +110,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
         .map(attribute => attribute.value),
     [attributesGenericSearch]
   );
-
   const {
     data: allAssetJobs = [],
     status: allAssetJobsStatus,
@@ -171,8 +126,8 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     { query: name },
     { enabled: open }
   );
-  const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
 
+  const { risks: riskOccurrence = [] } = riskNameGenericSearch || {};
   const definitionsFileValue =
     typeof definitionsFile === 'string'
       ? definitionsFile
@@ -182,23 +137,11 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     riskStatus === 'pending' || definitionsFileStatus === 'pending';
   const risk: Risk = risks[0] || {};
 
-  const jobForThisRisk = allAssetJobs.find(job => {
-    return job.source === risk.source;
+  const severityClass = getSeverityClass(risk.status?.[1]);
+  const { jobsTimeline, jobsStatus, isJobsRunning } = useJobsTimeline({
+    allAssetJobs,
+    source: risk.source,
   });
-
-  const jobTimeline = useMemo(() => {
-    return getJobTimeline({
-      status: jobForThisRisk?.status,
-      updated: jobForThisRisk?.updated,
-    });
-  }, [jobForThisRisk?.status, jobForThisRisk?.updated]);
-
-  const isJobRunningForThisRisk = useMemo(
-    () =>
-      jobForThisRisk &&
-      [JobStatus.Running, JobStatus.Queued].includes(jobForThisRisk?.status),
-    [jobForThisRisk]
-  );
 
   const resetMarkdownValue = useCallback(() => {
     setMarkdownValue(isEditingMarkdown ? definitionsFileValue : '');
@@ -236,73 +179,160 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       onClose={() => removeSearchParams(StorageKey.DRAWER_COMPOSITE_KEY)}
       onBack={() => navigate(-1)}
       minWidth={DRAWER_WIDTH}
+      className={cn(
+        'w-full rounded-t-lg bg-zinc-100 pb-0 shadow-lg',
+        severityClass
+      )}
+      footerClassname={'bg-zinc-200 bg-opacity-90'}
       header={
         isInitialLoading ? null : (
-          <DetailsDrawerHeader
-            title={risk.name}
-            subtitle={risk.dns}
-            prefix={
-              <div className="flex flex-row items-center space-x-1">
-                <RisksIcon className="size-5" />
-                {isKEVRisk(risk, knownExploitedThreats) && (
-                  <Tooltip
-                    title={
-                      <span>
-                        This risk was found in the{' '}
-                        <a
-                          href={`https://nvd.nist.gov/vuln/detail/${risk.name}`}
-                          className="underline"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          CISA Known Exploited Vulnerabilities catalog
-                        </a>
-                        , which helps organizations prioritize and manage
-                        vulnerabilities that are actively being exploited.
-                      </span>
-                    }
-                  >
-                    <ExclamationCircleIcon className="size-5 text-error" />
-                  </Tooltip>
-                )}
-              </div>
-            }
-            tag={
-              <div className="flex items-center text-sm text-gray-400">
-                <EyeIcon className="mr-2 size-5" />
-                {formatDate(risk.updated)}
-              </div>
-            }
-          />
+          <div className="flex w-full flex-col px-10 pb-0 pt-6">
+            {/* Job Timeline and Actions */}
+            <HorizontalTimeline
+              steps={jobsTimeline}
+              current={jobsTimeline.findIndex(
+                ({ status }) => status === jobsStatus
+              )}
+              className={severityClass + ' brightness-90'}
+            />
+          </div>
         )
       }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
-        <div className="flex h-full flex-col gap-2">
-          <div>
-            <div className="px-8">
-              <HorizontalTimeline
-                steps={jobTimeline}
-                current={jobTimeline.findIndex(
-                  ({ status }) => status === jobForThisRisk?.status
+        <div className="flex h-full flex-col gap-2 px-8 pt-0">
+          <div className="grid grid-cols-2 gap-4">
+            {/* Description & Remediation */}
+            <div
+              className={cn(
+                'bg-white flex flex-col  p-8 transition-all rounded-lg hover:shadow-md'
+              )}
+            >
+              <div className="mb-4 flex flex-row items-start space-x-1">
+                <ClipboardCheck className="mt-1 size-12 text-gray-800" />
+                <h3
+                  className={cn(
+                    'text-2xl font-semibold tracking-wide text-gray-900'
+                  )}
+                >
+                  <div className="flex flex-col justify-start text-left">
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {risk.name}{' '}
+                      {knownExploitedThreats.includes(risk.name) && (
+                        <span className="text-red-500">
+                          [Known Exploited Threat]
+                        </span>
+                      )}
+                    </p>
+                    <p className="ml-1 text-sm font-normal text-gray-500">
+                      via {risk.source} on {risk.dns}
+                    </p>
+                  </div>
+                </h3>
+              </div>
+              <Loader
+                isLoading={
+                  isDefinitionsFileFetching || reportRiskStatus === 'pending'
+                }
+                className="h-6"
+              >
+                <Modal
+                  size="xl"
+                  open={isEditingMarkdown}
+                  onClose={() => setIsEditingMarkdown(false)}
+                  title="Description & Remediation"
+                  footer={{
+                    text: 'Save',
+                    isLoading: updateFileStatus === 'pending',
+                    onClick: async () => {
+                      await updateFile({
+                        ignoreSnackbar: true,
+                        name: `definitions/${name}`,
+                        content: markdownValue,
+                      });
+                      setIsEditingMarkdown(false);
+                    },
+                  }}
+                >
+                  <div className="h-[60vh]">
+                    <MarkdownEditor
+                      value={markdownValue}
+                      onChange={value => setMarkdownValue(value || '')}
+                      filePathPrefix="definitions/files"
+                    />
+                  </div>
+                </Modal>
+                {definitionsFile ? (
+                  <MarkdownPreview
+                    source={definitionsFileValue}
+                    style={{
+                      padding: '0.75rem',
+                      wordBreak: 'break-word',
+                      minHeight: '20px',
+                    }}
+                  />
+                ) : (
+                  <div className="flex w-full flex-1 flex-col items-center justify-center text-center text-default">
+                    <UnionIcon className="mt-8 size-16 text-default-light" />
+                    <p className="mt-7 text-lg font-bold">
+                      Generate Description & Remediation
+                    </p>
+                    <p className="mt-2">
+                      Add a Description & Remediation to this Risk
+                      <br />
+                      using Praetorian’s Machine Learning.
+                    </p>
+                    <Button
+                      className="mt-10"
+                      startIcon={
+                        <UnionIcon className="size-3 text-brand-light" />
+                      }
+                      styleType="primary"
+                      onClick={() => reportRisk({ name })}
+                    >
+                      Generate Now
+                    </Button>
+                  </div>
                 )}
-              />
+                <Button
+                  styleType="none"
+                  className="mr-auto mt-4 pl-0 font-bold"
+                  endIcon={<PencilSquareIcon className="size-5" />}
+                  onClick={event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setIsEditingMarkdown(true);
+                  }}
+                >
+                  Edit
+                </Button>
+              </Loader>
             </div>
-            <div className="flex justify-between border border-gray-100 bg-gray-50 px-8 py-3">
-              <Tooltip placement="top" title="Change risk status">
-                <div>
-                  <RiskDropdown type="status" risk={risk} />
-                </div>
-              </Tooltip>
-              <Tooltip placement="top" title="Change risk severity">
-                <div>
-                  <RiskDropdown type="severity" risk={risk} />
-                </div>
-              </Tooltip>
-              <Tooltip placement="top" title="View proof of exploit">
-                <div>
+
+            <div className="flex flex-col gap-4">
+              {/* Actions Section */}
+              <div className="flex flex-row justify-end space-x-3">
+                <Tooltip placement="top" title="Change risk status">
+                  <RiskDropdown
+                    type="status"
+                    risk={risk}
+                    className="h-14 rounded-md border-none bg-white text-default"
+                  />
+                </Tooltip>
+                <Tooltip placement="top" title="Change risk severity">
+                  <RiskDropdown
+                    type="severity"
+                    risk={risk}
+                    className={cn(
+                      'transition-all h-15 rounded-md border-none',
+                      severityClass,
+                      'brightness-90'
+                    )}
+                  />
+                </Tooltip>
+                <Tooltip placement="top" title="View proof of exploit">
                   <Button
-                    className="border-1 h-8 border border-default"
+                    className="h-15 text-nowrap rounded-md border-none bg-white"
                     startIcon={<DocumentTextIcon className="size-5" />}
                     onClick={() => {
                       navigate(
@@ -314,244 +344,268 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                   >
                     Proof of Exploit
                   </Button>
-                </div>
-              </Tooltip>
-              <Tooltip
-                placement="top"
-                title={
-                  isInitialLoading
-                    ? ''
-                    : risk.source && !isManualORPRrovidedRisk(risk)
-                      ? isJobRunningForThisRisk
-                        ? 'Scanning in progress'
-                        : jobKeys.length === 0
-                          ? 'On-demand scanning is only available for risk which have a source attribute'
-                          : 'Revalidate the risk'
-                      : 'On-demand scanning is only available for automated risk discovery.'
-                }
-              >
-                <Button
-                  className="border-1 h-8 border border-default"
-                  startIcon={<ArrowPathIcon className="size-5" />}
-                  disabled={
-                    isInitialLoading ||
-                    jobKeys.length === 0 ||
-                    isManualORPRrovidedRisk(risk) ||
-                    Boolean(isJobRunningForThisRisk)
-                  }
-                  isLoading={
-                    reRunJobStatus === 'pending' ||
-                    allAssetJobsStatus === 'pending'
-                  }
-                  onClick={async () => {
-                    await bulkReRunJobs(
-                      jobKeys.map(jobKey => ({
-                        capability: risk.source,
-                        jobKey,
-                      }))
-                    );
-                    refetchAllAssetJobs();
-                  }}
-                >
-                  Scan Now
-                </Button>
-              </Tooltip>
-            </div>
-          </div>
+                </Tooltip>
 
-          <TabGroup className="h-full">
-            <TabList className="flex overflow-x-auto">
-              {[
-                'Description',
-                'Occurrences',
-                'Attributes',
-                'Comment',
-                'History',
-              ].map(tab => (
-                <TabWrapper key={tab}>{tab}</TabWrapper>
-              ))}
-            </TabList>
-            <TabPanels className="size-full h-[calc(100%-250px)] overflow-auto">
-              <TabPanel className="h-full p-6">
-                <Loader
-                  isLoading={
-                    isDefinitionsFileFetching || reportRiskStatus === 'pending'
+                <Tooltip
+                  placement="top"
+                  title={
+                    isInitialLoading
+                      ? ''
+                      : risk.source && !isManualORPRrovidedRisk(risk)
+                        ? isJobsRunning
+                          ? 'Scanning in progress'
+                          : sourceKeys.length === 0
+                            ? 'On-demand scanning is only available for risk which have a source attribute'
+                            : 'Revalidate the risk'
+                        : 'On-demand scanning is only available for automated risk discovery.'
                   }
-                  className="h-6"
                 >
-                  <Modal
-                    size="xl"
-                    open={isEditingMarkdown}
-                    onClose={() => {
-                      setIsEditingMarkdown(false);
-                    }}
-                    title="Description & Remediation"
-                    footer={{
-                      text: 'Save',
-                      isLoading: updateFileStatus === 'pending',
-                      onClick: async () => {
-                        await updateFile({
-                          ignoreSnackbar: true,
-                          name: `definitions/${name}`,
-                          content: markdownValue,
-                        });
-                        setIsEditingMarkdown(false);
-                      },
-                    }}
-                  >
-                    <div className="h-[60vh]">
-                      <MarkdownEditor
-                        value={markdownValue}
-                        onChange={value => {
-                          setMarkdownValue(value || '');
-                        }}
-                        filePathPrefix="definitions/files"
-                      />
-                    </div>
-                  </Modal>
-                  <>
-                    {definitionsFile && (
-                      <MarkdownPreview
-                        source={definitionsFileValue}
-                        style={{
-                          wordBreak: 'break-word',
-                          minHeight: '20px',
-                        }}
-                      />
-                    )}
-                    {!definitionsFile && (
-                      <div className="flex h-96 w-full flex-col items-center justify-center bg-layer1 text-center">
-                        <UnionIcon className="size-16 text-default-light" />
-                        <p className="mt-7 text-lg font-bold">
-                          Generate Description & Remediation
-                        </p>
-                        <p className="mt-2">
-                          Add a Description & Remediation to this Risk
-                          <br />
-                          using Praetorian’s Machine Learning.
-                        </p>
-                        <Button
-                          className="mt-10"
-                          startIcon={
-                            <UnionIcon className="size-3 text-brand-light" />
-                          }
-                          styleType="primary"
-                          onClick={() => {
-                            reportRisk({ name });
-                          }}
-                        >
-                          Generate Now
-                        </Button>
-                      </div>
-                    )}
-                  </>
                   <Button
-                    styleType="none"
-                    className="mt-4 pl-0 font-bold"
-                    endIcon={<PencilSquareIcon className="size-5" />}
-                    onClick={event => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      setIsEditingMarkdown(true);
+                    className="h-15 text-nowrap rounded-md border-none bg-white"
+                    startIcon={<ArrowPathIcon className="size-5" />}
+                    disabled={
+                      isInitialLoading ||
+                      sourceKeys.length === 0 ||
+                      isManualORPRrovidedRisk(risk) ||
+                      Boolean(isJobsRunning)
+                    }
+                    isLoading={
+                      reRunJobStatus === 'pending' ||
+                      allAssetJobsStatus === 'pending'
+                    }
+                    onClick={async () => {
+                      await bulkReRunJobs(
+                        sourceKeys.map(jobKey => ({
+                          capability: risk.source,
+                          jobKey,
+                        }))
+                      );
+                      refetchAllAssetJobs();
                     }}
                   >
-                    Edit
+                    Scan Now
                   </Button>
-                </Loader>
-              </TabPanel>
-              <TabPanel className="h-full">
-                <DrawerList
-                  dns={risk.dns}
-                  items={riskOccurrence.map(data => {
-                    const riskStatusKey =
-                      `${data.status?.[0]}${data.status?.[2] || ''}` as RiskStatus;
-                    const riskSeverityKey = data.status?.[1] as RiskSeverity;
+                </Tooltip>
+              </div>
 
-                    const statusIcon = getRiskStatusIcon(
-                      riskStatusKey,
-                      'size-5'
-                    );
-                    const severityIcon = getRiskSeverityIcon(
-                      riskSeverityKey,
-                      'size-5'
-                    );
+              {/* Attributes Section */}
+              <div
+                className={cn(
+                  ' bg-white p-8 transition-all rounded-lg hover:shadow-md'
+                )}
+              >
+                <div className="mb-4 flex flex-row items-center space-x-1">
+                  <NotepadText className="size-6 text-gray-800" />
+                  <h3 className="text-2xl font-semibold tracking-wide text-gray-900">
+                    Attributes
+                  </h3>
+                </div>
 
-                    const icons = (
-                      <div className="flex items-center gap-1 text-black">
-                        <Tooltip
-                          title={
-                            (RiskStatusLabel[riskStatusKey] || 'Closed') +
-                            ' Status'
-                          }
-                        >
-                          {statusIcon}
-                        </Tooltip>
-                        <Tooltip
-                          title={SeverityDef[riskSeverityKey] + ' Severity'}
-                        >
-                          {severityIcon}
-                        </Tooltip>
-                      </div>
-                    );
-                    return {
-                      prefix: icons,
-                      label: data.name,
-                      value: data.dns,
-                      updated: data.updated,
-                      to: getRiskDrawerLink(data),
-                    };
-                  })}
-                />
-              </TabPanel>
-              <TabPanel className="h-full">
-                <div className="ml-4">
-                  <AddAttribute resourceKey={risk.key} />
+                <div className="space-y-4">
+                  {attributesGenericSearch?.attributes?.length === 0 ? (
+                    <div className="text-center text-gray-500">
+                      <p>No attributes added to this risk yet.</p>
+                    </div>
+                  ) : (
+                    <table className="min-w-full table-auto">
+                      <thead>
+                        <tr>
+                          <th className="p-2 text-left text-sm font-medium text-gray-600">
+                            Name
+                          </th>
+                          <th className="p-2 text-left text-sm font-medium text-gray-600">
+                            Value
+                          </th>
+                          <th className="p-2 text-left text-sm font-medium text-gray-600">
+                            Last Updated
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {attributesGenericSearch?.attributes?.map(data => (
+                          <tr
+                            key={data.name}
+                            className="hover: border-b border-gray-200 bg-white"
+                          >
+                            <td className="p-2 text-sm font-medium text-gray-800">
+                              {data.name}
+                            </td>
+                            <td className=" break-all p-2 text-sm text-gray-500">
+                              <span className="">
+                                {data.value.startsWith('#asset') ? (
+                                  <Link
+                                    to={getAssetDrawerLink({
+                                      dns: data.value.split('#')[3],
+                                      name: data.value.split('#')[2],
+                                    })}
+                                    className="text-blue-500 hover:underline"
+                                  >
+                                    {data.value}
+                                  </Link>
+                                ) : data.value.startsWith('http') ? (
+                                  <a
+                                    href={data.value}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-blue-500 hover:underline"
+                                  >
+                                    {data.value}
+                                  </a>
+                                ) : (
+                                  data.value
+                                )}
+                              </span>
+                            </td>
+                            <td className="p-2 text-sm text-gray-500">
+                              {formatDate(data.updated)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
-                <div>
-                  <DrawerList
-                    dns={risk.dns}
-                    allowEmpty={true}
-                    items={(attributesGenericSearch?.attributes || [])?.map(
-                      data => ({
-                        label: data.name,
-                        value: data.value,
-                        updated: data.updated,
-                      })
-                    )}
-                  />
+              </div>
+              {/* Comment Section */}
+              <div
+                className={cn(
+                  'bg-white p-8 transition-all rounded-lg hover:shadow-md'
+                )}
+              >
+                <div className="mb-4 flex flex-row items-center space-x-1">
+                  <MessageSquare className="size-6 text-gray-800" />
+                  <h3 className="text-2xl font-semibold tracking-wide text-gray-900">
+                    Comments
+                  </h3>
                 </div>
-              </TabPanel>
-              <TabPanel className="h-full p-6">
                 <Comment
                   comment={risk.comment}
                   isLoading={isRiskFetching}
                   onSave={handleUpdateComment}
                 />
-              </TabPanel>
-              <TabPanel className="h-full px-6">
-                <Timeline
-                  items={[
-                    ...(history
-                      ?.map((item, itemIndex) => {
-                        const { title, updated } = getHistoryDiff(
-                          item,
-                          itemIndex === 0
-                        );
-                        return {
-                          title,
-                          description: updated,
-                          icon:
-                            itemIndex === 0 ? (
-                              <RisksIcon className="stroke-1" />
-                            ) : undefined,
-                        };
-                      })
-                      .reverse() || []),
-                  ]}
-                />
-              </TabPanel>
-            </TabPanels>
-          </TabGroup>
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full">
+            {/* Occurrences Section */}
+            <div
+              className={cn(
+                'bg-white p-8 transition-all rounded-lg hover:shadow-md'
+              )}
+            >
+              <div className="mb-4 flex flex-row items-center space-x-1">
+                <RisksIcon className="size-6 text-gray-800" />
+                <h3 className="text-2xl font-semibold text-gray-900">
+                  Occurrences
+                </h3>
+              </div>
+              {riskOccurrence.length === 0 ? (
+                <div className="text-center text-gray-500">
+                  <p>No occurrences found.</p>
+                </div>
+              ) : (
+                <table className="min-w-full table-auto text-default">
+                  <thead>
+                    <tr>
+                      <th className="w-28 p-2 text-left text-sm font-medium text-gray-600">
+                        Status
+                      </th>
+                      <th className="p-2 text-left text-sm font-medium text-gray-600">
+                        Name
+                      </th>
+                      <th className="p-2 text-left text-sm font-medium text-gray-600">
+                        DNS
+                      </th>
+                      <th className="p-2 text-left text-sm font-medium text-gray-600">
+                        Last Updated
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {riskOccurrence.map(data => {
+                      const riskSeverityKey = data.status?.[1] as RiskSeverity;
+
+                      return (
+                        <tr
+                          key={data.dns}
+                          className="hover: border-b border-gray-200 bg-white"
+                        >
+                          <td className="p-2 text-sm">
+                            <div className="flex flex-row items-center space-x-1">
+                              <Tooltip
+                                title={
+                                  SeverityDef[riskSeverityKey] + ' Severity'
+                                }
+                              >
+                                {getRiskSeverityIcon(
+                                  riskSeverityKey,
+                                  'h-4 w-4 text-red-500'
+                                )}
+                              </Tooltip>
+                              <p className="text-xs">
+                                {SeverityDef[riskSeverityKey]}
+                              </p>
+                            </div>
+                          </td>
+                          <td className="p-2 text-sm font-medium text-blue-500">
+                            <Link
+                              to={getRiskDrawerLink({
+                                dns: data.dns,
+                                name: data.name,
+                              })}
+                              className="hover:underline"
+                            >
+                              {data.name}
+                            </Link>
+                          </td>
+                          <td className="p-2 text-sm text-gray-500">
+                            {data.dns}
+                          </td>
+                          <td className="p-2 text-sm text-gray-500">
+                            {formatDate(data.updated)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+
+          {/* History Section */}
+          <div
+            className={cn(
+              'bg-white p-8 mb-8 transition-all rounded-lg hover:shadow-md'
+            )}
+          >
+            <div className="mb-4 flex flex-row items-center space-x-1">
+              <HistoryIcon className="size-6 text-gray-800" />
+              <h3 className="text-2xl font-semibold text-gray-900">History</h3>
+            </div>
+            <Timeline
+              items={[
+                ...(history
+                  ?.map((item, itemIndex) => {
+                    const { title, updated } = getHistoryDiff(
+                      item,
+                      itemIndex === 0
+                    );
+                    return {
+                      title,
+                      description: updated,
+                      className: 'text-default',
+                      icon:
+                        itemIndex === 0 ? (
+                          <RisksIcon className="stroke-1" />
+                        ) : undefined,
+                    };
+                  })
+                  .reverse() || []),
+              ]}
+            />
+          </div>
         </div>
       </Loader>
     </Drawer>

@@ -141,7 +141,7 @@ export const RiskDropdown: React.FC<Props> = ({
     return (
       <>
         <Dropdown
-          className={`justify-start rounded-[2px] py-1 ${className} border-1 min-w-32 border border-default`}
+          className={`min-w-32 justify-start rounded-[2px] border border-default py-1 ${className}`}
           menu={{
             items: riskStatusOptions,
             onClick: value => {
@@ -158,7 +158,7 @@ export const RiskDropdown: React.FC<Props> = ({
             riskStatusOptions.find(option => option.value === riskStatusKey)
               ?.icon ?? <LockClosedIcon className="size-4 stroke-2" />
           }
-          endIcon={<ChevronDownIcon className="size-3 text-default-light" />}
+          endIcon={<ChevronDownIcon className="text-defualt size-3" />}
           onClick={event => event.stopPropagation()}
         >
           <div className="flex-1 text-left">{statusLabel}</div>
@@ -175,7 +175,7 @@ export const RiskDropdown: React.FC<Props> = ({
 
   return (
     <Dropdown
-      className={`justify-between rounded-[2px] py-1 ${className} border-1 min-w-28 border border-default pr-2`}
+      className={`border-1 min-w-28 justify-between rounded-[2px] border border-default py-1 pr-2 ${className}`}
       menu={{
         items: riskSeverityOptions,
         onClick: value => {

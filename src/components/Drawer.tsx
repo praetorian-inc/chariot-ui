@@ -8,10 +8,9 @@ import { MODAL_WRAPPER_ID } from '@/components/Modal';
 import { Tooltip } from '@/components/Tooltip';
 import { useMutationObserver } from '@/hooks/useMutationObserver';
 import { cn } from '@/utils/classname';
-import { getTransitionSettings } from '@/utils/transition.util';
 
 interface Props {
-  position?: 'left' | 'right';
+  position?: 'bottom';
   open: boolean;
   onClose: () => void;
   onBack: () => void;
@@ -25,7 +24,6 @@ interface Props {
 }
 
 export function Drawer({
-  position = 'right',
   open,
   onClose,
   onBack,
@@ -35,14 +33,10 @@ export function Drawer({
   footer,
   footerClassname,
   header,
-  minWidth = 600,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [domHasModal, setDomHasModal] = useState(false);
 
-  /**
-   * Listen to the DOM changes to check if the modal is added or removed
-   */
   useMutationObserver(
     document.body,
     mutations => {
@@ -76,10 +70,6 @@ export function Drawer({
       }
     }
 
-    /**
-     * Modal and Drawer both listens to the escape key press event
-     * If the modal is open, we don't want the drawer to listen to the escape key press event
-     */
     if (open && !domHasModal) {
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
@@ -95,44 +85,45 @@ export function Drawer({
       >
         <Transition.Child
           as={Fragment}
-          {...getTransitionSettings({ type: 'fade' })}
+          enter="transition-opacity duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
         >
           <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
         </Transition.Child>
 
         <div className="fixed inset-0 h-full">
-          <div
-            className={`flex h-full ${position === 'right' ? 'justify-end' : 'justify-start'}`}
-          >
+          <div className="flex h-full items-end justify-center">
             <Transition.Child
               as={Fragment}
-              {...getTransitionSettings({
-                type: position === 'right' ? 'slideRight' : 'slideLeft',
-              })}
+              enter="drawer-enter"
+              enterFrom="drawer-enter"
+              enterTo="drawer-enter-active"
+              leave="drawer-exit"
+              leaveFrom="drawer-exit"
+              leaveTo="drawer-exit-active"
             >
               <div
                 className={cn(
-                  'relative border-l border-l-default flex flex-col bg-layer0 w-96',
+                  'relative border-t border-t-default flex flex-col bg-layer0 w-full',
                   className
                 )}
                 onClick={event => event.stopPropagation()}
                 style={{
-                  width: minWidth,
+                  height: '95%',
+                  maxHeight: '95%',
                 }}
                 ref={ref}
               >
-                {/* <div
-                  onMouseDown={onMouseDown}
-                  className="absolute left-[-20px] top-1/2 flex size-5 h-8 -translate-y-2/4 translate-x-2/4 items-center rounded-full bg-layer1 shadow-md hover:cursor-col-resize"
-                >
-                  <EllipsisVerticalIcon className="w-6" />
-                </div> */}
-                <div className="h-full overflow-auto">
-                  <div className="mx-2 my-4 flex justify-between">
-                    <div className="flex">
+                <div className="h-full overflow-auto text-default">
+                  <div className="mb-2 flex items-center justify-between px-10 pb-4">
+                    <div className="flex w-full items-center">
                       <Tooltip title="Go Back">
                         <ChevronLeftIcon
-                          className="mr-2 mt-2 size-5 cursor-pointer"
+                          className="mr-2 size-6 cursor-pointer"
                           onClick={onBack}
                         />{' '}
                       </Tooltip>
@@ -140,16 +131,23 @@ export function Drawer({
                     </div>
                     <Tooltip title="Close">
                       <XMarkIcon
-                        className=" mt-2 size-5 cursor-pointer"
+                        className="mt-2 size-6 cursor-pointer"
                         onClick={onClose}
                       />
                     </Tooltip>
                   </div>
-                  <div className="">{children}</div>
+                  <div>{children}</div>
                 </div>
                 {footer && (
-                  <div className={cn('w-full bg-layer1 p-3', footerClassname)}>
-                    {footer}
+                  <div className="absolute bottom-0 left-0 flex w-full flex-row items-center justify-center">
+                    <div
+                      className={cn(
+                        'rounded-t-lg bg-gray-200 px-8 py-4 shadow-lg',
+                        footerClassname
+                      )}
+                    >
+                      {footer}
+                    </div>
                   </div>
                 )}
               </div>

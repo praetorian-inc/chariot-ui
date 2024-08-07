@@ -7,7 +7,7 @@ import { Table } from '@/components/table/Table';
 import { Columns } from '@/components/table/types';
 import { InviteUser } from '@/components/ui/InviteUser';
 import { useModifyAccount, useMy } from '@/hooks';
-import { useGetAccountDetails } from '@/hooks/useAccounts';
+import { useGetPrimaryEmail } from '@/hooks/useAccounts';
 import { AvailableIntegrations } from '@/sections/overview/Integration';
 import { useAuth } from '@/state/auth';
 import { Account } from '@/types';
@@ -18,7 +18,7 @@ const isAccount = (account: Account): boolean => {
 };
 
 export const Users: React.FC = () => {
-  const { isImpersonating, friend } = useAuth();
+  const { friend } = useAuth();
   const { mutate: unlink } = useModifyAccount('unlink');
 
   const {
@@ -27,14 +27,8 @@ export const Users: React.FC = () => {
     error,
   } = useMy({ resource: 'account' });
 
-  const { data: myAccounts, status: myAccountsStatus } = useMy(
-    { resource: 'account' },
-    { doNotImpersonate: true, enabled: isImpersonating }
-  );
-
-  const { email: primaryEmail } = useGetAccountDetails(
-    isImpersonating ? myAccounts : accounts
-  );
+  const { data: primaryEmail, status: primaryEmailStatus } =
+    useGetPrimaryEmail();
 
   const users = [
     {
@@ -116,7 +110,7 @@ export const Users: React.FC = () => {
         data={users}
         error={error}
         loadingRowCount={1}
-        status={useMergeStatus(accountsStatus, myAccountsStatus)}
+        status={useMergeStatus(accountsStatus, primaryEmailStatus)}
         noData={{
           description: 'No authorized users found.',
         }}

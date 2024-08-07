@@ -341,19 +341,23 @@ export function Risks() {
   );
 
   useEffect(() => {
-    if (!search && !isRisksFetching && !isFetchingNextPage) {
-      setIsFilteredDataFetching(true);
-      fetchNextPage?.();
-
-      if (!fetchNextPage) {
+    if (!isRisksFetching) {
+      if (search) {
         setIsFilteredDataFetching(false);
+      } else {
+        if (fetchNextPage && sortedRisks.length < 50) {
+          setIsFilteredDataFetching(true);
+          fetchNextPage?.();
+        } else {
+          setIsFilteredDataFetching(false);
+        }
       }
     }
   }, [
     JSON.stringify({ sortedRisks }),
     search,
     isRisksFetching,
-    isFetchingNextPage,
+    Boolean(fetchNextPage),
   ]);
 
   return (

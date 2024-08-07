@@ -10,7 +10,7 @@ import { Hexagon } from '@/components/Hexagon';
 import { Loader } from '@/components/Loader';
 import { Tooltip } from '@/components/Tooltip';
 import { useGetCollaborators } from '@/hooks/collaborators';
-import { useGetAccountDetails } from '@/hooks/useAccounts';
+import { useGetAccountDetails, useGetPrimaryEmail } from '@/hooks/useAccounts';
 import { useMy } from '@/hooks/useMy';
 import Avatar from '@/sections/topNavBar/Avatar';
 import { useAuth } from '@/state/auth';
@@ -41,10 +41,12 @@ export const AccountDropdown: React.FC = () => {
       { enabled: isImpersonating }
     );
 
-  const { name: myDisplayName, email: primaryEmail } =
-    useGetAccountDetails(myAccounts);
+  const { name: myDisplayName } = useGetAccountDetails(myAccounts);
   const { name: friendDisplayName } =
     useGetAccountDetails(impersonatedAccounts);
+
+  const { data: primaryEmail, status: primaryEmailStatus } =
+    useGetPrimaryEmail();
 
   const { data: collaborators, status: collaboratorsStatus } =
     useGetCollaborators({ doNotImpersonate: true });
@@ -69,7 +71,8 @@ export const AccountDropdown: React.FC = () => {
             className: 'bg-layer2',
             isLoading:
               collaboratorsStatus === 'pending' ||
-              myAccountsStatus === 'pending',
+              myAccountsStatus === 'pending' ||
+              primaryEmailStatus === 'pending',
             hide:
               collaboratorsStatus === 'error' ||
               (collaboratorsStatus === 'success' && collaborators.length === 0),

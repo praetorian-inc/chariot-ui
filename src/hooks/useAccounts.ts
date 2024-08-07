@@ -123,16 +123,31 @@ export function usePurgeAccount() {
 }
 
 export function useGetAccountDetails(accounts: Account[]) {
-  const { isSSO, me } = useAuth();
-
   return useMemo(() => {
     const myAccount = accounts?.find(acc => acc.key.endsWith('#settings#'));
 
     return {
       name: myAccount?.config?.displayName || '',
-      email: isSSO ? myAccount?.name || '' : me,
     };
-  }, [JSON.stringify(accounts), isSSO, me]);
+  }, [JSON.stringify(accounts)]);
+}
+
+export function useGetPrimaryEmail() {
+  const { isSSO, me } = useAuth();
+
+  const { data: myAccounts, status: myAccountsStatus } = useMy(
+    {
+      resource: 'account',
+    },
+    { doNotImpersonate: true, enabled: isSSO }
+  );
+
+  const myAccount = myAccounts?.find(acc => acc.member.startsWith('sso:'));
+
+  return {
+    data: isSSO ? myAccount?.name || '' : me,
+    status: isSSO ? myAccountsStatus : 'success',
+  };
 }
 
 export function getDisplayName(accounts: Account[]) {

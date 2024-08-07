@@ -16,7 +16,6 @@ Resources:
               StringEquals:
                 'sts:ExternalId': !Ref ExternalId
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/ReadOnlyAccess
         - arn:aws:iam::aws:policy/SecurityAudit
 Parameters:
   ExternalId:

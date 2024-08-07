@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import {
   CheckCircleIcon,
@@ -6,68 +6,134 @@ import {
   ExclamationTriangleIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/solid';
+import { Dialog, Transition } from '@headlessui/react';
 
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
+import { Inputs, Values } from '@/components/form/Inputs';
 import { Integrations } from '@/sections/overview/Module';
 import { cn } from '@/utils/classname';
 
+const SetupModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  selectedIntegration: string | null;
+}> = ({ isOpen, onClose, selectedIntegration }) => {
+  const integration =
+    Integrations[selectedIntegration as keyof typeof Integrations];
+
+  if (!integration) return null;
+
+  const handleInputsChange = (values: Values) => {
+    // Handle the input values, e.g., save them to state or perform validation
+    console.log('Input Values:', values);
+  };
+
+  return (
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-lg overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title
+                  as="h3"
+                  className="text-lg font-medium leading-6 text-gray-900"
+                >
+                  {integration.name} Setup
+                </Dialog.Title>
+                <div className="mt-4">
+                  {integration.markup ? (
+                    integration.markup
+                  ) : (
+                    <Inputs
+                      inputs={integration.inputs || []}
+                      onChange={handleInputsChange}
+                    />
+                  )}
+                </div>
+                <div className="mt-4">
+                  <Button styleType="primary" onClick={onClose}>
+                    Close
+                  </Button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+  );
+};
+
 const integrations = [
   {
-    status: 'success',
+    status: 'warning',
     name: 'amazon',
-    identifier: '1234567890',
+    identifier: 'Requires Setup',
     assets: '10,000',
-    action: '',
   },
   {
-    status: 'success',
+    status: 'warning',
     name: 'google',
-    identifier: 'praetorian-chariot-example',
+    identifier: 'Requires Setup',
     assets: '200',
-    action: '',
   },
   {
     status: 'warning',
     name: 'ns1',
     identifier: 'Requires Setup',
     assets: '-',
-    action: 'Setup',
   },
   {
-    status: 'error',
+    status: 'warning',
     name: 'amazon',
-    identifier: '12badaccount3456',
+    identifier: 'Requires Setup',
     assets: '12',
-    action: '',
   },
   {
-    status: 'success',
+    status: 'warning',
     name: 'companydomain.com',
-    identifier: 'https://github.com/company-inc',
+    identifier: 'Requires Setup',
     assets: '12',
-    action: '',
   },
   {
-    status: 'success',
+    status: 'warning',
     name: 'github',
-    identifier: 'https://github.com/company-inc',
+    identifier: 'Requires Setup',
     assets: '12',
-    action: '',
   },
   {
-    status: 'success',
+    status: 'warning',
     name: 'jira',
-    identifier: 'https://company.atlassian.net',
+    identifier: 'Requires Setup',
     assets: '12',
-    action: '',
   },
   {
-    status: 'success',
+    status: 'warning',
     name: 'slack',
-    identifier: 'https://hooks.slack.com/services',
+    identifier: 'Requires Setup',
     assets: '12',
-    action: '',
   },
 ];
 
@@ -89,7 +155,10 @@ const getStatusIcon = (status: string) => {
 };
 
 const Chariot: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [setupIntegration, setSetupIntegration] = useState<string | null>(null);
+
   const modifiedIntegrations = [
     Integrations.amazon,
     Integrations.azure,
@@ -110,13 +179,17 @@ const Chariot: React.FC = () => {
     []
   );
 
+  const handleSetupClick = (integrationName: string) => {
+    setSetupIntegration(integrationName);
+    setIsModalOpen(true);
+  };
+
   const allIntegrations = modifiedIntegrations.map(integration => (
     <div
       key={integration.id}
       className={cn(
         'h-[150px] w-[200px] resize-none rounded-md bg-white p-4 text-center',
-        selectedIntegrations.includes(integration.id) &&
-          'border border-2 border-brand'
+        selectedIntegrations.includes(integration.id) && 'border-2 border-brand'
       )}
       role="button"
       onClick={() => {
@@ -215,17 +288,19 @@ const Chariot: React.FC = () => {
                     <td
                       className={cn(
                         'px-4 py-2',
-                        integration.identifier === 'Requires Setup' &&
-                          'text-[#FFD700]'
+                        integration.status === 'warning' && 'text-[#FFD700]'
                       )}
                     >
                       {integration.identifier}
                     </td>
                     <td className="px-4 py-2">{integration.assets}</td>
                     <td className="px-4 py-2 text-center">
-                      {integration.action ? (
-                        <button className="w-[100px] rounded-sm bg-[#FFD700] px-3 py-1 text-sm font-medium text-black">
-                          {integration.action}
+                      {integration.status === 'warning' ? (
+                        <button
+                          onClick={() => handleSetupClick(integration.name)}
+                          className="w-[100px] rounded-sm bg-[#FFD700] px-3 py-1 text-sm font-medium text-black"
+                        >
+                          Setup
                         </button>
                       ) : (
                         <EllipsisVerticalIcon className="mx-auto size-6 text-gray-400" />
@@ -239,6 +314,11 @@ const Chariot: React.FC = () => {
         </div>
       </main>
 
+      <SetupModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedIntegration={setupIntegration}
+      />
       <Drawer
         open={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}

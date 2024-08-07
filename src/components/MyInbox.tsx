@@ -10,7 +10,7 @@ import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
 const MyInbox: React.FC = () => {
   const { data: alerts = [], isPending } = useGetAccountAlerts({
-    refetchInterval: sToMs(10),
+    refetchInterval: sToMs(30),
   });
 
   const [prevAlertCount, setPrevAlertCount] = useStorage<undefined | number>(

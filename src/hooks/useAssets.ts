@@ -1,6 +1,7 @@
 import { toast } from 'sonner';
 
 import { useAxios } from '@/hooks/useAxios';
+import { useGetAccountAlerts } from '@/hooks/useGetAccountAlerts';
 import { useMy } from '@/hooks/useMy';
 import { Asset, AssetStatus, AssetStatusLabel, RiskScanMessage } from '@/types';
 import { useMutation } from '@/utils/api';
@@ -48,6 +49,9 @@ export const useUpdateAsset = () => {
       enabled: false,
     }
   );
+  const { invalidate: invalidateAlerts } = useGetAccountAlerts({
+    enabled: false,
+  });
 
   return useMutation<Asset, Error, UpdateAssetProps>({
     defaultErrorMessage: 'Failed to update asset',
@@ -67,6 +71,7 @@ export const useUpdateAsset = () => {
       const response = await promise;
       const data = response.data?.[0] as Asset;
 
+      invalidateAlerts();
       updateAllSubQueries(previous => {
         if (!previous) {
           return { pages: [[data]], pageParams: [undefined] };

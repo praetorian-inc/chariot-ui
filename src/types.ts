@@ -502,3 +502,17 @@ export interface IntegrationMeta {
     label: string;
   };
 }
+
+export interface AssetFilters {
+  attributes: string[];
+  priorities: AssetStatus[];
+  sources: string[];
+  search: string;
+}
+
+export type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
+export type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
+
+export interface AssetsWithRisk extends Asset {
+  riskSummary?: SeverityOpenCounts;
+}

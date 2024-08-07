@@ -1,13 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import { Square } from 'lucide-react';
 
 import { InputText } from '@/components/form/InputText';
 import { Popover } from '@/components/Popover';
-import { useAssetsWithAttributes } from '@/hooks/useAttribute';
-import { useFilter } from '@/hooks/useFilter';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
-import { parseKeys } from '@/sections/SearchByType';
+import { useStorage } from '@/utils/storage/useStorage.util';
 
 export type AttributeFilterType = Record<string, string[]>;
 
@@ -18,36 +16,19 @@ export const getSelectedAttributes = (attributes: AttributeFilterType) => {
 };
 
 interface Props {
-  resource?: string;
-  onAssetsChange: (assets: string[]) => void;
+  value: string[];
+  onChange: (assets: string[]) => void;
 }
 
 export const AttributeFilter = (props: Props) => {
-  const { resource = 'asset' } = props;
-
-  const [attributesFilter, setAttributesFilter] = useFilter<string[]>(
-    [],
-    `${resource}-attributes`
+  const [attributesFilter, setAttributesFilter] = useStorage<string[]>(
+    { parentState: props.value, onParentStateChange: props.onChange },
+    []
   );
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedAttributes, setSelectedAttributes] = useState<
     Record<string, boolean>
   >({});
-
-  const attFilterKeys = useMemo(() => {
-    return attributesFilter.map(att => {
-      const attribute = parseKeys.attributeKey(att);
-      return `${attribute.name}#${attribute.value}`;
-    });
-  }, [JSON.stringify(attributesFilter)]);
-
-  const { data, status } = useAssetsWithAttributes(attFilterKeys);
-
-  useEffect(() => {
-    if (status === 'success' && data) {
-      props.onAssetsChange(data);
-    }
-  }, [status, JSON.stringify(data), props]);
 
   const filterLabel = useMemo(() => {
     if (attributesFilter.length === 0) {
@@ -122,7 +103,6 @@ export const AttributeFilter = (props: Props) => {
       .filter(attrKey => newSelectedAttributes[attrKey])
       .map(attrKey => `#attribute#${attrKey}`);
     setAttributesFilter(updatedAttributes);
-    props.onAssetsChange(updatedAttributes);
   };
 
   const selectedOptions = useMemo(() => {

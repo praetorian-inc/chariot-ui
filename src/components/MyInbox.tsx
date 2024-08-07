@@ -4,11 +4,14 @@ import { Inbox } from 'lucide-react';
 import { Dropdown } from '@/components/Dropdown';
 import { useGetAccountAlerts } from '@/hooks/useGetAccountAlerts';
 import { cn } from '@/utils/classname';
+import { sToMs } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
 const MyInbox: React.FC = () => {
-  const { data: alerts = [], isPending } = useGetAccountAlerts();
+  const { data: alerts = [], isPending } = useGetAccountAlerts({
+    refetchInterval: sToMs(10),
+  });
 
   const [prevAlertCount, setPrevAlertCount] = useStorage<undefined | number>(
     { key: StorageKey.ALERT_COUNT },

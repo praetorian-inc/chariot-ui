@@ -72,9 +72,12 @@ const SetupModal: React.FC<{
                     />
                   )}
                 </div>
-                <div className="mt-4">
-                  <Button styleType="primary" onClick={onClose}>
+                <div className="mt-4 flex flex-row space-x-1">
+                  <Button styleType="secondary" onClick={onClose}>
                     Close
+                  </Button>
+                  <Button styleType="primary" onClick={onClose}>
+                    Connect
                   </Button>
                 </div>
               </Dialog.Panel>
@@ -95,7 +98,7 @@ const integrations = [
   },
   {
     status: 'warning',
-    name: 'google',
+    name: 'gcp',
     identifier: 'Requires Setup',
     assets: '200',
   },
@@ -112,9 +115,9 @@ const integrations = [
     assets: '12',
   },
   {
-    status: 'warning',
+    status: 'success',
     name: 'companydomain.com',
-    identifier: 'Requires Setup',
+    identifier: 'Root Domain',
     assets: '12',
   },
   {
@@ -188,7 +191,7 @@ const Chariot: React.FC = () => {
     <div
       key={integration.id}
       className={cn(
-        'h-[150px] w-[200px] resize-none rounded-md bg-white p-4 text-center',
+        ' w-[150px] resize-none rounded-md bg-white p-6 text-center',
         selectedIntegrations.includes(integration.id) && 'border-2 border-brand'
       )}
       role="button"
@@ -202,7 +205,7 @@ const Chariot: React.FC = () => {
         }
       }}
     >
-      <img className="mx-auto mb-3 size-20" src={integration.logo} />
+      <img className="mx-auto my-3 size-12" src={integration.logo} />
       <p className="text-lg font-bold">{integration.name?.split(' ')[0]}</p>
     </div>
   ));

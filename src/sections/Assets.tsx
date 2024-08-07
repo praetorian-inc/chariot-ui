@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { PlusIcon, PuzzlePieceIcon } from '@heroicons/react/24/outline';
-import { useDebounce } from 'use-debounce';
 
 import AssetStatusDropdown from '@/components/AssetStatusDropdown';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
@@ -12,21 +11,23 @@ import { Columns } from '@/components/table/types';
 import { Tooltip } from '@/components/Tooltip';
 import { getAssetStatusProperties } from '@/components/ui/AssetStatusChip';
 import { AttributeFilter } from '@/components/ui/AttributeFilter';
-import { useMy } from '@/hooks';
-import { useUpdateAsset } from '@/hooks/useAssets';
-import { useFilter } from '@/hooks/useFilter';
-import { useGenericSearch } from '@/hooks/useGenericSearch';
+import { useGetAssets, useUpdateAsset } from '@/hooks/useAssets';
 import { useIntegration } from '@/hooks/useIntegration';
 import { AssetStatusWarning } from '@/sections/AssetStatusWarning';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { parseKeys } from '@/sections/SearchByType';
 import { useGlobalState } from '@/state/global.state';
-import { Asset, AssetStatus, AssetStatusLabel, Risk } from '@/types';
-import { useMergeStatus } from '@/utils/api';
-import { useSearchParams } from '@/utils/url.util';
-
-type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
-type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
+import {
+  Asset,
+  AssetFilters,
+  AssetStatus,
+  AssetStatusLabel,
+  AssetsWithRisk,
+  Risk,
+  Severity,
+  SeverityOpenCounts,
+} from '@/types';
+import { useStorage } from '@/utils/storage/useStorage.util';
 
 export function buildOpenRiskDataset(
   risks: Risk[]
@@ -51,10 +52,6 @@ export function buildOpenRiskDataset(
   );
 }
 
-interface AssetsWithRisk extends Asset {
-  riskSummary?: SeverityOpenCounts;
-}
-
 const Assets: React.FC = () => {
   const {
     modal: {
@@ -67,160 +64,29 @@ const Assets: React.FC = () => {
     },
   } = useGlobalState();
 
-  const [isFilteredDataFetching, setIsFilteredDataFetching] = useState(false);
-
-  const [search, setSearch] = useState<string>('');
-  const [debouncedSearch] = useDebounce(search, 500);
-  const { data: dataDebouncedSearchName, status: statusDebouncedSearchName } =
-    useGenericSearch(
-      { query: `name:${debouncedSearch}` },
-      { enabled: Boolean(debouncedSearch) }
-    );
-  const { data: dataDebouncedSearchDns, status: statusDebouncedSearchDns } =
-    useGenericSearch(
-      { query: `dns:${debouncedSearch}` },
-      { enabled: Boolean(debouncedSearch) }
-    );
+  const [filters, setFilters] = useStorage<AssetFilters>(
+    { queryKey: 'assetFilters' },
+    { search: '', attributes: [], priorities: [], sources: [] }
+  );
 
   const {
-    isLoading,
+    data: assets,
     status: assetsStatus,
-    data: myAssets = [],
-    refetch,
-    error,
-    isFetchingNextPage,
+    error: assetsError,
     fetchNextPage,
-    isFetching,
-    isError,
-  } = useMy({
-    resource: 'asset',
-    filterByGlobalSearch: true,
+    isFetchingNextPage,
+  } = useGetAssets({
+    filters,
   });
-  const assets: Asset[] = useMemo(
-    () =>
-      debouncedSearch
-        ? [
-            ...(dataDebouncedSearchName?.assets || []),
-            ...(dataDebouncedSearchDns?.assets || []),
-          ].reduce((acc, asset: Asset) => {
-            if (!acc.find(a => a.key === asset.key)) {
-              acc.push(asset);
-            }
-            return acc;
-          }, [] as Asset[])
-        : myAssets,
-    [debouncedSearch, dataDebouncedSearchName, dataDebouncedSearchDns, myAssets]
-  );
-  const { data: risks = [], status: riskStatus } = useMy({ resource: 'risk' });
-  const { isIntegration } = useIntegration();
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const { searchParams, addSearchParams } = useSearchParams();
-  const [priorityFilter, setPriorityFilter] = useFilter(
-    [''],
-    'asset-priority',
-    setSelectedRows
-  );
-  const [sourceFilter, setSourceFilter] = useFilter(
-    [''],
-    'asset-source-filter',
-    setSelectedRows
-  );
-  const [assetsWithAttributesFilter, setAssetsWithAttributesFilter] = useState<
-    string[]
-  >([]);
-
-  useEffect(() => {
-    if (searchParams.has('asset-priority')) {
-      setPriorityFilter(
-        JSON.parse(searchParams.get('asset-priority') || '[]') as AssetStatus[]
-      );
-    }
-    if (searchParams.has('q')) {
-      setSearch(searchParams.get('q') || '');
-    }
-  }, [searchParams]);
-
-  const apiStatus = useMergeStatus(
-    ...(search
-      ? [statusDebouncedSearchDns, statusDebouncedSearchName, riskStatus]
-      : [riskStatus, assetsStatus])
-  );
-  const status = isFilteredDataFetching ? 'pending' : apiStatus;
 
   const { getAssetDrawerLink } = getDrawerLink();
-  const openRiskDataset = useMemo(
-    () => buildOpenRiskDataset(risks as Risk[]),
-    [risks]
-  );
+  const { isIntegration } = useIntegration();
+  const { mutateAsync: updateAsset } = useUpdateAsset();
+
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [showAssetStatusWarning, setShowAssetStatusWarning] =
     useState<boolean>(false);
   const [assetStatus, setAssetStatus] = useState<AssetStatus | ''>('');
-
-  const { mutateAsync: updateAsset } = useUpdateAsset();
-
-  React.useEffect(() => {
-    if (!isLoading && assets?.length === 0) {
-      const interval = setInterval(() => {
-        refetch();
-      }, 1000);
-
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, []);
-
-  // Filter assets list with the selected attributes
-  const assetsObjectWithAttributesFilter: Asset[] = useMemo(() => {
-    return assetsWithAttributesFilter &&
-      Array.isArray(assetsWithAttributesFilter) &&
-      assetsWithAttributesFilter.length > 0
-      ? ((assetsWithAttributesFilter as string[])
-          .map(key => assets.find(asset => asset.key === key))
-          .filter(Boolean) as Asset[])
-      : assets;
-  }, [assets, assetsWithAttributesFilter]);
-
-  // merge risk data with asset data
-  const assetsWithRisk: AssetsWithRisk[] = assetsObjectWithAttributesFilter.map(
-    asset => {
-      const riskSummary = openRiskDataset[asset.dns];
-
-      if (riskSummary) {
-        return { ...asset, riskSummary };
-      }
-
-      return asset;
-    }
-  );
-
-  const filteredAssets = useMemo(() => {
-    let filteredAssets = assetsWithRisk;
-
-    if (priorityFilter?.filter(Boolean).length > 0) {
-      filteredAssets = filteredAssets.filter(({ status }) => {
-        const parsedSource = status.startsWith('F')
-          ? AssetStatus.Frozen
-          : status;
-
-        return priorityFilter.includes(parsedSource);
-      });
-    }
-
-    if (sourceFilter?.filter(Boolean).length > 0) {
-      filteredAssets = filteredAssets.filter(({ source }) =>
-        sourceFilter.includes(source)
-      );
-    }
-    const sortOrder = Object.keys(AssetStatusLabel);
-    filteredAssets = filteredAssets.sort((a, b) => {
-      return (
-        sortOrder.indexOf(a.status) - sortOrder.indexOf(b.status) ||
-        new Date(b.updated).getTime() - new Date(a.updated).getTime()
-      );
-    });
-    return filteredAssets;
-  }, [assetsWithRisk, priorityFilter, sourceFilter]);
 
   const columns: Columns<AssetsWithRisk> = [
     {
@@ -319,53 +185,48 @@ const Assets: React.FC = () => {
     });
   }
 
-  function handleSearchUpdate(value: string) {
-    setSearch(value);
-    addSearchParams('q', value);
-  }
-
-  useEffect(() => {
-    if (
-      !search &&
-      !isFetching &&
-      !isFetchingNextPage &&
-      riskStatus === 'success' &&
-      filteredAssets.length < 50
-    ) {
-      setIsFilteredDataFetching(true);
-      fetchNextPage?.();
-
-      if (!fetchNextPage) {
-        setIsFilteredDataFetching(false);
-      }
-    }
-  }, [
-    JSON.stringify({ filteredAssets }),
-    search,
-    isFetching,
-    isFetchingNextPage,
-    riskStatus,
-  ]);
-
   return (
     <div className="flex w-full flex-col">
       <Table
         name="assets"
         search={{
-          value: search,
-          onChange: handleSearchUpdate,
+          value: filters.search,
+          onChange: updatedSearch => {
+            setFilters(prevFilters => {
+              return { ...prevFilters, search: updatedSearch };
+            });
+          },
         }}
         filters={
           <div className="flex gap-4">
             <AttributeFilter
-              onAssetsChange={assets => setAssetsWithAttributesFilter(assets)}
+              value={filters.attributes}
+              onChange={attributes => {
+                setFilters(prevFilters => {
+                  return { ...prevFilters, attributes };
+                });
+              }}
             />
             <AssetStatusDropdown
-              onSelect={(selected: string[]) => setPriorityFilter(selected)}
+              onSelect={(selected: string[]) => {
+                setFilters(prevFilters => {
+                  return {
+                    ...prevFilters,
+                    priorities: selected as AssetStatus[],
+                  };
+                });
+              }}
             />
             <SourceDropdown
               type="asset"
-              onSelect={selected => setSourceFilter(selected)}
+              onSelect={selected => {
+                setFilters(prevFilters => {
+                  return {
+                    ...prevFilters,
+                    sources: selected,
+                  };
+                });
+              }}
             />
           </div>
         }
@@ -458,9 +319,9 @@ const Assets: React.FC = () => {
           };
         }}
         columns={columns}
-        data={filteredAssets}
-        error={error}
-        status={status}
+        data={assets}
+        error={assetsError}
+        status={assetsStatus}
         fetchNextPage={fetchNextPage}
         isFetchingNextPage={isFetchingNextPage}
         noData={{

@@ -1,9 +1,24 @@
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { useDebounce } from 'use-debounce';
 
+import { useAssetsWithAttributes } from '@/hooks/useAttribute';
 import { useAxios } from '@/hooks/useAxios';
+import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useMy } from '@/hooks/useMy';
-import { Asset, AssetStatus, AssetStatusLabel, RiskScanMessage } from '@/types';
+import { buildOpenRiskDataset } from '@/sections/Assets';
+import { parseKeys } from '@/sections/SearchByType';
+import {
+  Asset,
+  AssetFilters,
+  AssetStatus,
+  AssetStatusLabel,
+  AssetsWithRisk,
+  Risk,
+  RiskScanMessage,
+} from '@/types';
 import { useMutation } from '@/utils/api';
+import { useMergeStatus } from '@/utils/api';
 
 interface UpdateAssetProps {
   key: string;
@@ -187,3 +202,166 @@ export const useBulkAddAsset = () => {
     },
   });
 };
+
+interface GetAssetProps {
+  filters: AssetFilters;
+}
+
+export function useGetAssets(props: GetAssetProps) {
+  const { filters } = props;
+
+  const [isFilteredDataFetching, setIsFilteredDataFetching] = useState(false);
+
+  const [debouncedSearch] = useDebounce(filters.search, 500);
+  const isSearched = Boolean(filters.search);
+
+  const {
+    data: assetSearchByName,
+    status: assetByNameStatus,
+    error: assetSearchByNameError,
+  } = useGenericSearch(
+    { query: `name:${debouncedSearch}` },
+    { enabled: isSearched }
+  );
+  const {
+    data: assetSearchByDns,
+    status: assetSearchByDnsStatus,
+    error: assetSearchByDnsError,
+  } = useGenericSearch(
+    { query: `dns:${debouncedSearch}` },
+    { enabled: isSearched }
+  );
+
+  const {
+    status: myAssetsStatus,
+    data: myAssets = [],
+    isFetching: isFetchingMyAssets,
+    fetchNextPage: myAssetsFetchNextPage,
+    isFetchingNextPage: myAssetsIsFetchingNextPage,
+    error: myAssetsError,
+  } = useMy(
+    {
+      resource: 'asset',
+      filterByGlobalSearch: true,
+    },
+    { enabled: !isSearched }
+  );
+
+  const { data: risks = [], status: riskStatus } = useMy({ resource: 'risk' });
+
+  const apiStatus = useMergeStatus(
+    ...(debouncedSearch
+      ? [assetByNameStatus, assetSearchByDnsStatus, riskStatus]
+      : [myAssetsStatus, riskStatus])
+  );
+  const isFetchingNextPage = debouncedSearch
+    ? false
+    : myAssetsIsFetchingNextPage;
+  const error = debouncedSearch
+    ? assetSearchByNameError || assetSearchByDnsError
+    : myAssetsError;
+  const fetchNextPage = debouncedSearch ? undefined : myAssetsFetchNextPage;
+
+  const status = isFilteredDataFetching ? 'pending' : apiStatus;
+
+  const attFilterKeys = useMemo(() => {
+    return filters.attributes.map(att => {
+      const attribute = parseKeys.attributeKey(att);
+      return `${attribute.name}#${attribute.value}`;
+    });
+  }, [JSON.stringify(filters.attributes)]);
+
+  const {
+    data: assetsWithAttributesFilter,
+    status: assetsWithAttributesFilterStatus,
+  } = useAssetsWithAttributes(attFilterKeys);
+
+  const assets: Asset[] = useMemo(
+    () =>
+      debouncedSearch
+        ? [
+            ...(assetSearchByName?.assets || []),
+            ...(assetSearchByDns?.assets || []),
+          ].reduce((acc, asset: Asset) => {
+            if (!acc.find(a => a.key === asset.key)) {
+              acc.push(asset);
+            }
+            return acc;
+          }, [] as Asset[])
+        : myAssets,
+    [
+      debouncedSearch,
+      JSON.stringify({ assetSearchByName, assetSearchByDns, myAssets }),
+    ]
+  );
+
+  const openRiskDataset = useMemo(
+    () => buildOpenRiskDataset(risks as Risk[]),
+    [riskStatus]
+  );
+
+  const data = useMemo(() => {
+    let filteredAssets = assets;
+
+    if (assetsWithAttributesFilter.length > 0) {
+      filteredAssets = assetsWithAttributesFilter
+        .map(key => assets.find(asset => asset.key === key))
+        .filter(Boolean) as Asset[];
+    }
+
+    if (filters.priorities.length > 0) {
+      filteredAssets = filteredAssets.filter(({ status }) =>
+        filters.priorities.includes(status)
+      );
+    }
+
+    if (filters.sources?.filter(Boolean).length > 0) {
+      filteredAssets = filteredAssets.filter(({ source }) =>
+        filters.sources.includes(source)
+      );
+    }
+
+    // merge risk data with asset data
+    return filteredAssets.map(asset => {
+      const riskSummary = openRiskDataset[asset.dns];
+
+      if (riskSummary) {
+        return { ...asset, riskSummary };
+      }
+
+      return asset;
+    }) as AssetsWithRisk[];
+  }, [
+    JSON.stringify({
+      assets,
+      filters,
+    }),
+    assetsWithAttributesFilterStatus,
+  ]);
+
+  console.log('data', data);
+  useEffect(() => {
+    if (riskStatus === 'success' && data.length < 50) {
+      if (filters.search) {
+        // If search is enabled, we need to fetch the search data
+      } else {
+        if (myAssetsFetchNextPage) {
+          if (!isFetchingMyAssets) {
+            setIsFilteredDataFetching(true);
+            myAssetsFetchNextPage();
+          }
+        } else {
+          setIsFilteredDataFetching(false);
+        }
+      }
+    }
+  }, [
+    JSON.stringify({ data }),
+    filters.search,
+    isFetchingMyAssets,
+    riskStatus,
+    Boolean(myAssetsFetchNextPage),
+  ]);
+
+  return { data, status, fetchNextPage, error, isFetchingNextPage };
+}

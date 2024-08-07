@@ -7,12 +7,12 @@ import Account from '@/sections/Account';
 import Alerts from '@/sections/Alerts';
 import Assets from '@/sections/Assets';
 import { AuthenticatedApp } from '@/sections/AuthenticatedApp';
+import Chariot from '@/sections/Chariot';
 import Files from '@/sections/Files';
 import Hello from '@/sections/Hello';
 import Intelligence from '@/sections/Intelligence';
 import Jobs from '@/sections/Jobs';
 import Logout from '@/sections/Logout';
-import { Overview } from '@/sections/overview';
 import { Report } from '@/sections/Report';
 import { Risks } from '@/sections/RisksTable';
 import { ForgotPassword, Login, Signup } from '@/sections/signup';
@@ -140,7 +140,7 @@ const appRoutes = {
     overview: {
       element: (
         <Body className="bg-header">
-          <Overview />
+          <Chariot />
         </Body>
       ),
       title: 'Overview',

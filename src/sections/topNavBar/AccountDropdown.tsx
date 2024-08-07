@@ -141,7 +141,7 @@ export const AccountDropdown: React.FC = () => {
       }}
     >
       <div className="flex h-5 flex-row items-center">
-        <div className="mr-0 text-nowrap p-2 text-xs">
+        <div className="mr-0 hidden text-nowrap p-2 text-xs md:block">
           <Loader
             isLoading={
               myAccountsStatus === 'pending' ||

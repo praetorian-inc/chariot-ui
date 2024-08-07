@@ -114,7 +114,7 @@ function AuthenticatedAppComponent(props: AuthenticatedApp) {
   );
 }
 
-const HeaderPortalSections = {
+export const HeaderPortalSections = {
   BREADCRUMBS: 'header-breadcrumbs-section',
   EXTRA_CONTENT: 'header-extra-content-section',
 };

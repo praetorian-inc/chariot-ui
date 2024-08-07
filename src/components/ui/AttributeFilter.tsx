@@ -139,7 +139,7 @@ export const AttributeFilter = (props: Props) => {
         <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
       }
     >
-      <div className="w-[500px] p-4">
+      <div className="w-[400px] p-4 md:w-[500px]">
         <p className="mb-2 text-sm text-default-light">
           Chariot collects metadata about assets, known as attributes. These
           key/value pairs describe specific properties you can search below.

@@ -14,13 +14,19 @@ const AssetStatusDropdown: React.FC<AssetStatusDropdownProps> = ({
 }) => {
   const { data } = useCounts({ resource: 'asset' });
   const [statusFilter, setStatusFilter] = useState<AssetStatus[]>([]);
-  const statusData: { [key: string]: number } = data?.status || {};
-  Object.keys(statusData).map(key => {
-    if (key != 'F' && key.startsWith('F')) {
-      statusData['F'] += statusData[key];
-      delete statusData[key];
-    }
-  });
+  const statusData: { [key: string]: number } = {
+    ...(data?.status || {}),
+    [AssetStatus.Frozen]: Object.entries(data?.status || {}).reduce(
+      (acc, [key, value]) => {
+        if (key.startsWith('F')) {
+          return acc + value;
+        }
+
+        return acc;
+      },
+      0
+    ),
+  };
   const name = 'Statuses';
 
   const handleSelect = (selectedRows: AssetStatus[]) => {

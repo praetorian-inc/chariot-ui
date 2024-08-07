@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import {
   CheckCircleIcon,
@@ -8,6 +8,8 @@ import {
 } from '@heroicons/react/24/solid';
 
 import { Button } from '@/components/Button';
+import { Drawer } from '@/components/Drawer';
+import { Integrations } from '@/sections/overview/Module';
 import { cn } from '@/utils/classname';
 
 const integrations = [
@@ -87,6 +89,51 @@ const getStatusIcon = (status: string) => {
 };
 
 const Chariot: React.FC = () => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const modifiedIntegrations = [
+    Integrations.amazon,
+    Integrations.azure,
+    Integrations.gcp,
+    Integrations.ns1,
+    Integrations.github,
+    Integrations.gitlab,
+    Integrations.crowdstrike,
+    Integrations.hook,
+    Integrations.nessus,
+    Integrations.webhook,
+    Integrations.slack,
+    Integrations.jira,
+    Integrations.zulip,
+    Integrations.teams,
+  ];
+  const [selectedIntegrations, setSelectedIntegrations] = useState<string[]>(
+    []
+  );
+
+  const allIntegrations = modifiedIntegrations.map(integration => (
+    <div
+      key={integration.id}
+      className={cn(
+        'h-[150px] w-[200px] resize-none rounded-md bg-white p-4 text-center',
+        selectedIntegrations.includes(integration.id) &&
+          'border border-2 border-brand'
+      )}
+      role="button"
+      onClick={() => {
+        if (selectedIntegrations.includes(integration.id)) {
+          setSelectedIntegrations(
+            selectedIntegrations.filter(id => id !== integration.id)
+          );
+        } else {
+          setSelectedIntegrations([...selectedIntegrations, integration.id]);
+        }
+      }}
+    >
+      <img className="mx-auto mb-3 size-20" src={integration.logo} />
+      <p className="text-lg font-bold">{integration.name?.split(' ')[0]}</p>
+    </div>
+  ));
+
   return (
     <div className="mt-7 flex flex-col text-gray-200">
       <div className="flex flex-col items-center justify-between">
@@ -117,6 +164,7 @@ const Chariot: React.FC = () => {
               <Button
                 styleType="none"
                 className="text-md w-[200px] bg-brand-dark font-bold"
+                onClick={() => setIsDrawerOpen(true)}
               >
                 Build Attack Surface
               </Button>
@@ -190,6 +238,34 @@ const Chariot: React.FC = () => {
           </div>
         </div>
       </main>
+
+      <Drawer
+        open={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onBack={() => setIsDrawerOpen(false)}
+        className={cn('w-full rounded-t-lg pb-0 shadow-lg p-6 bg-zinc-100')}
+        header={''}
+        footerClassname=""
+        footer={
+          selectedIntegrations.length > 0 && (
+            <Button
+              styleType="primary"
+              className="mx-20 mb-10 h-20 w-full text-xl font-bold"
+            >
+              Attach Integrations ({selectedIntegrations.length} selected)
+            </Button>
+          )
+        }
+      >
+        <div className="mx-12">
+          <h1 className="mb-12 text-4xl font-extrabold">
+            Which surfaces are you in?
+          </h1>
+          <div className="flex flex-row flex-wrap gap-4 ">
+            {allIntegrations}
+          </div>
+        </div>
+      </Drawer>
     </div>
   );
 };

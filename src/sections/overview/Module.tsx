@@ -1,3 +1,5 @@
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { To } from 'react-router-dom';
 import {
   ArrowPathIcon,
   InformationCircleIcon,
@@ -13,8 +15,6 @@ import {
   Radar,
   RefreshCcwDot,
 } from 'lucide-react';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { To } from 'react-router-dom';
 
 import { Button } from '@/components/Button';
 import { Dropzone, Files } from '@/components/Dropzone';

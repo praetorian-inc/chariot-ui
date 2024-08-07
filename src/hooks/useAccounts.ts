@@ -123,14 +123,16 @@ export function usePurgeAccount() {
 }
 
 export function useGetAccountDetails(accounts: Account[]) {
+  const { isSSO, me } = useAuth();
+
   return useMemo(() => {
     const myAccount = accounts?.find(acc => acc.key.endsWith('#settings#'));
 
     return {
       name: myAccount?.config?.displayName || '',
-      email: myAccount?.name || '',
+      email: isSSO ? myAccount?.name || '' : me,
     };
-  }, [JSON.stringify(accounts)]);
+  }, [JSON.stringify(accounts), isSSO, me]);
 }
 
 export function getDisplayName(accounts: Account[]) {

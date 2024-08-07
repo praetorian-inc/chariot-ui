@@ -3,18 +3,30 @@ import React, { useEffect, useState } from 'react';
 import { Loader } from '@/components/Loader';
 import { MarkdownEditor } from '@/components/markdown/MarkdownEditor';
 import { useOpenFile } from '@/hooks/useFiles';
+import { getFileType } from '@/sections/Files';
+import { ParsedFileTypes } from '@/types';
 
 const FileViewer = ({
   fileName,
-  fileType,
   onChange,
+  onClose,
 }: {
   fileName: string;
-  fileType: string;
   onChange?: (value: string) => void;
+  onClose: () => void;
 }) => {
   const { mutate: getFileContent, data: fileContent } = useOpenFile();
   const [editorContent, setEditorContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+
+  const fileType = fileName ? getFileType(fileName) : '';
+
+  useEffect(() => {
+    return () => {
+      setEditorContent('');
+      setImageUrl('');
+    };
+  }, []);
 
   useEffect(() => {
     if (fileName) {
@@ -24,8 +36,13 @@ const FileViewer = ({
 
   useEffect(() => {
     if (fileContent) {
-      if (fileType === 'image') {
-        setEditorContent('');
+      if (fileType === ParsedFileTypes.IMAGE) {
+        setImageUrl(URL.createObjectURL(fileContent));
+      } else if (fileType === ParsedFileTypes.PDF) {
+        const blob = new Blob([fileContent], { type: 'application/pdf' });
+        const blobURL = URL.createObjectURL(blob);
+        window.open(blobURL);
+        onClose();
       } else {
         // Handling non-image files, converting blob to text
         const reader = new FileReader();
@@ -45,10 +62,9 @@ const FileViewer = ({
     return <Loader isLoading />;
   }
 
-  if (fileType === 'image') {
-    const url = URL.createObjectURL(fileContent);
-    return <img src={url} alt="File content" />;
-  } else {
+  if (fileType === ParsedFileTypes.IMAGE) {
+    return <img src={imageUrl} alt="File content" />;
+  } else if (fileType === ParsedFileTypes.DOCUMENT) {
     return (
       <div className="h-[60vh]">
         <MarkdownEditor
@@ -62,6 +78,8 @@ const FileViewer = ({
       </div>
     );
   }
+
+  return null;
 };
 
 export default FileViewer;

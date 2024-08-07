@@ -14,8 +14,11 @@ const AssetStatusDropdown: React.FC<AssetStatusDropdownProps> = ({
 }) => {
   const { data } = useCounts({ resource: 'asset' });
   const [statusFilter, setStatusFilter] = useState<AssetStatus[]>([]);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { FL, FH, ...restStatus } = data?.status || {};
   const statusData: { [key: string]: number } = {
-    ...(data?.status || {}),
+    ...restStatus,
     [AssetStatus.Frozen]: Object.entries(data?.status || {}).reduce(
       (acc, [key, value]) => {
         if (key.startsWith('F')) {

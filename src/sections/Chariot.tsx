@@ -2,17 +2,16 @@ import React, { Fragment, useState } from 'react';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 import {
   CheckCircleIcon,
-  EllipsisVerticalIcon,
   ExclamationTriangleIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/solid';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { Dialog, Transition } from '@headlessui/react';
-import { Inbox } from 'lucide-react';
+import { Inbox, Unplug } from 'lucide-react';
 
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
 import { Inputs, Values } from '@/components/form/Inputs';
+import { Tooltip } from '@/components/Tooltip';
 import { useIntegration } from '@/hooks/useIntegration';
 import { Integrations } from '@/sections/overview/Module';
 import { cn } from '@/utils/classname';
@@ -57,14 +56,14 @@ const SetupModal: React.FC<{
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="w-full max-w-lg overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-lg overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title
                   as="h3"
                   className="text-lg font-medium leading-6 text-gray-900"
                 >
                   {integration.name} Setup
                 </Dialog.Title>
-                <div className="mt-4">
+                <div className="mt-4 space-y-4">
                   {integration.markup ? (
                     integration.markup
                   ) : (
@@ -74,12 +73,16 @@ const SetupModal: React.FC<{
                     />
                   )}
                 </div>
-                <div className="mt-4 flex flex-row space-x-1">
-                  <Button styleType="secondary" onClick={onClose}>
-                    Close
+                <div className="mt-4 flex flex-row justify-end space-x-1">
+                  <Button
+                    styleType="none"
+                    onClick={onClose}
+                    className="text-gray-600"
+                  >
+                    Setup Later
                   </Button>
                   <Button styleType="primary" onClick={onClose}>
-                    Connect
+                    Finish
                   </Button>
                 </div>
               </Dialog.Panel>
@@ -330,45 +333,11 @@ const Chariot: React.FC = () => {
                     </td>
                     <td className="px-4 py-2">[todo]</td>
                     <td className="relative px-4 py-2 text-center">
-                      <Menu as="div" className="relative mx-auto ">
-                        <MenuButton className="mx-auto">
-                          <EllipsisVerticalIcon className="mx-auto size-6 text-white" />
-                        </MenuButton>
-
-                        <MenuItems
-                          transition
-                          className="absolute left-14 z-10 mt-2 w-28 origin-top-right rounded-md bg-white shadow-lg transition focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                        >
-                          <div className="py-1">
-                            <MenuItem>
-                              <Button
-                                styleType="none"
-                                className="w-full text-left text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                              >
-                                <div className="w-full text-left">Assets</div>
-                              </Button>
-                            </MenuItem>
-                            <MenuItem>
-                              <Button
-                                styleType="none"
-                                className="w-full text-left text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                              >
-                                <div className="w-full text-left">Risks</div>
-                              </Button>
-                            </MenuItem>
-                            <MenuItem>
-                              <Button
-                                styleType="none"
-                                className="w-full text-left text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                              >
-                                <div className="w-full text-left">
-                                  Disconnect
-                                </div>
-                              </Button>
-                            </MenuItem>
-                          </div>
-                        </MenuItems>
-                      </Menu>
+                      <Tooltip title="Disconnect" placement="left">
+                        <Button styleType="none" className="mx-auto">
+                          <Unplug className="mr-2 size-6 text-white" />
+                        </Button>
+                      </Tooltip>
                     </td>
                   </tr>
                 ))}

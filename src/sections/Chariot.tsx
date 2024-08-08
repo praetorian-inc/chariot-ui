@@ -6,6 +6,7 @@ import {
   ExclamationTriangleIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/solid';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Inbox } from 'lucide-react';
 
@@ -116,7 +117,6 @@ const Chariot: React.FC = () => {
   const { getMyIntegrations } = useIntegration();
 
   const currentIntegrations = getMyIntegrations();
-  console.log('My Current Integrations:', currentIntegrations);
 
   const availableIntegrations = [
     Integrations.amazon,
@@ -328,8 +328,46 @@ const Chariot: React.FC = () => {
                       {integration.value ?? '[Redacted]'}
                     </td>
                     <td className="px-4 py-2">[todo]</td>
-                    <td className="px-4 py-2 text-center">
-                      <EllipsisVerticalIcon className="mx-auto size-6 text-gray-400" />
+                    <td className="relative px-4 py-2 text-center">
+                      <Menu as="div" className="relative mx-auto ">
+                        <MenuButton className="mx-auto">
+                          <EllipsisVerticalIcon className="mx-auto size-6 text-white" />
+                        </MenuButton>
+
+                        <MenuItems
+                          transition
+                          className="absolute left-14 z-10 mt-2 w-28 origin-top-right rounded-md bg-white shadow-lg transition focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                        >
+                          <div className="py-1">
+                            <MenuItem>
+                              <Button
+                                styleType="none"
+                                className="w-full text-left text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                              >
+                                <div className="w-full text-left">Assets</div>
+                              </Button>
+                            </MenuItem>
+                            <MenuItem>
+                              <Button
+                                styleType="none"
+                                className="w-full text-left text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                              >
+                                <div className="w-full text-left">Risks</div>
+                              </Button>
+                            </MenuItem>
+                            <MenuItem>
+                              <Button
+                                styleType="none"
+                                className="w-full text-left text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                              >
+                                <div className="w-full text-left">
+                                  Disconnect
+                                </div>
+                              </Button>
+                            </MenuItem>
+                          </div>
+                        </MenuItems>
+                      </Menu>
                     </td>
                   </tr>
                 ))}

@@ -130,7 +130,7 @@ const ProgressBar: React.FC<{
     <div className="mb-6 rounded-lg bg-gray-800 p-4 shadow-lg">
       <div className="mb-2 flex items-center justify-between">
         <p className="text-xl font-semibold text-white">
-          {`Plan: ${plan} - Used ${used} of ${total} available assets`}
+          {`Plan: ${plan} - Used ${used?.toLocaleString()} of ${total?.toLocaleString()} available assets`}
         </p>
         <Button styleType="primaryLight" className="text-md font-bold">
           Upgrade Plan
@@ -139,7 +139,7 @@ const ProgressBar: React.FC<{
       <div className="h-5 w-full justify-center overflow-hidden rounded-full bg-gray-700">
         <div
           className={cn(
-            'flex  items-center h-full justify-center text-center text-xs text-black leading-none rounded-full',
+            'flex  items-center h-full justify-center text-center text-xs text-white leading-none rounded-full',
             percentageUsed < 70
               ? 'bg-green-500'
               : percentageUsed < 90

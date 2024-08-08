@@ -20,7 +20,12 @@ export const useIntegration = () => {
     [accountStatus]
   );
 
+  const getMyIntegrations = useCallback(() => {
+    return integrationList;
+  }, [accountStatus]);
+
   return {
     isIntegration,
+    getMyIntegrations,
   };
 };

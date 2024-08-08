@@ -12,6 +12,7 @@ import { Inbox } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
 import { Inputs, Values } from '@/components/form/Inputs';
+import { useIntegration } from '@/hooks/useIntegration';
 import { Integrations } from '@/sections/overview/Module';
 import { cn } from '@/utils/classname';
 
@@ -163,6 +164,10 @@ const Chariot: React.FC = () => {
   const [isNotificationsDrawerOpen, setIsNotificationsDrawerOpen] =
     useState(false);
   const [setupIntegration, setSetupIntegration] = useState<string | null>(null);
+  const { getMyIntegrations } = useIntegration();
+
+  const currentIntegrations = getMyIntegrations();
+  console.log('My Current Integrations:', currentIntegrations);
 
   const availableIntegrations = [
     Integrations.amazon,
@@ -189,6 +194,10 @@ const Chariot: React.FC = () => {
   const [selectedIntegrations, setSelectedIntegrations] = useState<string[]>(
     []
   );
+  const [
+    selectedNotificationIntegrations,
+    setSelectedNotificationIntegrations,
+  ] = useState<string[]>([]);
 
   const handleSetupClick = (integrationName: string) => {
     setSetupIntegration(integrationName);
@@ -224,17 +233,22 @@ const Chariot: React.FC = () => {
         key={integration.id}
         className={cn(
           ' w-[150px] resize-none rounded-md bg-white p-6 text-center',
-          selectedIntegrations.includes(integration.id) &&
+          selectedNotificationIntegrations.includes(integration.id) &&
             'border-2 border-brand'
         )}
         role="button"
         onClick={() => {
-          if (selectedIntegrations.includes(integration.id)) {
+          if (selectedNotificationIntegrations.includes(integration.id)) {
             setSelectedIntegrations(
-              selectedIntegrations.filter(id => id !== integration.id)
+              selectedNotificationIntegrations.filter(
+                id => id !== integration.id
+              )
             );
           } else {
-            setSelectedIntegrations([...selectedIntegrations, integration.id]);
+            setSelectedNotificationIntegrations([
+              ...selectedNotificationIntegrations,
+              integration.id,
+            ]);
           }
         }}
       >
@@ -248,7 +262,7 @@ const Chariot: React.FC = () => {
 
   return (
     <div className="mt-7 flex flex-col text-gray-200">
-      <div className="flex flex-row items-center  justify-center space-x-4 ">
+      <div className="flex flex-row items-center  justify-center space-x-6 ">
         <div className="flex flex-col items-center justify-center">
           <svg
             width={size}
@@ -317,37 +331,21 @@ const Chariot: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {integrations.map((integration, index) => (
+                {currentIntegrations.map((integration, index) => (
                   <tr
                     key={index}
                     className=" h-[56px] text-[#9CA3AF] odd:bg-[#1F2937]"
                   >
-                    <td className="px-4 py-2">
-                      {getStatusIcon(integration.status)}
-                    </td>
+                    <td className="px-4 py-2">{getStatusIcon('success')}</td>
                     <td className="text-md px-4 py-2 font-semibold text-white">
-                      {integration.name}
+                      {integration.member}
                     </td>
-                    <td
-                      className={cn(
-                        'px-4 py-2',
-                        integration.status === 'warning' && 'text-[#FFD700]'
-                      )}
-                    >
-                      {integration.identifier}
+                    <td className={cn('px-4 py-2')}>
+                      {integration.value ?? '[Redacted]'}
                     </td>
-                    <td className="px-4 py-2">{integration.assets}</td>
+                    <td className="px-4 py-2">[todo]</td>
                     <td className="px-4 py-2 text-center">
-                      {integration.status === 'warning' ? (
-                        <button
-                          onClick={() => handleSetupClick(integration.name)}
-                          className="w-[100px] rounded-sm bg-[#FFD700] px-3 py-1 text-sm font-medium text-black"
-                        >
-                          Setup
-                        </button>
-                      ) : (
-                        <EllipsisVerticalIcon className="mx-auto size-6 text-gray-400" />
-                      )}
+                      <EllipsisVerticalIcon className="mx-auto size-6 text-gray-400" />
                     </td>
                   </tr>
                 ))}
@@ -375,6 +373,7 @@ const Chariot: React.FC = () => {
             <Button
               styleType="primary"
               className="mx-20 mb-10 h-20 w-full text-xl font-bold"
+              onClick={() => setIsDrawerOpen(false)}
             >
               Build Attack Surface ({selectedIntegrations.length} selected)
             </Button>
@@ -399,12 +398,14 @@ const Chariot: React.FC = () => {
         footerClassname=""
         skipBack={true}
         footer={
-          selectedIntegrations.length > 0 && (
+          selectedNotificationIntegrations.length > 0 && (
             <Button
               styleType="primary"
               className="mx-20 mb-10 h-20 w-full text-xl font-bold"
+              onClick={() => setIsNotificationsDrawerOpen(false)}
             >
-              Set Notification Channels ({selectedIntegrations.length} selected)
+              Set Notification Channels (
+              {selectedNotificationIntegrations.length} selected)
             </Button>
           )
         }

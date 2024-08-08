@@ -248,10 +248,13 @@ const Chariot: React.FC = () => {
             Dr. Klotzenstein&apos;s Organization
           </span>
           <div className="mt-2 flex items-center">
-            <a href="#" className="font-medium text-blue-500 hover:underline">
+            <a
+              href="#"
+              className="text-xl font-medium text-blue-400 hover:underline"
+            >
               examplecompany.com
             </a>
-            <PencilSquareIcon className="ml-1 size-4 stroke-[2px] text-white" />
+            <PencilSquareIcon className="ml-1 size-5 stroke-[2px] text-white" />
           </div>
           <div className="mt-4 flex w-auto space-x-4">
             <Button
@@ -272,6 +275,15 @@ const Chariot: React.FC = () => {
         </div>
       </div>
 
+      <div className="container mx-auto my-4 text-center">
+        <p className="text-md mt-2 text-gray-500">
+          We continuously test your attack surface against thousands of
+          potential threats to ensure robust security. For an extra layer of
+          defense, consider enhancing your protection with expert offensive
+          security engineers, adding real-world pressure testing to your
+          security strategy.
+        </p>
+      </div>
       <main className="container mx-auto mt-8 p-4">
         <div className="rounded-lg bg-[#2D3748] p-4 shadow-md">
           <div className="overflow-x-auto">

@@ -12,19 +12,18 @@ const fetchIntegrationCounts = async (
   try {
     const { data } = (await axios.get('/my/count', {
       params: {
-        key: `assets`,
+        key: `#attribute#source#${integration.member}`,
       },
     })) as { data: Statistics };
 
-    // Sum up all the values in the `status` field
-    const totalStatusCount = Object.values(data.status || {}).reduce(
-      (acc, count) => acc + count,
-      0
-    );
+    // Extract the asset count from the `attributes` field
+    const assetCount = data.attributes
+      ? data.attributes[`#source#${integration.member}#asset`] || 0
+      : 0;
 
-    return totalStatusCount;
+    return assetCount;
   } catch (error) {
-    console.error(`Failed to fetch counts for ${integration.name}:`, error);
+    console.error(`Failed to fetch counts for ${integration.member}:`, error);
     return 0; // Return 0 in case of an error
   }
 };

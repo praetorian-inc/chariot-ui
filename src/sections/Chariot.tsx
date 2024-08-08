@@ -15,6 +15,7 @@ import { Loader } from '@/components/Loader';
 import { Tooltip } from '@/components/Tooltip';
 import { useMy } from '@/hooks';
 import { useGetAccountDetails } from '@/hooks/useAccounts';
+import { useCounts } from '@/hooks/useCounts';
 import { useIntegration } from '@/hooks/useIntegration';
 import useIntegrationCounts from '@/hooks/useIntegrationCounts';
 import { Integrations } from '@/sections/overview/Module';
@@ -126,15 +127,27 @@ const Chariot: React.FC = () => {
   const { getMyIntegrations } = useIntegration();
 
   const currentIntegrations = getMyIntegrations();
-  const results = useIntegrationCounts(currentIntegrations);
+  const integrationCounts = useIntegrationCounts(currentIntegrations);
+
+  // Map the counts to each integration
+  const counts = integrationCounts.map((result, index) => ({
+    member: currentIntegrations[index].member,
+    count: result.data,
+  }));
+
+  const { data: assetCount, status: assetCountStatus } = useCounts({
+    resource: 'asset',
+  });
+  const totalAssets = assetCount
+    ? Object.values(assetCount?.status || {}).reduce((acc, val) => acc + val, 0)
+    : 0;
+
   const { me, friend } = useAuth();
   const { data: accounts, status: accountsStatus } = useMy({
     resource: 'account',
   });
 
   const displayName = useGetAccountDetails(accounts).name || friend || me;
-
-  const counts = results.map(result => result.data);
 
   const availableIntegrations = [
     Integrations.amazon,
@@ -247,10 +260,14 @@ const Chariot: React.FC = () => {
             />
           </svg>
           <div className="flex flex-col text-left">
-            <p className="text-md">
-              <span className="font-bold text-white">17,000</span>{' '}
-              <span className="text-gray-400">assets monitored</span>
-            </p>
+            <Loader isLoading={assetCountStatus === 'pending'}>
+              <p className="text-md">
+                <span className="font-bold text-white">
+                  {totalAssets?.toLocaleString()}
+                </span>{' '}
+                <span className="text-gray-400">assets monitored</span>
+              </p>
+            </Loader>
           </div>
         </div>
         <div className="flex flex-col">
@@ -385,7 +402,11 @@ const Chariot: React.FC = () => {
                     <td className={cn('px-4 py-2')}>
                       {integration.value ?? '[Redacted]'}
                     </td>
-                    <td className="px-4 py-2">{counts[index] ?? '-'}</td>
+                    <td className="px-4 py-2">
+                      {counts
+                        .find(count => count.member === integration.member)
+                        ?.count?.toLocaleString() || 0}
+                    </td>
                     <td className="relative px-4 py-2 text-center">
                       <Tooltip title="Disconnect" placement="left">
                         <Button styleType="none" className="mx-auto">

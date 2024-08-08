@@ -68,7 +68,7 @@ export const HorizontalTimeline = ({
                 index > 0 && index < steps.length - 1 && 'left-[-25px]',
                 index === steps.length - 1 && 'right-0',
                 className,
-                'bg-transparent brightness-60 opacity-70 hover:'
+                'bg-transparent brightness-60 opacity-70'
               )}
             >
               {step.title}

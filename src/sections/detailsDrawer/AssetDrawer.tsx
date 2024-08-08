@@ -146,7 +146,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
     };
 
     return [firstTrackedHistory, ...assetHistory];
-  }, [asset.history]);
+  }, [JSON.stringify(asset.history)]);
 
   const isInitialLoading =
     assetsStatus === 'pending' ||

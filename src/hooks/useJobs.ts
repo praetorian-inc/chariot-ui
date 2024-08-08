@@ -27,16 +27,14 @@ export function useReRunJob() {
     defaultErrorMessage: 'Failed to re run job',
     mutationFn: ({
       capability,
-      dns,
       jobKey,
     }: {
       capability: string;
-      dns?: string;
       jobKey?: string;
     }) => {
       return axios.post(`/job/`, {
         name: capability,
-        key: jobKey || `#asset#${dns}`,
+        key: jobKey,
       });
     },
     onSuccess: () => {

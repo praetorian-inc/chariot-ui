@@ -10,17 +10,13 @@ import { useMutationObserver } from '@/hooks/useMutationObserver';
 import { cn } from '@/utils/classname';
 
 interface Props {
-  position?: 'bottom';
   open: boolean;
   onClose: () => void;
   onBack: () => void;
   children: React.ReactNode;
   zIndex?: number;
   className?: string;
-  footer?: ReactNode;
-  footerClassname?: string;
   header?: ReactNode;
-  minWidth?: number;
 }
 
 export function Drawer({
@@ -30,8 +26,6 @@ export function Drawer({
   children,
   zIndex,
   className,
-  footer,
-  footerClassname,
   header,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
@@ -138,18 +132,6 @@ export function Drawer({
                   </div>
                   <div>{children}</div>
                 </div>
-                {footer && (
-                  <div className="absolute bottom-0 left-0 flex w-full flex-row items-center justify-center">
-                    <div
-                      className={cn(
-                        'rounded-t-lg bg-gray-200 px-8 py-4 shadow-lg',
-                        footerClassname
-                      )}
-                    >
-                      {footer}
-                    </div>
-                  </div>
-                )}
               </div>
             </Transition.Child>
           </div>

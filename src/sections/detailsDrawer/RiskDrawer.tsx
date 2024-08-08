@@ -31,7 +31,6 @@ import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useBulkReRunJob, useJobsTimeline } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
-import { DRAWER_WIDTH } from '@/sections/detailsDrawer';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import {
@@ -177,12 +176,10 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       open={open}
       onClose={() => removeSearchParams(StorageKey.DRAWER_COMPOSITE_KEY)}
       onBack={() => navigate(-1)}
-      minWidth={DRAWER_WIDTH}
       className={cn(
         'w-full rounded-t-lg bg-zinc-100 pb-0 shadow-lg',
         severityClass
       )}
-      footerClassname={'bg-zinc-200 bg-opacity-90'}
       header={
         isInitialLoading ? null : (
           <div className="flex w-full flex-col px-10 pb-0 pt-6">

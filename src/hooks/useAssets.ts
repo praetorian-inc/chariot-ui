@@ -4,8 +4,8 @@ import { useDebounce } from 'use-debounce';
 
 import { useAssetsWithAttributes } from '@/hooks/useAttribute';
 import { useAxios } from '@/hooks/useAxios';
-import { useGetAccountAlerts } from '@/hooks/useGetAccountAlerts';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
+import { useGetAccountAlerts } from '@/hooks/useGetAccountAlerts';
 import { useMy } from '@/hooks/useMy';
 import { buildOpenRiskDataset } from '@/sections/Assets';
 import {
@@ -319,9 +319,13 @@ export function useGetAssets(props: GetAssetProps) {
     }
 
     if (filters.priorities.length > 0) {
-      filteredAssets = filteredAssets.filter(({ status }) =>
-        filters.priorities.includes(status)
-      );
+      filteredAssets = filteredAssets.filter(({ status }) => {
+        const parsedSource = status.startsWith('F')
+          ? AssetStatus.Frozen
+          : status;
+
+        return filters.priorities.includes(parsedSource);
+      });
     }
 
     if (filters.sources?.filter(Boolean).length > 0) {

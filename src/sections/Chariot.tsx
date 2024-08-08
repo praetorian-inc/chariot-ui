@@ -1,17 +1,16 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { PencilSquareIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/solid';
-import { Dialog, Transition } from '@headlessui/react';
-import { Inbox, Unplug } from 'lucide-react';
+import { Hourglass, Inbox, Unplug } from 'lucide-react';
 
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
-import { Inputs, Values } from '@/components/form/Inputs';
 import { Loader } from '@/components/Loader';
+import ProgressBar from '@/components/ProgressBar';
 import { Tooltip } from '@/components/Tooltip';
 import { useMy } from '@/hooks';
 import { useGetAccountDetails } from '@/hooks/useAccounts';
@@ -19,140 +18,32 @@ import { useCounts } from '@/hooks/useCounts';
 import { useIntegration } from '@/hooks/useIntegration';
 import useIntegrationCounts from '@/hooks/useIntegrationCounts';
 import { Integrations } from '@/sections/overview/Module';
+import SetupModal from '@/sections/SetupModal';
 import { useAuth } from '@/state/auth';
 import { cn } from '@/utils/classname';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
-const SetupModal: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-  selectedIntegration: string | null;
-}> = ({ isOpen, onClose, selectedIntegration }) => {
-  const integration =
-    Integrations[selectedIntegration as keyof typeof Integrations];
-
-  if (!integration) return null;
-
-  const handleInputsChange = (values: Values) => {
-    console.log('Input Values:', values);
-  };
-
-  return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enterTo="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
-              <Dialog.Panel className="w-full max-w-lg overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900"
-                >
-                  {integration.name} Setup
-                </Dialog.Title>
-                <div className="mt-4 space-y-4">
-                  {integration.markup ? (
-                    integration.markup
-                  ) : (
-                    <Inputs
-                      inputs={integration.inputs || []}
-                      onChange={handleInputsChange}
-                    />
-                  )}
-                </div>
-                <div className="mt-4 flex flex-row justify-end space-x-1">
-                  <Button
-                    styleType="none"
-                    onClick={onClose}
-                    className="text-gray-600"
-                  >
-                    Setup Later
-                  </Button>
-                  <Button styleType="primary" onClick={onClose}>
-                    Finish
-                  </Button>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </div>
-      </Dialog>
-    </Transition>
-  );
-};
-
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'success':
-      return <CheckCircleIcon className="size-10 text-[#10B981] " />;
+      return <CheckCircleIcon className="size-10 text-[#10B981]" />;
     case 'warning':
       return (
         <div className="flex size-10 items-center justify-center rounded-full bg-[#FFD700]">
-          <WrenchScrewdriverIcon className="size-5 text-[#2D3748] " />
+          <WrenchScrewdriverIcon className="size-5 text-[#2D3748]" />
         </div>
       );
     case 'error':
-      return <ExclamationTriangleIcon className="size-10 text-[#F87171] " />;
-    default:
-      return <div className="size-6 bg-gray-600 "></div>;
-  }
-};
-
-const ProgressBar: React.FC<{
-  used: number;
-  total: number;
-  plan: string;
-  upgradeLink: string;
-}> = ({ used, total, plan, upgradeLink }) => {
-  const percentageUsed = Math.min((used / total) * 100, 100);
-
-  return (
-    <div className="mb-6 rounded-lg bg-gray-800 p-4 shadow-lg">
-      <div className="mb-2 flex items-center justify-between">
-        <p className="text-xl font-semibold text-white">
-          {`Plan: ${plan} - Used ${used?.toLocaleString()} of ${total?.toLocaleString()} available assets`}
-        </p>
-        <Button styleType="primaryLight" className="text-md font-bold">
-          Upgrade Plan
-        </Button>
-      </div>
-      <div className="h-5 w-full justify-center overflow-hidden rounded-full bg-gray-700">
-        <div
-          className={cn(
-            'flex  items-center h-full justify-center text-center text-xs text-white leading-none rounded-full',
-            percentageUsed < 70
-              ? 'bg-green-500'
-              : percentageUsed < 90
-                ? 'bg-yellow-500'
-                : 'bg-red-500'
-          )}
-          style={{ width: `${percentageUsed}%` }}
-        >
-          <p className="font-semibold">{percentageUsed.toFixed(0)}%</p>
+      return <ExclamationTriangleIcon className="size-10 text-[#F87171]" />;
+    case 'waitlist':
+      return (
+        <div className="flex size-10 items-center justify-center rounded-full bg-gray-600">
+          <Hourglass className="size-5 text-[#2D3748]" />
         </div>
-      </div>
-    </div>
-  );
+      );
+    default:
+      return <div className="size-6 bg-gray-600"></div>;
+  }
 };
 
 const Chariot: React.FC = () => {
@@ -199,6 +90,7 @@ const Chariot: React.FC = () => {
     Integrations.jira,
     Integrations.zulip,
     Integrations.teams,
+    Integrations.jupiterone,
   ];
 
   const notificationsIntegrations = [
@@ -208,6 +100,7 @@ const Chariot: React.FC = () => {
     Integrations.zulip,
     Integrations.teams,
   ];
+
   const [selectedIntegrations, setSelectedIntegrations] = useStorage<string[]>(
     { key: 'selectedIntegrations' },
     []
@@ -257,7 +150,7 @@ const Chariot: React.FC = () => {
         role="button"
         onClick={() => {
           if (selectedNotificationIntegrations.includes(integration.id)) {
-            setSelectedIntegrations(
+            setSelectedNotificationIntegrations(
               selectedNotificationIntegrations.filter(
                 id => id !== integration.id
               )
@@ -280,7 +173,7 @@ const Chariot: React.FC = () => {
 
   return (
     <div className="mt-7 flex flex-col text-gray-200">
-      <div className="flex flex-row items-center  justify-center space-x-6 ">
+      <div className="flex flex-row items-center justify-center space-x-6">
         <div className="flex flex-col items-center justify-center">
           <svg
             width={size}
@@ -386,31 +279,56 @@ const Chariot: React.FC = () => {
                     key={index}
                     className=" h-[56px] text-[#9CA3AF] odd:bg-[#1F2937]"
                   >
-                    <td className="px-4 py-2">{getStatusIcon('warning')}</td>
+                    <td className="px-4 py-2">
+                      {getStatusIcon(
+                        !Integrations[integration as keyof typeof Integrations]
+                          .inputs
+                          ? 'waitlist'
+                          : 'warning'
+                      )}
+                    </td>
                     <td className="text-md px-4 py-2 font-semibold text-white">
                       {
                         Integrations[integration as keyof typeof Integrations]
                           .name
                       }
                     </td>
-                    <td className={'px-4 py-2 text-[#FFD700]'}>
-                      Requires Setup
+                    <td
+                      className={cn(
+                        'px-4 py-2',
+                        !Integrations[integration as keyof typeof Integrations]
+                          .inputs
+                          ? 'text-gray-500'
+                          : 'text-[#FFD700]'
+                      )}
+                    >
+                      {!Integrations[integration as keyof typeof Integrations]
+                        .inputs
+                        ? 'Coming Soon'
+                        : 'Requires Setup'}
                     </td>
-                    <td className="px-4 py-2">[todo]</td>
+                    <td className="px-4 py-2">-</td>
                     <td className="px-4 py-2 text-center">
                       <div className="flex flex-row items-center justify-center">
-                        <button
-                          onClick={() =>
-                            handleSetupClick(
-                              Integrations[
-                                integration as keyof typeof Integrations
-                              ].id
-                            )
-                          }
-                          className="w-[100px] rounded-sm bg-[#FFD700] px-3 py-1 text-sm font-medium text-black"
-                        >
-                          Setup
-                        </button>
+                        {Integrations[integration as keyof typeof Integrations]
+                          .inputs ? (
+                          <button
+                            onClick={() =>
+                              handleSetupClick(
+                                Integrations[
+                                  integration as keyof typeof Integrations
+                                ].id
+                              )
+                            }
+                            className="w-[100px] rounded-sm bg-[#FFD700] px-3 py-1 text-sm font-medium text-black"
+                          >
+                            Setup
+                          </button>
+                        ) : (
+                          <p className="font-medium italic text-gray-500">
+                            Waitlist
+                          </p>
+                        )}
                         <Tooltip title="Remove" placement="left">
                           <button
                             onClick={() => {

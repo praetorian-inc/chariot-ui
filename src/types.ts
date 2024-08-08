@@ -538,11 +538,6 @@ export interface IntegrationMeta {
   };
 }
 
-export interface IntegrationComingSoonMeta {
-  name: string;
-  logo: string;
-}
-
 export interface AssetFilters {
   attributes: string[];
   priorities: AssetStatus[];

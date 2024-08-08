@@ -115,6 +115,17 @@ export const Menu: React.FC<MenuProps> = props => {
           }}
         />
       ))}
+      {multiSelect && (
+        <li
+          className={cn(
+            'flex items-center text-xs font-medium text-default-light justify-center',
+            menuMarginClassName,
+            className
+          )}
+        >
+          Counts reflect total known items.
+        </li>
+      )}
     </ul>
   );
 };

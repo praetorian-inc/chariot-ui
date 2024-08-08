@@ -424,6 +424,8 @@ export interface BackendStack {
 
 export interface AuthState extends BackendStack {
   me: string;
+  isSignedIn: boolean;
+  isSSO: boolean;
   friend: string;
   isImpersonating: boolean;
 }
@@ -501,4 +503,24 @@ export interface IntegrationMeta {
     href: string;
     label: string;
   };
+}
+
+export interface AssetFilters {
+  attributes: string[];
+  priorities: AssetStatus[];
+  sources: string[];
+  search: string;
+}
+
+export type Severity = 'I' | 'L' | 'M' | 'H' | 'C';
+export type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
+
+export interface AssetsWithRisk extends Asset {
+  riskSummary?: SeverityOpenCounts;
+}
+
+export enum ParsedFileTypes {
+  IMAGE = 'image',
+  PDF = 'pdf',
+  DOCUMENT = 'document',
 }

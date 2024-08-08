@@ -34,6 +34,8 @@ export const emptyAuth: AuthState = {
   friend: '',
   isImpersonating: false,
   me: '',
+  isSignedIn: false,
+  isSSO: false,
 };
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -130,20 +132,20 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         currentDate: new Date(),
       });
 
+      const userEmail =
+        session.tokens?.idToken?.payload?.email?.toString() ?? '';
+
       const ssoDomain = (
         session.tokens?.idToken?.payload?.identities as unknown as {
           providerName: string;
         }[]
       )?.[0]?.providerName;
 
-      const ssoUsername = `sso@${ssoDomain}`;
-
       setAuth(prevAuth => ({
         ...prevAuth,
-        me:
-          session.tokens?.idToken?.payload?.email?.toString() ??
-          ssoUsername ??
-          '',
+        me: userEmail,
+        isSignedIn: true,
+        isSSO: !userEmail && Boolean(ssoDomain),
       }));
     }
     setIsTokenFetching(false);

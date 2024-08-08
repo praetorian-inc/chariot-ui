@@ -13,7 +13,7 @@ export const TopNavBar: React.FC = () => {
 
   const currentPage = location.pathname.split('/').pop();
   const isCurrentPage = (page: string) => currentPage === page;
-  const linkSize = 'w-20';
+  const linkSize = 'w-15 md:w-20';
 
   const links = ['overview', 'assets', 'risks'];
   return (
@@ -45,7 +45,7 @@ export const TopNavBar: React.FC = () => {
               ))}
             </nav>
 
-            <div className="ml-auto flex items-center space-x-4">
+            <div className="ml-auto flex items-center md:space-x-4">
               <Notifications
                 onNotify={shouldShow => {
                   setShowNotification(shouldShow);

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { JSX } from 'react/jsx-runtime';
-import { useNavigate } from 'react-router-dom';
 import {
   ArrowDownOnSquareIcon,
   BookmarkIcon,
@@ -25,17 +24,17 @@ import { Button } from '@/components/Button';
 import { Dropdown } from '@/components/Dropdown';
 import { Dropzone } from '@/components/Dropzone';
 import FileViewer from '@/components/FileViewer';
-import { RisksIcon } from '@/components/icons';
+import { PdfIcon } from '@/components/icons/Pdf.icon';
 import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
 import { Tooltip } from '@/components/Tooltip';
 import { Body } from '@/components/ui/Body';
 import { NoData } from '@/components/ui/NoData';
 import { useDownloadFile, useMy, useUploadFile } from '@/hooks';
-import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
-import { MyFile } from '@/types';
+import { MyFile, ParsedFileTypes } from '@/types';
 import { cn } from '@/utils/classname';
 import { formatDate } from '@/utils/date.util';
+import { Regex } from '@/utils/regex.util';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
 interface Folder {
@@ -76,8 +75,6 @@ const TreeData: Folder[] = [
 ];
 
 const Files: React.FC = () => {
-  const navigate = useNavigate();
-  const { getRiskDrawerLink, getProofOfExploitLink } = getDrawerLink();
   const [defaultDir, setDefaultDir] = useStorage<string>(
     { key: 'files/defaultDir' },
     'home'
@@ -96,54 +93,6 @@ const Files: React.FC = () => {
     downloadFile({ name: item.name });
   }
 
-  const getAdditionalActions = (item: MyFile) => {
-    if (item.class === 'proof') {
-      const parts = item.name.split('/');
-      const dns = parts.shift() ?? '';
-      const name = parts.join('/') ?? '';
-      const riskDrawerLink = getRiskDrawerLink({ dns, name });
-      const othersLink = getProofOfExploitLink({ dns, name });
-
-      return (
-        <div className="flex flex-row justify-end space-x-1">
-          <Tooltip title="View Risk">
-            <button
-              onClick={() => navigate(riskDrawerLink)}
-              className="m-0 p-0"
-            >
-              <RisksIcon className="size-5" />
-            </button>
-          </Tooltip>
-          <Tooltip title="View Proof">
-            <button onClick={() => navigate(othersLink)}>
-              <DocumentTextIcon className="size-5" />
-            </button>
-          </Tooltip>
-        </div>
-      );
-    } else if (item.name.endsWith('png') || item.name.endsWith('jpg')) {
-      return (
-        <div className="flex flex-row justify-end">
-          <Tooltip title="Preview Image">
-            <button onClick={() => {}}>
-              <PhotoIcon className="size-5" />
-            </button>
-          </Tooltip>
-        </div>
-      );
-    } else {
-      return (
-        <div className="flex flex-row justify-end">
-          <Tooltip title="View File">
-            <button onClick={() => {}}>
-              <DocumentIcon className="size-5" />
-            </button>
-          </Tooltip>
-        </div>
-      );
-    }
-  };
-
   return (
     <Body className="border border-gray-200 pb-4">
       <TreeLevel
@@ -151,7 +100,6 @@ const Files: React.FC = () => {
         setCurrentFolder={folder => {
           setCurrentFolder(folder);
         }}
-        getAdditionalActions={getAdditionalActions}
         handleDownload={handleDownload}
       />
     </Body>
@@ -170,7 +118,6 @@ export const FilesIcon = (
 interface TreeLevelProps {
   currentFolder: Folder;
   setCurrentFolder: React.Dispatch<React.SetStateAction<Folder>>;
-  getAdditionalActions: (item: MyFile) => React.ReactNode;
   handleDownload: (item: MyFile) => void;
 }
 
@@ -184,7 +131,6 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [showFileUpload, setShowFileUpload] = useState(false);
   const [filename, setFilename] = useState('');
-  const [filetype, setFiletype] = useState('');
   const [content, setContent] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [favorites, setFavorites] = useStorage<string[]>(
@@ -346,7 +292,7 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
               </p>
               {uploadProgress === null ? (
                 <Dropzone
-                  type="string"
+                  type="arrayBuffer"
                   className="mt-1"
                   onFilesDrop={onFilesDrop}
                   title={`Click or drag and drop here.`}
@@ -394,7 +340,6 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
                   currentFolder={currentFolder}
                   setFavorites={setFavorites}
                   setFilename={setFilename}
-                  setFiletype={setFiletype}
                   handleDownload={handleDownload}
                   favorites={favorites}
                 />
@@ -409,7 +354,6 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
               currentFolder={currentFolder}
               setFavorites={setFavorites}
               setFilename={setFilename}
-              setFiletype={setFiletype}
               handleDownload={handleDownload}
               favorites={favorites}
             />
@@ -421,7 +365,7 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
       </div>
 
       <Modal
-        open={filename.length > 0 && filetype.length > 0}
+        open={filename.length > 0}
         onClose={() => setFilename('')}
         size="xl"
         title={filename}
@@ -440,8 +384,10 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
       >
         <FileViewer
           fileName={filename}
-          fileType={filetype}
           onChange={changed => setContent(changed)}
+          onClose={() => {
+            setFilename('');
+          }}
         />
       </Modal>
     </div>
@@ -453,7 +399,6 @@ interface FileItemProps {
   currentFolder: Folder;
   setFavorites: React.Dispatch<React.SetStateAction<string[]>>;
   setFilename: React.Dispatch<React.SetStateAction<string>>;
-  setFiletype: React.Dispatch<React.SetStateAction<string>>;
   handleDownload: (item: MyFile) => void;
   favorites: string[];
 }
@@ -463,10 +408,11 @@ const FileItem: React.FC<FileItemProps> = ({
   currentFolder,
   setFavorites,
   setFilename,
-  setFiletype,
   handleDownload,
   favorites,
 }) => {
+  const fileType = getFileType(file.name);
+
   return (
     <div
       className={cn(
@@ -476,8 +422,10 @@ const FileItem: React.FC<FileItemProps> = ({
     >
       <div className="mr-[35px] flex flex-row items-center overflow-hidden break-all text-center">
         <div className="mr-2">
-          {file.name.endsWith('png') || file.name.endsWith('jpg') ? (
+          {fileType === ParsedFileTypes.IMAGE ? (
             <PhotoIcon className="size-10 text-gray-500" />
+          ) : fileType === ParsedFileTypes.PDF ? (
+            <PdfIcon className="size-10 stroke-2 text-gray-500" />
           ) : (
             <DocumentIcon className="size-10 text-gray-500" />
           )}
@@ -487,11 +435,6 @@ const FileItem: React.FC<FileItemProps> = ({
             className="font-default text-left text-sm hover:underline"
             onClick={() => {
               setFilename(file.name);
-              setFiletype(
-                file.name.endsWith('png') || file.name.endsWith('jpg')
-                  ? 'image'
-                  : 'text'
-              );
             }}
           >
             {file.name.replace(`${currentFolder.query}/` ?? '/', '')}
@@ -521,11 +464,6 @@ const FileItem: React.FC<FileItemProps> = ({
               label: 'View',
               onClick: () => {
                 setFilename(file.name);
-                setFiletype(
-                  file.name.endsWith('png') || file.name.endsWith('jpg')
-                    ? 'image'
-                    : 'text'
-                );
               },
             },
             {
@@ -543,3 +481,13 @@ const FileItem: React.FC<FileItemProps> = ({
 };
 
 export default Files;
+
+export function getFileType(filename: string): ParsedFileTypes {
+  if (filename.match(Regex.IMAGE)) {
+    return ParsedFileTypes.IMAGE;
+  } else if (filename.endsWith('pdf')) {
+    return ParsedFileTypes.PDF;
+  } else {
+    return ParsedFileTypes.DOCUMENT;
+  }
+}

@@ -8,6 +8,13 @@ import { sToMs } from '@/utils/date.util';
 import { getRoute } from '@/utils/route.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 
+export const formatAlertCount = (count: number) => {
+  if (count > 999) {
+    return (count / 1000).toFixed(1) + 'k';
+  }
+  return count;
+};
+
 const MyInbox: React.FC = () => {
   const { data: alerts = [], isPending } = useGetAccountAlerts({
     refetchInterval: sToMs(30),
@@ -26,13 +33,6 @@ const MyInbox: React.FC = () => {
       setPrevAlertCount(totalAlerts);
     }
   }, [isPending, totalAlerts, prevAlertCount]);
-
-  const formatAlertCount = (count: number) => {
-    if (count > 999) {
-      return (count / 1000).toFixed(1) + 'k';
-    }
-    return count;
-  };
 
   const getMenuItems = () => {
     if (alerts === null || alerts.length === 0) {

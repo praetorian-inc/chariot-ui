@@ -10,15 +10,21 @@ import { Hexagon } from '@/components/Hexagon';
 import { Loader } from '@/components/Loader';
 import { Tooltip } from '@/components/Tooltip';
 import { useGetCollaborators } from '@/hooks/collaborators';
-import { useGetDisplayName } from '@/hooks/useAccounts';
+import { useGetAccountDetails, useGetPrimaryEmail } from '@/hooks/useAccounts';
 import { useMy } from '@/hooks/useMy';
 import Avatar from '@/sections/topNavBar/Avatar';
 import { useAuth } from '@/state/auth';
 import { getRoute } from '@/utils/route.util';
 
 export const AccountDropdown: React.FC = () => {
-  const { friend, me, startImpersonation, stopImpersonation, isImpersonating } =
-    useAuth();
+  const {
+    isSSO,
+    friend,
+    me,
+    startImpersonation,
+    stopImpersonation,
+    isImpersonating,
+  } = useAuth();
 
   const { data: myAccounts, status: myAccountsStatus } = useMy(
     {
@@ -35,8 +41,12 @@ export const AccountDropdown: React.FC = () => {
       { enabled: isImpersonating }
     );
 
-  const myDisplayName = useGetDisplayName(myAccounts);
-  const friendDisplayName = useGetDisplayName(impersonatedAccounts);
+  const { name: myDisplayName } = useGetAccountDetails(myAccounts);
+  const { name: friendDisplayName } =
+    useGetAccountDetails(impersonatedAccounts);
+
+  const { data: primaryEmail, status: primaryEmailStatus } =
+    useGetPrimaryEmail();
 
   const { data: collaborators, status: collaboratorsStatus } =
     useGetCollaborators({ doNotImpersonate: true });
@@ -61,25 +71,26 @@ export const AccountDropdown: React.FC = () => {
             className: 'bg-layer2',
             isLoading:
               collaboratorsStatus === 'pending' ||
-              myAccountsStatus === 'pending',
+              myAccountsStatus === 'pending' ||
+              primaryEmailStatus === 'pending',
             hide:
               collaboratorsStatus === 'error' ||
               (collaboratorsStatus === 'success' && collaborators.length === 0),
             label: myDisplayName ? (
-              <Tooltip title={me}>{myDisplayName}</Tooltip>
+              <Tooltip title={primaryEmail}>{myDisplayName}</Tooltip>
             ) : (
-              me
+              primaryEmail
             ),
             icon: (
               <Avatar
-                email={me}
+                email={primaryEmail}
                 className="size-5 max-w-max scale-125 rounded-full"
               />
             ),
-            value: myDisplayName || me,
+            value: primaryEmail,
             onClick: () => friend && stopImpersonation(),
           },
-          ...collaborators.map(collaborator => ({
+          ...(isSSO ? [] : collaborators).map(collaborator => ({
             label: (
               <Tooltip title={collaborator.email}>
                 <span className="overflow-hidden text-ellipsis text-nowrap">
@@ -137,11 +148,11 @@ export const AccountDropdown: React.FC = () => {
             to: getRoute(['app', 'logout']),
           },
         ],
-        value: friend || me,
+        value: friend || primaryEmail,
       }}
     >
       <div className="flex h-5 flex-row items-center">
-        <div className="mr-0 text-nowrap p-2 text-xs">
+        <div className="mr-0 hidden text-nowrap p-2 text-xs md:block">
           <Loader
             isLoading={
               myAccountsStatus === 'pending' ||
@@ -154,7 +165,7 @@ export const AccountDropdown: React.FC = () => {
           </Loader>
         </div>
         <Hexagon>
-          <Avatar className="scale-150" email={friend || me} />
+          <Avatar className="scale-150" email={friend || primaryEmail} />
         </Hexagon>
       </div>
     </Dropdown>

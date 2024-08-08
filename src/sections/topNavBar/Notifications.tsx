@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import { ArrowPathRoundedSquareIcon } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
+import { formatAlertCount } from '@/components/MyInbox';
 import { useMy } from '@/hooks/useMy';
 import { JobStatus } from '@/types';
 import { cn } from '@/utils/classname';
@@ -95,7 +97,7 @@ export const Notifications: React.FC<Props> = ({ onNotify, onClick }) => {
         ],
       }}
     >
-      <span className="relative inline-flex items-center space-x-2">
+      <span className="relative hidden items-center space-x-2 md:inline-flex">
         <span className="text-nowrap text-xs">Running:</span>
         <div
           className={cn(
@@ -106,6 +108,25 @@ export const Notifications: React.FC<Props> = ({ onNotify, onClick }) => {
         >
           {isPending ? '' : runningJobs}
         </div>
+      </span>
+      <span
+        className="relative inline-flex items-center space-x-2 md:hidden"
+        onClick={onClick}
+      >
+        <ArrowPathRoundedSquareIcon className="mr-1 size-6 stroke-1 text-white" />
+        {runningJobs > 0 && (
+          <span
+            role="label"
+            className={cn(
+              'text-white bg-red-500 rounded-full absolute flex justify-center items-center text-xs text-center font-semibold transition duration-150 ease-in-out',
+              runningJobs > 99
+                ? 'text-[10px] w-7 h-7 -top-3 -right-2'
+                : 'w-5 h-5 -top-2 -right-1'
+            )}
+          >
+            {formatAlertCount(runningJobs)}
+          </span>
+        )}
       </span>
     </Dropdown>
   );

@@ -118,6 +118,43 @@ const getStatusIcon = (status: string) => {
   }
 };
 
+const ProgressBar: React.FC<{
+  used: number;
+  total: number;
+  plan: string;
+  upgradeLink: string;
+}> = ({ used, total, plan, upgradeLink }) => {
+  const percentageUsed = Math.min((used / total) * 100, 100);
+
+  return (
+    <div className="mb-6 rounded-lg bg-gray-800 p-4 shadow-lg">
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xl font-semibold text-white">
+          {`Plan: ${plan} - Used ${used} of ${total} available assets`}
+        </p>
+        <Button styleType="primaryLight" className="text-md font-bold">
+          Upgrade Plan
+        </Button>
+      </div>
+      <div className="h-5 w-full justify-center overflow-hidden rounded-full bg-gray-700">
+        <div
+          className={cn(
+            'flex  items-center h-full justify-center text-center text-xs text-black leading-none rounded-full',
+            percentageUsed < 70
+              ? 'bg-green-500'
+              : percentageUsed < 90
+                ? 'bg-yellow-500'
+                : 'bg-red-500'
+          )}
+          style={{ width: `${percentageUsed}%` }}
+        >
+          <p className="font-semibold">{percentageUsed.toFixed(0)}%</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Chariot: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -323,6 +360,12 @@ const Chariot: React.FC = () => {
       </div>
       <main className="container mx-auto mt-8 p-4">
         <div className="rounded-lg bg-[#2D3748] p-4 shadow-md">
+          <ProgressBar
+            used={totalAssets}
+            total={500}
+            plan={'Unmanaged'}
+            upgradeLink={'/app/upgrade'}
+          />
           <div className="overflow-x-auto">
             <table className="min-w-full bg-[#2D3748] text-left text-sm">
               <thead>

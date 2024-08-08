@@ -33,7 +33,7 @@ import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
 import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
-import { getStatusColor, getStatusText } from '@/sections/Jobs';
+import { getStatusColor } from '@/sections/Jobs';
 import {
   Attribute,
   EntityHistory,
@@ -454,9 +454,13 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                       </thead>
                       <tbody>
                         {attributesGenericSearch?.attributes?.map(data => {
-                          const status = isScannable(data)
-                            ? jobsData[data.value]?.status
+                          const job = isScannable(data)
+                            ? jobsData[data.value]
                             : undefined;
+                          const status = job?.status;
+                          const lastScan = job?.updated
+                            ? formatDate(job.updated)
+                            : '';
                           return (
                             <tr
                               key={data.name}
@@ -494,7 +498,12 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                                   {isScannable(data) && (
                                     <Tooltip
                                       title={
-                                        status ? getStatusText(status) : ''
+                                        status
+                                          ? getJobStatusText({
+                                              status,
+                                              lastScan,
+                                            })
+                                          : ''
                                       }
                                     >
                                       <ArrowPathIcon
@@ -700,16 +709,35 @@ const JobStatusBadge = ({
     <div
       className={`!ml-auto flex min-w-40 items-center justify-center rounded-md px-4 py-1 text-xs ${getStatusColor(status)}`}
     >
-      {status === JobStatus.Pass && <span>{`Last Scan: ${lastScan}`}</span>}
-      {status === JobStatus.Fail && <span>{`Failed: ${lastScan})`}</span>}
-      {status === JobStatus.Running && (
-        <span className="flex gap-2">
-          Scanning <ArrowPathIcon className="size-4 animate-spin" />
-        </span>
-      )}
-      {status === JobStatus.Queued && <span>Queued</span>}
+      <span className="flex gap-2">
+        {getJobStatusText({ status, lastScan })}
+        {status === JobStatus.Running && (
+          <ArrowPathIcon className="size-4 animate-spin" />
+        )}
+      </span>
     </div>
   );
+};
+
+const getJobStatusText = ({
+  status,
+  lastScan,
+}: {
+  status?: JobStatus;
+  lastScan: string;
+}) => {
+  switch (status) {
+    case JobStatus.Pass:
+      return `Last Scan: ${lastScan}`;
+    case JobStatus.Fail:
+      return `Failed: ${lastScan}`;
+    case JobStatus.Running:
+      return 'Scanning';
+    case JobStatus.Queued:
+      return 'Job Queued';
+    default:
+      return '';
+  }
 };
 
 function getHistoryDiff(

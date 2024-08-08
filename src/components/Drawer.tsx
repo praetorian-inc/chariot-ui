@@ -21,6 +21,7 @@ interface Props {
   footerClassname?: string;
   header?: ReactNode;
   minWidth?: number;
+  skipBack?: boolean;
 }
 
 export function Drawer({
@@ -33,6 +34,7 @@ export function Drawer({
   footer,
   footerClassname,
   header,
+  skipBack,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [domHasModal, setDomHasModal] = useState(false);
@@ -121,17 +123,23 @@ export function Drawer({
                 <div className="h-full overflow-auto text-default">
                   <div className="mb-2 flex items-center justify-between px-10 pb-4">
                     <div className="flex w-full items-center">
-                      <Tooltip title="Go Back">
-                        <ChevronLeftIcon
-                          className="mr-2 size-6 cursor-pointer"
-                          onClick={onBack}
-                        />{' '}
-                      </Tooltip>
+                      {!skipBack && (
+                        <Tooltip title="Go Back">
+                          <ChevronLeftIcon
+                            className="mr-2 size-6 cursor-pointer"
+                            onClick={onBack}
+                          />{' '}
+                        </Tooltip>
+                      )}
                       {header}
                     </div>
                     <Tooltip title="Close">
                       <XMarkIcon
-                        className="mt-2 size-6 cursor-pointer"
+                        className={cn(
+                          'mt-2 size-6 cursor-pointer',
+                          skipBack &&
+                            'absolute -top-14 right-2 size-10 text-white stroke-2'
+                        )}
                         onClick={onClose}
                       />
                     </Tooltip>

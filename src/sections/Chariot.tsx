@@ -7,6 +7,7 @@ import {
   WrenchScrewdriverIcon,
 } from '@heroicons/react/24/solid';
 import { Dialog, Transition } from '@headlessui/react';
+import { Inbox } from 'lucide-react';
 
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
@@ -171,9 +172,7 @@ const Chariot: React.FC = () => {
     Integrations.github,
     Integrations.gitlab,
     Integrations.crowdstrike,
-    Integrations.hook,
     Integrations.nessus,
-    Integrations.webhook,
     Integrations.slack,
     Integrations.jira,
     Integrations.zulip,
@@ -311,7 +310,7 @@ const Chariot: React.FC = () => {
               <thead>
                 <tr className="h-[56px]">
                   <th className="px-4 py-2">Status</th>
-                  <th className="px-4 py-2">Integration</th>
+                  <th className="px-4 py-2">Surface</th>
                   <th className="px-4 py-2">Identifier</th>
                   <th className="px-4 py-2">Discovered Assets</th>
                   <th className="px-4 py-2 text-center">Actions</th>
@@ -369,6 +368,7 @@ const Chariot: React.FC = () => {
         onBack={() => setIsDrawerOpen(false)}
         className={cn('w-full rounded-t-lg pb-0 shadow-lg p-6 bg-zinc-100')}
         header={''}
+        skipBack={true}
         footerClassname=""
         footer={
           selectedIntegrations.length > 0 && (
@@ -397,6 +397,7 @@ const Chariot: React.FC = () => {
         className={cn('w-full rounded-t-lg pb-0 shadow-lg p-6 bg-zinc-100')}
         header={''}
         footerClassname=""
+        skipBack={true}
         footer={
           selectedIntegrations.length > 0 && (
             <Button
@@ -409,10 +410,22 @@ const Chariot: React.FC = () => {
         }
       >
         <div className="mx-12">
-          <h1 className="mb-12 text-4xl font-extrabold">
+          <h1 className="mb-4 text-4xl font-extrabold">
             Where do you want to be notified?
           </h1>
-          <div className="flex flex-row flex-wrap gap-4 ">
+          <p className="mb-8 text-lg text-gray-700">
+            Select your notification channels for alerts. View your current
+            alerts to stay updated.
+          </p>
+          <Button
+            styleType="none"
+            className="mb mx-auto mb-3 h-14 w-full rounded-md bg-white text-lg font-semibold"
+            onClick={() => (window.location.href = '/app/alerts')}
+          >
+            <Inbox className="mr-2 size-6 text-gray-700" /> View My Current
+            Alerts
+          </Button>
+          <div className="mb-8 flex flex-row flex-wrap gap-4">
             {notificationIntegrations}
           </div>
         </div>

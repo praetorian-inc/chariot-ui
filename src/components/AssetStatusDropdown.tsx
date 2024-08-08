@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
+import { countDescription } from '@/components/Menu';
 import { useCounts } from '@/hooks/useCounts';
 import { AssetStatus, AssetStatusLabel } from '@/types';
 
@@ -79,6 +80,7 @@ const AssetStatusDropdown: React.FC<AssetStatusDropdownProps> = ({
             ).toLocaleString(),
             value: status,
           })),
+          countDescription,
         ],
         onSelect: value => {
           const selectedValues = value.filter(v => v !== '');

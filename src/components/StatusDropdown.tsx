@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
+import { countDescription } from '@/components/Menu';
 import { useCounts } from '@/hooks/useCounts';
 import { RiskStatus, RiskStatusLabel } from '@/types';
 
@@ -87,6 +88,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ onSelect }) => {
             ).toLocaleString(),
             value: status,
           })),
+          countDescription,
         ],
         onSelect: value => handleSelect(value as RiskStatus[]),
         value: statusFilter,

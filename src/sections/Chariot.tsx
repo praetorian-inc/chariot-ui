@@ -13,6 +13,7 @@ import { Drawer } from '@/components/Drawer';
 import { Inputs, Values } from '@/components/form/Inputs';
 import { Tooltip } from '@/components/Tooltip';
 import { useIntegration } from '@/hooks/useIntegration';
+import useIntegrationCounts from '@/hooks/useIntegrationCounts';
 import { Integrations } from '@/sections/overview/Module';
 import { cn } from '@/utils/classname';
 import { useStorage } from '@/utils/storage/useStorage.util';
@@ -121,6 +122,9 @@ const Chariot: React.FC = () => {
   const { getMyIntegrations } = useIntegration();
 
   const currentIntegrations = getMyIntegrations();
+  const results = useIntegrationCounts(currentIntegrations);
+
+  const counts = results.map(result => result.data);
 
   const availableIntegrations = [
     Integrations.amazon,
@@ -365,7 +369,7 @@ const Chariot: React.FC = () => {
                     <td className={cn('px-4 py-2')}>
                       {integration.value ?? '[Redacted]'}
                     </td>
-                    <td className="px-4 py-2">[todo]</td>
+                    <td className="px-4 py-2">{counts[index] ?? '-'}</td>
                     <td className="relative px-4 py-2 text-center">
                       <Tooltip title="Disconnect" placement="left">
                         <Button styleType="none" className="mx-auto">

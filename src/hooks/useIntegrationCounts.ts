@@ -12,7 +12,7 @@ const fetchIntegrationCounts = async (
   try {
     const { data } = (await axios.get('/my/count', {
       params: {
-        key: `dns:${integration.member}`,
+        key: `assets`,
       },
     })) as { data: Statistics };
 

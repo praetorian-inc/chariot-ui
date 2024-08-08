@@ -11,10 +11,14 @@ import { Inbox, Unplug } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
 import { Inputs, Values } from '@/components/form/Inputs';
+import { Loader } from '@/components/Loader';
 import { Tooltip } from '@/components/Tooltip';
+import { useMy } from '@/hooks';
+import { useGetAccountDetails } from '@/hooks/useAccounts';
 import { useIntegration } from '@/hooks/useIntegration';
 import useIntegrationCounts from '@/hooks/useIntegrationCounts';
 import { Integrations } from '@/sections/overview/Module';
+import { useAuth } from '@/state/auth';
 import { cn } from '@/utils/classname';
 import { useStorage } from '@/utils/storage/useStorage.util';
 
@@ -123,6 +127,12 @@ const Chariot: React.FC = () => {
 
   const currentIntegrations = getMyIntegrations();
   const results = useIntegrationCounts(currentIntegrations);
+  const { me, friend } = useAuth();
+  const { data: accounts, status: accountsStatus } = useMy({
+    resource: 'account',
+  });
+
+  const displayName = useGetAccountDetails(accounts).name || friend || me;
 
   const counts = results.map(result => result.data);
 
@@ -248,9 +258,15 @@ const Chariot: React.FC = () => {
             My
             <span className="text-gray-400"> Chariot</span>
           </p>
-          <span className="mt-2 text-3xl font-bold text-white">
-            Dr. Klotzenstein&apos;s Organization
-          </span>
+          <Loader
+            styleType="header"
+            isLoading={accountsStatus === 'pending'}
+            className="mt-2 h-[36px]"
+          >
+            <span className="mt-2 text-3xl font-bold text-white">
+              {displayName}&apos;s Organization
+            </span>
+          </Loader>
           <div className="mt-2 flex items-center">
             <a
               href="#"

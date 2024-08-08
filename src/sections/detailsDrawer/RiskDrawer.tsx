@@ -14,7 +14,6 @@ import {
 
 import { Button } from '@/components/Button';
 import { Drawer } from '@/components/Drawer';
-import { HorizontalTimeline } from '@/components/HorizontalTimeline';
 import { RisksIcon } from '@/components/icons';
 import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
 import { UnionIcon } from '@/components/icons/Union.icon';
@@ -29,15 +28,11 @@ import { useMy } from '@/hooks';
 import { useGetKev } from '@/hooks/kev';
 import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
-import {
-  getJobTimeline,
-  useBulkReRunJob,
-  useJobsStatus,
-} from '@/hooks/useJobs';
+import { useBulkReRunJob, useJobsStatus } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
-import { getStatusText } from '@/sections/Jobs';
+import { getStatusColor, getStatusText } from '@/sections/Jobs';
 import {
   Attribute,
   EntityHistory,
@@ -158,16 +153,16 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     Object.values(jobsData).map(job => job?.status)
   );
 
-  const jobsTimeline = useMemo(() => {
-    return getJobTimeline({
-      status: jobsStatus,
-      updated:
-        Object.values(jobsData)
-          .map(job => job?.updated)
-          .sort()
-          .reverse()[0] || '',
-    });
-  }, [jobsStatus, jobsData]);
+  // const jobsTimeline = useMemo(() => {
+  //   return getJobTimeline({
+  //     status: jobsStatus,
+  //     updated:
+  //       Object.values(jobsData)
+  //         .map(job => job?.updated)
+  //         .sort()
+  //         .reverse()[0] || '',
+  //   });
+  // }, [jobsStatus, jobsData]);
 
   const isJobsRunning =
     jobsStatus === JobStatus.Running || jobsStatus === JobStatus.Queued;
@@ -213,20 +208,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
         'w-full rounded-t-lg bg-zinc-100 pb-0 shadow-lg',
         severityClass
       )}
-      header={
-        isInitialLoading ? null : (
-          <div className="flex w-full flex-col px-10 pb-0 pt-6">
-            {/* Job Timeline and Actions */}
-            <HorizontalTimeline
-              steps={jobsTimeline}
-              current={jobsTimeline.findIndex(
-                ({ status }) => status === jobsStatus
-              )}
-              className={severityClass + ' brightness-90'}
-            />
-          </div>
-        )
-      }
     >
       <Loader isLoading={isInitialLoading} type="spinner">
         <div className="flex h-full flex-col gap-2 px-8 pt-0">
@@ -437,6 +418,13 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                   <h3 className="text-2xl font-semibold tracking-wide text-gray-900">
                     Attributes
                   </h3>
+                  {jobsStatus && (
+                    <div
+                      className={`flex items-center rounded-md px-4 py-1 ${getStatusColor(jobsStatus)}`}
+                    >
+                      {getStatusText(jobsStatus)}
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-4">

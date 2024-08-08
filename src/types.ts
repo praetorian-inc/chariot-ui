@@ -487,6 +487,39 @@ export enum Integration {
   basAgent = 'basAgent',
   kev = 'kev',
   teams = 'teams',
+  godaddy = 'godaddy',
+  gsuite = 'gsuite',
+  cloudflare = 'cloudflare',
+  shodan = 'shodan',
+  securitytrails = 'securitytrails',
+  greynoise = 'greynoise',
+  sentinel = 'sentinel',
+  sumologic = 'sumologic',
+  palo = 'palo',
+  splunk = 'splunk',
+  graylog = 'graylog',
+  tanium = 'tanium',
+  orca = 'orca',
+  snyk = 'snyk',
+  ibmcloud = 'ibmcloud',
+  qualys = 'qualys',
+  mandiant = 'mandiant',
+  nexpose = 'nexpose',
+  jamf = 'jamf',
+  r7 = 'r7',
+  securityopscenter = 'securityopscenter',
+  jupiterone = 'jupiterone',
+  runzero = 'runzero',
+  traceable = 'traceable',
+  trellix = 'trellix',
+  elasticsearch = 'elasticsearch',
+  defender = 'defender',
+  sentinelone = 'sentinelone',
+  vulndb = 'vulndb',
+  imperva = 'imperva',
+  f5 = 'f5',
+  carbonblack = 'carbonblack',
+  wiz = 'wiz',
 }
 
 export interface IntegrationMeta {
@@ -503,6 +536,11 @@ export interface IntegrationMeta {
     href: string;
     label: string;
   };
+}
+
+export interface IntegrationComingSoonMeta {
+  name: string;
+  logo: string;
 }
 
 export interface AssetFilters {

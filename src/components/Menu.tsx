@@ -375,5 +375,5 @@ const CheckboxIcon = ({ isChecked }: { isChecked: boolean }) => {
 export const countDescription: MenuItemProps = {
   type: 'label',
   label: 'Counts reflect total known items.',
-  className: 'text-center',
+  className: 'text-center -translate-y-4 h-0',
 };

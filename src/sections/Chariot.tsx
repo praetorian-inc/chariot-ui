@@ -228,8 +228,9 @@ const Chariot: React.FC = () => {
             />
           </svg>
           <div className="flex flex-col text-left">
-            <p className="text-md font-medium text-white">
-              17,000 assets monitored
+            <p className="text-md">
+              <span className="font-bold text-white">17,000</span>{' '}
+              <span className="text-gray-400">assets monitored</span>
             </p>
           </div>
         </div>

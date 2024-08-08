@@ -17,6 +17,7 @@ export enum StorageKey {
   RUNNING_JOBS = 'RUNNING_JOBS',
   ASESET_PRIORITY_FILTER = 'asset-priority',
   RESIZE = 'resizeColumn',
+  RISK_JOB_MAP = 'riskJobMap',
 }
 
 interface UseStorageOptions<S> {

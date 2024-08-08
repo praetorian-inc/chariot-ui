@@ -7,7 +7,6 @@ import { useAxios } from '@/hooks/useAxios';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useMy } from '@/hooks/useMy';
 import { buildOpenRiskDataset } from '@/sections/Assets';
-import { parseKeys } from '@/sections/SearchByType';
 import {
   Asset,
   AssetFilters,
@@ -256,17 +255,10 @@ export function useGetAssets(props: GetAssetProps) {
     isFetching: isFetchingRisks,
   } = useMy({ resource: 'risk' });
 
-  const attFilterKeys = useMemo(() => {
-    return filters.attributes.map(att => {
-      const attribute = parseKeys.attributeKey(att);
-      return `${attribute.name}#${attribute.value}`;
-    });
-  }, [JSON.stringify(filters.attributes)]);
-
   const {
     data: assetsWithAttributesFilter,
     status: assetsWithAttributesFilterStatus,
-  } = useAssetsWithAttributes(attFilterKeys);
+  } = useAssetsWithAttributes(filters.attributes || []);
 
   const apiStatus = useMergeStatus(
     ...(debouncedSearch

@@ -92,9 +92,10 @@ export const AttributeFilter = (props: Props) => {
   };
 
   const updateFilter = (newSelectedAttributes: Record<string, boolean>) => {
-    const updatedAttributes = Object.keys(newSelectedAttributes)
-      .filter(attrKey => newSelectedAttributes[attrKey])
-      .map(attrKey => `#attribute#${attrKey}`);
+    const updatedAttributes = Object.keys(newSelectedAttributes).filter(
+      attrKey => newSelectedAttributes[attrKey]
+    );
+
     setAttributesFilter(updatedAttributes);
   };
 

@@ -1,6 +1,7 @@
 import { toast } from 'sonner';
 
 import { useAxios } from '@/hooks/useAxios';
+import { useGetAccountAlerts } from '@/hooks/useGetAccountAlerts';
 import { useMy } from '@/hooks/useMy';
 import { getQueryKey } from '@/hooks/useQueryKeys';
 import { queryClient } from '@/queryclient';
@@ -59,6 +60,9 @@ export const useUpdateRisk = () => {
       enabled: false,
     }
   );
+  const { invalidate: invalidateAlerts } = useGetAccountAlerts({
+    enabled: false,
+  });
 
   return useMutation<Risk, Error, RiskUpdate>({
     defaultErrorMessage: `Failed to update risk`,
@@ -77,6 +81,7 @@ export const useUpdateRisk = () => {
       const { data } = await promise;
       const updatedRisk = data.risks[0];
 
+      invalidateAlerts();
       queryClient.invalidateQueries({
         queryKey: getQueryKey.getCounts('risk'),
       });
@@ -104,6 +109,9 @@ const useBulkUpdateRiskHook = () => {
       enabled: false,
     }
   );
+  const { invalidate: invalidateAlerts } = useGetAccountAlerts({
+    enabled: false,
+  });
 
   return useMutation<unknown, Error, RiskTemplate[]>({
     defaultErrorMessage: 'Failed to update risks',
@@ -128,6 +136,8 @@ const useBulkUpdateRiskHook = () => {
 
       if (validResults.length > 0) {
         const keys = risks.map(r => r.key);
+
+        invalidateAlerts();
 
         updateAllSubQueries(previous => {
           const updatedPages = previous.pages.map(page =>

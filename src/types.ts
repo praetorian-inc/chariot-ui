@@ -518,3 +518,9 @@ export type SeverityOpenCounts = Partial<Record<Severity, Risk[]>>;
 export interface AssetsWithRisk extends Asset {
   riskSummary?: SeverityOpenCounts;
 }
+
+export enum ParsedFileTypes {
+  IMAGE = 'image',
+  PDF = 'pdf',
+  DOCUMENT = 'document',
+}

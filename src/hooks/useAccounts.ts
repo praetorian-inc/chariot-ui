@@ -128,9 +128,26 @@ export function useGetAccountDetails(accounts: Account[]) {
 
     return {
       name: myAccount?.config?.displayName || '',
-      email: myAccount?.name || '',
     };
   }, [JSON.stringify(accounts)]);
+}
+
+export function useGetPrimaryEmail() {
+  const { isSSO, me } = useAuth();
+
+  const { data: myAccounts, status: myAccountsStatus } = useMy(
+    {
+      resource: 'account',
+    },
+    { doNotImpersonate: true, enabled: isSSO }
+  );
+
+  const myAccount = myAccounts?.find(acc => acc.member.startsWith('sso:'));
+
+  return {
+    data: isSSO ? myAccount?.name || '' : me,
+    status: isSSO ? myAccountsStatus : 'success',
+  };
 }
 
 export function getDisplayName(accounts: Account[]) {

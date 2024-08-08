@@ -51,27 +51,20 @@ export const AttributeFilter = (props: Props) => {
     setSearchQuery(event.target.value);
   };
 
-  const parseKey = (key: string) => {
-    const parts = key.split('#');
-    return {
-      attribute: parts[2],
-      value: parts[3],
-      asset: parts[5],
-    };
-  };
-
   const nestedResults = useMemo(() => {
     if (!searchResults?.attributes) return {};
     return searchResults.attributes.reduce(
       (acc, attr) => {
-        const { attribute, value, asset } = parseKey(attr.key);
-        if (!acc[attribute]) {
-          acc[attribute] = {};
+        if (!acc[attr.name]) {
+          acc[attr.name] = {};
         }
-        if (!acc[attribute][value]) {
-          acc[attribute][value] = [];
+        if (!acc[attr.name][attr.value]) {
+          acc[attr.name][attr.value] = [];
         }
-        acc[attribute][value].push({ ...attr, asset });
+        acc[attr.name][attr.value].push({
+          ...attr,
+          asset: attr.source,
+        });
         return acc;
       },
       {} as Record<
@@ -99,9 +92,10 @@ export const AttributeFilter = (props: Props) => {
   };
 
   const updateFilter = (newSelectedAttributes: Record<string, boolean>) => {
-    const updatedAttributes = Object.keys(newSelectedAttributes)
-      .filter(attrKey => newSelectedAttributes[attrKey])
-      .map(attrKey => `#attribute#${attrKey}`);
+    const updatedAttributes = Object.keys(newSelectedAttributes).filter(
+      attrKey => newSelectedAttributes[attrKey]
+    );
+
     setAttributesFilter(updatedAttributes);
   };
 

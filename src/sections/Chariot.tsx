@@ -288,7 +288,7 @@ const Chariot: React.FC = () => {
                     key={index}
                     className=" h-[56px] text-[#9CA3AF] odd:bg-[#1F2937]"
                   >
-                    <td className="px-4 py-2">{getStatusIcon('success')}</td>
+                    <td className="px-4 py-2">{getStatusIcon('warning')}</td>
                     <td className="text-md px-4 py-2 font-semibold text-white">
                       {
                         Integrations[integration as keyof typeof Integrations]

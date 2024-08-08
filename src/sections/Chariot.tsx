@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { PencilSquareIcon } from '@heroicons/react/24/outline';
+import { PencilSquareIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
@@ -15,6 +15,7 @@ import { Tooltip } from '@/components/Tooltip';
 import { useIntegration } from '@/hooks/useIntegration';
 import { Integrations } from '@/sections/overview/Module';
 import { cn } from '@/utils/classname';
+import { useStorage } from '@/utils/storage/useStorage.util';
 
 const SetupModal: React.FC<{
   isOpen: boolean;
@@ -143,13 +144,14 @@ const Chariot: React.FC = () => {
     Integrations.zulip,
     Integrations.teams,
   ];
-  const [selectedIntegrations, setSelectedIntegrations] = useState<string[]>(
+  const [selectedIntegrations, setSelectedIntegrations] = useStorage<string[]>(
+    { key: 'selectedIntegrations' },
     []
   );
   const [
     selectedNotificationIntegrations,
     setSelectedNotificationIntegrations,
-  ] = useState<string[]>([]);
+  ] = useStorage<string[]>({ key: 'selectedNotificationIntegrations' }, []);
 
   const handleSetupClick = (integrationName: string) => {
     setSetupIntegration(integrationName);
@@ -304,18 +306,38 @@ const Chariot: React.FC = () => {
                     </td>
                     <td className="px-4 py-2">[todo]</td>
                     <td className="px-4 py-2 text-center">
-                      <button
-                        onClick={() =>
-                          handleSetupClick(
-                            Integrations[
-                              integration as keyof typeof Integrations
-                            ].id
-                          )
-                        }
-                        className="w-[100px] rounded-sm bg-[#FFD700] px-3 py-1 text-sm font-medium text-black"
-                      >
-                        Setup
-                      </button>
+                      <div className="flex flex-row items-center justify-center">
+                        <button
+                          onClick={() =>
+                            handleSetupClick(
+                              Integrations[
+                                integration as keyof typeof Integrations
+                              ].id
+                            )
+                          }
+                          className="w-[100px] rounded-sm bg-[#FFD700] px-3 py-1 text-sm font-medium text-black"
+                        >
+                          Setup
+                        </button>
+                        <Tooltip title="Remove" placement="left">
+                          <button
+                            onClick={() => {
+                              setSelectedIntegrations(
+                                selectedIntegrations.filter(
+                                  id => id !== integration
+                                )
+                              );
+                              setSelectedNotificationIntegrations(
+                                selectedNotificationIntegrations.filter(
+                                  id => id !== integration
+                                )
+                              );
+                            }}
+                          >
+                            <XMarkIcon className="ml-2 size-6 text-white" />
+                          </button>
+                        </Tooltip>
+                      </div>
                     </td>
                   </tr>
                 ))}

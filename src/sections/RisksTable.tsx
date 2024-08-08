@@ -18,7 +18,7 @@ import { RisksIcon } from '@/components/icons';
 import { HorseIcon } from '@/components/icons/Horse.icon';
 import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
 import { getRiskStatusIcon } from '@/components/icons/RiskStatus.icon';
-import { MenuItemProps } from '@/components/Menu';
+import { countDescription, MenuItemProps } from '@/components/Menu';
 import SeverityDropdown from '@/components/SeverityDropdown';
 import SourceDropdown from '@/components/SourceDropdown';
 import StatusDropdown from '@/components/StatusDropdown';
@@ -406,6 +406,7 @@ export function Risks() {
                     ).length,
                     value: 'cisa_kev',
                   },
+                  countDescription,
                 ],
                 onSelect: selectedRows => setIntelFilter(selectedRows),
                 value: intelFilter,

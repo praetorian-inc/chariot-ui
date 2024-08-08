@@ -37,7 +37,9 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ onSelect }) => {
       const subStatus = key.length > 1 ? key.slice(2) : '';
       const count = statusData[key];
 
-      if (baseStatus === 'T') {
+      if (baseStatus === 'M') {
+        counts.M += count;
+      } else if (baseStatus === 'T') {
         counts.T += count;
       } else if (baseStatus === 'O') {
         counts.O += count;

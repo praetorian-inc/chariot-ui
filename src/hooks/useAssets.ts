@@ -4,8 +4,8 @@ import { useDebounce } from 'use-debounce';
 
 import { useAssetsWithAttributes } from '@/hooks/useAttribute';
 import { useAxios } from '@/hooks/useAxios';
-import { useGetAccountAlerts } from '@/hooks/useGetAccountAlerts';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
+import { useGetAccountAlerts } from '@/hooks/useGetAccountAlerts';
 import { useMy } from '@/hooks/useMy';
 import { buildOpenRiskDataset } from '@/sections/Assets';
 import {

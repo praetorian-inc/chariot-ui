@@ -21,7 +21,7 @@ export const useIntegration = () => {
   );
 
   const getMyIntegrations = useCallback(() => {
-    return integrationList;
+    return integrationList.filter(account => account.member !== 'hook');
   }, [accountStatus]);
 
   return {

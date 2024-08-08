@@ -160,17 +160,6 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
       .sort()
       .reverse()[0] || '';
 
-  // const jobsTimeline = useMemo(() => {
-  //   return getJobTimeline({
-  //     status: jobsStatus,
-  //     updated:
-  //       Object.values(jobsData)
-  //         .map(job => job?.updated)
-  //         .sort()
-  //         .reverse()[0] || '',
-  //   });
-  // }, [jobsStatus, jobsData]);
-
   const isJobsRunning =
     jobsStatus === JobStatus.Running || jobsStatus === JobStatus.Queued;
 

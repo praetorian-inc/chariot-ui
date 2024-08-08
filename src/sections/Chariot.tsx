@@ -90,57 +90,6 @@ const SetupModal: React.FC<{
   );
 };
 
-const integrations = [
-  {
-    status: 'warning',
-    name: 'amazon',
-    identifier: 'Requires Setup',
-    assets: '10,000',
-  },
-  {
-    status: 'warning',
-    name: 'gcp',
-    identifier: 'Requires Setup',
-    assets: '200',
-  },
-  {
-    status: 'warning',
-    name: 'ns1',
-    identifier: 'Requires Setup',
-    assets: '-',
-  },
-  {
-    status: 'warning',
-    name: 'amazon',
-    identifier: 'Requires Setup',
-    assets: '12',
-  },
-  {
-    status: 'success',
-    name: 'companydomain.com',
-    identifier: 'Root Domain',
-    assets: '12',
-  },
-  {
-    status: 'warning',
-    name: 'github',
-    identifier: 'Requires Setup',
-    assets: '12',
-  },
-  {
-    status: 'warning',
-    name: 'jira',
-    identifier: 'Requires Setup',
-    assets: '12',
-  },
-  {
-    status: 'warning',
-    name: 'slack',
-    identifier: 'Requires Setup',
-    assets: '12',
-  },
-];
-
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'success':
@@ -331,6 +280,41 @@ const Chariot: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
+                {[
+                  ...selectedNotificationIntegrations,
+                  ...selectedIntegrations,
+                ].map((integration, index) => (
+                  <tr
+                    key={index}
+                    className=" h-[56px] text-[#9CA3AF] odd:bg-[#1F2937]"
+                  >
+                    <td className="px-4 py-2">{getStatusIcon('success')}</td>
+                    <td className="text-md px-4 py-2 font-semibold text-white">
+                      {
+                        Integrations[integration as keyof typeof Integrations]
+                          .name
+                      }
+                    </td>
+                    <td className={'px-4 py-2 text-[#FFD700]'}>
+                      Requires Setup
+                    </td>
+                    <td className="px-4 py-2">[todo]</td>
+                    <td className="px-4 py-2 text-center">
+                      <button
+                        onClick={() =>
+                          handleSetupClick(
+                            Integrations[
+                              integration as keyof typeof Integrations
+                            ].id
+                          )
+                        }
+                        className="w-[100px] rounded-sm bg-[#FFD700] px-3 py-1 text-sm font-medium text-black"
+                      >
+                        Setup
+                      </button>
+                    </td>
+                  </tr>
+                ))}
                 {currentIntegrations.map((integration, index) => (
                   <tr
                     key={index}

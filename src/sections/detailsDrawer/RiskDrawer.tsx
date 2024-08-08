@@ -30,6 +30,7 @@ import { useGetFile, useUploadFile } from '@/hooks/useFiles';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
 import { useBulkReRunJob, useJobsStatus } from '@/hooks/useJobs';
 import { useReportRisk, useUpdateRisk } from '@/hooks/useRisks';
+import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { getStatusColor, getStatusText } from '@/sections/Jobs';
@@ -152,6 +153,12 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
   const jobsStatus = mergeJobStatus(
     Object.values(jobsData).map(job => job?.status)
   );
+
+  const lastScan =
+    Object.values(jobsData)
+      .map(job => job?.updated)
+      .sort()
+      .reverse()[0] || '';
 
   // const jobsTimeline = useMemo(() => {
   //   return getJobTimeline({
@@ -418,13 +425,11 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                   <h3 className="text-2xl font-semibold tracking-wide text-gray-900">
                     Attributes
                   </h3>
-                  {jobsStatus && (
-                    <div
-                      className={`flex items-center rounded-md px-4 py-1 ${getStatusColor(jobsStatus)}`}
-                    >
-                      {getStatusText(jobsStatus)}
-                    </div>
-                  )}
+                  <AddAttribute className="ml-auto" resourceKey={risk.key} />
+                  <JobStatusBadge
+                    status={jobsStatus}
+                    lastScan={formatDate(lastScan)}
+                  />
                 </div>
 
                 <div className="space-y-4">
@@ -500,7 +505,7 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                                               JobStatus.Pass,
                                               JobStatus.Fail,
                                             ].includes(status) &&
-                                            'animate-spin cursor-disabled'
+                                            'animate-spin cursor-not-allowed'
                                         )}
                                         onClick={async () => {
                                           const [response] =
@@ -679,6 +684,33 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
     </Drawer>
   );
 }
+
+const JobStatusBadge = ({
+  status,
+  lastScan,
+}: {
+  status?: JobStatus;
+  lastScan: string;
+}) => {
+  if (!status) {
+    return null;
+  }
+
+  return (
+    <div
+      className={`!ml-auto flex min-w-40 items-center justify-center rounded-md px-4 py-1 text-xs ${getStatusColor(status)}`}
+    >
+      {status === JobStatus.Pass && <span>{`Last Scan: ${lastScan}`}</span>}
+      {status === JobStatus.Fail && <span>{`Failed: ${lastScan})`}</span>}
+      {status === JobStatus.Running && (
+        <span className="flex gap-2">
+          Scanning <ArrowPathIcon className="size-4 animate-spin" />
+        </span>
+      )}
+      {status === JobStatus.Queued && <span>Queued</span>}
+    </div>
+  );
+};
 
 function getHistoryDiff(
   history: EntityHistory,

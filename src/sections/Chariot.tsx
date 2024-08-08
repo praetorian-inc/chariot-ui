@@ -25,7 +25,6 @@ const SetupModal: React.FC<{
   if (!integration) return null;
 
   const handleInputsChange = (values: Values) => {
-    // Handle the input values, e.g., save them to state or perform validation
     console.log('Input Values:', values);
   };
 
@@ -160,9 +159,11 @@ const getStatusIcon = (status: string) => {
 const Chariot: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isNotificationsDrawerOpen, setIsNotificationsDrawerOpen] =
+    useState(false);
   const [setupIntegration, setSetupIntegration] = useState<string | null>(null);
 
-  const modifiedIntegrations = [
+  const availableIntegrations = [
     Integrations.amazon,
     Integrations.azure,
     Integrations.gcp,
@@ -178,6 +179,14 @@ const Chariot: React.FC = () => {
     Integrations.zulip,
     Integrations.teams,
   ];
+
+  const notificationsIntegrations = [
+    Integrations.slack,
+    Integrations.jira,
+    Integrations.webhook,
+    Integrations.zulip,
+    Integrations.teams,
+  ];
   const [selectedIntegrations, setSelectedIntegrations] = useState<string[]>(
     []
   );
@@ -187,7 +196,7 @@ const Chariot: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const allIntegrations = modifiedIntegrations.map(integration => (
+  const attackSurfaceIntegrations = availableIntegrations.map(integration => (
     <div
       key={integration.id}
       className={cn(
@@ -210,13 +219,41 @@ const Chariot: React.FC = () => {
     </div>
   ));
 
+  const notificationIntegrations = notificationsIntegrations.map(
+    integration => (
+      <div
+        key={integration.id}
+        className={cn(
+          ' w-[150px] resize-none rounded-md bg-white p-6 text-center',
+          selectedIntegrations.includes(integration.id) &&
+            'border-2 border-brand'
+        )}
+        role="button"
+        onClick={() => {
+          if (selectedIntegrations.includes(integration.id)) {
+            setSelectedIntegrations(
+              selectedIntegrations.filter(id => id !== integration.id)
+            );
+          } else {
+            setSelectedIntegrations([...selectedIntegrations, integration.id]);
+          }
+        }}
+      >
+        <img className="mx-auto my-3 size-12" src={integration.logo} />
+        <p className="text-lg font-bold">{integration.name?.split(' ')[0]}</p>
+      </div>
+    )
+  );
+
+  const size = 190;
+
   return (
     <div className="mt-7 flex flex-col text-gray-200">
-      <div className="flex flex-col items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-row items-center  justify-center space-x-4 ">
+        <div className="flex flex-col items-center justify-center">
           <svg
-            width={150}
-            height={150}
+            width={size}
+            height={size}
             viewBox={`0 0 74 74`}
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -228,37 +265,41 @@ const Chariot: React.FC = () => {
               fill={'white'}
             />
           </svg>
-          <div className="flex flex-col">
-            <p className="text-7xl font-bold">
-              My
-              <span className="text-gray-400"> Chariot</span>
+          <div className="flex flex-col text-left">
+            <p className="text-md font-medium text-white">
+              17,000 assets monitored
             </p>
-            <span className="mt-2 text-3xl font-bold text-white">
-              Dr. Klotzenstein&apos;s Organization
-            </span>
-            <div className="mt-4 flex w-auto space-x-4">
-              <Button
-                styleType="none"
-                className="text-md w-[200px] bg-brand-dark font-bold"
-                onClick={() => setIsDrawerOpen(true)}
-              >
-                Build Attack Surface
-              </Button>
-              <div className="flex flex-col text-left">
-                <div className="flex items-center">
-                  <a
-                    href="#"
-                    className="font-medium text-blue-500 hover:underline"
-                  >
-                    examplecompany.com
-                  </a>
-                  <PencilSquareIcon className="ml-1 size-4 stroke-[2px] text-white" />
-                </div>
-                <p className="font-meidum text-sm text-white">
-                  17,000 assets monitored
-                </p>
-              </div>
-            </div>
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <p className="text-7xl font-bold">
+            My
+            <span className="text-gray-400"> Chariot</span>
+          </p>
+          <span className="mt-2 text-3xl font-bold text-white">
+            Dr. Klotzenstein&apos;s Organization
+          </span>
+          <div className="mt-2 flex items-center">
+            <a href="#" className="font-medium text-blue-500 hover:underline">
+              examplecompany.com
+            </a>
+            <PencilSquareIcon className="ml-1 size-4 stroke-[2px] text-white" />
+          </div>
+          <div className="mt-4 flex w-auto space-x-4">
+            <Button
+              styleType="none"
+              className="text-md text-nowrap rounded-[4px] bg-brand-dark px-6 font-bold"
+              onClick={() => setIsDrawerOpen(true)}
+            >
+              Build Attack Surface
+            </Button>
+            <Button
+              styleType="none"
+              className="text-md text-nowrap rounded-[4px] bg-brand-dark px-6 font-bold"
+              onClick={() => setIsNotificationsDrawerOpen(true)}
+            >
+              Manage Risk Notifications
+            </Button>
           </div>
         </div>
       </div>
@@ -335,7 +376,7 @@ const Chariot: React.FC = () => {
               styleType="primary"
               className="mx-20 mb-10 h-20 w-full text-xl font-bold"
             >
-              Attach Integrations ({selectedIntegrations.length} selected)
+              Build Attack Surface ({selectedIntegrations.length} selected)
             </Button>
           )
         }
@@ -345,7 +386,34 @@ const Chariot: React.FC = () => {
             Which surfaces are you in?
           </h1>
           <div className="flex flex-row flex-wrap gap-4 ">
-            {allIntegrations}
+            {attackSurfaceIntegrations}
+          </div>
+        </div>
+      </Drawer>
+      <Drawer
+        open={isNotificationsDrawerOpen}
+        onClose={() => setIsNotificationsDrawerOpen(false)}
+        onBack={() => setIsNotificationsDrawerOpen(false)}
+        className={cn('w-full rounded-t-lg pb-0 shadow-lg p-6 bg-zinc-100')}
+        header={''}
+        footerClassname=""
+        footer={
+          selectedIntegrations.length > 0 && (
+            <Button
+              styleType="primary"
+              className="mx-20 mb-10 h-20 w-full text-xl font-bold"
+            >
+              Set Notification Channels ({selectedIntegrations.length} selected)
+            </Button>
+          )
+        }
+      >
+        <div className="mx-12">
+          <h1 className="mb-12 text-4xl font-extrabold">
+            Where do you want to be notified?
+          </h1>
+          <div className="flex flex-row flex-wrap gap-4 ">
+            {notificationIntegrations}
           </div>
         </div>
       </Drawer>

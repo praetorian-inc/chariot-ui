@@ -138,6 +138,7 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
     []
   );
   const [debouncedSearch] = useDebounce(search, 500);
+  const fileType = filename ? getFileType(filename) : undefined;
 
   const { data: files = [], status } = useMy(
     {
@@ -369,18 +370,22 @@ const TreeLevel: React.FC<TreeLevelProps> = ({
         onClose={() => setFilename('')}
         size="xl"
         title={filename}
-        footer={{
-          text: 'Save',
-          onClick: async () => {
-            uploadFile({
-              ignoreSnackbar: true,
-              name: filename,
-              content: content ?? '',
-            }).then(() => {
-              setFilename('');
-            });
-          },
-        }}
+        footer={
+          fileType === ParsedFileTypes.DOCUMENT
+            ? {
+                text: 'Save',
+                onClick: async () => {
+                  uploadFile({
+                    ignoreSnackbar: true,
+                    name: filename,
+                    content: content ?? '',
+                  }).then(() => {
+                    setFilename('');
+                  });
+                },
+              }
+            : undefined
+        }
       >
         <FileViewer
           fileName={filename}

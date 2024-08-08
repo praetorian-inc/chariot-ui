@@ -29,6 +29,7 @@ import { NoData } from '@/components/ui/NoData';
 import { useScroll } from '@/hooks';
 import { useResize } from '@/hooks/useResize';
 import {
+  HeaderPortalSections,
   RenderHeaderBreadcrumbSection,
   RenderHeaderExtraContentSection,
 } from '@/sections/AuthenticatedApp';
@@ -70,6 +71,9 @@ export function Table<TData>(props: TableProps<TData>) {
     },
     ''
   );
+  const headerSectionHeight = document.getElementById(
+    HeaderPortalSections.EXTRA_CONTENT
+  )?.offsetHeight;
   const [expandedGroups, setExpandedGroups] = useState(
     groupBy?.map(group => group.label) || []
   );
@@ -344,13 +348,13 @@ export function Table<TData>(props: TableProps<TData>) {
     >
       {(filters || parsedActions || parsedPrimaryAction) && (
         <RenderHeaderExtraContentSection>
-          <div className="flex justify-between">
+          <div className="flex flex-col justify-between gap-4 lg:flex-row">
             {filters}
             <div className="flex space-x-4">
               <Input
                 name="search"
                 placeholder={`Go to ${tableName}`}
-                className="h-11 w-64 justify-end rounded-sm border-gray-900 bg-header-light p-2 text-sm text-white  ring-0"
+                className="h-11 w-72 justify-end rounded-sm border-gray-900 bg-header-light p-2 text-sm text-white ring-0 md:w-64"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 startIcon={
@@ -381,7 +385,7 @@ export function Table<TData>(props: TableProps<TData>) {
                 )}
 
                 {parsedActions && (
-                  <div className="relative h-full origin-bottom-right">
+                  <div>
                     <Tooltip
                       title={
                         selectedRows.length === 0
@@ -443,11 +447,11 @@ export function Table<TData>(props: TableProps<TData>) {
           )}
         >
           <thead
-            className={cn(
-              'sticky bg-layer0',
-              isTableView && !skipHeader ? 'top-[4.5rem]' : 'top-0'
-            )}
-            style={{ zIndex: 1 }}
+            className={'sticky bg-layer0'}
+            style={{
+              zIndex: 1,
+              top: isTableView && !skipHeader ? headerSectionHeight : 0,
+            }}
           >
             <tr className="relative">
               {enableCheckbox && (

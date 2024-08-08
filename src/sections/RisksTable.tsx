@@ -18,7 +18,7 @@ import { RisksIcon } from '@/components/icons';
 import { HorseIcon } from '@/components/icons/Horse.icon';
 import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
 import { getRiskStatusIcon } from '@/components/icons/RiskStatus.icon';
-import { MenuItemProps } from '@/components/Menu';
+import { countDescription, MenuItemProps } from '@/components/Menu';
 import SeverityDropdown from '@/components/SeverityDropdown';
 import SourceDropdown from '@/components/SourceDropdown';
 import StatusDropdown from '@/components/StatusDropdown';
@@ -173,6 +173,8 @@ export function Risks() {
     }
   }, [updateRiskStatus]);
 
+  const [isFilteredDataFetching, setIsFilteredDataFetching] = useState(false);
+
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 500);
   const { data: dataDebouncedSearch, status: statusDebouncedSearch } =
@@ -194,6 +196,7 @@ export function Risks() {
     status: risksStatus,
     error,
     isFetchingNextPage,
+    isFetching: isRisksFetching,
     fetchNextPage,
   } = useMy({
     resource: 'risk',
@@ -210,10 +213,12 @@ export function Risks() {
     ? dataDebouncedSearch?.risks || []
     : risksUseMy;
 
-  const status = useMergeStatus(
+  const apiStatus = useMergeStatus(
     debouncedSearch ? statusDebouncedSearch : risksStatus,
     threatsStatus
   );
+
+  const status = isFilteredDataFetching ? 'pending' : apiStatus;
 
   const filteredRisks = useMemo(() => {
     return getFilteredRisks(risks, {
@@ -335,6 +340,26 @@ export function Risks() {
     []
   );
 
+  useEffect(() => {
+    if (!isRisksFetching) {
+      if (search) {
+        setIsFilteredDataFetching(false);
+      } else {
+        if (fetchNextPage && sortedRisks.length < 50) {
+          setIsFilteredDataFetching(true);
+          fetchNextPage?.();
+        } else {
+          setIsFilteredDataFetching(false);
+        }
+      }
+    }
+  }, [
+    JSON.stringify({ sortedRisks }),
+    search,
+    isRisksFetching,
+    Boolean(fetchNextPage),
+  ]);
+
   return (
     <div className="flex w-full flex-col">
       <Table
@@ -381,6 +406,7 @@ export function Risks() {
                     ).length,
                     value: 'cisa_kev',
                   },
+                  countDescription,
                 ],
                 onSelect: selectedRows => setIntelFilter(selectedRows),
                 value: intelFilter,

@@ -9,6 +9,7 @@ export const Regex = {
   EMAIL: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/,
   CVE_ID: /CVE-\d{4}-\d{4,7}/,
   AWS_REGION_REGEX: /.*execute-api.(.*).amazonaws/,
+  IMAGE: /.*\.(jpg|jpeg|png|gif|bmp)$/,
 };
 
 export const AllowedSeedRegex = new RegExp(

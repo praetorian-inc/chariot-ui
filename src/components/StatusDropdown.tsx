@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
+import { countDescription } from '@/components/Menu';
 import { useCounts } from '@/hooks/useCounts';
 import { RiskStatus, RiskStatusLabel } from '@/types';
 
@@ -37,7 +38,9 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ onSelect }) => {
       const subStatus = key.length > 1 ? key.slice(2) : '';
       const count = statusData[key];
 
-      if (baseStatus === 'T') {
+      if (baseStatus === 'M') {
+        counts.M += count;
+      } else if (baseStatus === 'T') {
         counts.T += count;
       } else if (baseStatus === 'O') {
         counts.O += count;
@@ -87,6 +90,7 @@ const StatusDropdown: React.FC<StatusDropdownProps> = ({ onSelect }) => {
             ).toLocaleString(),
             value: status,
           })),
+          countDescription,
         ],
         onSelect: value => handleSelect(value as RiskStatus[]),
         value: statusFilter,

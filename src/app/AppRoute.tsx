@@ -22,10 +22,10 @@ import { validateRoutes } from '@/utils/route.util';
 import { getRoute } from '@/utils/route.util';
 
 function CheckAuth(props: { children: ReactNode }) {
-  const { me } = useAuth();
+  const { isSignedIn } = useAuth();
   const location = useLocation();
 
-  if (me) {
+  if (isSignedIn) {
     return props.children;
   } else {
     return (
@@ -35,9 +35,9 @@ function CheckAuth(props: { children: ReactNode }) {
 }
 
 function CheckNoAuth(props: { children: ReactNode }) {
-  const { me } = useAuth();
+  const { isSignedIn } = useAuth();
 
-  if (!me) {
+  if (!isSignedIn) {
     return props.children;
   } else {
     return <Navigate to={getRoute(['app'])} replace />;

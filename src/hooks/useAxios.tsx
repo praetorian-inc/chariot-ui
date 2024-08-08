@@ -20,8 +20,10 @@ export function useInitAxiosInterceptors() {
     axiosInstance.defaults.baseURL = api ?? '';
     axiosInstance.defaults.headers.common['account'] =
       friend !== '' ? friend : undefined;
+  }, [friend, api]);
 
-    axiosInstance.interceptors.request.use(
+  useMemo(() => {
+    return axiosInstance.interceptors.request.use(
       async config => {
         try {
           // Get the current session from Auth
@@ -38,5 +40,5 @@ export function useInitAxiosInterceptors() {
         return Promise.reject(error);
       }
     );
-  }, [friend, api]);
+  }, []);
 }

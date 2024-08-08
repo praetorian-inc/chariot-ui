@@ -5,10 +5,10 @@ import { GenericResource } from '@/types';
 import { UseExtendQueryOptions, useQuery } from '@/utils/api';
 
 export const useGenericSearch = (
-  props: { query: string },
+  props: { query: string; exact?: boolean },
   options?: UseExtendQueryOptions<GenericResource>
 ) => {
-  const { query } = props;
+  const { query, exact } = props;
 
   const axios = useAxios();
   return useQuery<GenericResource>({
@@ -20,6 +20,7 @@ export const useGenericSearch = (
       const { data } = await axios.get<GenericResource>(`/my`, {
         params: {
           key: query,
+          exact: exact,
         },
       });
 

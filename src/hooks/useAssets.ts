@@ -1,9 +1,24 @@
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { useDebounce } from 'use-debounce';
 
+import { useAssetsWithAttributes } from '@/hooks/useAttribute';
 import { useAxios } from '@/hooks/useAxios';
+import { useGenericSearch } from '@/hooks/useGenericSearch';
+import { useGetAccountAlerts } from '@/hooks/useGetAccountAlerts';
 import { useMy } from '@/hooks/useMy';
-import { Asset, AssetStatus, AssetStatusLabel, RiskScanMessage } from '@/types';
+import { buildOpenRiskDataset } from '@/sections/Assets';
+import {
+  Asset,
+  AssetFilters,
+  AssetStatus,
+  AssetStatusLabel,
+  AssetsWithRisk,
+  Risk,
+  RiskScanMessage,
+} from '@/types';
 import { useMutation } from '@/utils/api';
+import { useMergeStatus } from '@/utils/api';
 
 interface UpdateAssetProps {
   key: string;
@@ -48,6 +63,9 @@ export const useUpdateAsset = () => {
       enabled: false,
     }
   );
+  const { invalidate: invalidateAlerts } = useGetAccountAlerts({
+    enabled: false,
+  });
 
   return useMutation<Asset, Error, UpdateAssetProps>({
     defaultErrorMessage: 'Failed to update asset',
@@ -67,6 +85,7 @@ export const useUpdateAsset = () => {
       const response = await promise;
       const data = response.data?.[0] as Asset;
 
+      invalidateAlerts();
       updateAllSubQueries(previous => {
         if (!previous) {
           return { pages: [[data]], pageParams: [undefined] };
@@ -187,3 +206,172 @@ export const useBulkAddAsset = () => {
     },
   });
 };
+
+interface GetAssetProps {
+  filters: AssetFilters;
+}
+
+export function useGetAssets(props: GetAssetProps) {
+  const { filters } = props;
+
+  const [isFilteredDataFetching, setIsFilteredDataFetching] = useState(false);
+
+  const [debouncedSearch] = useDebounce(filters.search, 500);
+  const isSearched = Boolean(filters.search);
+
+  const {
+    data: assetSearchByName,
+    status: assetByNameStatus,
+    error: assetSearchByNameError,
+    isFetching: isFetchingAssetSearchByName,
+  } = useGenericSearch(
+    { query: `name:${debouncedSearch}` },
+    { enabled: isSearched }
+  );
+  const {
+    data: assetSearchByDns,
+    status: assetSearchByDnsStatus,
+    error: assetSearchByDnsError,
+    isFetching: isFetchingAssetSearchByDns,
+  } = useGenericSearch(
+    { query: `dns:${debouncedSearch}` },
+    { enabled: isSearched }
+  );
+
+  const {
+    status: myAssetsStatus,
+    data: myAssets = [],
+    isFetching: isFetchingMyAssets,
+    fetchNextPage: myAssetsFetchNextPage,
+    isFetchingNextPage: myAssetsIsFetchingNextPage,
+    error: myAssetsError,
+  } = useMy(
+    {
+      resource: 'asset',
+      filterByGlobalSearch: true,
+    },
+    { enabled: !isSearched }
+  );
+
+  const {
+    data: risks = [],
+    status: riskStatus,
+    error: risksError,
+    isFetching: isFetchingRisks,
+  } = useMy({ resource: 'risk' });
+
+  const {
+    data: assetsWithAttributesFilter,
+    status: assetsWithAttributesFilterStatus,
+  } = useAssetsWithAttributes(filters.attributes || []);
+
+  const apiStatus = useMergeStatus(
+    ...(debouncedSearch
+      ? [assetByNameStatus, assetSearchByDnsStatus, riskStatus]
+      : [myAssetsStatus, riskStatus])
+  );
+  const isFetchingNextPage = debouncedSearch
+    ? false
+    : myAssetsIsFetchingNextPage;
+  const error = debouncedSearch
+    ? assetSearchByNameError || assetSearchByDnsError || risksError
+    : myAssetsError || risksError;
+  const fetchNextPage = debouncedSearch ? undefined : myAssetsFetchNextPage;
+  const isFetching = debouncedSearch
+    ? isFetchingAssetSearchByName ||
+      isFetchingAssetSearchByDns ||
+      isFetchingRisks
+    : isFetchingMyAssets || isFetchingRisks;
+
+  const status = isFilteredDataFetching ? 'pending' : apiStatus;
+
+  const assets: Asset[] = useMemo(
+    () =>
+      debouncedSearch
+        ? [
+            ...(assetSearchByName?.assets || []),
+            ...(assetSearchByDns?.assets || []),
+          ].reduce((acc, asset: Asset) => {
+            if (!acc.find(a => a.key === asset.key)) {
+              acc.push(asset);
+            }
+            return acc;
+          }, [] as Asset[])
+        : myAssets,
+    [
+      debouncedSearch,
+      JSON.stringify({ assetSearchByName, assetSearchByDns, myAssets }),
+    ]
+  );
+
+  const openRiskDataset = useMemo(
+    () => buildOpenRiskDataset(risks as Risk[]),
+    [riskStatus]
+  );
+
+  const data = useMemo(() => {
+    let filteredAssets = assets;
+
+    if (assetsWithAttributesFilter.length > 0) {
+      filteredAssets = assetsWithAttributesFilter
+        .map(key => assets.find(asset => asset.key === key))
+        .filter(Boolean) as Asset[];
+    }
+
+    if (filters.priorities.length > 0) {
+      filteredAssets = filteredAssets.filter(({ status }) => {
+        const parsedSource = status.startsWith('F')
+          ? AssetStatus.Frozen
+          : status;
+
+        return filters.priorities.includes(parsedSource);
+      });
+    }
+
+    if (filters.sources?.filter(Boolean).length > 0) {
+      filteredAssets = filteredAssets.filter(({ source }) =>
+        filters.sources.includes(source)
+      );
+    }
+
+    // merge risk data with asset data
+    return filteredAssets.map(asset => {
+      const riskSummary = openRiskDataset[asset.dns];
+
+      if (riskSummary) {
+        return { ...asset, riskSummary };
+      }
+
+      return asset;
+    }) as AssetsWithRisk[];
+  }, [
+    JSON.stringify({
+      assets,
+      filters,
+    }),
+    assetsWithAttributesFilterStatus,
+  ]);
+
+  useEffect(() => {
+    if (!isFetching) {
+      if (filters.search) {
+        setIsFilteredDataFetching(false);
+        // If search is enabled, we need to fetch the search data
+      } else {
+        if (myAssetsFetchNextPage && data.length < 50) {
+          setIsFilteredDataFetching(true);
+          myAssetsFetchNextPage();
+        } else {
+          setIsFilteredDataFetching(false);
+        }
+      }
+    }
+  }, [
+    JSON.stringify({ data }),
+    filters.search,
+    isFetching,
+    Boolean(myAssetsFetchNextPage),
+  ]);
+
+  return { data, status, fetchNextPage, error, isFetchingNextPage, isFetching };
+}

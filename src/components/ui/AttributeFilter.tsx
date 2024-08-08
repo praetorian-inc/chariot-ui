@@ -1,13 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import { Square } from 'lucide-react';
 
 import { InputText } from '@/components/form/InputText';
 import { Popover } from '@/components/Popover';
-import { useAssetsWithAttributes } from '@/hooks/useAttribute';
-import { useFilter } from '@/hooks/useFilter';
 import { useGenericSearch } from '@/hooks/useGenericSearch';
-import { parseKeys } from '@/sections/SearchByType';
+import { useStorage } from '@/utils/storage/useStorage.util';
 
 export type AttributeFilterType = Record<string, string[]>;
 
@@ -18,36 +16,19 @@ export const getSelectedAttributes = (attributes: AttributeFilterType) => {
 };
 
 interface Props {
-  resource?: string;
-  onAssetsChange: (assets: string[]) => void;
+  value: string[];
+  onChange: (assets: string[]) => void;
 }
 
 export const AttributeFilter = (props: Props) => {
-  const { resource = 'asset' } = props;
-
-  const [attributesFilter, setAttributesFilter] = useFilter<string[]>(
-    [],
-    `${resource}-attributes`
+  const [attributesFilter, setAttributesFilter] = useStorage<string[]>(
+    { parentState: props.value, onParentStateChange: props.onChange },
+    []
   );
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedAttributes, setSelectedAttributes] = useState<
     Record<string, boolean>
   >({});
-
-  const attFilterKeys = useMemo(() => {
-    return attributesFilter.map(att => {
-      const attribute = parseKeys.attributeKey(att);
-      return `${attribute.name}#${attribute.value}`;
-    });
-  }, [JSON.stringify(attributesFilter)]);
-
-  const { data, status } = useAssetsWithAttributes(attFilterKeys);
-
-  useEffect(() => {
-    if (status === 'success' && data) {
-      props.onAssetsChange(data);
-    }
-  }, [status, JSON.stringify(data), props]);
 
   const filterLabel = useMemo(() => {
     if (attributesFilter.length === 0) {
@@ -70,27 +51,20 @@ export const AttributeFilter = (props: Props) => {
     setSearchQuery(event.target.value);
   };
 
-  const parseKey = (key: string) => {
-    const parts = key.split('#');
-    return {
-      attribute: parts[2],
-      value: parts[3],
-      asset: parts[5],
-    };
-  };
-
   const nestedResults = useMemo(() => {
     if (!searchResults?.attributes) return {};
     return searchResults.attributes.reduce(
       (acc, attr) => {
-        const { attribute, value, asset } = parseKey(attr.key);
-        if (!acc[attribute]) {
-          acc[attribute] = {};
+        if (!acc[attr.name]) {
+          acc[attr.name] = {};
         }
-        if (!acc[attribute][value]) {
-          acc[attribute][value] = [];
+        if (!acc[attr.name][attr.value]) {
+          acc[attr.name][attr.value] = [];
         }
-        acc[attribute][value].push({ ...attr, asset });
+        acc[attr.name][attr.value].push({
+          ...attr,
+          asset: attr.source,
+        });
         return acc;
       },
       {} as Record<
@@ -118,11 +92,11 @@ export const AttributeFilter = (props: Props) => {
   };
 
   const updateFilter = (newSelectedAttributes: Record<string, boolean>) => {
-    const updatedAttributes = Object.keys(newSelectedAttributes)
-      .filter(attrKey => newSelectedAttributes[attrKey])
-      .map(attrKey => `#attribute#${attrKey}`);
+    const updatedAttributes = Object.keys(newSelectedAttributes).filter(
+      attrKey => newSelectedAttributes[attrKey]
+    );
+
     setAttributesFilter(updatedAttributes);
-    props.onAssetsChange(updatedAttributes);
   };
 
   const selectedOptions = useMemo(() => {
@@ -139,7 +113,7 @@ export const AttributeFilter = (props: Props) => {
         <ChevronDownIcon className="size-3 stroke-[4px] text-header-dark" />
       }
     >
-      <div className="w-[500px] p-4">
+      <div className="w-[400px] p-4 md:w-[500px]">
         <p className="mb-2 text-sm text-default-light">
           Chariot collects metadata about assets, known as attributes. These
           key/value pairs describe specific properties you can search below.

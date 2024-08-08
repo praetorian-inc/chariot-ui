@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
+import { countDescription } from '@/components/Menu';
 import { useCounts } from '@/hooks/useCounts';
 import { AssetStatus, AssetStatusLabel } from '@/types';
 
@@ -14,7 +15,22 @@ const AssetStatusDropdown: React.FC<AssetStatusDropdownProps> = ({
 }) => {
   const { data } = useCounts({ resource: 'asset' });
   const [statusFilter, setStatusFilter] = useState<AssetStatus[]>([]);
-  const statusData: { [key: string]: number } = data?.status || {};
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+  const { FL, FH, ...restStatus } = data?.status || {};
+  const statusData: { [key: string]: number } = {
+    ...restStatus,
+    [AssetStatus.Frozen]: Object.entries(data?.status || {}).reduce(
+      (acc, [key, value]) => {
+        if (key.startsWith('F')) {
+          return acc + value;
+        }
+
+        return acc;
+      },
+      0
+    ),
+  };
   const name = 'Statuses';
 
   const handleSelect = (selectedRows: AssetStatus[]) => {
@@ -64,6 +80,7 @@ const AssetStatusDropdown: React.FC<AssetStatusDropdownProps> = ({
             ).toLocaleString(),
             value: status,
           })),
+          countDescription,
         ],
         onSelect: value => {
           const selectedValues = value.filter(v => v !== '');

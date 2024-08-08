@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 import { Dropdown } from '@/components/Dropdown';
+import { countDescription } from '@/components/Menu';
 import { useCounts } from '@/hooks/useCounts';
 import { RiskSeverity, SeverityDef } from '@/types';
 
@@ -72,6 +73,7 @@ const SeverityDropdown: React.FC<SeverityDropdownProps> = ({ onSelect }) => {
               value: severity,
             }))
             .reverse(),
+          countDescription,
         ],
         onSelect: value => handleSelect(value as RiskSeverity[]),
         value: severityFilter,

@@ -27,7 +27,7 @@ import { Loader } from '@/components/Loader';
 import { Modal } from '@/components/Modal';
 import { Tabs } from '@/components/Tab';
 import { useMy } from '@/hooks';
-import { useGetDisplayName, useModifyAccount } from '@/hooks/useAccounts';
+import { useGetAccountDetails, useModifyAccount } from '@/hooks/useAccounts';
 import { useBulkAddAsset } from '@/hooks/useAssets';
 import { useBulkAddAttributes } from '@/hooks/useAttribute';
 import { Modules, useGetModuleData } from '@/sections/overview/Module';
@@ -57,7 +57,7 @@ export function Overview() {
     resource: 'account',
   });
 
-  const displayName = useGetDisplayName(accounts) || friend || me;
+  const displayName = useGetAccountDetails(accounts).name || friend || me;
 
   const size = 150;
 
@@ -640,7 +640,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                 {markup && <div>{markup}</div>}
                 {showInputs &&
                   [...Array(count).keys()].map(index => (
-                    <div key={index} className="relative space-y-4">
+                    <div key={index} className="relative mb-5 space-y-4">
                       {index > 0 && (
                         <Button
                           aria-label="CloseIcon"

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowPathIcon,
   DocumentTextIcon,
+  InformationCircleIcon,
   PencilSquareIcon,
 } from '@heroicons/react/24/outline';
 import {
@@ -407,10 +408,10 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
               {/* Attributes Section */}
               <div
                 className={cn(
-                  ' bg-white p-8 transition-all rounded-lg hover:shadow-md'
+                  ' bg-white p-8 pb-2 transition-all rounded-lg hover:shadow-md'
                 )}
               >
-                <div className="mb-4 flex flex-row items-center space-x-1">
+                <div className="flex flex-row items-center space-x-1">
                   <NotepadText className="size-6 text-gray-800" />
                   <h3 className="text-2xl font-semibold tracking-wide text-gray-900">
                     Attributes
@@ -423,7 +424,8 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                 </div>
 
                 <div className="space-y-4">
-                  {attributesGenericSearch?.attributes?.length === 0 ? (
+                  {attributesGenericSearch?.attributes?.length === 0 ||
+                  !attributesGenericSearch?.attributes ? (
                     <div className="text-center text-gray-500">
                       <p>No attributes added to this risk yet.</p>
                     </div>
@@ -537,6 +539,10 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                     </table>
                   )}
                 </div>
+                <p className="mt-6 text-center text-xs font-medium text-gray-500">
+                  <InformationCircleIcon className="inline size-3" /> Attributes
+                  apply only to this specific occurrence.
+                </p>
               </div>
               {/* Comment Section */}
               <div

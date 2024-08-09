@@ -35,6 +35,7 @@ import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { Comment } from '@/sections/detailsDrawer/Comment';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
 import { getStatusColor } from '@/sections/Jobs';
+import { parseKeys } from '@/sections/SearchByType';
 import {
   Attribute,
   EntityHistory,
@@ -49,6 +50,7 @@ import { cn } from '@/utils/classname';
 import { formatDate } from '@/utils/date.util';
 import { sToMs } from '@/utils/date.util';
 import { getSeverityClass } from '@/utils/getSeverityClass.util';
+import { Regex } from '@/utils/regex.util';
 import { isManualORPRrovidedRisk } from '@/utils/risk.util';
 import { StorageKey, useStorage } from '@/utils/storage/useStorage.util';
 import { generatePathWithSearch, useSearchParams } from '@/utils/url.util';
@@ -453,6 +455,10 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                           const lastScan = job?.updated
                             ? formatDate(job.updated)
                             : '';
+
+                          const [, assetLink] =
+                            data.value.match(Regex.CONTAINS_ASSET) || [];
+
                           return (
                             <tr
                               key={data.name}
@@ -464,12 +470,11 @@ export function RiskDrawer({ compositeKey, open }: RiskDrawerProps) {
                               <td className=" break-all p-2 text-sm text-gray-500">
                                 <span className="flex justify-between">
                                   <span className="">
-                                    {data.value.startsWith('#asset') ? (
+                                    {assetLink ? (
                                       <Link
-                                        to={getAssetDrawerLink({
-                                          dns: data.value.split('#')[3],
-                                          name: data.value.split('#')[2],
-                                        })}
+                                        to={getAssetDrawerLink(
+                                          parseKeys.assetKey(assetLink)
+                                        )}
                                         className="text-blue-500 hover:underline"
                                       >
                                         {data.value}

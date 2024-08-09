@@ -1,4 +1,5 @@
-/* eslint-disable unused-imports/no-unused-vars */
+const ASSET = /#asset#(.+)#(.+)/;
+
 export const Regex = {
   DOMAIN:
     /(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}(?:\.\w+)?/,
@@ -10,6 +11,8 @@ export const Regex = {
   CVE_ID: /CVE-\d{4}-\d{4,7}/,
   AWS_REGION_REGEX: /.*execute-api.(.*).amazonaws/,
   IMAGE: /.*\.(jpg|jpeg|png|gif|bmp)$/,
+  ASSET,
+  CONTAINS_ASSET: new RegExp(`.*(${ASSET.source})`),
 };
 
 export const AllowedSeedRegex = new RegExp(
@@ -61,7 +64,7 @@ export function GetSeeds(file: string, maxSeed: number): string[] {
     });
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
   const { email, ...restSeedTypes } = seeds;
 
   return Object.values(restSeedTypes).flatMap(x => x);
@@ -71,7 +74,7 @@ function checkMaxSeeds(
   seedByTypes: Record<seedRegexName, string[]>,
   maxSeed: number
 ): boolean {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
   const { email, ...restSeedTypes } = seedByTypes;
 
   return Object.values(restSeedTypes).flatMap(x => x).length >= maxSeed;

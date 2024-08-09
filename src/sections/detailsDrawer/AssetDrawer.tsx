@@ -169,7 +169,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
 
   const parentAssets = useMemo(() => {
     return (
-      attributesGenericSearch?.attributes.filter(attribute => {
+      attributesGenericSearch?.attributes?.filter?.(attribute => {
         return (
           attribute.name === 'source' && attribute.value.match(Regex.ASSET)
         );

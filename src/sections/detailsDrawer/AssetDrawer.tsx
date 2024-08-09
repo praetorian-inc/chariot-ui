@@ -369,112 +369,122 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
             </div>
           </div>
 
-          {/* Parent Assets Section */}
-          <div className="rounded-lg  bg-white p-8 transition-all hover:rounded-lg hover:shadow-md">
-            <h3 className="mb-4 text-2xl font-semibold tracking-wide text-gray-900">
-              <AssetsIcon className="mr-1 inline size-6 text-gray-800" />
-              Parent Assets
-            </h3>
-            <Table
-              contentClassName="max-w-full max-h-96"
-              tableClassName="border-0"
-              name="parent assets"
-              columns={[
-                {
-                  label: 'Name',
-                  id: 'name',
-                  cell: item => {
-                    const containsRisks = openRiskDataset[item.dns];
+          <div className="grid grid-cols-2 gap-4">
+            {/* Parent Assets Section */}
+            <div className="rounded-lg  bg-white p-8 transition-all hover:rounded-lg hover:shadow-md">
+              <h3 className="mb-4 text-2xl font-semibold tracking-wide text-gray-900">
+                <AssetsIcon className="mr-1 inline size-6 text-gray-800" />
+                Parent Assets
+              </h3>
+              <Table
+                contentClassName="max-w-full"
+                tableClassName="border-0"
+                className={cn(
+                  'max-h-96',
+                  parentAssets.length === 0 && 'justify-center'
+                )}
+                name="parent assets"
+                columns={[
+                  {
+                    label: 'Name',
+                    id: 'name',
+                    cell: item => {
+                      const containsRisks = openRiskDataset[item.dns];
 
-                    return (
-                      <div className="flex flex-row items-center space-x-1">
-                        {containsRisks && (
-                          <Tooltip title="Contains open risks">
-                            <RisksIcon className="size-4 text-red-500" />
-                          </Tooltip>
-                        )}
-                        <Link
-                          to={getAssetDrawerLink(item)}
-                          className="hover:underline"
-                        >
-                          {item.name}
-                        </Link>
-                      </div>
-                    );
+                      return (
+                        <div className="flex flex-row items-center space-x-1">
+                          {containsRisks && (
+                            <Tooltip title="Contains open risks">
+                              <RisksIcon className="size-4 text-red-500" />
+                            </Tooltip>
+                          )}
+                          <Link
+                            to={getAssetDrawerLink(item)}
+                            className="text-brand hover:underline"
+                          >
+                            {item.name}
+                          </Link>
+                        </div>
+                      );
+                    },
                   },
-                },
-                {
-                  className: 'text-default-light',
-                  label: 'DNS',
-                  id: 'dns',
-                },
-              ]}
-              data={parentAssets.map(({ value }) => {
-                return parseKeys.assetKey(value);
-              })}
-              error={attributesGenericSearchError}
-              loadingRowCount={1}
-              status={attributesStatus}
-              noData={{
-                title: 'This asset has no parent assets.',
-                styleType: 'text',
-              }}
-              isTableView={false}
-            />
-          </div>
-
-          {/* Child Assets Section */}
-          <div className="rounded-lg  bg-white p-8 transition-all hover:rounded-lg hover:shadow-md">
-            <h3 className="mb-4 text-2xl font-semibold tracking-wide text-gray-900">
-              <AssetsIcon className="mr-1 inline size-6 text-gray-800" />
-              Child Assets
-            </h3>
-            <Table
-              contentClassName="max-w-full max-h-96"
-              tableClassName="border-0"
-              name="child assets"
-              columns={[
-                {
-                  label: 'Name',
-                  id: 'name',
-                  cell: item => {
-                    const containsRisks = openRiskDataset[item.dns];
-
-                    return (
-                      <div className="flex flex-row items-center space-x-1">
-                        {containsRisks && (
-                          <Tooltip title="Contains open risks">
-                            <RisksIcon className="size-4 text-red-500" />
-                          </Tooltip>
-                        )}
-                        <Link
-                          to={getAssetDrawerLink(item)}
-                          className="hover:underline"
-                        >
-                          {item.name}
-                        </Link>
-                      </div>
-                    );
+                  {
+                    className: 'text-default-light',
+                    label: 'DNS',
+                    id: 'dns',
                   },
-                },
-                {
-                  className: 'text-default-light',
-                  label: 'DNS',
-                  id: 'dns',
-                },
-              ]}
-              data={childAssetsAttributes.map(({ source }) => {
-                return parseKeys.assetKey(source);
-              })}
-              error={childAssetsError}
-              loadingRowCount={1}
-              status={childAssetsStatus}
-              noData={{
-                title: 'This asset has no child assets.',
-                styleType: 'text',
-              }}
-              isTableView={false}
-            />
+                ]}
+                data={parentAssets.map(({ value }) => {
+                  return parseKeys.assetKey(value);
+                })}
+                error={attributesGenericSearchError}
+                loadingRowCount={1}
+                status={attributesStatus}
+                noData={{
+                  title: 'This asset has no parent assets.',
+                  styleType: 'text',
+                }}
+                isTableView={false}
+              />
+            </div>
+
+            {/* Child Assets Section */}
+            <div className="rounded-lg  bg-white p-8 transition-all hover:rounded-lg hover:shadow-md">
+              <h3 className="mb-4 text-2xl font-semibold tracking-wide text-gray-900">
+                <AssetsIcon className="mr-1 inline size-6 text-gray-800" />
+                Child Assets
+              </h3>
+              <Table
+                contentClassName="max-w-full"
+                tableClassName="border-0"
+                className={cn(
+                  'max-h-96',
+                  childAssetsAttributes.length === 0 && 'justify-center'
+                )}
+                name="child assets"
+                columns={[
+                  {
+                    label: 'Name',
+                    id: 'name',
+                    cell: item => {
+                      const containsRisks = openRiskDataset[item.dns];
+
+                      return (
+                        <div className="flex flex-row items-center space-x-1">
+                          {containsRisks && (
+                            <Tooltip title="Contains open risks">
+                              <RisksIcon className="size-4 text-red-500" />
+                            </Tooltip>
+                          )}
+                          <Link
+                            to={getAssetDrawerLink(item)}
+                            className="text-brand hover:underline"
+                          >
+                            {item.name}
+                          </Link>
+                        </div>
+                      );
+                    },
+                  },
+                  {
+                    className: 'text-default-light',
+                    label: 'DNS',
+                    id: 'dns',
+                  },
+                ]}
+                data={childAssetsAttributes.map(({ source }) => {
+                  return parseKeys.assetKey(source);
+                })}
+                error={childAssetsError}
+                loadingRowCount={1}
+                status={childAssetsStatus}
+                noData={{
+                  title: 'This asset has no child assets.',
+                  styleType: 'text',
+                }}
+                isTableView={false}
+              />
+            </div>
           </div>
 
           {/* History Section */}

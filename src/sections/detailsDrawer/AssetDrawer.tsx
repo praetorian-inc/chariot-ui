@@ -20,6 +20,7 @@ import { useReRunJob } from '@/hooks/useJobs';
 import { buildOpenRiskDataset } from '@/sections/Assets';
 import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
+import { parseKeys } from '@/sections/SearchByType';
 import {
   Asset,
   AssetStatusLabel,
@@ -334,10 +335,9 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
                             <td className="break-all p-2 text-sm text-gray-500">
                               {data.value?.startsWith('#asset') ? (
                                 <Link
-                                  to={getAssetDrawerLink({
-                                    dns: data.value.split('#')[3],
-                                    name: data.value.split('#')[2],
-                                  })}
+                                  to={getAssetDrawerLink(
+                                    parseKeys.assetKey(data.value)
+                                  )}
                                   className="text-blue-500 hover:underline"
                                 >
                                   {data.value}

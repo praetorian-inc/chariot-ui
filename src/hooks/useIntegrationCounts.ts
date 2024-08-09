@@ -5,16 +5,6 @@ import { AxiosInstance } from 'axios';
 import { useAxios } from '@/hooks/useAxios';
 import { Account, Statistics } from '@/types';
 
-const getKeyByType = (integration: Account) => {
-  switch (integration.member) {
-    case 'aws':
-    case 'github':
-      return `#attribute#source#${integration.member}`;
-    default:
-      return `#attribute#source##asset#${integration.member}`;
-  }
-};
-
 const fetchIntegrationCounts = async (
   axios: AxiosInstance,
   integration: Account
@@ -22,7 +12,7 @@ const fetchIntegrationCounts = async (
   try {
     const { data } = (await axios.get('/my/count', {
       params: {
-        key: getKeyByType(integration),
+        key: `#attribute#source##asset#${integration.member}`,
       },
     })) as { data: Statistics };
 

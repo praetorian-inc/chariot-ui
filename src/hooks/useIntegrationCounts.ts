@@ -5,6 +5,16 @@ import { AxiosInstance } from 'axios';
 import { useAxios } from '@/hooks/useAxios';
 import { Account, Statistics } from '@/types';
 
+const getKeyByType = (integration: Account) => {
+  switch (integration.member) {
+    case 'aws':
+    case 'github':
+      return `#attribute#source#${integration.member}`;
+    default:
+      return `#attribute#source##asset#${integration.member}`;
+  }
+};
+
 const fetchIntegrationCounts = async (
   axios: AxiosInstance,
   integration: Account
@@ -12,13 +22,15 @@ const fetchIntegrationCounts = async (
   try {
     const { data } = (await axios.get('/my/count', {
       params: {
-        key: `#attribute#source#${integration.member}`,
+        key: getKeyByType(integration),
       },
     })) as { data: Statistics };
 
-    // Extract the asset count from the `attributes` field
+    // Extract the asset count from the `attributes` field with the new key structure
     const assetCount = data.attributes
-      ? data.attributes[`#source#${integration.member}#asset`] || 0
+      ? data.attributes[
+          `#source##asset#${integration.member}#${integration.value ?? integration.member}#asset`
+        ] || 0
       : 0;
 
     return assetCount;
@@ -32,7 +44,7 @@ const useIntegrationCounts = (integrations: Account[]) => {
   const axios = useAxios();
 
   const queries = integrations.map(integration => ({
-    queryKey: ['integrationCount', integration.member],
+    queryKey: ['integrationCount', integration.member, integration.value],
     queryFn: () => fetchIntegrationCounts(axios, integration),
     enabled: !!integration.member,
   }));

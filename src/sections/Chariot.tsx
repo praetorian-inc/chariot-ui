@@ -55,6 +55,7 @@ const Chariot: React.FC = () => {
   const { getMyIntegrations } = useIntegration();
 
   const currentIntegrations = getMyIntegrations();
+  console.log('currentIntegrations', currentIntegrations);
   const integrationCounts = useIntegrationCounts(currentIntegrations);
 
   // Map the counts to each integration

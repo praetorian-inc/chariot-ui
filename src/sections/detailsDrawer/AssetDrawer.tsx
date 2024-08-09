@@ -21,6 +21,7 @@ import { useReRunJob } from '@/hooks/useJobs';
 import { buildOpenRiskDataset } from '@/sections/Assets';
 import { AddAttribute } from '@/sections/detailsDrawer/AddAttribute';
 import { getDrawerLink } from '@/sections/detailsDrawer/getDrawerLink';
+import { parseKeys } from '@/sections/SearchByType';
 import {
   Asset,
   AssetStatusLabel,
@@ -88,12 +89,13 @@ function getHistoryDiff(history: EntityHistory): {
 }
 
 export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
-  const [, dns] = compositeKey.split('#');
+  const [, dns, name] = compositeKey.split('#');
   const riskFilter = `#${dns}`;
   const attributeFilter = `source:#asset${compositeKey}`;
-  const childAssetsFilter = `#attribute#source##asset${compositeKey}#`;
+  const childAssetsFilter = `#source##asset#${dns}#${name}`;
   const linkedIpsFilter = `#${dns}#`;
-  const linkedHostnamesFilter = compositeKey.split('#')[2]; // name
+  const linkedHostnamesFilter = name;
+
   const { removeSearchParams } = useSearchParams();
   const navigate = useNavigate();
 
@@ -117,8 +119,9 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
     data: childAssetsAttributes,
     status: childAssetsStatus,
     error: childAssetsError,
-  } = useGenericSearch(
+  } = useMy(
     {
+      resource: 'attribute',
       query: childAssetsFilter,
     },
     { enabled: open }
@@ -400,20 +403,10 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
                   label: 'DNS',
                   id: 'dns',
                 },
-                {
-                  className: 'text-default-light',
-                  label: 'Last Updated',
-                  id: 'updated',
-                  cell: 'date',
-                },
               ]}
-              data={(childAssetsAttributes?.attributes || []).map(
-                ({ source, updated }) => ({
-                  name: source.split('#')[3],
-                  dns: source.split('#')[2],
-                  updated: formatDate(updated),
-                })
-              )}
+              data={childAssetsAttributes.map(({ source }) => {
+                return parseKeys.assetKey(source);
+              })}
               error={childAssetsError}
               loadingRowCount={1}
               status={childAssetsStatus}

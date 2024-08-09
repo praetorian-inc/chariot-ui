@@ -8,10 +8,11 @@ import { useCreateAttribute } from '@/hooks/useAttribute';
 
 interface Props {
   resourceKey: string;
+  className?: string; // Optional prop for custom class names
 }
 
 export const AddAttribute = (props: Props) => {
-  const { resourceKey } = props;
+  const { resourceKey, className } = props;
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -29,76 +30,76 @@ export const AddAttribute = (props: Props) => {
   }
 
   return (
-    <Popover
-      onClick={() => setOpen(!open)}
-      type="button"
-      open={open}
-      setOpen={setOpen}
-      styleType="none"
-      className="m-2 rounded-sm border border-gray-200 px-6 text-sm hover:bg-gray-100"
-      endIcon={<ChevronDownIcon className="size-4" />}
-      label="Add Attribute"
-      style={{ zIndex: 1 }}
-    >
-      <div className="w-[300px]">
-        <form
-          className="flex flex-1 flex-col gap-4 space-y-4 p-2"
-          onSubmit={event => {
-            event.preventDefault();
-            createAttribute(
-              {
-                key: resourceKey,
-                name: formData.name,
-                value: formData.value,
-              },
-              {
-                onSuccess: reset,
+    <div className={`flex items-center justify-between ${className}`}>
+      <Popover
+        onClick={() => setOpen(!open)}
+        type="button"
+        open={open}
+        setOpen={setOpen}
+        styleType="none"
+        className="relative flex items-center text-nowrap rounded-md bg-white py-5"
+        endIcon={<ChevronDownIcon className="ml-auto size-3 text-default" />}
+        startIcon={<PlusIcon className="size-5 text-default" />}
+        label="Add Attribute"
+        style={{ zIndex: 1 }}
+      >
+        <div className="w-[360px]">
+          <form
+            className="space-y-4 px-4"
+            onSubmit={event => {
+              event.preventDefault();
+              createAttribute(
+                {
+                  key: resourceKey,
+                  name: formData.name,
+                  value: formData.value,
+                },
+                {
+                  onSuccess: reset,
+                }
+              );
+            }}
+          >
+            <Inputs
+              inputs={[
+                {
+                  label: 'Name',
+                  value: formData.name,
+                  placeholder: 'technology',
+                  name: 'name',
+                  required: true,
+                },
+                {
+                  label: 'Value',
+                  value: formData.value,
+                  placeholder: 'Apache Web Server',
+                  name: 'value',
+                  required: true,
+                },
+              ]}
+              onChange={values =>
+                setFormData(formData => ({ ...formData, ...values }))
               }
-            );
-          }}
-        >
-          <Inputs
-            inputs={[
-              {
-                label: 'Name',
-                value: formData.name,
-                placeholder: 'technology',
-                name: 'name',
-                required: true,
-              },
-              {
-                label: 'Value',
-                value: formData.value,
-                placeholder: 'Apache Web Server',
-                name: 'value',
-                required: true,
-              },
-            ]}
-            onChange={values =>
-              setFormData(formData => ({ ...formData, ...values }))
-            }
-          />
-          <div className="flex gap-2">
-            <Button
-              styleType="primary"
-              type="submit"
-              className="w-fit"
-              startIcon={<PlusIcon className="size-4" />}
-              disabled={creatingAttribute === 'pending'}
-            >
-              Add
-            </Button>
-            <Button
-              styleType="textPrimary"
-              className="w-fit"
-              disabled={creatingAttribute === 'pending'}
-              onClick={reset}
-            >
-              Cancel
-            </Button>
-          </div>
-        </form>
-      </div>
-    </Popover>
+            />
+            <div className="flex justify-start gap-2">
+              <Button
+                styleType="primary"
+                type="submit"
+                disabled={creatingAttribute === 'pending'}
+              >
+                Add Attribute
+              </Button>
+              <Button
+                styleType="secondary"
+                disabled={creatingAttribute === 'pending'}
+                onClick={reset}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Popover>
+    </div>
   );
 };

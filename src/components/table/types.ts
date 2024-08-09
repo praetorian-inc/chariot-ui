@@ -9,6 +9,7 @@ export type CellAlignment = 'center' | 'left' | 'right';
 
 export interface TableProps<TData> {
   className?: string;
+  contentClassName?: string;
   tableClassName?: string;
   name: string;
   columns: Columns<TData>;

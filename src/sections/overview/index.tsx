@@ -6,11 +6,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronRightIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/24/outline';
 import {
   ArrowRightCircleIcon,
   CheckCircleIcon,
-  ChevronRightIcon,
   ExclamationCircleIcon,
   ExclamationTriangleIcon,
   LockClosedIcon,
@@ -695,8 +697,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             {multiple && (
               <Button
                 styleType="textPrimary"
-                className="!mt-0"
-                endIcon={<ChevronRightIcon className="size-5" />}
+                endIcon={
+                  <ChevronRightIcon className="ml-1 inline size-2.5 stroke-[3px]" />
+                }
                 onClick={() => {
                   setCount(count => count + 1);
                 }}

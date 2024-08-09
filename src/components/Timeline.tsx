@@ -9,7 +9,7 @@ export function Timeline(props: TimelineProps) {
   const lastItemHeight = lastItemRef.current?.clientHeight || 0;
 
   return (
-    <div className="relative flex flex-col gap-8 pt-4">
+    <div className="relative flex flex-col gap-8 pt-4 text-default">
       <div
         className="absolute left-[19px] top-0 z-0 w-[2px] bg-default"
         style={{

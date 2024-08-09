@@ -140,9 +140,9 @@ module.exports = {
         mono: ['IBM Plex Mono', ...defaultTheme.fontFamily.mono],
       },
       keyframes: {
-        spinSlow: {
-          '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg)' },
+        slideDown: {
+          '0%': { transform: 'translateY(0)', opacity: 1 },
+          '100%': { transform: 'translateY(100%)', opacity: 0 },
         },
       },
       animation: {

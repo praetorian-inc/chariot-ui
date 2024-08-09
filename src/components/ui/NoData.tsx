@@ -7,22 +7,31 @@ export interface NoDataProps {
   icon?: ReactNode;
   title: string;
   description?: ReactNode;
-  className?: string;
+  styleType?: 'text' | 'textWithIcon';
 }
 
 export const NoData = ({
   icon = <HorseIcon />,
   title,
   description,
-  className,
-}: NoDataProps) => (
-  <div className="flex size-full flex-col items-center justify-center gap-6 p-12">
-    <div className="text-[240px]">{icon}</div>
-    <h6 className={cn('text-3xl font-bold capitalize text-center', className)}>
-      {title}
-    </h6>
-    {description && (
-      <p className="whitespace-break-spaces text-center">{description}</p>
-    )}
-  </div>
-);
+  styleType = 'textWithIcon',
+}: NoDataProps) => {
+  const isText = styleType === 'text';
+  return (
+    <div
+      className={cn(
+        'flex size-full flex-col items-center justify-center gap-6 p-12',
+        isText && 'p-0 text-default-light gap-0'
+      )}
+    >
+      {!isText && <div className="text-[240px]">{icon}</div>}
+      {!isText && (
+        <h6 className={'text-center text-3xl font-bold capitalize'}>{title}</h6>
+      )}
+      {isText && <p className="whitespace-break-spaces text-center">{title}</p>}
+      {description && (
+        <p className="whitespace-break-spaces text-center">{description}</p>
+      )}
+    </div>
+  );
+};

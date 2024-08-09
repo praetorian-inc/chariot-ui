@@ -9,11 +9,17 @@ export const Body = forwardRef(function Paper(
     footer?: boolean;
     header?: boolean;
     className?: string;
+    contentClassName?: string;
     children?: ReactNode;
   },
   ref?: React.Ref<HTMLDivElement>
 ) {
-  const { className = '', footer = true, header = true } = props;
+  const {
+    className = '',
+    contentClassName = '',
+    footer = true,
+    header = true,
+  } = props;
 
   return (
     <div
@@ -28,7 +34,10 @@ export const Body = forwardRef(function Paper(
       <div>
         {header && <Header />}
         <div
-          className={cn('mx-auto w-full max-w-screen-xl rounded-sm')}
+          className={cn(
+            'mx-auto w-full max-w-screen-xl rounded-sm',
+            contentClassName
+          )}
           style={{ marginTop: header ? -16 : 0 }}
         >
           {props.children}

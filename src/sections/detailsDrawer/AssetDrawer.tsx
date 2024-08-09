@@ -11,6 +11,7 @@ import { Drawer } from '@/components/Drawer';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
 import { Loader } from '@/components/Loader';
+import { Table } from '@/components/table/Table';
 import { Timeline } from '@/components/Timeline';
 import { Tooltip } from '@/components/Tooltip';
 import { AssetStatusDropdown } from '@/components/ui/AssetPriorityDropdown';
@@ -90,6 +91,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
   const [, dns] = compositeKey.split('#');
   const riskFilter = `#${dns}`;
   const attributeFilter = `source:#asset${compositeKey}`;
+  const childAssetsFilter = `#attribute#source##asset${compositeKey}#`;
   const linkedIpsFilter = `#${dns}#`;
   const { removeSearchParams } = useSearchParams();
   const navigate = useNavigate();
@@ -109,6 +111,17 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
       },
       { enabled: open }
     );
+
+  const {
+    data: childAssetsAttributes,
+    status: childAssetsStatus,
+    error: childAssetsError,
+  } = useGenericSearch(
+    {
+      query: childAssetsFilter,
+    },
+    { enabled: open }
+  );
 
   const { data: risks = [], status: risksStatus } = useMy(
     {
@@ -134,6 +147,8 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
     () => buildOpenRiskDataset(risks as Risk[]),
     [risks]
   );
+
+  console.log({ openRiskDataset });
 
   const asset: Asset = assets[0] || {};
   const history = useMemo(() => {
@@ -357,6 +372,54 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Child Assets Section */}
+          <div className="rounded-lg  bg-white p-8 transition-all hover:rounded-lg hover:shadow-md">
+            <h3 className="mb-4 text-2xl font-semibold tracking-wide text-gray-900">
+              <AssetsIcon className="mr-1 inline size-6 text-gray-800" />
+              Child Assets
+            </h3>
+            <Table
+              contentClassName="max-w-full max-h-96"
+              tableClassName="border-0"
+              name="child assets"
+              columns={[
+                {
+                  label: 'Name',
+                  id: 'name',
+                  cell: 'highlight',
+                  className: 'hover:underline',
+                  to: item => getAssetDrawerLink(item),
+                },
+                {
+                  className: 'text-default-light',
+                  label: 'DNS',
+                  id: 'dns',
+                },
+                {
+                  className: 'text-default-light',
+                  label: 'Last Updated',
+                  id: 'updated',
+                  cell: 'date',
+                },
+              ]}
+              data={(childAssetsAttributes?.attributes || []).map(
+                ({ source, updated }) => ({
+                  name: source.split('#')[3],
+                  dns: source.split('#')[2],
+                  updated: formatDate(updated),
+                })
+              )}
+              error={childAssetsError}
+              loadingRowCount={1}
+              status={childAssetsStatus}
+              noData={{
+                title: 'This asset has no child assets.',
+                styleType: 'text',
+              }}
+              isTableView={false}
+            />
           </div>
 
           {/* Related Assets Section */}

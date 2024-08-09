@@ -21,6 +21,7 @@ import {
   RiskSeverity,
   RiskStatus,
   RiskStatusLabel,
+  SeverityDef,
 } from '@/types';
 import { cn } from '@/utils/classname';
 import { formatDate } from '@/utils/date.util';
@@ -258,7 +259,9 @@ const Alerts: React.FC = () => {
         </div>
         <div className="flex flex-1 items-center space-x-3 overflow-hidden">
           {!isAsset(item) && (
-            <Tooltip title="Severity">
+            <Tooltip
+              title={`${SeverityDef[item.status[1] as RiskSeverity]} Severity`}
+            >
               {getRiskSeverityIcon(item.status[1] as RiskSeverity)}
             </Tooltip>
           )}

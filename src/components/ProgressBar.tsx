@@ -23,7 +23,7 @@ const ProgressBar: React.FC<{
           <Button
             id="upgrade-plan"
             styleType="primaryLight"
-            className="text-md font-bold"
+            className="text-md font-bold text-primary-light"
             onClick={() => {
               setIsUpgradePlanOpen(v => !v);
             }}

@@ -92,7 +92,7 @@ const UpgradeMenu: React.FC<Props> = ({ open, currentPlan, onClose }) => {
             </Button>
           ) : (
             <Button className="mt-6 w-full rounded-sm bg-brand font-semibold text-white">
-              Free Trial Upgrade
+              Free Trial
             </Button>
           )}
         </div>

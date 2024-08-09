@@ -378,7 +378,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
             <Table
               contentClassName="max-w-full max-h-96"
               tableClassName="border-0"
-              name="child assets"
+              name="parent assets"
               columns={[
                 {
                   label: 'Name',
@@ -416,7 +416,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
               loadingRowCount={1}
               status={attributesStatus}
               noData={{
-                title: 'This asset has no child assets.',
+                title: 'This asset has no parent assets.',
                 styleType: 'text',
               }}
               isTableView={false}

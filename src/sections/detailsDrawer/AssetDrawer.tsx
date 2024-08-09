@@ -11,6 +11,7 @@ import { Drawer } from '@/components/Drawer';
 import { AssetsIcon, RisksIcon } from '@/components/icons';
 import { getRiskSeverityIcon } from '@/components/icons/RiskSeverity.icon';
 import { Loader } from '@/components/Loader';
+import { Table } from '@/components/table/Table';
 import { Timeline } from '@/components/Timeline';
 import { Tooltip } from '@/components/Tooltip';
 import { AssetStatusDropdown } from '@/components/ui/AssetPriorityDropdown';
@@ -88,10 +89,13 @@ function getHistoryDiff(history: EntityHistory): {
 }
 
 export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
-  const [, dns] = compositeKey.split('#');
+  const [, dns, name] = compositeKey.split('#');
   const riskFilter = `#${dns}`;
   const attributeFilter = `source:#asset${compositeKey}`;
+  const childAssetsFilter = `#source##asset#${dns}#${name}`;
   const linkedIpsFilter = `#${dns}#`;
+  const linkedHostnamesFilter = name;
+
   const { removeSearchParams } = useSearchParams();
   const navigate = useNavigate();
 
@@ -111,6 +115,18 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
       { enabled: open }
     );
 
+  const {
+    data: childAssetsAttributes,
+    status: childAssetsStatus,
+    error: childAssetsError,
+  } = useMy(
+    {
+      resource: 'attribute',
+      query: childAssetsFilter,
+    },
+    { enabled: open }
+  );
+
   const { data: risks = [], status: risksStatus } = useMy(
     {
       resource: 'risk',
@@ -118,16 +134,19 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
     },
     { enabled: open }
   );
-  const {
-    data: rawLinkedHostnamesIncludingSelf = [],
-    status: linkedIpsStatus,
-  } = useMy(
-    {
-      resource: 'asset',
-      query: linkedIpsFilter,
-    },
-    { enabled: open }
-  );
+  const { data: rawLinkedIpsIncludingSelf = [], status: linkedIpsStatus } =
+    useMy(
+      {
+        resource: 'asset',
+        query: linkedIpsFilter,
+      },
+      { enabled: open }
+    );
+  const { data: assetNameGenericSearch, status: linkedHostnamesStatus } =
+    useGenericSearch({ query: linkedHostnamesFilter }, { enabled: open });
+
+  const { assets: rawLinkedHostnamesIncludingSelf = [] } =
+    assetNameGenericSearch || {};
 
   const { mutateAsync: runJob } = useReRunJob();
 
@@ -154,12 +173,13 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
     assetsStatus === 'pending' ||
     risksStatus === 'pending' ||
     linkedIpsStatus === 'pending' ||
+    linkedHostnamesStatus === 'pending' ||
     attributesStatus === 'pending';
 
   const linkedHostnames = rawLinkedHostnamesIncludingSelf.filter(
     ({ dns }) => dns !== asset.dns
   );
-  const linkedIps = rawLinkedHostnamesIncludingSelf.filter(
+  const linkedIps = rawLinkedIpsIncludingSelf.filter(
     ({ name }) => name !== asset.dns
   );
 
@@ -357,6 +377,44 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Child Assets Section */}
+          <div className="rounded-lg  bg-white p-8 transition-all hover:rounded-lg hover:shadow-md">
+            <h3 className="mb-4 text-2xl font-semibold tracking-wide text-gray-900">
+              <AssetsIcon className="mr-1 inline size-6 text-gray-800" />
+              Child Assets
+            </h3>
+            <Table
+              contentClassName="max-w-full max-h-96"
+              tableClassName="border-0"
+              name="child assets"
+              columns={[
+                {
+                  label: 'Name',
+                  id: 'name',
+                  cell: 'highlight',
+                  className: 'hover:underline',
+                  to: item => getAssetDrawerLink(item),
+                },
+                {
+                  className: 'text-default-light',
+                  label: 'DNS',
+                  id: 'dns',
+                },
+              ]}
+              data={childAssetsAttributes.map(({ source }) => {
+                return parseKeys.assetKey(source);
+              })}
+              error={childAssetsError}
+              loadingRowCount={1}
+              status={childAssetsStatus}
+              noData={{
+                title: 'This asset has no child assets.',
+                styleType: 'text',
+              }}
+              isTableView={false}
+            />
           </div>
 
           {/* Related Assets Section */}

@@ -40,8 +40,10 @@ const UpgradeMenu: React.FC<Props> = ({ open, currentPlan, onClose }) => {
   return (
     <div
       ref={ref}
-      className={`absolute right-0 top-12 z-50 w-[500px] rounded-sm bg-brand-lighter p-6 shadow-xl transition-all duration-100 ease-out${
-        open ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'
+      className={`absolute right-0 top-12 z-50 w-[500px] rounded-sm bg-brand-lighter p-6 shadow-xl transition-all duration-200 ease-out${
+        open
+          ? 'pointer-events-auto translate-y-0 opacity-100'
+          : 'top-999999999999 left-99999999 pointer-events-none -translate-y-5 opacity-0'
       }`}
     >
       <div className="flex space-x-6">

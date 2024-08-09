@@ -409,8 +409,8 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
                   id: 'dns',
                 },
               ]}
-              data={parentAssets.map(({ source }) => {
-                return parseKeys.assetKey(source);
+              data={parentAssets.map(({ value }) => {
+                return parseKeys.assetKey(value);
               })}
               error={attributesGenericSearchError}
               loadingRowCount={1}

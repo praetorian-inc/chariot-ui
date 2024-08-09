@@ -113,7 +113,7 @@ export function Drawer({
                 ref={ref}
               >
                 <div className="h-full overflow-auto text-default">
-                  <div className="mb-2 flex items-center justify-between px-10 pb-4">
+                  <div className="my-2 flex items-center justify-between px-10 pb-4">
                     <div className="flex w-full items-center">
                       <Tooltip title="Go Back">
                         <ChevronLeftIcon

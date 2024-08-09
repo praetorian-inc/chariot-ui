@@ -35,7 +35,7 @@ export const getStatusColor = (status: JobStatus) => {
   }
 };
 
-const getStatusText = (status: JobStatus) => {
+export const getStatusText = (status: JobStatus) => {
   const classes = 'px-1 text-xs leading-5 font-medium rounded-full text-center';
   switch (status) {
     case JobStatus.Pass:

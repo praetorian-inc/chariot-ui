@@ -93,6 +93,7 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
   const attributeFilter = `source:#asset${compositeKey}`;
   const childAssetsFilter = `#attribute#source##asset${compositeKey}#`;
   const linkedIpsFilter = `#${dns}#`;
+  const linkedHostnamesFilter = compositeKey.split('#')[2]; // name
   const { removeSearchParams } = useSearchParams();
   const navigate = useNavigate();
 
@@ -130,16 +131,19 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
     },
     { enabled: open }
   );
-  const {
-    data: rawLinkedHostnamesIncludingSelf = [],
-    status: linkedIpsStatus,
-  } = useMy(
-    {
-      resource: 'asset',
-      query: linkedIpsFilter,
-    },
-    { enabled: open }
-  );
+  const { data: rawLinkedIpsIncludingSelf = [], status: linkedIpsStatus } =
+    useMy(
+      {
+        resource: 'asset',
+        query: linkedIpsFilter,
+      },
+      { enabled: open }
+    );
+  const { data: assetNameGenericSearch, status: linkedHostnamesStatus } =
+    useGenericSearch({ query: linkedHostnamesFilter }, { enabled: open });
+
+  const { assets: rawLinkedHostnamesIncludingSelf = [] } =
+    assetNameGenericSearch || {};
 
   const { mutateAsync: runJob } = useReRunJob();
 
@@ -147,8 +151,6 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
     () => buildOpenRiskDataset(risks as Risk[]),
     [risks]
   );
-
-  console.log({ openRiskDataset });
 
   const asset: Asset = assets[0] || {};
   const history = useMemo(() => {
@@ -168,12 +170,13 @@ export const AssetDrawer: React.FC<Props> = ({ compositeKey, open }) => {
     assetsStatus === 'pending' ||
     risksStatus === 'pending' ||
     linkedIpsStatus === 'pending' ||
+    linkedHostnamesStatus === 'pending' ||
     attributesStatus === 'pending';
 
   const linkedHostnames = rawLinkedHostnamesIncludingSelf.filter(
     ({ dns }) => dns !== asset.dns
   );
-  const linkedIps = rawLinkedHostnamesIncludingSelf.filter(
+  const linkedIps = rawLinkedIpsIncludingSelf.filter(
     ({ name }) => name !== asset.dns
   );
 

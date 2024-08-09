@@ -24,10 +24,12 @@ export interface TabsProps<ID = string> {
   className?: string;
   tabWrapperclassName?: string;
   contentWrapperClassName?: string;
+  styleType?: 'vertical' | 'horizontal';
 }
 
 export function Tabs<ID = string>(props: TabsProps<ID>) {
   const defaultTab = props.defaultValue || props.tabs[0]?.id;
+  const styleType = props.styleType || 'vertical';
 
   const [selectedTabId, setSelectedTabId] = useStorage(
     {
@@ -42,11 +44,19 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
   if (props.tabs.length === 0) return null;
 
   return (
-    <div className={cn('flex h-full', props.className)}>
+    <div
+      className={cn(
+        styleType === 'horizontal' ? 'w-full' : 'flex h-full',
+        props.className
+      )}
+    >
       {tabLabels.length > 0 && (
         <div
           className={cn(
-            'border-r-2 border-layer1 h-full overflow-auto flex-shrink-0 flex flex-col',
+            'border-r-2 border-layer1 overflow-auto flex flex-col',
+            styleType === 'horizontal'
+              ? 'flex-row w-full'
+              : 'h-full flex-shrink-0',
             props.tabWrapperclassName
           )}
         >
@@ -63,6 +73,11 @@ export function Tabs<ID = string>(props: TabsProps<ID>) {
                   'w-full rounded-none border-x-0 shadow-none text-nowrap justify-start ',
                   index > 0 && 'mt-[-1px]',
                   isSelected && 'sticky top-0 left-0 z-10',
+                  isSelected &&
+                    styleType === 'horizontal' &&
+                    'text-brand border-b-4 border-b-brand',
+                  styleType === 'horizontal' &&
+                    'justify-center bg-layer0 border-t-0 font-semibold',
                   tab.tabClassName
                 )}
                 isSelected={isSelected}

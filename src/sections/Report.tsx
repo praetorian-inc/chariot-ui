@@ -1,11 +1,10 @@
 import { useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
-import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react';
 
 import { Button } from '@/components/Button';
 import CircularProgressBar from '@/components/CircularProgressBar';
-import { TabWrapper } from '@/components/ui/TabWrapper';
+import { Tabs } from '@/components/Tab';
 import { useGetAccountDetails } from '@/hooks/useAccounts';
 import { useAggregateCounts } from '@/hooks/useAggregateCounts';
 import { useGetFile } from '@/hooks/useFiles';
@@ -22,6 +21,7 @@ export const Report = () => {
 
   const client = useGetAccountDetails(accounts).name || friend || me;
   const [showDetails, setShowDetails] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(0);
   const { counts } = useAggregateCounts();
   const jobsRunning = counts.jobsRunning;
 
@@ -75,16 +75,13 @@ export const Report = () => {
         )}
       >
         {reportReady ? (
-          <TabGroup>
-            <TabList className="flex overflow-x-auto p-1">
-              {Object.keys(reportSections).map(tab => (
-                <TabWrapper key={tab}>{tab}</TabWrapper>
-              ))}
-            </TabList>
-            <TabPanels className="p-6">
-              {Object.entries(reportSections).map(([heading, tabContent]) => {
-                return (
-                  <TabPanel key={heading} className="prose max-w-none">
+          <Tabs
+            tabs={Object.entries(reportSections).map(
+              ([tab, tabContent], index) => ({
+                label: tab,
+                id: index,
+                Content: () => (
+                  <>
                     {typeof tabContent === 'string' && (
                       <Markdown>{tabContent}</Markdown>
                     )}
@@ -105,20 +102,27 @@ export const Report = () => {
                           );
                         }
                       )}
-                  </TabPanel>
-                );
-              })}
-            </TabPanels>
-            <div className="flex flex-row">
-              <Button
-                onClick={() => downloadFileContent()}
-                styleType="none"
-                startIcon={<DocumentArrowDownIcon className="size-6" />}
-              >
-                Download Report
-              </Button>
-            </div>
-          </TabGroup>
+                    <div className="flex flex-row">
+                      <Button
+                        className="p-0"
+                        onClick={() => downloadFileContent()}
+                        styleType="none"
+                        startIcon={<DocumentArrowDownIcon className="size-6" />}
+                      >
+                        Download Report
+                      </Button>
+                    </div>
+                  </>
+                ),
+              })
+            )}
+            styleType="horizontal"
+            defaultValue={0}
+            value={selectedTab}
+            onChange={setSelectedTab}
+            tabWrapperclassName=""
+            contentWrapperClassName="p-4 prose max-w-none"
+          />
         ) : (
           <div className="flex flex-col justify-center p-4">
             <div className="flex flex-col items-center justify-center">
